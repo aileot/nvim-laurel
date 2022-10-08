@@ -12,6 +12,23 @@ tested with [vusted][vusted].
 
 ## Installation
 
+### With a compiler plugin (recommended)
+
+Install nvim-laurel by your favorite plugin manager.
+
+[packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+use "aileot/nvim-laurel"
+```
+
+[dein.vim](https://github.com/Shougo/dein.vim) in toml:
+
+```toml
+[[plugin]]
+repo = "aileot/nvim-laurel"
+```
+
 ### Compile outside Neovim
 
 1. Download nvim-laurel where you feel like
@@ -28,23 +45,6 @@ git clone https://github.com/aileot/nvim-laurel /path/to/install
 %.lua: %.fnl
 	fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
 		--compile $< > $@
-```
-
-### With a compiler plugin
-
-Install nvim-laurel by your favorite plugin manager.
-
-[packer.nvim](https://github.com/wbthomason/packer.nvim)
-
-```lua
-use "aileot/nvim-laurel"
-```
-
-[dein.vim](https://github.com/Shougo/dein.vim) in toml:
-
-```toml
-[[plugin]]
-repo = "aileot/nvim-laurel"
 ```
 
 ## Usage
