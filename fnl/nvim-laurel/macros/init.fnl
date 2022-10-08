@@ -585,12 +585,6 @@
         (assert-compile (cterm-color? val.ctermbg)
                         (.. "ctermbg expects 256 color, got "
                             (view val.ctermbg)) val)
-        ;; Remove values invalid for cterm table.
-        (tset val.cterm :fg nil)
-        (tset val.cterm :ctermfg nil)
-        (tset val.cterm :bg nil)
-        (tset val.cterm :ctermbg nil)
-        (tset val.cterm :default nil)
         `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))))
 
 (lambda hi! [...]
