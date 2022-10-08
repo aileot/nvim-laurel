@@ -83,7 +83,7 @@
           _
           (error (.. "Invalid vim option modifier: " (view ?flag)))))))
 
-(lambda option/split-modifier [name-?flag]
+(lambda option/extract-flag [name-?flag]
   (let [?flag (: name-?flag :match "[^a-zA-Z]")
         name (if ?flag (: name-?flag :match "[a-zA-Z]+") name-?flag)]
     [name ?flag]))
@@ -91,7 +91,7 @@
 (lambda option/set [scope name-?flag ?val]
   (let [modify (partial option/modify scope)
         [name ?flag] (if (str? name-?flag)
-                         (option/split-modifier name-?flag)
+                         (option/extract-flag name-?flag)
                          [name-?flag nil])]
     (modify name ?val ?flag)))
 
