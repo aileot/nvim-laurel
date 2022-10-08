@@ -1,4 +1,4 @@
-# nvim-laurel 🍃
+# nvim-laurel 🌿
 
 nvim-laurel provides a syntax sugar macro collection to write neovim config in
 [Fennel][Fennel], developped with [parinfer-rust][parinfer-rust],
