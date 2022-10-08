@@ -91,8 +91,8 @@
 (lambda option/set [scope name-?flag ?val]
   (let [modify (partial option/modify scope)
         [name ?flag] (if (str? name-?flag)
-                        (option/split-modifier name-?flag)
-                        [name-?flag nil])]
+                         (option/split-modifier name-?flag)
+                         [name-?flag nil])]
     (modify name ?val ?flag)))
 
 ;; Export ///1
