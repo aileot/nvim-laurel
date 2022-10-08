@@ -575,9 +575,6 @@
                         (.. "With `link` key, no other options are invalid: " k)
                         val))
       (do
-        (tset val :cterm
-              (collect [k v (pairs val)]
-                (values k (or (?. val.cterm k) v))))
         (tset val :ctermfg (or (?. val :ctermfg)
                                (let [?fg (?. val :cterm :fg)]
                                  (when (cterm-color? ?fg)
@@ -586,8 +583,6 @@
                                (let [?bg (?. val :cterm :bg)]
                                  (when (cterm-color? ?bg)
                                    ?bg))))
-        (tset val :fg (or (?. val :fg) (?. val :ctermfg)))
-        (tset val :bg (or (?. val :bg) (?. val :ctermbg)))
         ;; Remove values invalid for cterm table.
         (tset val.cterm :fg nil)
         (tset val.cterm :ctermfg nil)
