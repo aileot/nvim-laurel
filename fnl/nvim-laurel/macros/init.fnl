@@ -31,7 +31,7 @@
                   (.. k ":" v))]
     (table.concat key-val ",")))
 
-(lambda option/modify [scope name val ?mod]
+(lambda option/modify [scope name ?val ?mod]
   (let [name (name:lower)
         interface (match scope
                     :local `vim.opt_local
@@ -40,38 +40,38 @@
                     _ (error (.. "Expected `local`, `global`, or `general`, got: "
                                  (view scope))))
         opt-obj `(. ,interface ,name)
-        val (if (and (contains? [:formatoptions :shortmess] name)
-                     ;; Convert sequence of table values into a sequence of
-                     ;; letters; let us set them in sequential table.
-                     (sequence? val))
-                (accumulate [str "" _ v (ipairs val)]
-                  (do
-                    (assert-compile (not (sym? v))
-                                    (.. name " cannot include " (type v)
-                                        " value")
-                                    v)
-                    (.. str v)))
-                val)]
+        ?val (if (and (contains? [:formatoptions :shortmess] name)
+                      ;; Convert sequence of table values into a sequence of
+                      ;; letters; let us set them in sequential table.
+                      (sequence? ?val))
+                 (accumulate [str "" _ v (ipairs ?val)]
+                   (do
+                     (assert-compile (not (sym? v))
+                                     (.. name " cannot include " (type v)
+                                         " value")
+                                     v)
+                     (.. str v)))
+                 ?val)]
     (if (nil? ?mod)
         (let [opts {:scope (if (= scope :general) nil scope)}]
-          (if (sym? val)
+          (if (sym? ?val)
               ;; Note: `set` is unavailable in compiler environment
-              `(tset ,interface ,name ,val)
-              (sequence? val)
-              `(vim.api.nvim_set_option_value ,name ,(table.concat val ",")
+              `(tset ,interface ,name ,?val)
+              (sequence? ?val)
+              `(vim.api.nvim_set_option_value ,name ,(table.concat ?val ",")
                                               ,opts)
-              (table? val)
+              (table? ?val)
               `(vim.api.nvim_set_option_value ,name
-                                              ,(option/concat-kv-table val)
+                                              ,(option/concat-kv-table ?val)
                                               ,opts)
-              `(vim.api.nvim_set_option_value ,name ,val ,opts)))
+              `(vim.api.nvim_set_option_value ,name ,?val ,opts)))
         (match ?mod
           "+"
-          `(: ,opt-obj :append ,val)
+          `(: ,opt-obj :append ,?val)
           "^"
-          `(: ,opt-obj :prepend ,val)
+          `(: ,opt-obj :prepend ,?val)
           "-"
-          `(: ,opt-obj :remove ,val)
+          `(: ,opt-obj :remove ,?val)
           "!"
           `(tset ,opt-obj (not (: ,opt-obj :get)))
           "<" ; Sync local option to global one.
@@ -87,25 +87,25 @@
         name (if ?mod (: name-?mod :match "[a-zA-Z]+") name-?mod)]
     [name ?mod]))
 
-(lambda option/set [scope name-?mod val]
+(lambda option/set [scope name-?mod ?val]
   (let [modify (partial option/modify scope)
         [name ?mod] (if (str? name-?mod)
                         (option/split-modifier name-?mod)
                         [name-?mod nil])]
-    (modify name val ?mod)))
+    (modify name ?val ?mod)))
 
 ;; Export ///1
-(lambda set! [name-?mod val]
+(lambda set! [name-?mod ?val]
   "Set global value to the option like `:set {option}={value}` in Vimscript.
   See `setglobal!` for the advanced usage."
-  (option/set :general name-?mod val))
+  (option/set :general name-?mod ?val))
 
-(lambda setlocal! [name-?mod val]
+(lambda setlocal! [name-?mod ?val]
   "Set local value to the option like `:setlocal {option}={value}` in Vimscript.
   See `setglobal!` for the advanced usage."
-  (option/set :local name-?mod val))
+  (option/set :local name-?mod ?val))
 
-(lambda setglobal! [name-?mod val]
+(lambda setglobal! [name-?mod ?val]
   "Set global value to the option like `:setglobal {option}={value}` in Vimscript.
   As long as the option name is literal string, you can append a flag to the option name,
   like `+`, `^`, `-`, and so on, to append value, prepend, remove, and so on, like Vimscript.
@@ -126,7 +126,7 @@
   Note: This macro has no support for symbol at option name; instead, use
   `setglobal+`, `setglobal^`, or `setglobal-`, and so on, respectively for such
   usage."
-  (option/set :global name-?mod val))
+  (option/set :global name-?mod ?val))
 
 (lambda set+ [name val]
   (option/modify name val "+"))
@@ -552,9 +552,9 @@
 "
   `(vim.api.nvim_feedkeys ,(keycodes keys) ,flags false))
 
-(lambda cterm-color? [color]
+(lambda cterm-color? [?color]
   "`:h cterm-colors`"
-  (or (num? color) (and (str? color) (color:match "[a-zA-Z]"))))
+  (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
 (lambda highlight! [...]
   ;; FIXME: Compile error: Missing argument val
@@ -575,32 +575,17 @@
                         (.. "With `link` key, no other options are invalid: " k)
                         val))
       (do
-        (tset val :cterm
-              (collect [k v (pairs val)]
-                (values k (or (?. val.cterm k) v))))
-        (tset val :ctermfg (or (?. val :ctermfg)
-                               (let [?fg (?. val :cterm :fg)]
-                                 (when (cterm-color? ?fg)
-                                   ?fg))))
-        (tset val :ctermbg (or (?. val :ctermbg)
-                               (let [?bg (?. val :cterm :bg)]
-                                 (when (cterm-color? ?bg)
-                                   ?bg))))
-        (tset val :fg (or (?. val :fg) (?. val :ctermfg)))
-        (tset val :bg (or (?. val :bg) (?. val :ctermbg)))
-        ;; Remove values invalid for cterm table.
-        (tset val.cterm :fg nil)
-        (tset val.cterm :ctermfg nil)
-        (tset val.cterm :bg nil)
-        (tset val.cterm :ctermbg nil)
-        (tset val.cterm :default nil)
-        (when val.ctermfg
-          (assert-compile (not (string.match val.ctermfg "#"))
-                          (.. "ctermfg expects 256 color, got " val.ctermfg) val))
-        (when val.ctermbg
-          (assert-compile (not (string.match val.ctermbg "#"))
-                          (.. "ctermbg expects 256 color, got " val.ctermbg) val))))
-  `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))
+        (when (nil? val.ctermfg)
+          (set val.ctermfg (?. val :cterm :fg)))
+        (when (nil? val.ctermbg)
+          (set val.ctermbg (?. val :cterm :bg)))
+        (assert-compile (cterm-color? val.ctermfg)
+                        (.. "ctermfg expects 256 color, got "
+                            (view val.ctermfg)) val)
+        (assert-compile (cterm-color? val.ctermbg)
+                        (.. "ctermbg expects 256 color, got "
+                            (view val.ctermbg)) val)
+        `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))))
 
 (lambda hi! [...]
   "Same as highlight!"
