@@ -20,7 +20,7 @@ FNL_TESTS:=$(wildcard tests/fnl/*_spec.fnl)
 LUA_TESTS:=$(FNL_TESTS:%.fnl=%.lua)
 
 REPO_MACRO_DIR := $(REPO_ROOT)/fnl
-REPO_MACRO_PATH := $(shell echo "$(REPO_MACRO_DIR)" | sed -e "s#.*#\0/?.fnl;\0/?/init.fnl#g")
+REPO_MACRO_PATH := $(REPO_MACRO_DIR)/?.fnl;$(REPO_MACRO_DIR)/?/init.fnl
 
 .DEFAULT_GOAL := help
 .PHONY: help
