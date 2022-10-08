@@ -575,27 +575,23 @@
                         (.. "With `link` key, no other options are invalid: " k)
                         val))
       (do
-        (tset val :ctermfg (or (?. val :ctermfg)
-                               (let [?fg (?. val :cterm :fg)]
-                                 (when (cterm-color? ?fg)
-                                   ?fg))))
-        (tset val :ctermbg (or (?. val :ctermbg)
-                               (let [?bg (?. val :cterm :bg)]
-                                 (when (cterm-color? ?bg)
-                                   ?bg))))
+        (when (nil? val.ctermfg)
+          (set val.ctermfg (?. val :cterm :fg)))
+        (when (nil? val.ctermbg)
+          (set val.ctermbg (?. val :cterm :bg)))
+        (assert-compile (cterm-color? val.ctermfg)
+                        (.. "ctermfg expects 256 color, got "
+                            (view val.ctermfg)) val)
+        (assert-compile (cterm-color? val.ctermbg)
+                        (.. "ctermbg expects 256 color, got "
+                            (view val.ctermbg)) val)
         ;; Remove values invalid for cterm table.
         (tset val.cterm :fg nil)
         (tset val.cterm :ctermfg nil)
         (tset val.cterm :bg nil)
         (tset val.cterm :ctermbg nil)
         (tset val.cterm :default nil)
-        (when val.ctermfg
-          (assert-compile (not (string.match val.ctermfg "#"))
-                          (.. "ctermfg expects 256 color, got " val.ctermfg) val))
-        (when val.ctermbg
-          (assert-compile (not (string.match val.ctermbg "#"))
-                          (.. "ctermbg expects 256 color, got " val.ctermbg) val))))
-  `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))
+        `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))))
 
 (lambda hi! [...]
   "Same as highlight!"
