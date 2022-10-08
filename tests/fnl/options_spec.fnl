@@ -23,4 +23,11 @@
                             (assert.is_false vim.go.wrap)
                             (assert.is_true vim.wo.wrap)
                             (assert.is.same "" vim.go.bufhidden)
-                            (assert.is.same :hide vim.bo.bufhidden))))))
+                            (assert.is.same :hide vim.bo.bufhidden)))
+                      (it "inherits global value when local is set to nil"
+                          (fn []
+                            (setlocal! :bufhidden :hide)
+                            (assert.is.not.same vim.bo.bufhidden
+                                                vim.go.bufhidden)
+                            (setlocal! :bufhidden nil)
+                            (assert.is.same vim.bo.bufhidden vim.go.bufhidden))))))
