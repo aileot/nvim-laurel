@@ -1,6 +1,9 @@
 (import-macros {: set! : setglobal! : setlocal!} :nvim-laurel.macros)
 
 (describe :options ;
+          (setup (fn []
+                   (vim.cmd "setglobal wrap
+                            setglobal bufhidden=")))
           (before_each (fn []
                          (vim.cmd.new)
                          (vim.cmd.only)))
