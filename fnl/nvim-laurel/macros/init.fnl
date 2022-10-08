@@ -537,8 +537,18 @@
   (define-autocmd! ...))
 
 ;; Misc ///1
-(lambda keycodes [str]
-  "Interpret string as if in Vimscript"
+(lambda str->keycodes [str]
+  "Replace terminal codes and keycodes in a string.
+
+  ```fennel
+  (str->keycodes :foo)
+  ```
+
+  is compiled to
+
+  ```lua
+  vim.api.nvim_replace_termcodes(\"foo\", true, false, true)
+  ```"
   `(vim.api.nvim_replace_termcodes ,str true false true))
 
 (lambda feedkeys! [keys flags]
@@ -550,7 +560,7 @@
 ---|'\"x\"' # Execute commands until typehead is empty like using `:normal!`.
 ---|'\"!\"' # With \"x\", it won't end Insert mode. Useful for testing `CursorHoldI`.
 "
-  `(vim.api.nvim_feedkeys ,(keycodes keys) ,flags false))
+  `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,flags false))
 
 (lambda cterm-color? [?color]
   "`:h cterm-colors`"
@@ -648,7 +658,7 @@
  : augroup+
  : au!
  : autocmd!
- : keycodes
+ : str->keycodes
  : feedkeys!
  : highlight!
  : hi!}
