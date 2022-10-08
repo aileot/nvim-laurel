@@ -129,31 +129,31 @@
   (option/set :global name-?flag ?val))
 
 (lambda set+ [name val]
-  (option/modify name val "+"))
+  (option/modify :general name val "+"))
 
 (lambda set^ [name val]
-  (option/modify name val "^"))
+  (option/modify :general name val "^"))
 
 (lambda set- [name val]
-  (option/modify name val "-"))
+  (option/modify :general name val "-"))
 
 (lambda setlocal+ [name val]
-  (option/modify name val "+"))
+  (option/modify :local name val "+"))
 
 (lambda setlocal^ [name val]
-  (option/modify name val "^"))
+  (option/modify :local name val "^"))
 
 (lambda setlocal- [name val]
-  (option/modify name val "-"))
+  (option/modify :local name val "-"))
 
 (lambda setglobal+ [name val]
-  (option/modify name val "+"))
+  (option/modify :global name val "+"))
 
 (lambda setglobal^ [name val]
-  (option/modify name val "^"))
+  (option/modify :global name val "^"))
 
 (lambda setglobal- [name val]
-  (option/modify name val "-"))
+  (option/modify :global name val "-"))
 
 ;; Variable ///1
 (lambda b! [name val]
