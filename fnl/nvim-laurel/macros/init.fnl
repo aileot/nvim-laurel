@@ -394,12 +394,14 @@
 
 ;; Command ///1
 (lambda command! [name command ?api-opts]
-  "Equivalent to `vim.api.nvim_create_user_command`. When you set `buffer` key,
-  it'll be equivalent to `vim.api.nvim_buf_create_user_command` instead.
+  "(command! name command ?api-opts)
+  name: (string) Name of the new user command. Must begin with an uppercase letter.
+  command: (string|function) Replacement command.
+  ?api-opts: (table) Optional command attributes. Same opts for `nvim_create_user_command`.
+      Additionally, `buffer` key is available, which is passed to {buffer} for `nvim_buf_create_user_command`.
 
-  name: (string)
-  command: (string|function)
-  ?api-opts: (table?) Optional command attributes.
+  Equivalent to `vim.api.nvim_create_user_command`. When you set `buffer` key,
+  it'll be equivalent to `vim.api.nvim_buf_create_user_command` instead.
 
   ```fennel
   (command! :SayHello \"echo 'Hello world!'\")
