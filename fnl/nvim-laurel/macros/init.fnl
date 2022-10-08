@@ -107,26 +107,52 @@
   (option/set :local name-?flag ?val))
 
 (lambda setglobal! [name-?flag ?val]
-  "Set global value to the option like `:setglobal {option}={value}` in Vimscript.
-  As long as the option name is literal string, you can append a flag to the option name,
-  like `+`, `^`, `-`, and so on, to append value, prepend, remove, and so on, like Vimscript.
+  "Set global value to the option. Almost equivalent to `:setglobal` in Vim script.
+
+  ```fennel
+  (setglobal! name-?flag ?val)
+  ```
+
+  - name-?flag: (string) Option name.
+    As long as the option name is literal string, you can append a flag to
+    the option name such as `+`, `^`, `-`, and so on, to append value, prepend,
+    remove, respectively.
+    This is case-insensitive so that you can improve readability a bit with
+    camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+    `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
+  - ?val: (undefine) New option value.
+    If not provided, the value is supposed to be `true` (experimental).
 
   ```fennel
   (setglobal! :number true)
   (setglobal! :wrap false)
   (setglobal! :signColumn :yes)
-  (setglobal! :colorColumn :+1)
   (setglobal! :formatOptions+ [:1 :2 :c :B])
   (setglobal! :rtp^ [:/path/to/another/vimrc])
   ```
 
-  Note: This interface is case-insensitive for option name so that
-  you can improve readability a bit with camelCase/PascalCase.
-  Since `:h {option}` is also case-insensitive, `(setlocal! :keywordPrg \":help\")`
-  for fennel still makes sense.
-  Note: This macro has no support for symbol at option name; instead, use
-  `setglobal+`, `setglobal^`, or `setglobal-`, and so on, respectively for such
-  usage."
+  is equivalent to
+
+  ```lua
+  vim.api.nvim_set_option_value(\"number\", true)
+  vim.api.nvim_set_option_value(\"wrap\", false)
+  vim.api.nvim_set_option_value(\"signcolumn\", \"yes\")
+  vim.opt_global.formatoptions:append(\"12cB\")
+  vim.opt_global.rtp:prepend(\"/path/to/another/vimrc\")
+  ```
+
+  Note: This macro has no support for symbol with any flag at option name;
+  instead, use `setglobal+`, `setglobal^`, or `setglobal-`, and so on,
+  respectively for such usage:
+
+  ```fennel
+  ;; Invalid usage!
+  (let [opt :formatOptions+]
+    (setglobal! opt [:1 :B]))
+  ;; Use the corresponding macro instead.
+  (let [opt :formatOptions]
+    (setglobal+ opt [:1 :B]))
+  ```"
   (option/set :global name-?flag ?val))
 
 (lambda set+ [name val]
