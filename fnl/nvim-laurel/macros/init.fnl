@@ -21,8 +21,9 @@
 
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
-  ;; e.g., `(setglobal! :fillchars {:eob " " :fold "-"})` is converted into
-  ;; `vim.api.nvim_set_option_value("fillchars", "eob: ,fold:-", {scope = "global"})`
+  "Concat kv table into a string for `vim.api.nvim_set_option_value`.
+  For example,
+  `{:eob \" \" :fold \"-\"})` should be compiled to `\"eob: ,fold:-\"`"
   (assert-compile (table? kv-table)
                   (.. "Expected table, got " (type kv-table) "\ndump:\n"
                       (view kv-table)) ;
