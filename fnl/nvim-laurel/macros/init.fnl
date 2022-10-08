@@ -551,7 +551,7 @@
   ```"
   `(vim.api.nvim_replace_termcodes ,str true false true))
 
-(lambda feedkeys! [keys flags]
+(lambda feedkeys! [keys ?flags]
   "Equivalent to `vim.fn.feedkeys()`.
 
   ```fennel
@@ -563,7 +563,7 @@
   ```lua
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(\"foo\", true, false, true) \"ni\", false)
   ```"
-  `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,flags false))
+  `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,?flags false))
 
 (lambda cterm-color? [?color]
   "`:h cterm-colors`"
