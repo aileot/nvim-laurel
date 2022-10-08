@@ -552,14 +552,17 @@
   `(vim.api.nvim_replace_termcodes ,str true false true))
 
 (lambda feedkeys! [keys flags]
-  "vim.fn.feedkeys()
----@param keys string
----@param flags? '\"m\"'|'\"n\"'
----|'\"t\"' # Handle keys as if typed; otherwise, they are handled as if coming from a mapping. This matters for undo, opening folds, etc.
----|'\"i\"'
----|'\"x\"' # Execute commands until typehead is empty like using `:normal!`.
----|'\"!\"' # With \"x\", it won't end Insert mode. Useful for testing `CursorHoldI`.
-"
+  "Equivalent to `vim.fn.feedkeys()`.
+
+  ```fennel
+  (feedkeys! :foo :ni)
+  ```
+
+  is compiled to
+
+  ```lua
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(\"foo\", true, false, true) \"ni\", false)
+  ```"
   `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,flags false))
 
 (lambda cterm-color? [?color]
