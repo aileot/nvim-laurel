@@ -1,4 +1,4 @@
-# nvim-laurel 🍃
+# nvim-laurel 🌿
 
 nvim-laurel provides a syntax sugar macro collection to write neovim config in
 [Fennel][Fennel], developped with [parinfer-rust][parinfer-rust],
@@ -12,24 +12,9 @@ tested with [vusted][vusted].
 
 ## Installation
 
-Unless you compiles fennel files before loading `init.lua`, the installation
-should run without any plugin manager which usually doesn't care plugin
-installation order. Add such scripts to install nvim-laurel to your `init.lua`.
+### With a compiler plugin (recommended)
 
-```lua
-local url = "https://github.com/aileot/nvim-laurel"
-local name = url:match("[^/]+$")
-local pack = foo
-local path = vim.fn.stdpath("data") .. "/site/pack/" .. pack .. "/start/" .. name
-if vim.fn.isdirectory(path) == 0 then
-  vim.notify("Installing " .. name .. " to " .. path .. "...")
-  vim.fn.system({"git", "clone", "--depth", "1", url, path})
-  vim.cmd.redraw()
-  vim.notify("Finished installing " .. name)
-end
-```
-
-But you can manage version of nvim-laurel by your favorite package manager:
+Install nvim-laurel by your favorite plugin manager.
 
 [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
@@ -42,7 +27,24 @@ use "aileot/nvim-laurel"
 ```toml
 [[plugin]]
 repo = "aileot/nvim-laurel"
-path = "/path/to/install"
+```
+
+### Compile outside Neovim
+
+1. Download nvim-laurel where you feel like
+
+```sh
+git clone https://github.com/aileot/nvim-laurel /path/to/install
+```
+
+2. Compile your fennel files with macro path for nvim-laurel
+   `/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl`. For
+   example, in your Makefile,
+
+```make
+%.lua: %.fnl
+	fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
+		--compile $< > $@
 ```
 
 ## Usage
