@@ -1,0 +1,45 @@
+name: test
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.fnl"
+      - ".github/workflows/test.yml"
+      - "Makefile"
+  pull_request:
+    paths:
+      - "**/*.fnl"
+      - ".github/workflows/test.yml"
+      - "Makefile"
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        nvim_version:
+          - v0.8.0
+          - stable
+          - nightly
+    steps:
+      - uses: actions/checkout@v3
+      - run: date +%F > todays-date
+      - name: Restore test dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            _neovim
+            lua_modules
+          key: ${{ runner.os }}-${{ matrix.nvim_version }}-${{ hashFiles('todays-date') }}
+      - uses: notomo/action-setup-nvim-lua@v1
+      - run: luarocks --lua-version=5.1 install fennel
+      - run: luarocks --lua-version=5.1 install vusted
+      - uses: rhysd/action-setup-vim@v1
+        id: vim
+        with:
+          neovim: true
+          version: ${{ matrix.nvim_version }}
+      - run: make test
+        env:
+          VUSTED_NVIM: ${{ steps.vim.outputs.executable }}
+        timeout-minutes: 5
