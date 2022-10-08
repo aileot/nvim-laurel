@@ -12,9 +12,29 @@ tested with [vusted][vusted].
 
 ## Installation
 
-Unless you compiles fennel files before loading `init.lua`, the installation
-should run without any plugin manager which usually doesn't care plugin
-installation order. Add such scripts to install nvim-laurel to your `init.lua`.
+### Compile outside Neovim
+
+1. Download nvim-laurel where you feel like
+
+```sh
+git clone https://github.com/aileot/nvim-laurel /path/to/install
+```
+
+2. Compile your fennel files with macro path for nvim-laurel
+   `/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl`. For
+   example, in your Makefile,
+
+```make
+%.lua: %.fnl
+	fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
+		--compile $< > $@
+```
+
+### Compile inside Neovim with a plugin
+
+The installation should run without any plugin manager which usually doesn't
+care plugin installation order. Add such scripts to install nvim-laurel to your
+`init.lua`.
 
 ```lua
 local url = "https://github.com/aileot/nvim-laurel"
