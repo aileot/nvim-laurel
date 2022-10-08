@@ -21,8 +21,9 @@
 
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
-  ;; e.g., `(setglobal! :fillchars {:eob " " :fold "-"})` is converted into
-  ;; `vim.api.nvim_set_option_value("fillchars", "eob: ,fold:-", {scope = "global"})`
+  "Concat kv table into a string for `vim.api.nvim_set_option_value`.
+  For example,
+  `{:eob \" \" :fold \"-\"})` should be compiled to `\"eob: ,fold:-\"`"
   (assert-compile (table? kv-table)
                   (.. "Expected table, got " (type kv-table) "\ndump:\n"
                       (view kv-table)) ;
@@ -31,7 +32,7 @@
                   (.. k ":" v))]
     (table.concat key-val ",")))
 
-(lambda option/modify [scope name ?val ?mod]
+(lambda option/modify [scope name ?val ?flag]
   (let [name (name:lower)
         interface (match scope
                     :local `vim.opt_local
@@ -52,7 +53,7 @@
                                      v)
                      (.. str v)))
                  ?val)]
-    (if (nil? ?mod)
+    (if (nil? ?flag)
         (let [opts {:scope (if (= scope :general) nil scope)}]
           (if (sym? ?val)
               ;; Note: `set` is unavailable in compiler environment
@@ -65,7 +66,7 @@
                                               ,(option/concat-kv-table ?val)
                                               ,opts)
               `(vim.api.nvim_set_option_value ,name ,?val ,opts)))
-        (match ?mod
+        (match ?flag
           "+"
           `(: ,opt-obj :append ,?val)
           "^"
@@ -80,32 +81,32 @@
                                           {:scope :local})
           ;; "&" `(vim.cmd.set (.. ,name "&"))
           _
-          (error (.. "Invalid vim option modifier: " (view ?mod)))))))
+          (error (.. "Invalid vim option modifier: " (view ?flag)))))))
 
-(lambda option/split-modifier [name-?mod]
-  (let [?mod (: name-?mod :match "[^a-zA-Z]")
-        name (if ?mod (: name-?mod :match "[a-zA-Z]+") name-?mod)]
-    [name ?mod]))
+(lambda option/split-modifier [name-?flag]
+  (let [?flag (: name-?flag :match "[^a-zA-Z]")
+        name (if ?flag (: name-?flag :match "[a-zA-Z]+") name-?flag)]
+    [name ?flag]))
 
-(lambda option/set [scope name-?mod ?val]
+(lambda option/set [scope name-?flag ?val]
   (let [modify (partial option/modify scope)
-        [name ?mod] (if (str? name-?mod)
-                        (option/split-modifier name-?mod)
-                        [name-?mod nil])]
-    (modify name ?val ?mod)))
+        [name ?flag] (if (str? name-?flag)
+                        (option/split-modifier name-?flag)
+                        [name-?flag nil])]
+    (modify name ?val ?flag)))
 
 ;; Export ///1
-(lambda set! [name-?mod ?val]
+(lambda set! [name-?flag ?val]
   "Set global value to the option like `:set {option}={value}` in Vimscript.
   See `setglobal!` for the advanced usage."
-  (option/set :general name-?mod ?val))
+  (option/set :general name-?flag ?val))
 
-(lambda setlocal! [name-?mod ?val]
+(lambda setlocal! [name-?flag ?val]
   "Set local value to the option like `:setlocal {option}={value}` in Vimscript.
   See `setglobal!` for the advanced usage."
-  (option/set :local name-?mod ?val))
+  (option/set :local name-?flag ?val))
 
-(lambda setglobal! [name-?mod ?val]
+(lambda setglobal! [name-?flag ?val]
   "Set global value to the option like `:setglobal {option}={value}` in Vimscript.
   As long as the option name is literal string, you can append a flag to the option name,
   like `+`, `^`, `-`, and so on, to append value, prepend, remove, and so on, like Vimscript.
@@ -126,7 +127,7 @@
   Note: This macro has no support for symbol at option name; instead, use
   `setglobal+`, `setglobal^`, or `setglobal-`, and so on, respectively for such
   usage."
-  (option/set :global name-?mod ?val))
+  (option/set :global name-?flag ?val))
 
 (lambda set+ [name val]
   (option/modify name val "+"))
