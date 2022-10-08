@@ -89,11 +89,10 @@
     [name ?flag]))
 
 (lambda option/set [scope name-?flag ?val]
-  (let [modify (partial option/modify scope)
-        [name ?flag] (if (str? name-?flag)
+  (let [[name ?flag] (if (str? name-?flag)
                          (option/extract-flag name-?flag)
                          [name-?flag nil])]
-    (modify name ?val ?flag)))
+    (option/modify scope name ?val ?flag)))
 
 ;; Export ///1
 (lambda set! [name-?flag ?val]
