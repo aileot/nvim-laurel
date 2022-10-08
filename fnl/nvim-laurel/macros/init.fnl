@@ -394,11 +394,31 @@
 
 ;; Command ///1
 (lambda command! [name command ?api-opts]
-  "Define a new user command by `vim.api.nvim_(buf_)?create_user_command`.
+  "Equivalent to `vim.api.nvim_create_user_command`. When you set `buffer` key,
+  it'll be equivalent to `vim.api.nvim_buf_create_user_command` instead.
+
   name: (string)
   command: (string|function)
-  ?opts: (table?) Optional command attributes.
-  "
+  ?api-opts: (table?) Optional command attributes.
+
+  ```fennel
+  (command! :SayHello \"echo 'Hello world!'\")
+  (command! :Salute #(print \"Hello world!\")
+            {:buffer 0 :bang true :desc \"Say Hello!\"})
+  ```
+
+  is equivalent to
+
+  ```lua
+  nvim_create_user_command(\"SayHello\", \"echo 'Hello world!'\", {})
+  nvim_buf_create_user_command(0, \"Salute\",
+                               function()
+                                 print(\"'Hello world!'\")
+                               end, {
+                               bang = true,
+                               desc = \"Say Hello!\"
+                              })
+  ```"
   (let [api-opts (or ?api-opts {})]
     (if api-opts.buffer
         (let [buffer-handle api-opts.buffer]
