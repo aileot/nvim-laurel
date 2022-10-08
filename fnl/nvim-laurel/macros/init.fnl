@@ -552,9 +552,9 @@
 "
   `(vim.api.nvim_feedkeys ,(keycodes keys) ,flags false))
 
-(lambda cterm-color? [color]
+(lambda cterm-color? [?color]
   "`:h cterm-colors`"
-  (or (num? color) (and (str? color) (color:match "[a-zA-Z]"))))
+  (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
 (lambda highlight! [...]
   ;; FIXME: Compile error: Missing argument val
