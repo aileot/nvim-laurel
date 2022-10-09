@@ -97,17 +97,30 @@
 
 ;; Export ///1
 (lambda set! [name-?flag ?val]
-  "Set global value to the option like `:set {option}={value}` in Vimscript.
-  See `setglobal!` for the advanced usage."
+  "Set global value to the option.
+  Almost equivalent to `:set` in Vim script.
+
+  ```fennel
+  (set! name-?flag ?val)
+  ```
+
+  See `setglobal!` for the details."
   (option/set :general name-?flag ?val))
 
 (lambda setlocal! [name-?flag ?val]
-  "Set local value to the option like `:setlocal {option}={value}` in Vimscript.
-  See `setglobal!` for the advanced usage."
+  "Set local value to the option.
+  Almost equivalent to `:setlocal` in Vim script.
+
+  ```fennel
+  (setlocal! name-?flag ?val)
+  ```
+
+  See `setglobal!` for the details."
   (option/set :local name-?flag ?val))
 
 (lambda setglobal! [name-?flag ?val]
-  "Set global value to the option. Almost equivalent to `:setglobal` in Vim script.
+  "Set global value to the option.
+  Almost equivalent to `:setglobal` in Vim script.
 
   ```fennel
   (setglobal! name-?flag ?val)
