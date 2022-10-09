@@ -142,8 +142,10 @@
 
   Note: There is no plan to support option prefix either `no` or `inv`; instead,
   set `false` or `(not vim.go.foo)` respectively.
-  Note: This macro has no support for symbol with any flag at option name;
-  instead, use `set+`, `set^`, or `set-`, respectively for such usage:
+
+  Note: This macro has no support for either symbol or list with any flag
+  at option name; instead, use `set+`, `set^`, or `set-`, respectively for such
+  usage:
 
   ```fennel
   ;; Invalid usage!
