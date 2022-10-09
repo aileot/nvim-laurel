@@ -141,6 +141,8 @@
   vim.opt_global.rtp:prepend(\"/path/to/another/vimrc\")
   ```
 
+  Note: There is no plan to support option prefix either `no` or `inv`; instead,
+  set `false` or `(not vim.go.foo)` respectively.
   Note: This macro has no support for symbol with any flag at option name;
   instead, use `setglobal+`, `setglobal^`, or `setglobal-`, and so on,
   respectively for such usage:
