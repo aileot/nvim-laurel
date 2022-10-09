@@ -133,14 +133,14 @@
     This is case-insensitive so that you can improve readability a bit with
     camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
     `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
-  - ?val: (undefine) New option value.
+  - ?val: (boolean|number|string|table) New option value.
     If not provided, the value is supposed to be `true` (experimental).
 
   ```fennel
   (setglobal! :number true)
-  (setglobal! :wrap false)
   (setglobal! :signColumn :yes)
-  (setglobal! :formatOptions+ [:1 :2 :c :B])
+  (setglobal! :formatOptions [:1 :2 :c :B])
+  (setglobal! :colorColumn+ :+1)
   (setglobal! :rtp^ [:/path/to/another/vimrc])
   ```
 
@@ -148,9 +148,9 @@
 
   ```lua
   vim.api.nvim_set_option_value(\"number\", true)
-  vim.api.nvim_set_option_value(\"wrap\", false)
   vim.api.nvim_set_option_value(\"signcolumn\", \"yes\")
-  vim.opt_global.formatoptions:append(\"12cB\")
+  vim.api.nvim_set_option_value(\".formatoptions\", \"12cB\")
+  vim.opt_global.colorcolumn:append(\"+1\")
   vim.opt_global.rtp:prepend(\"/path/to/another/vimrc\")
   ```
 
@@ -171,30 +171,87 @@
   (option/set :global name-?flag ?val))
 
 (lambda set+ [name val]
+  "Append a value to string-style options.
+  Almost equivalent to `:set {option}+={value}` in Vim script.
+
+  ```fennel
+  (set+ name val)
+  ```"
   (option/modify :general name val "+"))
 
 (lambda set^ [name val]
+  "Prepend a value to string-style options.
+  Almost equivalent to `:set {option}^={value}` in Vim script.
+
+  ```fennel
+  (set^ name val)
+  ```"
   (option/modify :general name val "^"))
 
 (lambda set- [name val]
+  "Remove a value from string-style options.
+  Almost equivalent to `:set {option}-={value}` in Vim script.
+
+  ```fennel
+  (set- name val)
+  ```"
   (option/modify :general name val "-"))
 
 (lambda setlocal+ [name val]
+  "Append a value to string-style local options.
+  Almost equivalent to `:setlocal {option}+={value}` in Vim script.
+
+  ```fennel
+  (setlocal+ name val)
+  ```"
   (option/modify :local name val "+"))
 
 (lambda setlocal^ [name val]
+  "Prepend a value to string-style local options.
+  Almost equivalent to `:setlocal {option}^={value}` in Vim script.
+
+  ```fennel
+  (setlocal^ name val)
+  ```"
   (option/modify :local name val "^"))
 
 (lambda setlocal- [name val]
+  "Remove a value from string-style local options.
+  Almost equivalent to `:setlocal {option}-={value}` in Vim script.
+
+  ```fennel
+  (setlocal- name val)
+  ```"
   (option/modify :local name val "-"))
 
 (lambda setglobal+ [name val]
+  "Append a value to string-style global options.
+  Almost equivalent to `:setglobal {option}+={value}` in Vim script.
+
+  ```fennel
+  (setglobal+ name val)
+  ```
+
+  - name: (string) Option name.
+  - val: (string) Additional option value."
   (option/modify :global name val "+"))
 
 (lambda setglobal^ [name val]
+  "Prepend a value from string-style global options.
+  Almost equivalent to `:setglobal {option}^={value}` in Vim script.
+
+  ```fennel
+  (setglobal^ name val)
+  ```"
   (option/modify :global name val "^"))
 
 (lambda setglobal- [name val]
+  "Remove a value from string-style global options.
+  Almost equivalent to `:setglobal {option}-={value}` in Vim script.
+
+  ```fennel
+  (setglobal- name val)
+  ```"
   (option/modify :global name val "-"))
 
 ;; Variable ///1
