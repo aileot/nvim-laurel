@@ -1,128 +1,99 @@
 (import-macros {: map! : noremap! : unmap! : cmap! : map-all!}
                :nvim-laurel.macros)
 
-(insulate :api.keymap ;
-          (describe "nvim_set_keymap()"
-                    (fn []
-                      (it "defines mapping"
-                          #(let [mode :n
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (assert.is.same "" (vim.fn.maparg mode lhs))
-                             (vim.api.nvim_set_keymap mode lhs rhs {})
-                             (vim.schedule #(assert.is.same rhs
-                                                            (vim.fn.maparg mode
-                                                                           lhs)))))
-                      (it "cannot define multi mode mappings at once"
-                          #(let [modes [:n :i :t]
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (assert.has_error #(vim.api.nvim_set_keymap modes
-                                                                         lhs rhs
-                                                                         {}))))))
-          (describe "nvim_del_keymap()"
-                    (fn []
-                      (it "deletes mapping"
-                          #(let [mode :n
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (assert.is.same "" (vim.fn.maparg mode lhs))
-                             (vim.api.nvim_set_keymap mode lhs rhs {})
-                             (vim.schedule #(assert.is.same rhs
-                                                            (vim.fn.maparg mode
-                                                                           lhs))
-                                           (vim.api.nvim_set_keymap mode lhs
-                                                                    rhs {}))
-                             (vim.api.nvim_del_keymap mode lhs)
-                             (vim.schedule #(assert.is.same ""
-                                                            (vim.fn.maparg mode
-                                                                           lhs)))))
-                      (it "cannot define multi mode mappings at once"
-                          #(let [modes [:n :t]
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (each [_ mode (ipairs modes)]
-                               (vim.api.nvim_set_keymap mode lhs rhs {}))
-                             (assert.has_error #(vim.api.nvim_del_keymap modes
-                                                                         lhs)))))))
+(lambda get-mapargs [mode lhs]
+  (let [mappings (vim.api.nvim_get_keymap mode)]
+    (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
+      (when (= lhs m.lhs)
+        m))))
+
+(lambda get-rhs [mode lhs]
+  (?. (get-mapargs mode lhs) :rhs))
+
+(lambda get-callback [mode lhs]
+  (?. (get-mapargs mode lhs) :callback))
 
 (insulate :macros.keymap
-          (describe :map!
-                    (fn []
-                      (it "maps lhs to rhs with `noremap` set to false"
-                          #(let [mode :n
-                                 lhs :foo
-                                 rhs :bar]
-                             (assert.is.same "" (vim.fn.maparg mode lhs))
-                             (map! mode lhs rhs)
-                             (vim.schedule #(let [{: noremap} (vim.fn.maparg mode
-                                                                             lhs)]
-                                              (assert.is.same 0 noremap)))))))
-          (describe :noremap!
-                    (fn []
-                      (it "maps lhs to rhs with `noremap` set to true"
-                          #(let [mode :n
-                                 lhs :foo
-                                 rhs :bar]
-                             (assert.is.same "" (vim.fn.maparg mode lhs))
-                             (noremap! mode lhs rhs)
-                             (vim.schedule #(let [{: noremap} (vim.fn.maparg mode
-                                                                             lhs)]
-                                              (assert.is.same 1 noremap)))))
-                      (it "maps multiple mode mappings with sequence at once"
-                          #(let [modes [:n :t :o]
-                                 lhs :foo
-                                 rhs :bar]
-                             (each [_ mode (ipairs modes)]
-                               (assert.is.same "" (vim.fn.maparg mode lhs)))
-                             (noremap! modes lhs rhs)
-                             (vim.schedule #(each [_ mode (ipairs modes)]
-                                              (assert.is.same rhs
-                                                              (vim.fn.maparg mode
-                                                                             lhs))))))
+          (fn []
+            (before_each (fn []
+                           (let [all-modes ["" "!" :l :t]]
+                             (each [_ mode (ipairs all-modes)]
+                               (pcall vim.api.nvim_del_keymap mode :foo)
+                               (assert.is_nil (get-rhs mode :foo))))))
+            (describe :noremap!
+                      (fn []
+                        (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
+                            #(let [mode :n
+                                   lhs :foo
+                                   rhs :bar]
+                               (assert.is_nil (get-rhs mode lhs))
+                               (noremap! mode lhs rhs)
+                               (let [{: noremap} (get-mapargs mode lhs)]
+                                 (assert.is.same 1 noremap))))
+                        (it "maps multiple mode mappings with sequence at once"
+                            #(let [modes [:n :t :o]
+                                   lhs :foo
+                                   rhs :bar]
+                               (each [_ mode (ipairs modes)]
+                                 (assert.is_nil (get-rhs mode lhs)))
+                               (noremap! modes lhs :bar)
+                               (each [_ mode (ipairs modes)]
+                                 (assert.is.same rhs (get-rhs mode lhs)))))))
+            (describe :map!
+                      (fn []
+                        (it "maps lhs to rhs with `noremap` set to `false` represented by `1`"
+                            #(let [mode :n
+                                   lhs :foo
+                                   rhs :bar]
+                               (map! mode lhs rhs)
+                               (vim.schedule #(let [{: noremap} (get-rhs mode
+                                                                         lhs)]
+                                                (assert.is.same 0 noremap)))))
+                        (it "maps symbol prefixed by `ex-` to rhs"
+                            #(let [mode :n
+                                   lhs :foo
+                                   ex-rhs :bar]
+                               (map! mode lhs ex-rhs)
+                               (assert.is.same ex-rhs (get-rhs mode lhs))))
+                        (it "maps symbol without prefix `ex-` to callback instead"
+                            #(let [mode :n
+                                   lhs :foo
+                                   rhs #:bar]
+                               (map! mode lhs rhs)
+                               ;; Note: rhs is nil when callback is set in the dictionary.
+                               (assert.is.same rhs (get-callback mode lhs)))))
                       (it "maps multiple mode mappings with a string at once"
                           #(let [modes [:n :c :t]
                                  lhs :foo
                                  rhs :bar]
                              (each [_ mode (ipairs modes)]
-                               (assert.is.same "" (vim.fn.maparg mode lhs)))
-                             (noremap! modes lhs rhs)
-                             (vim.schedule #(each [_ mode (ipairs modes)]
-                                              (assert.is.same rhs
-                                                              (vim.fn.maparg mode
-                                                                             lhs))))))))
-          (describe :cmap!
-                    (fn []
-                      (it "maps key without `silent` by default"
-                          (fn []
-                            (let [lhs :<CR>
-                                  rhs :foo]
-                              (assert.is.same "" (vim.fn.maparg :c lhs))
-                              (cmap! lhs rhs)
-                              (vim.schedule #(let [{: silent?} (vim.fn.maparg :c
-                                                                              lhs
-                                                                              false
-                                                                              true)]
-                                               (assert.is.same 0 silent?))))))))
-          (describe :map-all!
-                    (fn []
-                      (setup (fn []
-                               (map-all! :foo :bar)))
-                      (it "maps without silent key by default for i, l, c, t."
-                          #(vim.schedule #(let [modes [:i :l :c :t]]
-                                            (each [_ mode (ipairs modes)]
-                                              (let [dict (vim.fn.maparg :foo
-                                                                        mode
-                                                                        false
-                                                                        true)]
-                                                (assert.is.not_nil dict)
-                                                (assert.is.same 0 dict.silent))))))
-                      (it "maps with silent set to true by default for n, x, s, v, o."
-                          #(vim.schedule #(let [modes [:n :x :s :v :o]]
-                                            (each [_ mode (ipairs modes)]
-                                              (let [dict (vim.fn.maparg :foo
-                                                                        mode
-                                                                        false
-                                                                        true)]
-                                                (assert.is.not_nil dict)
-                                                (assert.is.same 1 dict.silent)))))))))
+                               (assert.is_nil (get-rhs mode lhs)))
+                             (noremap! modes lhs :bar)
+                             (each [_ mode (ipairs modes)]
+                               (assert.is.same rhs (get-rhs mode lhs))))))
+            (describe :cmap!
+                      (fn []
+                        (it "maps key without `silent` by default"
+                            (fn []
+                              (let [lhs :foo
+                                    rhs :bar]
+                                (assert.is_nil (get-rhs :c lhs))
+                                (cmap! lhs rhs)
+                                (let [{: silent} (get-mapargs :c lhs)]
+                                  (assert.is.same 0 silent)))))))
+            (describe :map-all!
+                      (fn []
+                        (before_each (fn []
+                                       (map-all! :foo :bar)))
+                        (it "maps without silent key by default for i, l, c, t."
+                            (fn []
+                              (let [modes [:i :l :c :t]]
+                                (each [_ mode (ipairs modes)]
+                                  (let [{: silent} (get-mapargs mode :foo)]
+                                    (assert.is.same 0 silent))))))
+                        (it "maps with silent set to true by default for n, x, s, v, o."
+                            (fn []
+                              (let [modes [:n :x :s :v :o]]
+                                (each [_ mode (ipairs modes)]
+                                  (let [{: silent} (get-mapargs mode :foo)]
+                                    (assert.is.same 1 silent))))))))))
