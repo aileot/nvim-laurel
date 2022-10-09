@@ -105,14 +105,20 @@
   ```
 
   - name-?flag: (string) Option name.
-    As long as the option name is literal string, you can append a flag to
-    the option name such as `+`, `^`, `-`, and so on, to append value, prepend,
-    remove, respectively.
-    This is case-insensitive so that you can improve readability a bit with
-    camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
-    `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
+    As long as the option name is literal string, i.e., neither symbol nor list,
+    this macro has two advantages:
+
+    1. A flag can be appended to the option name. Append `+`, `^`, or `-`,
+       to append, prepend, or remove values, respectively.
+    2. Option name is case-insensitive. You can improve readability a bit with
+       camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+       `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
+
   - ?val: (boolean|number|string|table) New option value.
     If not provided, the value is supposed to be `true` (experimental).
+    This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
+    however, when the value is set in either symbol or list,
+    this macro is expanding to `(tset vim.opt name val)` instead.
 
   ```fennel
   (set! :number true)
