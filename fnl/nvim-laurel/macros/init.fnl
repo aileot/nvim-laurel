@@ -118,6 +118,7 @@
   (set! :number true)
   (set! :signColumn :yes)
   (set! :formatOptions [:1 :2 :c :B])
+  (set! :listchars {:space :_ :tab: :>~})
   (set! :colorColumn+ :+1)
   (set! :rtp^ [:/path/to/another/vimrc])
   ```
@@ -128,6 +129,7 @@
   vim.api.nvim_set_option_value(\"number\", true)
   vim.api.nvim_set_option_value(\"signcolumn\", \"yes\")
   vim.api.nvim_set_option_value(\".formatoptions\", \"12cB\")
+  vim.api.nvim_set_option_value(\"listchars\", \"space:_,tab:>~\")
   vim.opt_global.colorcolumn:append(\"+1\")
   vim.opt_global.rtp:prepend(\"/path/to/another/vimrc\")
   ```
