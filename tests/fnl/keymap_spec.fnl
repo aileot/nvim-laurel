@@ -1,50 +1,17 @@
 (import-macros {: map! : noremap! : unmap! : cmap! : map-all!}
                :nvim-laurel.macros)
 
-(insulate :api.keymap ;
-          (describe "nvim_set_keymap()"
-                    (fn []
-                      (it "defines mapping"
-                          #(let [mode :n
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (assert.is.same "" (vim.fn.maparg mode lhs))
-                             (vim.api.nvim_set_keymap mode lhs rhs {})
-                             (vim.schedule #(assert.is.same rhs
-                                                            (vim.fn.maparg mode
-                                                                           lhs)))))
-                      (it "cannot define multi mode mappings at once"
-                          #(let [modes [:n :i :t]
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (assert.has_error #(vim.api.nvim_set_keymap modes
-                                                                         lhs rhs
-                                                                         {}))))))
-          (describe "nvim_del_keymap()"
-                    (fn []
-                      (it "deletes mapping"
-                          #(let [mode :n
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (assert.is.same "" (vim.fn.maparg mode lhs))
-                             (vim.api.nvim_set_keymap mode lhs rhs {})
-                             (vim.schedule #(assert.is.same rhs
-                                                            (vim.fn.maparg mode
-                                                                           lhs))
-                                           (vim.api.nvim_set_keymap mode lhs
-                                                                    rhs {}))
-                             (vim.api.nvim_del_keymap mode lhs)
-                             (vim.schedule #(assert.is.same ""
-                                                            (vim.fn.maparg mode
-                                                                           lhs)))))
-                      (it "cannot define multi mode mappings at once"
-                          #(let [modes [:n :t]
-                                 lhs :<CR>
-                                 rhs "<Cmd>echo 'sample'<CR>"]
-                             (each [_ mode (ipairs modes)]
-                               (vim.api.nvim_set_keymap mode lhs rhs {}))
-                             (assert.has_error #(vim.api.nvim_del_keymap modes
-                                                                         lhs)))))))
+(lambda get-mapargs [mode lhs]
+  (let [mappings (vim.api.nvim_get_keymap mode)]
+    (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
+      (when (= lhs m.lhs)
+        m))))
+
+(lambda get-rhs [mode lhs]
+  (?. (get-mapargs mode lhs) :rhs))
+
+(lambda get-callback [mode lhs]
+  (?. (get-mapargs mode lhs) :callback))
 
 (insulate :macros.keymap
           (describe :map!
