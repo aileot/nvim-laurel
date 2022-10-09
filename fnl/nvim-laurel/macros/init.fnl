@@ -122,11 +122,15 @@
 
   ```fennel
   (set! :number true)
-  (set! :signColumn :yes)
   (set! :formatOptions [:1 :2 :c :B])
   (set! :listchars {:space :_ :tab: :>~})
   (set! :colorColumn+ :+1)
   (set! :rtp^ [:/path/to/another/vimrc])
+
+  (local val :yes)
+  (set! :signColumn val)
+  (local opt :wrap)
+  (set! opt false)
   ```
 
   is equivalent to
@@ -138,6 +142,11 @@
   vim.api.nvim_set_option_value(\"listchars\", \"space:_,tab:>~\")
   vim.opt_global.colorcolumn:append(\"+1\")
   vim.opt_global.rtp:prepend(\"/path/to/another/vimrc\")
+
+  local val = \"yes\"
+  vim.opt.signcolumn = val
+  local opt = \"wrap\"
+  vim.opt[opt] = false
   ```
 
   Note: There is no plan to support option prefix either `no` or `inv`; instead,
