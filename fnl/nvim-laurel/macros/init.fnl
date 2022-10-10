@@ -324,7 +324,7 @@
   ;; [default-opts modes ?extra-opts lhs rhs ?api-opts]
   "Merge extra options with default ones.
    `(map modes ?extra-opts lhs rhs ?api-opts)` where
-   - `?extra-opts` must be a sequence of literal strings.
+   - `?extra-opts` must be a sequence of raw strings.
    - `?api-opts` must be a dictionary which accepts the same arguments as
      `vim.api.nvim_set_keymap()` accepts.
   `desc` will be filled based on `rhs` which is a function."
@@ -526,7 +526,7 @@
     boolean attributes.
     The boolean attributes are set to `true` just being there alone.
     To set some attributes to `false`, set them instead in `?api-opts` below.
-    All the keys must be literal string there.
+    All the keys must be raw string there.
     Addition to the optional command attributes for `nvim_create_user_command`,
     `buffer` key is available, whose value is passed to {buffer} for
     `nvim_buf_create_user_command`.
@@ -677,7 +677,7 @@
     `vim.api.nvim_create_autocmd()` unless you use this `au!` macro within
     either `augroup!` or `augroup+` macro.
   - events (string|string[]):
-    You can set multiple events in a dot-separated literal string.
+    You can set multiple events in a dot-separated raw string.
   - pattern ('*'|string|string[]):
     You can set `:<buffer>` here to set `autocmd` to current buffer.
     Symbol `*` can be passed as if a string.
@@ -690,7 +690,7 @@
     `\"double-quoted string\"`, but cannot `:string-with-colon-ahead`.
   - command-or-callback:
     A value for api options. Set either vim-command or callback function of vim,
-    lua or fennel. Any literal string here is interpreted as vim-command; use
+    lua or fennel. Any raw string here is interpreted as vim-command; use
     `vim.fn` table to set a Vimscript function.
   "
   (define-autocmd! ...))
