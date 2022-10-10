@@ -1,12 +1,5 @@
-(import-macros {: if-not
-                : contains?
-                : ->str
-                : str?
-                : num?
-                : fn?
-                : nil?
-                : ++
-                : slice} :nvim-laurel.macros.utils)
+(import-macros {: contains? : ->str : str? : num? : fn? : nil? : ++ : slice}
+               :nvim-laurel.macros.utils)
 
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
@@ -345,9 +338,9 @@
                            (tset opts :replace_keycodes false)
                            (tset opts :literal nil))
                          opts))
-        api-opts (if-not ?api-opts extra-opts
-                         (collect [k v (pairs ?api-opts) &into extra-opts]
-                           (values k v)))
+        api-opts (if (nil? ?api-opts) extra-opts
+                     (collect [k v (pairs ?api-opts) &into extra-opts]
+                       (values k v)))
         rhs (if (excmd? raw-rhs)
                 raw-rhs
                 (do
