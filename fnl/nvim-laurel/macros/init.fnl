@@ -5,6 +5,7 @@
                 : num?
                 : fn?
                 : nil?
+                : ++
                 : slice} :nvim-laurel.macros.utils)
 
 (lambda merge-default-kv-table [default another]
@@ -18,6 +19,21 @@
   (or (str? cmd) ;
       (and (sym? cmd) ;
            (string.match (->str cmd) :^ex-))))
+
+(lambda seq->kv-table [xs ?trues]
+  "Convert `xs` into a kv-table.
+  The value for `x` listed in `?trues` is set to `true`.
+  The value for the rest of `x`s is set to the next value in `xs`."
+  (let [kv-table {}
+        max (length xs)]
+    (var i 1)
+    (while (<= i max)
+      (let [x (. xs i)]
+        (if (contains? ?trues x)
+            (tset kv-table x true)
+            (tset kv-table x (. xs (++ i)))))
+      (++ i))
+    kv-table))
 
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
