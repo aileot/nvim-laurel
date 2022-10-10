@@ -555,7 +555,23 @@
                                desc = \"Say Hello!\"
                               })
   ```"
-  (let [api-opts (or ?api-opts {})]
+  (let [api-opts {}
+        [name command ?api-opts] ;
+        (accumulate [args [] _ varg (ipairs [...])]
+          (do
+            (if (sequence? varg)
+                (let [extra-opts (seq->kv-table varg
+                                                [:bar
+                                                 :bang
+                                                 :register
+                                                 :keepscript])]
+                  (each [k v (pairs extra-opts)]
+                    (tset api-opts k v)))
+                (table.insert args varg))
+            args))]
+    (when ?api-opts
+      (collect [k v (pairs ?api-opts) &into api-opts]
+        (values k v)))
     (if api-opts.buffer
         (let [buffer-handle api-opts.buffer]
           (tset api-opts :buffer nil)
