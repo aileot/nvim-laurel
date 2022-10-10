@@ -351,8 +351,17 @@
         [lhs raw-rhs ?api-opts] (if ?extra-opts
                                     (slice [...] 2)
                                     [...])
-        extra-opts (if-not ?extra-opts {}
-                           (keymap/extra-opts->api-opts ?extra-opts))
+        extra-opts (if (nil? ?extra-opts) {}
+                       (let [opts (seq->kv-table ?extra-opts
+                                                 [:buffer
+                                                  :expr
+                                                  :literal
+                                                  :script
+                                                  :unique])]
+                         (when opts.literal
+                           (tset opts :replace_keycodes false)
+                           (tset opts :literal nil))
+                         opts))
         api-opts (if-not ?api-opts extra-opts
                          (collect [k v (pairs ?api-opts) &into extra-opts]
                            (values k v)))
