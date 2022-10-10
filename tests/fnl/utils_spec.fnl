@@ -38,6 +38,9 @@
             (describe :contains?
                       (fn []
                         (it "returns true if x is in xs."
-                            #(assert.is_true (contains? [:a :b :c] :b)))
+                            (fn []
+                              (assert.is_true (contains? [:a :b :c] :a))
+                              (assert.is_true (contains? [:a :b :c] :b))
+                              (assert.is_true (contains? [:a :b :c] :c))))
                         (it "returns false if x is not in xs."
                             #(assert.is_false (contains? [:a :b :c] :z)))))))
