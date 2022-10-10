@@ -391,7 +391,7 @@
                               (not= false (?. raw-api-opts :replace_keycodes)))
                      (tset raw-api-opts :replace_keycodes true))
                    (icollect [_ m (ipairs modes)]
-                       (set-keymap m raw-api-opts))))]
+                     (set-keymap m raw-api-opts)))]
         (if (< 1 (length maps))
             maps
             (unpack maps)))))
