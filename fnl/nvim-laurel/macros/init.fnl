@@ -1,5 +1,12 @@
-(import-macros {: contains? : ->str : str? : num? : fn? : nil? : ++ : slice}
+(import-macros {: ->str : str? : num? : fn? : nil? : ++ : slice}
                :nvim-laurel.macros.utils)
+
+(lambda contains? [xs ?a]
+  "Check if `?a` is in `xs`."
+  (accumulate [eq? false ;
+               _ x (ipairs xs) ;
+               &until eq?]
+    (= ?a x)))
 
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]

@@ -1,14 +1,4 @@
 ;; Predicate ///1
-(lambda contains? [xs a]
-  "Check if `a` is in `xs`."
-  ;; TODO: Find the reason `or-expansion` version below often fails unexpectedly.
-  ;; `(or ,(unpack (icollect [_ x (ipairs xs)]
-  ;;                 `(= ,x ,a)))))
-  `(accumulate [contains?# false ;
-                _# x# (ipairs ,xs) ;
-                &until contains?#]
-     (= ,a x#)))
-
 (fn nil? [x]
   "checks if value of 'x' is nil."
   `(= nil ,x))
@@ -126,8 +116,7 @@
 
 ;; Export ///1
 
-{: contains?
- : warn!
+{: warn!
  : error!
  : when-not
  : if-not
