@@ -70,30 +70,4 @@
                                (assert.is_nil (get-rhs mode lhs)))
                              (noremap! modes lhs :bar)
                              (each [_ mode (ipairs modes)]
-                               (assert.is.same rhs (get-rhs mode lhs))))))
-            (describe :cmap!
-                      (fn []
-                        (it "maps key without `silent` by default"
-                            (fn []
-                              (let [lhs :foo
-                                    rhs :bar]
-                                (assert.is_nil (get-rhs :c lhs))
-                                (cmap! lhs rhs)
-                                (let [{: silent} (get-mapargs :c lhs)]
-                                  (assert.is.same 0 silent)))))))
-            (describe :map-all!
-                      (fn []
-                        (before_each (fn []
-                                       (map-all! :foo :bar)))
-                        (it "maps without silent key by default for i, l, c, t."
-                            (fn []
-                              (let [modes [:i :l :c :t]]
-                                (each [_ mode (ipairs modes)]
-                                  (let [{: silent} (get-mapargs mode :foo)]
-                                    (assert.is.same 0 silent))))))
-                        (it "maps with silent set to true by default for n, x, s, v, o."
-                            (fn []
-                              (let [modes [:n :x :s :v :o]]
-                                (each [_ mode (ipairs modes)]
-                                  (let [{: silent} (get-mapargs mode :foo)]
-                                    (assert.is.same 1 silent))))))))))
+                               (assert.is.same rhs (get-rhs mode lhs))))))))

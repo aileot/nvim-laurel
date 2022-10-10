@@ -391,10 +391,6 @@
                               (not= false (?. raw-api-opts :replace_keycodes)))
                      (tset raw-api-opts :replace_keycodes true))
                    (icollect [_ m (ipairs modes)]
-                     (do
-                       (when (and (nil? (?. raw-api-opts :silent))
-                                  (contains? [:n :x :s :v :o ""] m))
-                         (tset raw-api-opts :silent true))
                        (set-keymap m raw-api-opts))))]
         (if (< 1 (length maps))
             maps
