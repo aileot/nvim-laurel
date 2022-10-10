@@ -308,8 +308,6 @@
   (let [complement {}
         api-opts (collect [_ map-arg (ipairs extra-opts)]
                    (match map-arg
-                     :verbose
-                     (values :silent false)
                      ;; Note: Another macro will resolve the invalid "buffer" option.
                      :buffer
                      (values :buffer true)
@@ -328,7 +326,6 @@
   "Merge extra options with default ones.
    `(map modes ?extra-opts lhs rhs ?api-opts)` where
    - `?extra-opts` must be a sequence of literal strings.
-     A special key `verbose` is avaliable.
    - `?api-opts` must be a dictionary which accepts the same arguments as
      `vim.api.nvim_set_keymap()` accepts.
   `desc` will be filled based on `rhs` which is a function."
