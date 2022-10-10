@@ -64,13 +64,6 @@
   `(if (not ,cond)
        ,...))
 
-;; Type Conversion ///1
-(fn ->str [x]
-  `(tostring ,x))
-
-(fn ->num [x]
-  `(tonumber ,x))
-
 ;; Number ///1
 (fn inc [x]
   "Return incremented result"
@@ -105,6 +98,13 @@
 (lambda slice [xs ?first ?last ?step]
   `(fcollect [i# (or ,?first 1) (or ,?last (length ,xs) (or ,?step 1))]
              (. ,xs i#)))
+
+;; Type Conversion ///1
+(fn ->str [x]
+  `(tostring ,x))
+
+(fn ->num [x]
+  `(tonumber ,x))
 
 ;; Debug ///1
 (fn notify! [x ?level]
