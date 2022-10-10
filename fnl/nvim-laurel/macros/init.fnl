@@ -589,6 +589,15 @@
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
       (let [[id events pattern & rest] [...]
             api-opts {:group id}]
+        (each [_ val (ipairs rest)]
+          (if (sequence? val)
+              (let [extra-opts (seq->kv-table val [:once :nested])]
+                (each [k v (pairs extra-opts)]
+                  (tset api-opts k v)))
+              (if (excmd? val)
+                  (tset api-opts :command val)
+                  ;; Ignore the possibility to set VimL callback function in string.
+                  (tset api-opts :callback val))))
         (when (and (str? pattern) (= pattern :<buffer>))
           (tset api-opts :buffer 0))
         (when (nil? api-opts.buffer)
@@ -598,32 +607,11 @@
                              (: :match "%*")))
                     (->str pattern)
                     pattern)))
-        ;; TODO: More concise implementation.
         (let [es (if (str? events)
+                     ;; Expect dot-separated format: `:BufNewFile.BufReadPost`.
                      (icollect [p (events:gmatch "[a-zA-Z]+")]
                        p)
                      events)]
-          (each [_ val (ipairs rest)]
-            (if (sequence? val)
-                (let [?extra-opts val
-                      desc-pattern ;
-                      "[^-a-zA-Z0-9_!#$%^&*=+\\|:/.?]"]
-                  (each [_ v (ipairs ?extra-opts)]
-                    (when (str? v)
-                      (match v
-                        :once (tset api-opts :once true)
-                        :nested (tset api-opts :nested true)
-                        _ (do
-                            (assert-compile (v:match desc-pattern)
-                                            (.. "Unexpected string: " v) v)
-                            (tset api-opts :desc v))))))
-                (match val
-                  :once (tset api-opts :once true)
-                  :nested (tset api-opts :nested true)
-                  _ (if (excmd? val)
-                        (tset api-opts :command val)
-                        ;; Ignore the possibility to set VimL callback function in string.
-                        (tset api-opts :callback val)))))
           `(vim.api.nvim_create_autocmd ,es ,api-opts)))))
 
 (lambda define-augroup! [name opts ...]
