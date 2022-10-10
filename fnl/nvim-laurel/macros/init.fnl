@@ -527,32 +527,52 @@
   (map! :t ...))
 
 ;; Command ///1
-(lambda command! [name command ?api-opts]
-  "(command! name command ?api-opts)
-  name: (string) Name of the new user command. Must begin with an uppercase letter.
-  command: (string|function) Replacement command.
-  ?api-opts: (table) Optional command attributes. Same opts for `nvim_create_user_command`.
-      Additionally, `buffer` key is available, which is passed to {buffer} for `nvim_buf_create_user_command`.
-
-  Equivalent to `vim.api.nvim_create_user_command`. When you set `buffer` key,
-  it'll be equivalent to `vim.api.nvim_buf_create_user_command` instead.
+(lambda command! [...]
+  "Define a user command.
 
   ```fennel
-  (command! :SayHello \"echo 'Hello world!'\")
-  (command! :Salute #(print \"Hello world!\")
-            {:buffer 0 :bang true :desc \"Say Hello!\"})
+  (command! ?extra-opts name command ?api-opts)
+  (command! name ?extra-opts command ?api-opts)
+  ```
+
+  - name: (string) Name of the new user command.
+    It must begin with an uppercase letter.
+  - ?extra-opts: (sequence) Optional command attributes.
+    Neither symbol nor list can be placed here.
+    This sequential table is treated as if a key/value table, except the
+    boolean attributes.
+    The boolean attributes are set to `true` just being there alone.
+    To set some attributes to `false`, set them instead in `?api-opts` below.
+    All the keys must be literal string there.
+    Addition to the optional command attributes for `nvim_create_user_command`,
+    `buffer` key is available, whose value is passed to {buffer} for
+    `nvim_buf_create_user_command`.
+  - command: (string|function) Replacement command.
+  - ?api-opts: (table) Optional command attributes.
+    The same as {opts} for `nvim_create_user_command`.
+
+  ```fennel
+  (command! :SayHello
+            \"echo 'Hello world!'\"
+            {:bang true :desc \"Hello world!\"})
+  (command! :Salute
+            [:bar :buffer 10 :desc \"Say Hello!\"]
+            #(print \"Salute!\")
   ```
 
   is equivalent to
 
   ```lua
-  nvim_create_user_command(\"SayHello\", \"echo 'Hello world!'\", {})
-  nvim_buf_create_user_command(0, \"Salute\",
+  nvim_create_user_command(\"SayHello\", \"echo 'Hello world!'\", {
+                                         bang = true,
+                                         desc = \"Say Hello!\",
+                                         })
+  nvim_buf_create_user_command(10, \"Salute\",
                                function()
                                  print(\"'Hello world!'\")
                                end, {
-                               bang = true,
-                               desc = \"Say Hello!\"
+                               bar = true,
+                               desc = \"Salute!\"
                               })
   ```"
   (let [api-opts {}
