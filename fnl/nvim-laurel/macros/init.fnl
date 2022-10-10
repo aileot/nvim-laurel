@@ -626,6 +626,9 @@
                              (: :match "%*")))
                     (->str pattern)
                     pattern)))
+        (when (= "*" api-opts.pattern)
+          ;; Note: `*` is the default and redundant.
+          (tset api-opts :pattern nil))
         (let [es (if (str? events)
                      ;; Expect dot-separated format: `:BufNewFile.BufReadPost`.
                      (icollect [p (events:gmatch "[a-zA-Z]+")]
