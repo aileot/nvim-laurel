@@ -320,23 +320,6 @@
                            (raw-rhs:sub 2)))]
     ?description))
 
-(lambda keymap/extra-opts->api-opts [extra-opts]
-  (let [complement {}
-        api-opts (collect [_ map-arg (ipairs extra-opts)]
-                   (match map-arg
-                     ;; Note: Another macro will resolve the invalid "buffer" option.
-                     :buffer
-                     (values :buffer true)
-                     :literal
-                     (values :replace_keycodes false)
-                     _
-                     (if (contains? [:script :unique :expr] map-arg)
-                         (values map-arg true)
-                         (values :desc map-arg))))]
-    (collect [k v (pairs complement) &into api-opts]
-      (when (nil? (?. api-opts k))
-        (values k v)))))
-
 (lambda keymap/varargs->api-args [...]
   ;; [default-opts modes ?extra-opts lhs rhs ?api-opts]
   "Merge extra options with default ones.
