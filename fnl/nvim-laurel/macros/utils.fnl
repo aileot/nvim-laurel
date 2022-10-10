@@ -1,12 +1,13 @@
 ;; Predicate ///1
-(lambda contains? [xs x]
-  "Check if `x` is in `xs`."
-  ;; `(accumulate [contains?# false
-  ;;               _# x# (ipairs ,xs)
-  ;;               &until contains?#]
-  ;;     (= ,y x#)))
-  `(or ,(unpack (icollect [_ y (ipairs xs)]
-                  `(= ,x ,y)))))
+(lambda contains? [xs a]
+  "Check if `a` is in `xs`."
+  ;; TODO: Find the reason `or-expansion` version below often fails unexpectedly.
+  ;; `(or ,(unpack (icollect [_ x (ipairs xs)]
+  ;;                 `(= ,x ,a)))))
+  `(accumulate [contains?# false ;
+                _# x# (ipairs ,xs) ;
+                &until contains?#]
+     (= ,a x#)))
 
 (fn nil? [x]
   "checks if value of 'x' is nil."
@@ -64,13 +65,6 @@
   `(if (not ,cond)
        ,...))
 
-;; Type Conversion ///1
-(fn ->str [x]
-  `(tostring ,x))
-
-(fn ->num [x]
-  `(tonumber ,x))
-
 ;; Number ///1
 (fn inc [x]
   "Return incremented result"
@@ -105,6 +99,13 @@
 (lambda slice [xs ?first ?last ?step]
   `(fcollect [i# (or ,?first 1) (or ,?last (length ,xs) (or ,?step 1))]
              (. ,xs i#)))
+
+;; Type Conversion ///1
+(fn ->str [x]
+  `(tostring ,x))
+
+(fn ->num [x]
+  `(tonumber ,x))
 
 ;; Debug ///1
 (fn notify! [x ?level]

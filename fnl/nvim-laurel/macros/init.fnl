@@ -5,6 +5,7 @@
                 : num?
                 : fn?
                 : nil?
+                : ++
                 : slice} :nvim-laurel.macros.utils)
 
 (lambda merge-default-kv-table [default another]
@@ -18,6 +19,21 @@
   (or (str? cmd) ;
       (and (sym? cmd) ;
            (string.match (->str cmd) :^ex-))))
+
+(lambda seq->kv-table [xs ?trues]
+  "Convert `xs` into a kv-table.
+  The value for `x` listed in `?trues` is set to `true`.
+  The value for the rest of `x`s is set to the next value in `xs`."
+  (let [kv-table {}
+        max (length xs)]
+    (var i 1)
+    (while (<= i max)
+      (let [x (. xs i)]
+        (if (contains? ?trues x)
+            (tset kv-table x true)
+            (tset kv-table x (. xs (++ i)))))
+      (++ i))
+    kv-table))
 
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
@@ -304,28 +320,11 @@
                            (raw-rhs:sub 2)))]
     ?description))
 
-(lambda keymap/extra-opts->api-opts [extra-opts]
-  (let [complement {}
-        api-opts (collect [_ map-arg (ipairs extra-opts)]
-                   (match map-arg
-                     ;; Note: Another macro will resolve the invalid "buffer" option.
-                     :buffer
-                     (values :buffer true)
-                     :literal
-                     (values :replace_keycodes false)
-                     _
-                     (if (contains? [:script :unique :expr] map-arg)
-                         (values map-arg true)
-                         (values :desc map-arg))))]
-    (collect [k v (pairs complement) &into api-opts]
-      (when (nil? (?. api-opts k))
-        (values k v)))))
-
 (lambda keymap/varargs->api-args [...]
   ;; [default-opts modes ?extra-opts lhs rhs ?api-opts]
   "Merge extra options with default ones.
    `(map modes ?extra-opts lhs rhs ?api-opts)` where
-   - `?extra-opts` must be a sequence of literal strings.
+   - `?extra-opts` must be a sequence of raw strings.
    - `?api-opts` must be a dictionary which accepts the same arguments as
      `vim.api.nvim_set_keymap()` accepts.
   `desc` will be filled based on `rhs` which is a function."
@@ -335,8 +334,17 @@
         [lhs raw-rhs ?api-opts] (if ?extra-opts
                                     (slice [...] 2)
                                     [...])
-        extra-opts (if-not ?extra-opts {}
-                           (keymap/extra-opts->api-opts ?extra-opts))
+        extra-opts (if (nil? ?extra-opts) {}
+                       (let [opts (seq->kv-table ?extra-opts
+                                                 [:buffer
+                                                  :expr
+                                                  :literal
+                                                  :script
+                                                  :unique])]
+                         (when opts.literal
+                           (tset opts :replace_keycodes false)
+                           (tset opts :literal nil))
+                         opts))
         api-opts (if-not ?api-opts extra-opts
                          (collect [k v (pairs ?api-opts) &into extra-opts]
                            (values k v)))
@@ -502,35 +510,71 @@
   (map! :t ...))
 
 ;; Command ///1
-(lambda command! [name command ?api-opts]
-  "(command! name command ?api-opts)
-  name: (string) Name of the new user command. Must begin with an uppercase letter.
-  command: (string|function) Replacement command.
-  ?api-opts: (table) Optional command attributes. Same opts for `nvim_create_user_command`.
-      Additionally, `buffer` key is available, which is passed to {buffer} for `nvim_buf_create_user_command`.
-
-  Equivalent to `vim.api.nvim_create_user_command`. When you set `buffer` key,
-  it'll be equivalent to `vim.api.nvim_buf_create_user_command` instead.
+(lambda command! [...]
+  "Define a user command.
 
   ```fennel
-  (command! :SayHello \"echo 'Hello world!'\")
-  (command! :Salute #(print \"Hello world!\")
-            {:buffer 0 :bang true :desc \"Say Hello!\"})
+  (command! ?extra-opts name command ?api-opts)
+  (command! name ?extra-opts command ?api-opts)
+  ```
+
+  - name: (string) Name of the new user command.
+    It must begin with an uppercase letter.
+  - ?extra-opts: (sequence) Optional command attributes.
+    Neither symbol nor list can be placed here.
+    This sequential table is treated as if a key/value table, except the
+    boolean attributes.
+    The boolean attributes are set to `true` just being there alone.
+    To set some attributes to `false`, set them instead in `?api-opts` below.
+    All the keys must be raw string there.
+    Addition to the optional command attributes for `nvim_create_user_command`,
+    `buffer` key is available, whose value is passed to {buffer} for
+    `nvim_buf_create_user_command`.
+  - command: (string|function) Replacement command.
+  - ?api-opts: (table) Optional command attributes.
+    The same as {opts} for `nvim_create_user_command`.
+
+  ```fennel
+  (command! :SayHello
+            \"echo 'Hello world!'\"
+            {:bang true :desc \"Hello world!\"})
+  (command! :Salute
+            [:bar :buffer 10 :desc \"Say Hello!\"]
+            #(print \"Salute!\")
   ```
 
   is equivalent to
 
   ```lua
-  nvim_create_user_command(\"SayHello\", \"echo 'Hello world!'\", {})
-  nvim_buf_create_user_command(0, \"Salute\",
+  nvim_create_user_command(\"SayHello\", \"echo 'Hello world!'\", {
+                                         bang = true,
+                                         desc = \"Say Hello!\",
+                                         })
+  nvim_buf_create_user_command(10, \"Salute\",
                                function()
                                  print(\"'Hello world!'\")
                                end, {
-                               bang = true,
-                               desc = \"Say Hello!\"
+                               bar = true,
+                               desc = \"Salute!\"
                               })
   ```"
-  (let [api-opts (or ?api-opts {})]
+  (let [api-opts {}
+        [name command ?api-opts] ;
+        (accumulate [args [] _ varg (ipairs [...])]
+          (do
+            (if (sequence? varg)
+                (let [extra-opts (seq->kv-table varg
+                                                [:bar
+                                                 :bang
+                                                 :register
+                                                 :keepscript])]
+                  (each [k v (pairs extra-opts)]
+                    (tset api-opts k v)))
+                (table.insert args varg))
+            args))]
+    (when ?api-opts
+      (collect [k v (pairs ?api-opts) &into api-opts]
+        (values k v)))
     (if api-opts.buffer
         (let [buffer-handle api-opts.buffer]
           (tset api-opts :buffer nil)
@@ -564,6 +608,15 @@
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
       (let [[id events pattern & rest] [...]
             api-opts {:group id}]
+        (each [_ val (ipairs rest)]
+          (if (sequence? val)
+              (let [extra-opts (seq->kv-table val [:once :nested])]
+                (each [k v (pairs extra-opts)]
+                  (tset api-opts k v)))
+              (if (excmd? val)
+                  (tset api-opts :command val)
+                  ;; Ignore the possibility to set VimL callback function in string.
+                  (tset api-opts :callback val))))
         (when (and (str? pattern) (= pattern :<buffer>))
           (tset api-opts :buffer 0))
         (when (nil? api-opts.buffer)
@@ -573,32 +626,11 @@
                              (: :match "%*")))
                     (->str pattern)
                     pattern)))
-        ;; TODO: More concise implementation.
         (let [es (if (str? events)
+                     ;; Expect dot-separated format: `:BufNewFile.BufReadPost`.
                      (icollect [p (events:gmatch "[a-zA-Z]+")]
                        p)
                      events)]
-          (each [_ val (ipairs rest)]
-            (if (sequence? val)
-                (let [?extra-opts val
-                      desc-pattern ;
-                      "[^-a-zA-Z0-9_!#$%^&*=+\\|:/.?]"]
-                  (each [_ v (ipairs ?extra-opts)]
-                    (when (str? v)
-                      (match v
-                        :once (tset api-opts :once true)
-                        :nested (tset api-opts :nested true)
-                        _ (do
-                            (assert-compile (v:match desc-pattern)
-                                            (.. "Unexpected string: " v) v)
-                            (tset api-opts :desc v))))))
-                (match val
-                  :once (tset api-opts :once true)
-                  :nested (tset api-opts :nested true)
-                  _ (if (excmd? val)
-                        (tset api-opts :command val)
-                        ;; Ignore the possibility to set VimL callback function in string.
-                        (tset api-opts :callback val)))))
           `(vim.api.nvim_create_autocmd ,es ,api-opts)))))
 
 (lambda define-augroup! [name opts ...]
@@ -645,7 +677,7 @@
     `vim.api.nvim_create_autocmd()` unless you use this `au!` macro within
     either `augroup!` or `augroup+` macro.
   - events (string|string[]):
-    You can set multiple events in a dot-separated literal string.
+    You can set multiple events in a dot-separated raw string.
   - pattern ('*'|string|string[]):
     You can set `:<buffer>` here to set `autocmd` to current buffer.
     Symbol `*` can be passed as if a string.
@@ -658,7 +690,7 @@
     `\"double-quoted string\"`, but cannot `:string-with-colon-ahead`.
   - command-or-callback:
     A value for api options. Set either vim-command or callback function of vim,
-    lua or fennel. Any literal string here is interpreted as vim-command; use
+    lua or fennel. Any raw string here is interpreted as vim-command; use
     `vim.fn` table to set a Vimscript function.
   "
   (define-autocmd! ...))
