@@ -28,15 +28,6 @@
   table?, sequence?, etc., is only available in compile time."
   `(= (type ,x) :table))
 
-;; Decision ///1
-(lambda when-not [cond ...]
-  `(when (not ,cond)
-     ,...))
-
-(lambda if-not [cond ...]
-  `(if (not ,cond)
-       ,...))
-
 ;; Number ///1
 (lambda inc [x]
   "Return incremented result"
@@ -77,9 +68,7 @@
 
 ;; Export ///1
 
-{: when-not
- : if-not
- : nil?
+{: nil?
  : bool?
  : str?
  : num?
