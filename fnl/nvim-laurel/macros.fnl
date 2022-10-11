@@ -589,9 +589,9 @@
       (collect [k v (pairs ?api-opts) &into api-opts]
         (values k v)))
     (if api-opts.buffer
-        (let [buffer-handle api-opts.buffer]
+        (let [bufnr api-opts.buffer]
           (tset api-opts :buffer nil)
-          `(vim.api.nvim_buf_create_user_command ,buffer-handle ,name ,command
+          `(vim.api.nvim_buf_create_user_command ,bufnr ,name ,command
                                                  ,api-opts))
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
