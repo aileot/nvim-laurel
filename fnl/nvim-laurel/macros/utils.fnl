@@ -77,13 +77,13 @@
 
 ;; Table ///1
 (lambda first [xs]
-  `(?. ,xs 1))
+  `(. ,xs 1))
 
 (lambda second [xs]
-  `(?. ,xs 2))
+  `(. ,xs 2))
 
 (lambda last [xs]
-  `(?. ,xs ,(length xs)))
+  `(. ,xs ,(length xs)))
 
 (lambda slice [xs ?first ?last ?step]
   `(fcollect [i# (or ,?first 1) (or ,?last (length ,xs) (or ,?step 1))]
