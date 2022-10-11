@@ -1,29 +1,29 @@
 ;; Predicate ///1
-(fn nil? [x]
+(lambda nil? [x]
   "checks if value of 'x' is nil."
   `(= nil ,x))
 
-(fn bool? [x]
+(lambda bool? [x]
   "checks if 'x' is of boolean type."
   `(= :boolean (type ,x)))
 
-(fn str? [x]
+(lambda str? [x]
   "Check if `x` is of string type."
   `(= :string (type ,x)))
 
-(fn num? [x]
+(lambda num? [x]
   "checks if 'x' is of number type."
   `(= :number (type ,x)))
 
-(fn odd? [x]
+(lambda odd? [x]
   "checks if 'x' is mathematically of odd parity ;}"
   `(and ,(num? x) (= 1 (% ,x 2))))
 
-(fn even? [x]
+(lambda even? [x]
   "checks if 'x' is mathematically of even parity ;}"
   `(and ,(num? x) (= 0 (% ,x 2))))
 
-(fn fn? [x]
+(lambda fn? [x]
   "Check if type of `x` is function."
   (let [ref `(?. ,x 1 1)]
     `(contains? [:fn :hashfn :lambda :partial] ,ref)))
@@ -40,7 +40,7 @@
   ;; Note: table?, sequence?, etc. only available in macro.
   `(= (type ,x) :table))
 
-(fn empty? [tbl]
+(lambda empty? [tbl]
   "checks if 'tbl' is empty."
   (if (tbl? tbl)
       `(not (next ,tbl))
@@ -56,21 +56,21 @@
        ,...))
 
 ;; Number ///1
-(fn inc [x]
+(lambda inc [x]
   "Return incremented result"
   `(+ ,x 1))
 
-(fn dec [x]
+(lambda dec [x]
   "Return decremented result"
   `(- ,x 1))
 
-(fn ++ [x]
+(lambda ++ [x]
   "Increment `x` by 1"
   `(do
      (set ,x ,(inc x))
      ,x))
 
-(fn -- [x]
+(lambda -- [x]
   "Decrement `x` by 1"
   `(do
      (set ,x ,(dec x))
@@ -91,25 +91,25 @@
              (. ,xs i#)))
 
 ;; Type Conversion ///1
-(fn ->str [x]
+(lambda ->str [x]
   `(tostring ,x))
 
-(fn ->num [x]
+(lambda ->num [x]
   `(tonumber ,x))
 
 ;; Debug ///1
-(fn notify! [x ?level]
+(lambda notify! [x ?level]
   (let [msg (view x)]
     `(vim.notify ,msg ,?level)))
 
-(fn warn! [x]
+(lambda warn! [x]
   (notify! x _G.vim.levels.WARN))
 
-(fn error! [x]
+(lambda error! [x]
   (notify! x _G.vim.levels.ERROR))
 
 ;; Lua ///1
-(fn get-script-path []
+(lambda get-script-path []
   `(: ;
       (. (debug.getinfo 1 :S) :source) ;
       :match "@?(.*)"))
