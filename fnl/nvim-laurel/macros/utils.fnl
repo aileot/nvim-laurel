@@ -24,7 +24,8 @@
   `(not (nil? (. ,x 1))))
 
 (lambda tbl? [x]
-  ;; Note: table?, sequence?, etc. only available in macro.
+  "Check if `x` is of table type.
+  table?, sequence?, etc., is only available in compile time."
   `(= (type ,x) :table))
 
 ;; Decision ///1
