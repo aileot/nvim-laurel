@@ -1,13 +1,48 @@
-(import-macros {: if-not
-                : contains?
-                : ->str
-                : str?
-                : num?
-                : fn?
-                : nil?
-                : ++
-                : slice} :nvim-laurel.macros.utils)
+;; General Macros ///1
+(macro ++ [x]
+  "Increment `x` by 1"
+  `(do
+     (set ,x (+ 1 ,x))
+     ,x))
 
+;; General Utils ///1
+(fn ->str [x]
+  "Convert `x` to a string, or get the name if `x` is a symbol."
+  (tostring x))
+
+(lambda slice [xs ?first ?last ?step]
+  (let [first (or ?first 1)
+        last (or ?last (length xs) (or ?step 1))]
+    (fcollect [i first last] ;
+              (. xs i))))
+
+;; Predicates ///2
+(lambda contains? [xs ?a]
+  "Check if `?a` is in `xs`."
+  (accumulate [eq? false ;
+               _ x (ipairs xs) ;
+               &until eq?]
+    (= ?a x)))
+
+(fn nil? [x]
+  "Check if value of 'x' is nil."
+  (= nil x))
+
+(fn str? [x]
+  "Check if `x` is of string type."
+  (= :string (type x)))
+
+(fn num? [x]
+  "Check if 'x' is of number type."
+  (= :number (type x)))
+
+(fn function? [x]
+  "(Compile time) Check if type of `x` is function.
+  Note: It cannot detect a function set in a symbol."
+  (let [ref (?. x 1 1)]
+    (contains? [:fn :hashfn :lambda :partial] ref)))
+
+;; Specific Utils ///1
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
     (when (nil? (?. another :k))
@@ -345,9 +380,9 @@
                            (tset opts :replace_keycodes false)
                            (tset opts :literal nil))
                          opts))
-        api-opts (if-not ?api-opts extra-opts
-                         (collect [k v (pairs ?api-opts) &into extra-opts]
-                           (values k v)))
+        api-opts (if (nil? ?api-opts) extra-opts
+                     (collect [k v (pairs ?api-opts) &into extra-opts]
+                       (values k v)))
         rhs (if (excmd? raw-rhs)
                 raw-rhs
                 (do
@@ -591,7 +626,7 @@
      (tset vim.g :eventignore :all)
      ,(if (excmd? callback) `(vim.cmd ,callback)
           (do
-            (assert-compile (or (sym? callback) (fn? callback))
+            (assert-compile (or (sym? callback) (function? callback))
                             (.. "callback must be a string or function, got "
                                 (type callback))
                             callback))
