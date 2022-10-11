@@ -468,7 +468,7 @@
 (lambda noremap-operator! [...]
   (noremap! [:n :x] ...))
 
-(lambda noremap-textobject! [...]
+(lambda noremap-textobj! [...]
   (noremap! [:o :x] ...))
 
 (lambda nnoremap! [...]
@@ -514,7 +514,7 @@
 (lambda map-operator! [...]
   (map! [:n :x] ...))
 
-(lambda map-textobject! [...]
+(lambda map-textobj! [...]
   (map! [:o :x] ...))
 
 (lambda nmap! [...]
@@ -832,7 +832,7 @@
  : noremap-input!
  : noremap-motion!
  : noremap-operator!
- : noremap-textobject!
+ : noremap-textobj!
  : nnoremap!
  : vnoremap!
  : xnoremap!
@@ -846,7 +846,7 @@
  : map-input!
  : map-motion!
  : map-operator!
- : map-textobject!
+ : map-textobj!
  : nmap!
  : vmap!
  : xmap!
