@@ -322,28 +322,6 @@
   ```"
   (option/modify :global name val "-"))
 
-;; Variable ///1
-(lambda b! [name val]
-  `(tset vim.b ,name ,val))
-
-(lambda w! [name val]
-  `(tset vim.w ,name ,val))
-
-(lambda t! [name val]
-  `(tset vim.t ,name ,val))
-
-(lambda g! [name val]
-  `(tset vim.g ,name ,val))
-
-(lambda v! [name val]
-  `(tset vim.v ,name ,val))
-
-(lambda env! [name val]
-  `(tset vim.env ,name ,val))
-
-;; (lambda $! [name val]
-;;   `(tset vim.env ,name ,val))
-
 ;; Keymap ///1
 (lambda keymap/infer-description [raw-rhs]
   (let [raw-rhs (->str raw-rhs)
@@ -819,12 +797,6 @@
  : setglobal+
  : setglobal^
  : setglobal-
- : b!
- : w!
- : t!
- : g!
- : v!
- : env!
  : noremap!
  : map!
  : unmap!
