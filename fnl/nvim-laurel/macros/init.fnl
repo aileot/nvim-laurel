@@ -1,6 +1,27 @@
-(import-macros {: ->str : str? : num? : nil? : ++} :nvim-laurel.macros.utils)
+;; General Macros ///1
+(macro ++ [x]
+  "Increment `x` by 1"
+  `(do
+     (set ,x (+ 1 ,x))
+     ,x))
 
 ;; General Utils ///1
+(fn ->str [x]
+  "Convert `x` to a string, or get the name if `x` is a symbol."
+  (tostring x))
+
+(fn nil? [x]
+  "Check if value of 'x' is nil."
+  (= nil x))
+
+(fn str? [x]
+  "Check if `x` is of string type."
+  (= :string (type x)))
+
+(fn num? [x]
+  "Check if 'x' is of number type."
+  (= :number (type x)))
+
 (lambda contains? [xs ?a]
   "Check if `?a` is in `xs`."
   (accumulate [eq? false ;
