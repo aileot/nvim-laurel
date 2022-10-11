@@ -19,18 +19,6 @@
   "Check if 'x' is of number type."
   `(= :number (type ,x)))
 
-(lambda odd? [x]
-  "Check if 'x' is mathematically of odd parity ;}"
-  `(and ,(num? x) (= 1 (% ,x 2))))
-
-(lambda even? [x]
-  "Check if 'x' is mathematically of even parity ;}"
-  `(and ,(num? x) (= 0 (% ,x 2))))
-
-(lambda quote? [x]
-  (let [ref `(?. ,x 1 1)]
-    `(= ,ref :quote)))
-
 (lambda seq? [x]
   "Check if `x` is a sequence."
   `(not (nil? (. ,x 1))))
@@ -38,12 +26,6 @@
 (lambda tbl? [x]
   ;; Note: table?, sequence?, etc. only available in macro.
   `(= (type ,x) :table))
-
-(lambda empty? [tbl]
-  "Check if 'tbl' is empty."
-  (if (tbl? tbl)
-      `(not (next ,tbl))
-      (error (: "expected table, got %s: %s" :format (type tbl) (view tbl)))))
 
 ;; Decision ///1
 (lambda when-not [cond ...]
@@ -92,40 +74,17 @@
 (lambda ->num [x]
   `(tonumber ,x))
 
-;; Debug ///1
-(lambda notify! [x ?level]
-  (let [msg (view x)]
-    `(vim.notify ,msg ,?level)))
-
-(lambda warn! [x]
-  (notify! x _G.vim.levels.WARN))
-
-(lambda error! [x]
-  (notify! x _G.vim.levels.ERROR))
-
-;; Lua ///1
-(lambda get-script-path []
-  `(: ;
-      (. (debug.getinfo 1 :S) :source) ;
-      :match "@?(.*)"))
-
 ;; Export ///1
 
-{: warn!
- : error!
- : when-not
+{: when-not
  : if-not
  : nil?
  : bool?
  : str?
  : num?
- : odd?
- : even?
  : fn?
- : quote?
  : seq?
  : tbl?
- : empty?
  : ->str
  : ->num
  : inc
@@ -134,7 +93,6 @@
  : --
  : first
  : second
- : last
- : get-script-path}
+ : last}
 
 ;; vim:fdm=marker:foldmarker=///,"""
