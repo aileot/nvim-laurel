@@ -1,29 +1,29 @@
 ;; Predicate ///1
-(lambda nil? [x]
+(fn nil? [x]
   "Check if value of 'x' is nil."
   `(= nil ,x))
 
-(lambda bool? [x]
+(fn bool? [x]
   "Check if 'x' is of boolean type."
   `(= :boolean (type ,x)))
 
-(lambda str? [x]
+(fn str? [x]
   "Check if `x` is of string type."
   `(= :string (type ,x)))
 
-(lambda fn? [x]
+(fn fn? [x]
   "(Runtime time) Check if type of `x` is function."
   `(= :function (type ,x)))
 
-(lambda num? [x]
+(fn num? [x]
   "Check if 'x' is of number type."
   `(= :number (type ,x)))
 
-(lambda seq? [x]
+(fn seq? [x]
   "Check if `x` is a sequence."
   `(not (nil? (. ,x 1))))
 
-(lambda tbl? [x]
+(fn tbl? [x]
   "Check if `x` is of table type.
   table?, sequence?, etc., is only available in compile time."
   `(= (type ,x) :table))
