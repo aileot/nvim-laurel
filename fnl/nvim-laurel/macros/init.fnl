@@ -10,6 +10,20 @@
   "Convert `x` to a string, or get the name if `x` is a symbol."
   (tostring x))
 
+(lambda slice [xs ?first ?last ?step]
+  (let [first (or ?first 1)
+        last (or ?last (length xs) (or ?step 1))]
+    (fcollect [i first last] ;
+              (. xs i))))
+
+;; Predicates ///2
+(lambda contains? [xs ?a]
+  "Check if `?a` is in `xs`."
+  (accumulate [eq? false ;
+               _ x (ipairs xs) ;
+               &until eq?]
+    (= ?a x)))
+
 (fn nil? [x]
   "Check if value of 'x' is nil."
   (= nil x))
@@ -22,20 +36,7 @@
   "Check if 'x' is of number type."
   (= :number (type x)))
 
-(lambda contains? [xs ?a]
-  "Check if `?a` is in `xs`."
-  (accumulate [eq? false ;
-               _ x (ipairs xs) ;
-               &until eq?]
-    (= ?a x)))
-
-(lambda slice [xs ?first ?last ?step]
-  (let [first (or ?first 1)
-        last (or ?last (length xs) (or ?step 1))]
-    (fcollect [i first last] ;
-              (. xs i))))
-
-(lambda function? [x]
+(fn function? [x]
   "(Compile time) Check if type of `x` is function.
   Note: It cannot detect a function set in a symbol."
   (let [ref (?. x 1 1)]
