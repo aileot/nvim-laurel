@@ -11,6 +11,10 @@
   "Check if `x` is of string type."
   `(= :string (type ,x)))
 
+(lambda fn? [x]
+  "(Runtime time) Check if type of `x` is function."
+  `(= :function (type ,x)))
+
 (lambda num? [x]
   "checks if 'x' is of number type."
   `(= :number (type ,x)))
@@ -22,11 +26,6 @@
 (lambda even? [x]
   "checks if 'x' is mathematically of even parity ;}"
   `(and ,(num? x) (= 0 (% ,x 2))))
-
-(lambda fn? [x]
-  "Check if type of `x` is function."
-  (let [ref `(?. ,x 1 1)]
-    `(contains? [:fn :hashfn :lambda :partial] ,ref)))
 
 (lambda quote? [x]
   (let [ref `(?. ,x 1 1)]

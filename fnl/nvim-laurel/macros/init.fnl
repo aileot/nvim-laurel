@@ -1,4 +1,4 @@
-(import-macros {: ->str : str? : num? : fn? : nil? : ++ : slice}
+(import-macros {: ->str : str? : num? : nil? : ++ : slice}
                :nvim-laurel.macros.utils)
 
 (lambda contains? [xs ?a]
@@ -7,6 +7,12 @@
                _ x (ipairs xs) ;
                &until eq?]
     (= ?a x)))
+
+(lambda function? [x]
+  "(Compile time) Check if type of `x` is function.
+  Note: It cannot detect a function set in a symbol."
+  (let [ref (?. x 1 1)]
+    (contains? [:fn :hashfn :lambda :partial] ref)))
 
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
@@ -591,7 +597,7 @@
      (tset vim.g :eventignore :all)
      ,(if (excmd? callback) `(vim.cmd ,callback)
           (do
-            (assert-compile (or (sym? callback) (fn? callback))
+            (assert-compile (or (sym? callback) (function? callback))
                             (.. "callback must be a string or function, got "
                                 (type callback))
                             callback))
