@@ -85,10 +85,6 @@
 (lambda last [xs]
   `(. ,xs ,(length xs)))
 
-(lambda slice [xs ?first ?last ?step]
-  `(fcollect [i# (or ,?first 1) (or ,?last (length ,xs) (or ,?step 1))]
-             (. ,xs i#)))
-
 ;; Type Conversion ///1
 (lambda ->str [x]
   `(tostring ,x))
@@ -139,7 +135,6 @@
  : first
  : second
  : last
- : slice
  : get-script-path}
 
 ;; vim:fdm=marker:foldmarker=///,"""

@@ -1,4 +1,4 @@
-(import-macros {: ->str : str? : num? : nil? : ++ : slice}
+(import-macros {: ->str : str? : num? : nil? : ++}
                :nvim-laurel.macros.utils)
 
 (lambda contains? [xs ?a]
@@ -7,6 +7,12 @@
                _ x (ipairs xs) ;
                &until eq?]
     (= ?a x)))
+
+(lambda slice [xs ?first ?last ?step]
+  (let [first (or ?first 1)
+        last (or ?last (length xs) (or ?step 1))]
+    (fcollect [i first last] ;
+              (. xs i))))
 
 (lambda function? [x]
   "(Compile time) Check if type of `x` is function.
