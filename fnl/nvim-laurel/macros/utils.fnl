@@ -1,10 +1,10 @@
 ;; Predicate ///1
 (lambda nil? [x]
-  "checks if value of 'x' is nil."
+  "Check if value of 'x' is nil."
   `(= nil ,x))
 
 (lambda bool? [x]
-  "checks if 'x' is of boolean type."
+  "Check if 'x' is of boolean type."
   `(= :boolean (type ,x)))
 
 (lambda str? [x]
@@ -16,15 +16,15 @@
   `(= :function (type ,x)))
 
 (lambda num? [x]
-  "checks if 'x' is of number type."
+  "Check if 'x' is of number type."
   `(= :number (type ,x)))
 
 (lambda odd? [x]
-  "checks if 'x' is mathematically of odd parity ;}"
+  "Check if 'x' is mathematically of odd parity ;}"
   `(and ,(num? x) (= 1 (% ,x 2))))
 
 (lambda even? [x]
-  "checks if 'x' is mathematically of even parity ;}"
+  "Check if 'x' is mathematically of even parity ;}"
   `(and ,(num? x) (= 0 (% ,x 2))))
 
 (lambda quote? [x]
@@ -40,7 +40,7 @@
   `(= (type ,x) :table))
 
 (lambda empty? [tbl]
-  "checks if 'tbl' is empty."
+  "Check if 'tbl' is empty."
   (if (tbl? tbl)
       `(not (next ,tbl))
       (error (: "expected table, got %s: %s" :format (type tbl) (view tbl)))))
