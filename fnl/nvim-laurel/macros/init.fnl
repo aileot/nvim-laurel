@@ -1,6 +1,7 @@
 (import-macros {: ->str : str? : num? : nil? : ++}
                :nvim-laurel.macros.utils)
 
+;; General Utils ///1
 (lambda contains? [xs ?a]
   "Check if `?a` is in `xs`."
   (accumulate [eq? false ;
@@ -20,6 +21,7 @@
   (let [ref (?. x 1 1)]
     (contains? [:fn :hashfn :lambda :partial] ref)))
 
+;; Specific Utils ///1
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
     (when (nil? (?. another :k))
