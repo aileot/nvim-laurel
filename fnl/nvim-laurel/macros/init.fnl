@@ -1,5 +1,4 @@
-(import-macros {: ->str : str? : num? : nil? : ++}
-               :nvim-laurel.macros.utils)
+(import-macros {: ->str : str? : num? : nil? : ++} :nvim-laurel.macros.utils)
 
 ;; General Utils ///1
 (lambda contains? [xs ?a]
