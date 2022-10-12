@@ -540,9 +540,9 @@
     The boolean attributes are set to `true` just being there alone.
     To set some attributes to `false`, set them instead in `?api-opts` below.
     All the keys must be raw string there.
-    Addition to the optional command attributes for `nvim_create_user_command`,
-    `buffer` key is available, whose value is passed to {buffer} for
-    `nvim_buf_create_user_command`.
+    Additional attributes:
+    - `buffer`: with this alone, command is set in current buffer instead.
+    - `buffer=`: with the next value, command is set to the buffer instead.
   - command: (string|function) Replacement command.
   - ?api-opts: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`.
@@ -552,7 +552,7 @@
             \"echo 'Hello world!'\"
             {:bang true :desc \"Hello world!\"})
   (command! :Salute
-            [:bar :buffer 10 :desc \"Say Hello!\"]
+            [:bar :buffer= 10 :desc \"Say Hello!\"]
             #(print \"Salute!\")
   ```
 
