@@ -35,7 +35,13 @@
                               (assert.is.not.same vim.bo.bufhidden
                                                   vim.go.bufhidden)
                               (setlocal! :bufhidden nil)
-                              (assert.is.same vim.bo.bufhidden vim.go.bufhidden)))))
+                              (assert.is.same vim.bo.bufhidden vim.go.bufhidden)))
+                        (it "accepts camelCase/PascalCase option name in raw string"
+                            (fn []
+                              (setglobal! :bufHidden :hide)
+                              (setglobal! :BufHidden :wipe)
+                              (let [name :BufHidden]
+                                (assert.has_error #(setglobal! name :hide)))))))
             (describe :setglobal-
                       (fn []
                         (it "removes values in string"
