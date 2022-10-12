@@ -84,7 +84,7 @@
     (table.concat key-val ",")))
 
 (lambda option/modify [scope name ?val ?flag]
-  (let [name (name:lower)
+  (let [name (if (str? name) (name:lower) name)
         interface (match scope
                     :local `vim.opt_local
                     :global `vim.opt_global
