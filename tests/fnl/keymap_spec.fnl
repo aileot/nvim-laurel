@@ -61,13 +61,13 @@
                                    rhs #:bar]
                                (map! mode lhs rhs)
                                ;; Note: rhs is nil when callback is set in the dictionary.
-                               (assert.is.same rhs (get-callback mode lhs)))))
-                      (it "maps multiple mode mappings with a string at once"
-                          #(let [modes [:n :c :t]
-                                 lhs :foo
-                                 rhs :bar]
-                             (each [_ mode (ipairs modes)]
-                               (assert.is_nil (get-rhs mode lhs)))
-                             (noremap! modes lhs :bar)
-                             (each [_ mode (ipairs modes)]
-                               (assert.is.same rhs (get-rhs mode lhs))))))))
+                               (assert.is.same rhs (get-callback mode lhs))))
+                        (it "maps multiple mode mappings with a string at once"
+                            #(let [modes [:n :c :t]
+                                   lhs :foo
+                                   rhs :bar]
+                               (each [_ mode (ipairs modes)]
+                                 (assert.is_nil (get-rhs mode lhs)))
+                               (noremap! modes lhs :bar)
+                               (each [_ mode (ipairs modes)]
+                                 (assert.is.same rhs (get-rhs mode lhs)))))))))
