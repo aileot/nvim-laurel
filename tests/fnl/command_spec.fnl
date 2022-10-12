@@ -18,10 +18,10 @@
                   (assert.is_nil (get-command :Foo))
                   (command! :Foo :Bar)
                   (assert.is_not_nil (get-command :Foo))))
-            (it "defines local user command for current buffer with `buffer` attr"
+            (it "defines local user command for current buffer with `<buffer>` attr"
                 (fn []
                   (assert.is_nil (get-buf-command 0 :Foo))
-                  (command! [:buffer] :Foo :Bar)
+                  (command! [:<buffer>] :Foo :Bar)
                   (assert.is_not_nil (get-buf-command 0 :Foo))))
             (it "defines local user command with buffer number"
                 (fn []
@@ -29,7 +29,7 @@
                     (assert.is_nil (get-buf-command bufnr :Foo))
                     (vim.cmd.new)
                     (vim.cmd.only)
-                    (command! :Foo [:buffer= bufnr] :Bar)
+                    (command! :Foo [:buffer bufnr] :Bar)
                     (assert.is_not_nil (get-buf-command bufnr :Foo))
                     (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr
                                                                              :Foo)))))))

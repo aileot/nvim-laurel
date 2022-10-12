@@ -541,8 +541,8 @@
     To set some attributes to `false`, set them instead in `?api-opts` below.
     All the keys must be raw string there.
     Additional attributes:
-    - `buffer`: with this alone, command is set in current buffer instead.
-    - `buffer=`: with the next value, command is set to the buffer instead.
+    - `<buffer>`: with this alone, command is set in current buffer instead.
+    - `buffer`: with the next value, command is set to the buffer instead.
   - command: (string|function) Replacement command.
   - ?api-opts: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`.
@@ -552,7 +552,7 @@
             \"echo 'Hello world!'\"
             {:bang true :desc \"Hello world!\"})
   (command! :Salute
-            [:bar :buffer= 10 :desc \"Say Hello!\"]
+            [:bar :buffer 10 :desc \"Say Hello!\"]
             #(print \"Salute!\")
   ```
 
@@ -579,19 +579,22 @@
                 (let [extra-opts (seq->kv-table varg
                                                 [:bar
                                                  :bang
+                                                 :<buffer>
                                                  :register
                                                  :keepscript])]
                   (each [k v (pairs extra-opts)]
                     (tset api-opts k v)))
                 (table.insert args varg))
-            args))]
+            args))
+        ?bufnr (if api-opts.<buffer> 0 api-opts.buffer)]
     (when ?api-opts
       (collect [k v (pairs ?api-opts) &into api-opts]
         (values k v)))
-    (if api-opts.buffer
-        (let [bufnr api-opts.buffer]
+    (if ?bufnr
+        (do
           (tset api-opts :buffer nil)
-          `(vim.api.nvim_buf_create_user_command ,bufnr ,name ,command
+          (tset api-opts :<buffer> nil)
+          `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command
                                                  ,api-opts))
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
