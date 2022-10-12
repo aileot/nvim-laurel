@@ -10,6 +10,9 @@
 
 (describe :command! ;
           (fn []
+            (before_each (fn []
+                           (pcall vim.api.nvim_del_user_command :Foo)
+                           (pcall vim.api.nvim_buf_del_user_command :Foo)))
             (it "defines user command"
                 (fn []
                   (assert.is_nil (get-command :Foo))
