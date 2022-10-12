@@ -349,7 +349,7 @@
                                     [...])
         extra-opts (if (nil? ?extra-opts) {}
                        (let [opts (seq->kv-table ?extra-opts
-                                                 [:buffer
+                                                 [:<buffer>
                                                   :expr
                                                   :literal
                                                   :script
@@ -393,12 +393,15 @@
       ;; Note: We cannot tell whether or not `rhs` should be set to callback in
       ;; compile time. Keep the compiled results simple.
       `(vim.keymap.set ,modes ,lhs ,rhs ,raw-api-opts)
-      (let [?bufnr (?. raw-api-opts :buffer)
+      (let [?bufnr (if raw-api-opts.<buffer> 0 raw-api-opts.buffer)
             modes (if (str? modes) [modes] modes)
             set-keymap (if ?bufnr
-                           (lambda [mode api-opts]
-                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                           ,rhs ,api-opts))
+                           (do
+                             (tset raw-api-opts :buffer nil)
+                             (tset raw-api-opts :<buffer> nil)
+                             (lambda [mode api-opts]
+                               `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                             ,rhs ,api-opts)))
                            (lambda [mode api-opts]
                              `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
                                                        ,api-opts)))
