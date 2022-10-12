@@ -12,14 +12,14 @@
           (fn []
             (before_each (fn []
                            (pcall vim.api.nvim_del_user_command :Foo)
-                           (pcall vim.api.nvim_buf_del_user_command :Foo)))
+                           (pcall vim.api.nvim_buf_del_user_command 0 :Foo)))
             (it "defines user command"
                 (fn []
                   (assert.is_nil (get-command :Foo))
                   (command! :Foo :Bar)
                   (assert.is_not_nil (get-command :Foo))))
-            (it "defines buffer-local user command"
+            (it "defines local user command for current buffer with `buffer` attr"
                 (fn []
-                  (assert.is_nil (get-buf-command :Foo))
-                  (command! :Foo :Bar {:buffer 0})
-                  (assert.is_not_nil (get-buf-command :Foo))))))
+                  (assert.is_nil (get-buf-command 0 :Foo))
+                  (command! [:buffer] :Foo :Bar)
+                  (assert.is_not_nil (get-buf-command 0 :Foo))))))
