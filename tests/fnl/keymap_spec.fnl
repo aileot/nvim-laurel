@@ -26,7 +26,6 @@
                             #(let [mode :n
                                    lhs :foo
                                    rhs :bar]
-                               (assert.is_nil (get-rhs mode lhs))
                                (noremap! mode lhs rhs)
                                (let [{: noremap} (get-mapargs mode lhs)]
                                  (assert.is.same 1 noremap))))
@@ -34,8 +33,6 @@
                             #(let [modes [:n :t :o]
                                    lhs :foo
                                    rhs :bar]
-                               (each [_ mode (ipairs modes)]
-                                 (assert.is_nil (get-rhs mode lhs)))
                                (noremap! modes lhs :bar)
                                (each [_ mode (ipairs modes)]
                                  (assert.is.same rhs (get-rhs mode lhs)))))))
@@ -66,8 +63,6 @@
                             #(let [modes [:n :c :t]
                                    lhs :foo
                                    rhs :bar]
-                               (each [_ mode (ipairs modes)]
-                                 (assert.is_nil (get-rhs mode lhs)))
                                (noremap! modes lhs :bar)
                                (each [_ mode (ipairs modes)]
                                  (assert.is.same rhs (get-rhs mode lhs)))))))))
