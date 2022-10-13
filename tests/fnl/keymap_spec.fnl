@@ -13,6 +13,18 @@
 (lambda get-callback [mode lhs]
   (?. (get-mapargs mode lhs) :callback))
 
+(lambda buf-get-mapargs [bufnr mode lhs]
+  (let [mappings (vim.api.nvim_buf_get_keymap bufnr mode)]
+    (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
+      (when (= lhs m.lhs)
+        m))))
+
+(lambda buf-get-rhs [bufnr mode lhs]
+  (?. (buf-get-mapargs bufnr mode lhs) :rhs))
+
+(lambda buf-get-callback [bufnr mode lhs]
+  (?. (buf-get-mapargs bufnr mode lhs) :callback))
+
 (insulate :macros.keymap
           (fn []
             (before_each (fn []
