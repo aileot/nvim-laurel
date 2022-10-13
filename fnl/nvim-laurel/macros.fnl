@@ -607,10 +607,9 @@
             (assert-compile (or (sym? callback) (function? callback))
                             (.. "callback must be a string or function, got "
                                 (type callback))
-                            callback))
-          `(do
-             (callback)
-             (vim.schedule #(tset vim.g :eventignore save-ei#))))))
+                            callback)
+            `(,callback)))
+     (vim.schedule #(tset vim.g :eventignore save-ei#))))
 
 ;; Autocmd/Augroup ///1
 (lambda define-autocmd! [...]
