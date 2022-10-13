@@ -77,4 +77,18 @@
                                    rhs :bar]
                                (noremap! modes lhs :bar)
                                (each [_ mode (ipairs modes)]
-                                 (assert.is.same rhs (get-rhs mode lhs)))))))))
+                                 (assert.is.same rhs (get-rhs mode lhs)))))))
+            (describe :nnoremap!
+                      (fn []
+                        (it "maps to current buffer with `<buffer>`"
+                            (fn []
+                              (nnoremap! [:<buffer>] :foo :bar)
+                              (assert.is.same :bar (buf-get-rhs 0 :n :foo))))
+                        (it "maps to specific buffer with `buffer`"
+                            (fn []
+                              (let [bufnr (vim.api.nvim_get_current_buf)]
+                                (vim.cmd.new)
+                                (vim.cmd.only)
+                                (nnoremap! [:buffer bufnr] :foo :bar)
+                                (assert.is_nil (buf-get-rhs 0 :n :foo))
+                                (assert.is.same :bar (buf-get-rhs bufnr :n :foo)))))))))
