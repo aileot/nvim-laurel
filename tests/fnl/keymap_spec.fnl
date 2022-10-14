@@ -89,4 +89,15 @@
                             (nnoremap! :lhs :rhs)
                             (assert.is.same :rhs (get-rhs :n :lhs))
                             (unmap! :n :lhs)
-                            (assert.is_nil (get-rhs :n :lhs)))))))
+                            (assert.is_nil (get-rhs :n :lhs))))
+                      (it "can unmap buffer local key"
+                          (fn []
+                            (let [bufnr (vim.api.nvim_get_current_buf)]
+                              (nnoremap! [:<buffer>] :lhs :rhs)
+                              (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))
+                              (unmap! 0 :n :lhs)
+                              (assert.is_nil (buf-get-rhs 0 :n :lhs))
+                              (nnoremap! [:buffer bufnr] :lhs :rhs)
+                              (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
+                              (unmap! bufnr :n :lhs)
+                              (assert.is_nil (buf-get-rhs bufnr :n :lhs))))))))
