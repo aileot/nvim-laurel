@@ -81,4 +81,12 @@
                                 (nnoremap! [:buffer bufnr] :lhs :rhs)
                                 (assert.is_nil (buf-get-rhs 0 :n :lhs))
                                 (assert.is.same :rhs
-                                                (buf-get-rhs bufnr :n :lhs)))))))))
+                                                (buf-get-rhs bufnr :n :lhs))))))))
+          (describe :unmap!
+                    (fn []
+                      (it "`unmap`s key"
+                          (fn []
+                            (nnoremap! :lhs :rhs)
+                            (assert.is.same :rhs (get-rhs :n :lhs))
+                            (unmap! :n :lhs)
+                            (assert.is_nil (get-rhs :n :lhs)))))))
