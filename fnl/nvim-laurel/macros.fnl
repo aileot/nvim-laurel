@@ -380,11 +380,9 @@
   ;; Note: nvim_del_keymap itself cannot delete mappings in multi mode at once.
   (let [[?bufnr modes lhs] (if (= 3 (select "#" ...)) [...] [nil ...])
         del-maps! (fn [mode]
-                    (match (type ?bufnr)
-                      :nil `(vim.api.nvim_del_keymap ,mode ,lhs)
-                      :number `(vim.api.nvim_buf_del_keymap ,?bufnr ,mode ,lhs)
-                      _ (error (: "expected nil or number, got %s: %s" :format
-                                  (type ?bufnr) (view ?bufnr)))))
+                    (if ?bufnr
+                        `(vim.api.nvim_buf_del_keymap ,?bufnr ,mode ,lhs)
+                        `(vim.api.nvim_del_keymap ,mode ,lhs)))
         modes (if (str? modes) [modes] modes)]
     (icollect [_ m (ipairs modes)]
       (del-maps! m lhs))))
