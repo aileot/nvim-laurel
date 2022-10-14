@@ -425,8 +425,6 @@
     (merge-default-kv-table default-opts api-opts)
     (keymap/set-maps! modes lhs rhs api-opts)))
 
-(local unmap! keymap/del-maps!)
-
 ;; Wrapper ///3
 (lambda noremap-all! [...]
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
@@ -439,7 +437,7 @@
 
 (lambda noremap-motion! [...]
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(noremap! "" lhs rhs api-opts) (unmap! :s lhs)]))
+    [(noremap! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
 
 (lambda noremap-operator! [...]
   (noremap! [:n :x] ...))
@@ -485,7 +483,7 @@
 
 (lambda map-motion! [...]
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(map! "" lhs rhs api-opts) (unmap! :s lhs)]))
+    [(map! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
 
 (lambda map-operator! [...]
   (map! [:n :x] ...))
@@ -799,7 +797,7 @@
  : setglobal-
  : noremap!
  : map!
- : unmap!
+ :unmap! keymap/del-maps!
  : noremap-all!
  : noremap-input!
  : noremap-motion!
