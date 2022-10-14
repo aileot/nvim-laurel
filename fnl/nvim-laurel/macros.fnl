@@ -374,19 +374,14 @@
           (tset api-opts :desc ?description))))
     (values lhs rhs api-opts)))
 
-(lambda keymap/del-maps! [modes lhs ?bufnr]
+(lambda keymap/del-maps! [...]
   "Delete keymap in such format as
-  `(del-keymap :nx :f :buffer)`, or `(del-keymap :nx :f 8)`."
+  `(del-keymap :n :lhs)`, or `(del-keymap bufnr :n :lhs)`."
   ;; Note: nvim_del_keymap itself cannot delete mappings in multi mode at once.
-  (let [del-maps! (fn [mode]
-                    (match (type ?bufnr)
-                      :nil `(vim.api.nvim_del_keymap ,mode ,lhs)
-                      :number `(vim.api.nvim_buf_del_keymap ,?bufnr ,mode ,lhs)
-                      _ (error (: "expected nil or number, got %s: %s" :format
-                                  (type ?bufnr) (view ?bufnr)))))
-        modes (if (str? modes) [modes] modes)]
-    (icollect [_ m (ipairs modes)]
-      (del-maps! m lhs))))
+  (let [[?bufnr mode lhs] (if (= 3 (select "#" ...)) [...] [nil ...])]
+    (if ?bufnr
+        `(vim.api.nvim_buf_del_keymap ,?bufnr ,mode ,lhs)
+        `(vim.api.nvim_del_keymap ,mode ,lhs))))
 
 (lambda keymap/set-maps! [modes lhs rhs raw-api-opts]
   (if (or (sym? modes) (sym? rhs))
@@ -430,8 +425,6 @@
     (merge-default-kv-table default-opts api-opts)
     (keymap/set-maps! modes lhs rhs api-opts)))
 
-(local unmap! keymap/del-maps!)
-
 ;; Wrapper ///3
 (lambda noremap-all! [...]
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
@@ -444,7 +437,7 @@
 
 (lambda noremap-motion! [...]
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(noremap! "" lhs rhs api-opts) (unmap! :s lhs)]))
+    [(noremap! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
 
 (lambda noremap-operator! [...]
   (noremap! [:n :x] ...))
@@ -490,7 +483,7 @@
 
 (lambda map-motion! [...]
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(map! "" lhs rhs api-opts) (unmap! :s lhs)]))
+    [(map! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
 
 (lambda map-operator! [...]
   (map! [:n :x] ...))
@@ -804,7 +797,7 @@
  : setglobal-
  : noremap!
  : map!
- : unmap!
+ :unmap! keymap/del-maps!
  : noremap-all!
  : noremap-input!
  : noremap-motion!
