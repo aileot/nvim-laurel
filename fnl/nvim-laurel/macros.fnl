@@ -146,7 +146,7 @@
         ?val (if (nil? ?val) true ?val)]
     (option/modify scope name ?val ?flag)))
 
-;; Export ///1
+;; Export ///2
 (lambda set! [name-?flag ?val]
   "Set value to the option.
   Almost equivalent to `:set` in Vim script.
