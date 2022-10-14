@@ -30,8 +30,8 @@
             (before_each (fn []
                            (let [all-modes ["" "!" :l :t]]
                              (each [_ mode (ipairs all-modes)]
-                               (pcall vim.api.nvim_del_keymap mode :foo)
-                               (assert.is_nil (get-rhs mode :foo))))))
+                               (pcall vim.api.nvim_del_keymap mode :lhs)
+                               (assert.is_nil (get-rhs mode :lhs))))))
             (describe :noremap!
                       (fn []
                         (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
@@ -71,14 +71,14 @@
                       (fn []
                         (it "maps to current buffer with `<buffer>`"
                             (fn []
-                              (nnoremap! [:<buffer>] :foo :rhs)
-                              (assert.is.same :rhs (buf-get-rhs 0 :n :foo))))
+                              (nnoremap! [:<buffer>] :lhs :rhs)
+                              (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))))
                         (it "maps to specific buffer with `buffer`"
                             (fn []
                               (let [bufnr (vim.api.nvim_get_current_buf)]
                                 (vim.cmd.new)
                                 (vim.cmd.only)
-                                (nnoremap! [:buffer bufnr] :foo :rhs)
-                                (assert.is_nil (buf-get-rhs 0 :n :foo))
+                                (nnoremap! [:buffer bufnr] :lhs :rhs)
+                                (assert.is_nil (buf-get-rhs 0 :n :lhs))
                                 (assert.is.same :rhs
-                                                (buf-get-rhs bufnr :n :foo)))))))))
+                                                (buf-get-rhs bufnr :n :lhs)))))))))
