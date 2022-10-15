@@ -572,49 +572,138 @@
   (noremap! :t ...))
 
 (lambda map-all! [...]
+  "Map `lhs` to `rhs` in all modes recursively.
+
+  ```fennel
+  (map-all! ?extra-opts lhs rhs ?api-opts)
+  (map-all! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
     [(map! "" lhs rhs api-opts)
      (map! "!" lhs rhs api-opts)
      (unpack (map! [:l :t] lhs rhs api-opts))]))
 
 (lambda map-input! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode recursively.
+
+  ```fennel
+  (map-input! ?extra-opts lhs rhs ?api-opts)
+  (map-input! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! "!" ...))
 
 (lambda map-motion! [...]
+  "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
+  recursively.
+
+  ```fennel
+  (map-motion! ?extra-opts lhs rhs ?api-opts)
+  (map-motion! lhs ?extra-opts rhs ?api-opts)
+  ```
+
+  Note: This macro `unmap`s `lhs` in Select mode for the performance.
+  To avoid this, use `(map! [:n :o :x] ...)` instead."
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
     [(map! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
 
 (lambda map-operator! [...]
+  "Map `lhs` to `rhs` in Normal/Visual mode recursively.
+
+  ```fennel
+  (map-operator! ?extra-opts lhs rhs ?api-opts)
+  (map-operator! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! [:n :x] ...))
 
 (lambda map-textobj! [...]
+  "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
+
+  ```fennel
+  (map-textobj! ?extra-opts lhs rhs ?api-opts)
+  (map-textobj! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! [:o :x] ...))
 
 (lambda nmap! [...]
+  "Map `lhs` to `rhs` in Normal mode recursively.
+
+  ```fennel
+  (nmap! ?extra-opts lhs rhs ?api-opts)
+  (nmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :n ...))
 
 (lambda vmap! [...]
+  "Map `lhs` to `rhs` in Visual/Select mode recursively.
+
+  ```fennel
+  (vmap! ?extra-opts lhs rhs ?api-opts)
+  (vmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :v ...))
 
 (lambda xmap! [...]
+  "Map `lhs` to `rhs` in Visual mode recursively.
+
+  ```fennel
+  (xmap! ?extra-opts lhs rhs ?api-opts)
+  (xmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :x ...))
 
 (lambda smap! [...]
+  "Map `lhs` to `rhs` in Select mode recursively.
+
+  ```fennel
+  (smap! ?extra-opts lhs rhs ?api-opts)
+  (smap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :s ...))
 
 (lambda omap! [...]
+  "Map `lhs` to `rhs` in Operator-pending mode recursively.
+
+  ```fennel
+  (omap! ?extra-opts lhs rhs ?api-opts)
+  (omap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :o ...))
 
 (lambda imap! [...]
+  "Map `lhs` to `rhs` in Insert mode recursively.
+
+  ```fennel
+  (imap! ?extra-opts lhs rhs ?api-opts)
+  (imap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :i ...))
 
 (lambda lmap! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
+  `:h language-mapping` for the details.
+
+  ```fennel
+  (lmap! ?extra-opts lhs rhs ?api-opts)
+  (lmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :l ...))
 
 (lambda cmap! [...]
+  "Map `lhs` to `rhs` in Command-line mode recursively.
+
+  ```fennel
+  (cmap! ?extra-opts lhs rhs ?api-opts)
+  (cmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :c ...))
 
 (lambda tmap! [...]
+  "Map `lhs` to `rhs` in Terminal mode recursively.
+
+  ```fennel
+  (tmap! ?extra-opts lhs rhs ?api-opts)
+  (tmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :t ...))
 
 ;; Command ///1
