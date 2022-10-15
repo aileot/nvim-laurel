@@ -935,14 +935,10 @@
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
 (lambda highlight! [...]
-  ;; FIXME: Compile error: Missing argument val
-  ;; [?namespace hl-name val]
   "Set a highlight group.
-  The first arg namespace is optional; without it, highlight is set globally.
 
   ```fennel
-  (highlight! hl-name {:fg :Red :bold true})
-  (highlight! hl-name {:link another-hl-name})
+  (highlight! ?ns-id name val)
  ```"
   (local [?namespace hl-name val] (match (length [...])
                                     2 [nil (select 1 ...) (select 2 ...)]
@@ -966,7 +962,7 @@
         `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))))
 
 (lambda hi! [...]
-  "Same as highlight!"
+  "An alias of `highlight!`"
   (highlight! ...))
 
 ;; Export ///1
