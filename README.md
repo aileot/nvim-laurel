@@ -1,8 +1,7 @@
 # nvim-laurel 🌿
 
-nvim-laurel provides a syntax sugar macro collection to write neovim config in
-[Fennel][Fennel], developped with [parinfer-rust][parinfer-rust],
-[fnlfmt][fnlfmt] and [fennel-language-server][fennel-language-server], and
+nvim-laurel provides syntax sugar macros for Neovim. The macros are developped
+with [fnlfmt][fnlfmt] and [fennel-language-server][fennel-language-server], and
 tested with [vusted][vusted].
 
 ## Requirements
@@ -29,7 +28,7 @@ use "aileot/nvim-laurel"
 repo = "aileot/nvim-laurel"
 ```
 
-### Compile outside Neovim
+### To compile outside Neovim
 
 1. Download nvim-laurel where you feel like
 
@@ -37,9 +36,11 @@ repo = "aileot/nvim-laurel"
 git clone https://github.com/aileot/nvim-laurel /path/to/install
 ```
 
-2. Compile your fennel files with macro path for nvim-laurel
-   `/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl`. For
-   example, in your Makefile,
+2. Compile your fennel files with macro path for nvim-laurel:
+
+   `/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl`
+
+   For example, in your Makefile,
 
 ```make
 %.lua: %.fnl
@@ -56,7 +57,6 @@ git clone https://github.com/aileot/nvim-laurel /path/to/install
 ### Examples
 
 [Fennel]: https://github.com/bakpakin/Fennel
-[parinfer-rust]: https://github.com/eraserhd/parinfer-rust
 [fnlfmt]: https://git.sr.ht/~technomancy/fnlfmt
 [fennel-language-server]: https://github.com/rydesun/fennel-language-server
 [vusted]: https://github.com/notomo/vusted
