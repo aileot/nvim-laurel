@@ -396,7 +396,6 @@
       ;; compile time. Keep the compiled results simple.
       `(vim.keymap.set ,modes ,lhs ,rhs ,raw-api-opts)
       (let [?bufnr (if raw-api-opts.<buffer> 0 raw-api-opts.buffer)
-            modes (if (str? modes) [modes] modes)
             api-opts (keymap/resolve-opts-compatibilities raw-api-opts)
             set-keymap (if ?bufnr
                            (lambda [mode]
@@ -404,12 +403,11 @@
                                                            ,rhs ,api-opts))
                            (lambda [mode]
                              `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                       ,api-opts)))
-            maps (icollect [_ m (ipairs modes)]
-                   (set-keymap m))]
-        (if (< 1 (length maps))
-            maps
-            (unpack maps)))))
+                                                       ,api-opts)))]
+        (if (str? modes)
+            (set-keymap modes)
+            (icollect [_ m (ipairs modes)]
+              (set-keymap m))))))
 
 ;; Export ///2
 (lambda noremap! [modes ...]
