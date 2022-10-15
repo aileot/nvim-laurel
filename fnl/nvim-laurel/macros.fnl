@@ -348,16 +348,12 @@
                                     (slice [...] 2)
                                     [...])
         extra-opts (if (nil? ?extra-opts) {}
-                       (let [opts (seq->kv-table ?extra-opts
-                                                 [:<buffer>
-                                                  :expr
-                                                  :literal
-                                                  :script
-                                                  :unique])]
-                         (when opts.literal
-                           (tset opts :replace_keycodes false)
-                           (tset opts :literal nil))
-                         opts))
+                       (seq->kv-table ?extra-opts
+                                      [:<buffer>
+                                       :expr
+                                       :literal
+                                       :script
+                                       :unique]))
         api-opts (if (nil? ?api-opts) extra-opts
                      (collect [k v (pairs ?api-opts) &into extra-opts]
                        (values k v)))
@@ -373,6 +369,17 @@
         (when ?description
           (tset api-opts :desc ?description))))
     (values lhs rhs api-opts)))
+
+(lambda keymap/resolve-opts-compatibilities [api-opts]
+  "Remove invalid keys in the api functions."
+  (set api-opts.buffer nil)
+  (set api-opts.<buffer> nil)
+  (when (and api-opts.expr (not= false api-opts.replace_keycodes))
+    (set api-opts.replace_keycodes true))
+  (when api-opts.literal
+    (set api-opts.literal nil)
+    (set api-opts.replace_keycodes nil))
+  api-opts)
 
 (lambda keymap/del-maps! [...]
   "Delete keymap in such format as
@@ -390,24 +397,16 @@
       `(vim.keymap.set ,modes ,lhs ,rhs ,raw-api-opts)
       (let [?bufnr (if raw-api-opts.<buffer> 0 raw-api-opts.buffer)
             modes (if (str? modes) [modes] modes)
+            api-opts (keymap/resolve-opts-compatibilities raw-api-opts)
             set-keymap (if ?bufnr
-                           (do
-                             (tset raw-api-opts :buffer nil)
-                             (tset raw-api-opts :<buffer> nil)
-                             (lambda [mode api-opts]
-                               `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                             ,rhs ,api-opts)))
-                           (lambda [mode api-opts]
+                           (lambda [mode]
+                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                           ,rhs ,api-opts))
+                           (lambda [mode]
                              `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
                                                        ,api-opts)))
-            maps (do
-                   ;; Remove keys invalid to the api functions.
-                   (tset raw-api-opts :buffer nil)
-                   (when (and (?. raw-api-opts :expr) ;
-                              (not= false (?. raw-api-opts :replace_keycodes)))
-                     (tset raw-api-opts :replace_keycodes true))
-                   (icollect [_ m (ipairs modes)]
-                     (set-keymap m raw-api-opts)))]
+            maps (icollect [_ m (ipairs modes)]
+                   (set-keymap m))]
         (if (< 1 (length maps))
             maps
             (unpack maps)))))
