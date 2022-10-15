@@ -782,7 +782,7 @@
                                                  ,api-opts))
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
-;; Autocmd/Augroup ///1
+;; Autocmd ///1
 (lambda define-autocmd! [...]
   (if (= 2 (length [...]))
       ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
