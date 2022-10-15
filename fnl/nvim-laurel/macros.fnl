@@ -412,12 +412,24 @@
 
 ;; Export ///2
 (lambda noremap! [modes ...]
+  "Map `lhs` to `rhs` in `modes` non-recursively.
+
+  ```fennel
+  (noremap! modes ?extra-opts lhs rhs ?api-opts)
+  (noremap! modes lhs ?extra-opts rhs ?api-opts)
+  ```"
   (let [default-opts {:noremap true}
         (lhs rhs api-opts) (keymap/varargs->api-args ...)]
     (merge-default-kv-table default-opts api-opts)
     (keymap/set-maps! modes lhs rhs api-opts)))
 
 (lambda map! [modes ...]
+  "Map `lhs` to `rhs` in `modes` recursively.
+
+  ```fennel
+  (noremap! modes ?extra-opts lhs rhs ?api-opts)
+  (noremap! modes lhs ?extra-opts rhs ?api-opts)
+  ```"
   (let [default-opts {}
         (lhs rhs api-opts) (keymap/varargs->api-args ...)]
     (merge-default-kv-table default-opts api-opts)
