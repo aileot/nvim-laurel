@@ -855,28 +855,28 @@
   "Append `autocmd`s to an existing `augroup`."
   (define-augroup! name {:clear false} ...))
 
-(lambda au! [...]
+(lambda autocmd! [...]
   "Define an autocmd:
 
   ```fennel
-  (au! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
+  (autocmd! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
   ```
 
   ```fennel
   (augroup! :your-augroup
-    (au! :FileType * [\"some description\"] #(fnl-expr))
-    (au! :InsertEnter :<buffer> \"some Vimscript command\")
-    (au! :BufNewFile.BufRead \"{some,any}.ext\"
+    (autocmd! :FileType * [\"some description\"] #(fnl-expr))
+    (autocmd! :InsertEnter :<buffer> \"some Vimscript command\")
+    (autocmd! :BufNewFile.BufRead \"{some,any}.ext\"
          [:this-is-invalid-description]
          #(vim.fn.foo))
-    (au! [:BufNewFile :BufRead] [:multi :patterns :for :events :in :sequence]
+    (autocmd! [:BufNewFile :BufRead] [:multi :patterns :for :events :in :sequence]
          [:once :nested \"You can also set :once or :nested here\"] ...))
   ```
 
   This macro also works as a syntax sugar in `(augroup!)`.
   - ?augroup-id (string|integer):
     Actually, `?augroup-id` is not an optional argument unlike
-    `vim.api.nvim_create_autocmd()` unless you use this `au!` macro within
+    `vim.api.nvim_create_autocmd()` unless you use this `autocmd!` macro within
     either `augroup!` or `augroup+` macro.
   - events (string|string[]):
     You can set multiple events in a dot-separated raw string.
@@ -897,8 +897,8 @@
   "
   (define-autocmd! ...))
 
-(lambda autocmd! [...]
-  "Same as `au!`"
+(lambda au! [...]
+  "An alias of `autocmd!`"
   (define-autocmd! ...))
 
 ;; Misc ///1
