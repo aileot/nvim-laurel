@@ -1,13 +1,72 @@
-cspell:disable
+# nvim-laurel macros
 
-# Macros
+- [CAUTION](#CAUTION)
+- [Terminology](#Terminology)
+- [Macros](#Macros)
+
+## CAUTION
+
+Each macro might be more flexible than documented, but of course, undocumented
+usages are subject to change without notifications.
+
+## Terminology
+
+### sequence
+
+  It is an alias of sequential table `[]`.
+
+### kv table
+
+  It is an alias of key/value table `{}`.
+
+### raw `<type-name>`
+
+  It describes a value cannot be either symbol or list in compile time.
+
+  - `(.. :foo :bar)` is not a raw string.
+  - `(icollect [_ val (ipairs [:foo :bar])] val)` is not a raw sequence.
+
+### `?<name>`
+
+  `<name>` is optional.
+
+### `?api-opts`
+
+  It is kv table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
+  otherwise noted, this option has the following features:
+
+  - It only accepts the same key/value described in `api.txt`.
+  - It can be `nil`.
+
+### `?extra-opts`
+
+  Some macros accept an optional argument `?extra-opts`. Unless otherwise noted,
+  this option has the following features:
+
+  - It is only intended as shorthand; for complicated usage, use `?api-opts`
+    instead, or use them together.
+    - Values in `?api-opts` has priority over those in `?extra-opts` when they
+      are conflicted.
+  - It must be raw sequence `[]`, but interpreted as if kv table `{}`. Boolean
+    key/value for `?api-opts` is set to `true` by key itself; the other keys
+    expects the next values as their values respectively.
+    - To set `false` to key, set it in `?api-opts` instead.
+    - Items for keys must be raw strings, for values can be any.
+
+### `ex-<name>`
+
+  A special symbol name. With prefix `ex-`, some of nvim-laurel macros in
+  compile time can tell that the named symbol will result in a string of vim Ex
+  command in runtime.
+
+## Macros
 
 - [Autocmd](#Autocmd)
 - [Option](#Option)
 - [Keymap](#Keymap)
 - [Others](#Others)
 
-## Autocmd
+### Autocmd
 
 - [`au!`](#au)
 - [`augroup!`](#augroup)
@@ -15,7 +74,7 @@ cspell:disable
 - [`autocmd!`](#autocmd)
 - [`noautocmd!`](#noautocmd)
 
-### `augroup!`
+#### `augroup!`
 
 Define/Override an augroup.
 
@@ -25,7 +84,7 @@ Define/Override an augroup.
   (autocmd! ...))
 ```
 
-### `augroup+`
+#### `augroup+`
 
 Add `autocmd`s to an existing `augroup`.
 
@@ -34,7 +93,7 @@ Add `autocmd`s to an existing `augroup`.
   (autocmd! ...))
 ```
 
-### `autocmd!`
+#### `autocmd!`
 
 Define an autocmd:
 
@@ -116,11 +175,11 @@ This macro also works as a syntax sugar in `augroup!`.
   interpreted as vim-command; use `vim.fn` interface to set a Vimscript
   function.
 
-### `au!`
+#### `au!`
 
 An alias of `autocmd!`
 
-### `noautocmd!`
+#### `noautocmd!`
 
 (experimental) Imitation of `:noautocmd`.
 
@@ -133,7 +192,7 @@ This will set `&eventignore` to "all" for the duration of callback.
 - `callback`: (string|function) If string or symbol prefixed by `ex-` is
   regarded as vim Ex command; otherwise, it must be a function.
 
-## Option
+### Option
 
 - [`set!`](#set)
 - [`set+`](#set-1)
@@ -148,7 +207,7 @@ This will set `&eventignore` to "all" for the duration of callback.
 - [`setlocal-`](#setlocal-)
 - [`setlocal^`](#setlocal-2)
 
-### `set!`
+#### `set!`
 
 Set value to the option. Almost equivalent to `:set` in Vim script.
 
@@ -227,7 +286,7 @@ usage:
   (set+ opt [:1 :B]))
 ```
 
-### `set+`
+#### `set+`
 
 Append a value to string-style options. Almost equivalent to
 `:set {option}+={value}` in Vim script.
@@ -236,7 +295,7 @@ Append a value to string-style options. Almost equivalent to
 (set+ name val)
 ```
 
-### `set-`
+#### `set-`
 
 Remove a value from string-style options. Almost equivalent to
 `:set {option}-={value}` in Vim script.
@@ -245,7 +304,7 @@ Remove a value from string-style options. Almost equivalent to
 (set- name val)
 ```
 
-### `set^`
+#### `set^`
 
 Prepend a value to string-style options. Almost equivalent to
 `:set {option}^={value}` in Vim script.
@@ -254,7 +313,7 @@ Prepend a value to string-style options. Almost equivalent to
 (set^ name val)
 ```
 
-### `setglobal!`
+#### `setglobal!`
 
 Set global value to the option. Almost equivalent to `:setglobal` in Vim script.
 
@@ -264,7 +323,7 @@ Set global value to the option. Almost equivalent to `:setglobal` in Vim script.
 
 See [`set!`](#set) for the details.
 
-### `setglobal+`
+#### `setglobal+`
 
 Append a value to string-style global options. Almost equivalent to
 `:setglobal {option}+={value}` in Vim script.
@@ -276,7 +335,7 @@ Append a value to string-style global options. Almost equivalent to
 - name: (string) Option name.
 - val: (string) Additional option value.
 
-### `setglobal-`
+#### `setglobal-`
 
 Remove a value from string-style global options. Almost equivalent to
 `:setglobal {option}-={value}` in Vim script.
@@ -285,7 +344,7 @@ Remove a value from string-style global options. Almost equivalent to
 (setglobal- name val)
 ```
 
-### `setglobal^`
+#### `setglobal^`
 
 Prepend a value from string-style global options. Almost equivalent to
 `:setglobal {option}^={value}` in Vim script.
@@ -294,7 +353,7 @@ Prepend a value from string-style global options. Almost equivalent to
 (setglobal^ name val)
 ```
 
-### `setlocal!`
+#### `setlocal!`
 
 Set local value to the option. Almost equivalent to `:setlocal` in Vim script.
 
@@ -304,7 +363,7 @@ Set local value to the option. Almost equivalent to `:setlocal` in Vim script.
 
 See [`set!`](#set) for the details.
 
-### `setlocal+`
+#### `setlocal+`
 
 Append a value to string-style local options. Almost equivalent to
 `:setlocal {option}+={value}` in Vim script.
@@ -313,7 +372,7 @@ Append a value to string-style local options. Almost equivalent to
 (setlocal+ name val)
 ```
 
-### `setlocal-`
+#### `setlocal-`
 
 Remove a value from string-style local options. Almost equivalent to
 `:setlocal {option}-={value}` in Vim script.
@@ -322,7 +381,7 @@ Remove a value from string-style local options. Almost equivalent to
 (setlocal- name val)
 ```
 
-### `setlocal^`
+#### `setlocal^`
 
 Prepend a value to string-style local options. Almost equivalent to
 `:setlocal {option}^={value}` in Vim script.
@@ -331,7 +390,7 @@ Prepend a value to string-style local options. Almost equivalent to
 (setlocal^ name val)
 ```
 
-## Keymap
+### Keymap
 
 - [`map!`](#map)
 - [`noremap!`](#noremap)
@@ -365,7 +424,7 @@ Prepend a value to string-style local options. Almost equivalent to
 - [`cnoremap!`](#cnoremap)
 - [`tnoremap!`](#tnoremap)
 
-### `map!`
+#### `map!`
 
 Map `lhs` to `rhs` in `modes` recursively.
 
@@ -374,7 +433,7 @@ Map `lhs` to `rhs` in `modes` recursively.
 (noremap! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `noremap!`
+#### `noremap!`
 
 Map `lhs` to `rhs` in `modes` non-recursively.
 
@@ -383,7 +442,7 @@ Map `lhs` to `rhs` in `modes` non-recursively.
 (noremap! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `unmap!`
+#### `unmap!`
 
 Delete keymap.
 
@@ -415,7 +474,7 @@ vim.api.nvim_buf_del_keymap(0, "o", "bar")
 vim.api.nvim_buf_del_keymap(10, "x", "baz")
 ```
 
-### `map-all!`
+#### `map-all!`
 
 Map `lhs` to `rhs` in all modes recursively.
 
@@ -424,7 +483,7 @@ Map `lhs` to `rhs` in all modes recursively.
 (map-all! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `map-input!`
+#### `map-input!`
 
 Map `lhs` to `rhs` in Insert/Command-line mode recursively.
 
@@ -433,7 +492,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode recursively.
 (map-input! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `map-motion!`
+#### `map-motion!`
 
 Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively.
 
@@ -445,7 +504,7 @@ Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively.
 Note: This macro deletes mapping to `lhs` in Select mode for the performance. To
 avoid this, use `(map! [:n :o :x] ...)` instead.
 
-### `map-operator!`
+#### `map-operator!`
 
 Map `lhs` to `rhs` in Normal/Visual mode recursively.
 
@@ -454,7 +513,7 @@ Map `lhs` to `rhs` in Normal/Visual mode recursively.
 (map-operator! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `map-textobj!`
+#### `map-textobj!`
 
 Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
 
@@ -463,7 +522,7 @@ Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
 (map-textobj! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `nmap!`
+#### `nmap!`
 
 Map `lhs` to `rhs` in Normal mode recursively.
 
@@ -472,7 +531,7 @@ Map `lhs` to `rhs` in Normal mode recursively.
 (nmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `vmap!`
+#### `vmap!`
 
 Map `lhs` to `rhs` in Visual/Select mode recursively.
 
@@ -481,7 +540,7 @@ Map `lhs` to `rhs` in Visual/Select mode recursively.
 (vmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `xmap!`
+#### `xmap!`
 
 Map `lhs` to `rhs` in Visual mode recursively.
 
@@ -490,7 +549,7 @@ Map `lhs` to `rhs` in Visual mode recursively.
 (xmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `smap!`
+#### `smap!`
 
 Map `lhs` to `rhs` in Select mode recursively.
 
@@ -499,7 +558,7 @@ Map `lhs` to `rhs` in Select mode recursively.
 (smap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `omap!`
+#### `omap!`
 
 Map `lhs` to `rhs` in Operator-pending mode recursively.
 
@@ -508,7 +567,7 @@ Map `lhs` to `rhs` in Operator-pending mode recursively.
 (omap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `imap!`
+#### `imap!`
 
 Map `lhs` to `rhs` in Insert mode recursively.
 
@@ -517,7 +576,7 @@ Map `lhs` to `rhs` in Insert mode recursively.
 (imap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `lmap!`
+#### `lmap!`
 
 Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
 `:h language-mapping` for the details.
@@ -527,7 +586,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
 (lmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `cmap!`
+#### `cmap!`
 
 Map `lhs` to `rhs` in Command-line mode recursively.
 
@@ -536,7 +595,7 @@ Map `lhs` to `rhs` in Command-line mode recursively.
 (cmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `tmap!`
+#### `tmap!`
 
 Map `lhs` to `rhs` in Terminal mode recursively.
 
@@ -545,7 +604,7 @@ Map `lhs` to `rhs` in Terminal mode recursively.
 (tmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `noremap-all!`
+#### `noremap-all!`
 
 Map `lhs` to `rhs` in all modes non-recursively.
 
@@ -554,7 +613,7 @@ Map `lhs` to `rhs` in all modes non-recursively.
 (noremap-all! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `noremap-input!`
+#### `noremap-input!`
 
 Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
 
@@ -563,7 +622,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
 (noremap-input! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `noremap-motion!`
+#### `noremap-motion!`
 
 Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode non-recursively.
 
@@ -575,7 +634,7 @@ Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode non-recursively.
 Note: This macro deletes mapping to `lhs` in Select mode for the performance. To
 avoid this, use `(noremap! [:n :o :x] ...)` instead.
 
-### `noremap-operator!`
+#### `noremap-operator!`
 
 Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
 
@@ -584,7 +643,7 @@ Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
 (noremap-operator! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `noremap-textobj!`
+#### `noremap-textobj!`
 
 Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
 
@@ -593,7 +652,7 @@ Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
 (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `nnoremap!`
+#### `nnoremap!`
 
 Map `lhs` to `rhs` in Normal mode non-recursively.
 
@@ -602,7 +661,7 @@ Map `lhs` to `rhs` in Normal mode non-recursively.
 (nnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `vnoremap!`
+#### `vnoremap!`
 
 Map `lhs` to `rhs` in Visual/Select mode non-recursively.
 
@@ -611,7 +670,7 @@ Map `lhs` to `rhs` in Visual/Select mode non-recursively.
 (vnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `xnoremap!`
+#### `xnoremap!`
 
 Map `lhs` to `rhs` in Visual mode non-recursively.
 
@@ -620,7 +679,7 @@ Map `lhs` to `rhs` in Visual mode non-recursively.
 (xnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `snoremap!`
+#### `snoremap!`
 
 Map `lhs` to `rhs` in Select mode non-recursively.
 
@@ -629,7 +688,7 @@ Map `lhs` to `rhs` in Select mode non-recursively.
 (snoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `onoremap!`
+#### `onoremap!`
 
 Map `lhs` to `rhs` in Operator-pending mode non-recursively.
 
@@ -638,7 +697,7 @@ Map `lhs` to `rhs` in Operator-pending mode non-recursively.
 (onoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `inoremap!`
+#### `inoremap!`
 
 Map `lhs` to `rhs` in Insert mode non-recursively.
 
@@ -647,7 +706,7 @@ Map `lhs` to `rhs` in Insert mode non-recursively.
 (inoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `lnoremap!`
+#### `lnoremap!`
 
 Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
 `:h language-mapping` for the details.
@@ -657,7 +716,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
 (lnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `cnoremap!`
+#### `cnoremap!`
 
 Map `lhs` to `rhs` in Command-line mode non-recursively.
 
@@ -666,7 +725,7 @@ Map `lhs` to `rhs` in Command-line mode non-recursively.
 (cnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-### `tnoremap!`
+#### `tnoremap!`
 
 Map `lhs` to `rhs` in Terminal mode non-recursively.
 
@@ -675,14 +734,14 @@ Map `lhs` to `rhs` in Terminal mode non-recursively.
 (tnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
-## Others
+### Others
 
 - [`command!`](#command)
 - [`feedkeys!`](#feedkeys)
 - [`highlight!`](#highlight)
 - [`hi!`](#hi)
 
-### `command!`
+#### `command!`
 
 Define a user command.
 
@@ -734,7 +793,7 @@ nvim_buf_create_user_command(0, "Salute", function()
                             })
 ```
 
-### `feedkeys!`
+#### `feedkeys!`
 
 `:h feedkeys()`
 
@@ -759,7 +818,7 @@ vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<CR>", true, true, true
 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true) "ni", false)
 ```
 
-### `highlight!`
+#### `highlight!`
 
 Set a highlight group.
 
@@ -792,6 +851,6 @@ nvim_set_nl(0, "Foo", {
 })
 ```
 
-### `hi!`
+#### `hi!`
 
 An alias of `highlight!`
