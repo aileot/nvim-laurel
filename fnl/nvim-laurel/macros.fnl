@@ -12,8 +12,9 @@
 
 (lambda slice [xs ?first ?last ?step]
   (let [first (or ?first 1)
-        last (or ?last (length xs) (or ?step 1))]
-    (fcollect [i first last] ;
+        last (or ?last (length xs))
+        step (or ?step 1)]
+    (fcollect [i first last step] ;
               (. xs i))))
 
 ;; Predicates ///2
