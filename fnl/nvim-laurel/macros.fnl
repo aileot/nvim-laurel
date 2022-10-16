@@ -686,9 +686,9 @@
   (command! name ?extra-opts command ?api-opts)
   ```
 
-  - name: (string) Name of the new user command.
+  - `name`: (string) Name of the new user command.
     It must begin with an uppercase letter.
-  - ?extra-opts: (sequence) Optional command attributes.
+  - `?extra-opts`: (sequence) Optional command attributes.
     Neither symbol nor list can be placed here.
     This sequential table is treated as if a key/value table, except the
     boolean attributes.
@@ -698,8 +698,8 @@
     Additional attributes:
     - `<buffer>`: with this alone, command is set in current buffer instead.
     - `buffer`: with the next value, command is set to the buffer instead.
-  - command: (string|function) Replacement command.
-  - ?api-opts: (table) Optional command attributes.
+  - `command`: (string|function) Replacement command.
+  - `?api-opts`: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
   (let [api-opts {}
         [name command ?api-opts] ;
@@ -826,7 +826,6 @@
   (noautocmd! callback)
   ```
 
-  This will set `&eventignore` to \"all\" for the duration of callback.
   - `callback`: (string|function) If string or symbol prefixed by `ex-` is
     regarded as vim Ex command; otherwise, it must be function."
   `(let [save-ei# vim.g.eventignore]
