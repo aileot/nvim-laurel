@@ -51,7 +51,7 @@ git clone https://github.com/aileot/nvim-laurel /path/to/install
 ## Usage
 
 ```fennel
-(import-macros {: nnoremap! : augroup! :au! ...} :nvim-laurel.macros)
+(import-macros {: setglobal! : augroup! :au! ...} :nvim-laurel.macros)
 ```
 
 ### Examples
