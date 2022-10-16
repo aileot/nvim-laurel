@@ -886,10 +886,15 @@
   (define-autocmd! ...))
 
 (lambda noautocmd! [callback]
-  "(experimental) Imitation of `:noautocmd`. It sets `&eventignore` to \"all\"
-  for the duration of callback.
-  callback: (string|function) If string or symbol prefixed by `ex-` is regarded
-      as vim Ex command; otherwise, it must be lua/fennel function."
+  "(experimental) Imitation of `:noautocmd`.
+
+  ```fennel
+  (noautocmd! callback)
+  ```
+
+  This will set `&eventignore` to \"all\" for the duration of callback.
+  - `callback`: (string|function) If string or symbol prefixed by `ex-` is
+    regarded as vim Ex command; otherwise, it must be function."
   `(let [save-ei# vim.g.eventignore]
      (tset vim.g :eventignore :all)
      ,(if (excmd? callback) `(vim.cmd ,callback)
