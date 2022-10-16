@@ -724,7 +724,7 @@
   ```lua
   vim.api.nvim_replace_termcodes(\"foo\", true, false, true)
   ```"
-  `(vim.api.nvim_replace_termcodes ,str true false true))
+  `(vim.api.nvim_replace_termcodes ,str true true true))
 
 (lambda feedkeys! [keys ?flags]
   "Equivalent to `vim.fn.feedkeys()`.
