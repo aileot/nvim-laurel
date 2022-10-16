@@ -910,13 +910,7 @@
   "Replace terminal codes and keycodes in a string.
 
   ```fennel
-  (str->keycodes :foo)
-  ```
-
-  is compiled to
-
-  ```lua
-  vim.api.nvim_replace_termcodes(\"foo\", true, false, true)
+  (str->keycodes str)
   ```"
   `(vim.api.nvim_replace_termcodes ,str true false true))
 
@@ -924,13 +918,7 @@
   "Equivalent to `vim.fn.feedkeys()`.
 
   ```fennel
-  (feedkeys! :foo :ni)
-  ```
-
-  is compiled to
-
-  ```lua
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(\"foo\", true, false, true) \"ni\", false)
+  (feedkeys! keys ?flags)
   ```"
   `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,?flags false))
 
