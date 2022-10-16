@@ -58,8 +58,6 @@ See
 [doc/macros.md](https://github.com/aileot/nvim-laurel/blob/main/doc/macros.md)
 for each macro usage in detail.
 
-### Examples
-
 [Fennel]: https://github.com/bakpakin/Fennel
 [fnlfmt]: https://git.sr.ht/~technomancy/fnlfmt
 [fennel-language-server]: https://github.com/rydesun/fennel-language-server
