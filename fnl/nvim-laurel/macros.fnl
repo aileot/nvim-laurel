@@ -26,7 +26,7 @@
     (= ?a x)))
 
 (fn nil? [x]
-  "Check if value of 'x' is nil."
+  "Check if value of `x` is nil."
   (= nil x))
 
 (fn str? [x]
@@ -34,7 +34,7 @@
   (= :string (type x)))
 
 (fn num? [x]
-  "Check if 'x' is of number type."
+  "Check if `x` is of number type."
   (= :number (type x)))
 
 (fn function? [x]
