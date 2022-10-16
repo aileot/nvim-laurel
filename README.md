@@ -54,6 +54,10 @@ git clone https://github.com/aileot/nvim-laurel /path/to/install
 (import-macros {: setglobal! : augroup! :au! ...} :nvim-laurel.macros)
 ```
 
+See
+[doc/macros.md](https://github.com/aileot/nvim-laurel/blob/main/doc/macros.md)
+for each macro usage in detail.
+
 ### Examples
 
 [Fennel]: https://github.com/bakpakin/Fennel
