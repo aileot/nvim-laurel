@@ -58,6 +58,14 @@ See
 [doc/macros.md](https://github.com/aileot/nvim-laurel/blob/main/doc/macros.md)
 for each macro usage in detail.
 
+## Alternatives
+
+- [aniseed](https://github.com/Olical/aniseed)
+- [hibiscus.nvim](https://github.com/udayvir-singh/hibiscus.nvim)
+- [katcros-fnl](https://github.com/katawful/katcros-fnl)
+- [themis.nvim](https://github.com/datwaft/themis.nvim)
+- [zest.nvim](https://github.com/tsbohc/zest.nvim)
+
 [Fennel]: https://github.com/bakpakin/Fennel
 [fnlfmt]: https://git.sr.ht/~technomancy/fnlfmt
 [fennel-language-server]: https://github.com/rydesun/fennel-language-server
