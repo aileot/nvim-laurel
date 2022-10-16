@@ -172,35 +172,6 @@
     however, when the value is set in either symbol or list,
     this macro is expanding to `(tset vim.opt name val)` instead.
 
-  ```fennel
-  (set! :number true)
-  (set! :formatOptions [:1 :2 :c :B])
-  (set! :listchars {:space :_ :tab: :>~})
-  (set! :colorColumn+ :+1)
-  (set! :rtp^ [:/path/to/another/vimrc])
-
-  (local val :yes)
-  (set! :signColumn val)
-  (local opt :wrap)
-  (set! opt false)
-  ```
-
-  is equivalent to
-
-  ```lua
-  vim.api.nvim_set_option_value(\"number\", true)
-  vim.api.nvim_set_option_value(\"signcolumn\", \"yes\")
-  vim.api.nvim_set_option_value(\".formatoptions\", \"12cB\")
-  vim.api.nvim_set_option_value(\"listchars\", \"space:_,tab:>~\")
-  vim.opt_global.colorcolumn:append(\"+1\")
-  vim.opt_global.rtp:prepend(\"/path/to/another/vimrc\")
-
-  local val = \"yes\"
-  vim.opt.signcolumn = val
-  local opt = \"wrap\"
-  vim.opt[opt] = false
-  ```
-
   Note: There is no plan to support option prefix either `no` or `inv`; instead,
   set `false` or `(not vim.go.foo)` respectively.
 
@@ -729,32 +700,7 @@
     - `buffer`: with the next value, command is set to the buffer instead.
   - command: (string|function) Replacement command.
   - ?api-opts: (table) Optional command attributes.
-    The same as {opts} for `nvim_create_user_command`.
-
-  ```fennel
-  (command! :SayHello
-            \"echo 'Hello world!'\"
-            {:bang true :desc \"Hello world!\"})
-  (command! :Salute
-            [:bar :buffer 10 :desc \"Say Hello!\"]
-            #(print \"Salute!\")
-  ```
-
-  is equivalent to
-
-  ```lua
-  nvim_create_user_command(\"SayHello\", \"echo 'Hello world!'\", {
-                                         bang = true,
-                                         desc = \"Say Hello!\",
-                                         })
-  nvim_buf_create_user_command(10, \"Salute\",
-                               function()
-                                 print(\"'Hello world!'\")
-                               end, {
-                               bar = true,
-                               desc = \"Salute!\"
-                              })
-  ```"
+    The same as {opts} for `nvim_create_user_command`."
   (let [api-opts {}
         [name command ?api-opts] ;
         (accumulate [args [] _ varg (ipairs [...])]
@@ -844,17 +790,6 @@
 
   ```fennel
   (autocmd! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
-  ```
-
-  ```fennel
-  (augroup! :your-augroup
-    (autocmd! :FileType * [\"some description\"] #(fnl-expr))
-    (autocmd! :InsertEnter :<buffer> \"some Vimscript command\")
-    (autocmd! :BufNewFile.BufRead \"{some,any}.ext\"
-         [:this-is-invalid-description]
-         #(vim.fn.foo))
-    (autocmd! [:BufNewFile :BufRead] [:multi :patterns :for :events :in :sequence]
-         [:once :nested \"You can also set :once or :nested here\"] ...))
   ```
 
   This macro also works as a syntax sugar in `augroup!`.
