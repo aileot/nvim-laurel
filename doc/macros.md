@@ -13,51 +13,51 @@ usages are subject to change without notifications.
 
 ### sequence
 
-  It is an alias of sequential table `[]`.
+It is an alias of sequential table `[]`.
 
 ### kv table
 
-  It is an alias of key/value table `{}`.
+It is an alias of key/value table `{}`.
 
 ### raw `<type-name>`
 
-  It describes a value cannot be either symbol or list in compile time.
+It describes a value cannot be either symbol or list in compile time.
 
-  - `(.. :foo :bar)` is not a raw string.
-  - `(icollect [_ val (ipairs [:foo :bar])] val)` is not a raw sequence.
+- `(.. :foo :bar)` is not a raw string.
+- `(icollect [_ val (ipairs [:foo :bar])] val)` is not a raw sequence.
 
 ### `?<name>`
 
-  `<name>` is optional.
+`<name>` is optional.
 
 ### `?api-opts`
 
-  It is kv table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
-  otherwise noted, this option has the following features:
+It is kv table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
+otherwise noted, this option has the following features:
 
-  - It only accepts the same key/value described in `api.txt`.
-  - It can be `nil`.
+- It only accepts the same key/value described in `api.txt`.
+- It can be `nil`.
 
 ### `?extra-opts`
 
-  Some macros accept an optional argument `?extra-opts`. Unless otherwise noted,
-  this option has the following features:
+Some macros accept an optional argument `?extra-opts`. Unless otherwise noted,
+this option has the following features:
 
-  - It is only intended as shorthand; for complicated usage, use `?api-opts`
-    instead, or use them together.
-    - Values in `?api-opts` has priority over those in `?extra-opts` when they
-      are conflicted.
-  - It must be raw sequence `[]`, but interpreted as if kv table `{}`. Boolean
-    key/value for `?api-opts` is set to `true` by key itself; the other keys
-    expects the next values as their values respectively.
-    - To set `false` to key, set it in `?api-opts` instead.
-    - Items for keys must be raw strings, for values can be any.
+- It is only intended as shorthand; for complicated usage, use `?api-opts`
+  instead, or use them together.
+  - Values in `?api-opts` has priority over those in `?extra-opts` when they are
+    conflicted.
+- It must be raw sequence `[]`, but interpreted as if kv table `{}`. Boolean
+  key/value for `?api-opts` is set to `true` by key itself; the other keys
+  expects the next values as their values respectively.
+  - To set `false` to key, set it in `?api-opts` instead.
+  - Items for keys must be raw strings, for values can be any.
 
 ### `ex-<name>`
 
-  A special symbol name. With prefix `ex-`, some of nvim-laurel macros in
-  compile time can tell that the named symbol will result in a string of vim Ex
-  command in runtime.
+A special symbol name. With prefix `ex-`, some of nvim-laurel macros in compile
+time can tell that the named symbol will result in a string of vim Ex command in
+runtime.
 
 ## Macros
 
@@ -164,16 +164,13 @@ This macro also works as a syntax sugar in `augroup!`.
   string.
 - `pattern`: ('*'|string|string[]) You can set `:<buffer>` here to set `autocmd`
   to current buffer. Symbol `*` can be passed as if a string.
-- `?extra-opts`: (string[]) No symbol is available here. You can set `:once`
-  and/or `:nested` here to make them `true`. You can also set a string value for
-  `:desc` with a bit of restriction. The string for description must be a
-  `"double-quoted string"` which contains at least one of any characters, on
-  qwerty keyboard, which can compose `"double-quoted string"`, but cannot
-  `:string-with-colon-ahead`.
+- [`?extra-opts`][?extra-opts]: (sequence) You can set `:once` and/or `:nested`
+  here to make them `true`. You can also set a string value for `:desc`.
 - `command-or-callback`: (string|function) A value for api options. Set either
   vim-command or callback function of vim, lua or fennel. Any raw string here is
   interpreted as vim-command; use `vim.fn` interface to set a Vimscript
   function.
+- [`?api-opts`][?api-opts]: (kv table) Optional autocmd attributes.
 
 #### `au!`
 
@@ -752,17 +749,13 @@ Define a user command.
 
 - `name`: (string) Name of the new user command. It must begin with an uppercase
   letter.
-- `?extra-opts`: (sequence) Optional command attributes. Neither symbol nor list
-  can be placed here. This sequential table is treated as if a key/value table,
-  except the boolean attributes. The boolean attributes are set to `true` just
-  being there alone. To set some attributes to `false`, set them instead in
-  `?api-opts` below. All the keys must be raw string there. Additional
-  attributes:
+- [`?extra-opts`][?extra-opts]: (sequence) Optional command attributes.
+  Additional attributes:
   - `<buffer>`: with this alone, command is set in current buffer.
   - `buffer`: with the next value, command is set to the buffer.
 - `command`: (string|function) Replacement command.
-- `?api-opts`: (table) Optional command attributes. The same as `opts` for
-  `nvim_create_user_command`.
+- [`?api-opts`][?api-opts]: (kv table) Optional command attributes. The same as
+  `opts` for `nvim_create_user_command`.
 
 ```fennel
 (command! :SayHello
@@ -854,3 +847,6 @@ nvim_set_nl(0, "Foo", {
 #### `hi!`
 
 An alias of `highlight!`
+
+[?extra-opts]: #?extra-opts
+[?api-opts]: #?api-opts
