@@ -857,28 +857,27 @@
          [:once :nested \"You can also set :once or :nested here\"] ...))
   ```
 
-  This macro also works as a syntax sugar in `(augroup!)`.
-  - ?augroup-id (string|integer):
-    Actually, `?augroup-id` is not an optional argument unlike
+  This macro also works as a syntax sugar in `augroup!`.
+  - `?augroup-name-or-id`: (string|integer)
+    Actually, `?augroup-name-or-id` is not an optional argument unlike
     `vim.api.nvim_create_autocmd()` unless you use this `autocmd!` macro within
     either `augroup!` or `augroup+` macro.
-  - events (string|string[]):
+  - `events`: (string|string[])
     You can set multiple events in a dot-separated raw string.
-  - pattern ('*'|string|string[]):
+  - `pattern`: ('*'|string|string[])
     You can set `:<buffer>` here to set `autocmd` to current buffer.
     Symbol `*` can be passed as if a string.
-  - ?extra-opts (string[]?):
+  - `?extra-opts`: (string[])
     No symbol is available here.
     You can set `:once` and/or `:nested` here to make them `true`.
     You can also set a string value for `:desc` with a bit of restriction. The
     string for description must be a `\"double-quoted string\"` which contains
     at least one of any characters, on qwerty keyboard, which can compose
     `\"double-quoted string\"`, but cannot `:string-with-colon-ahead`.
-  - command-or-callback:
+  - `command-or-callback`: (string|function)
     A value for api options. Set either vim-command or callback function of vim,
     lua or fennel. Any raw string here is interpreted as vim-command; use
-    `vim.fn` table to set a Vimscript function.
-  "
+    `vim.fn` table to set a Vimscript function."
   (define-autocmd! ...))
 
 (lambda au! [...]
