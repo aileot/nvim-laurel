@@ -157,7 +157,7 @@
   ```
 
   - name-?flag: (string) Option name.
-    As long as the option name is literal string, i.e., neither symbol nor list,
+    As long as the option name is a bare string, i.e., neither symbol nor list,
     this macro has two advantages:
 
     1. A flag can be appended to the option name. Append `+`, `^`, or `-`,

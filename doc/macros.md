@@ -19,12 +19,12 @@ It is an alias of sequential table `[]`.
 
 It is an alias of key/value table `{}`.
 
-### raw `<type-name>`
+### bare `<type-name>`
 
 It describes a value cannot be either symbol or list in compile time.
 
-- `(.. :foo :bar)` is not a raw string.
-- `(icollect [_ val (ipairs [:foo :bar])] val)` is not a raw sequence.
+- `(.. :foo :bar)` is not a bare string.
+- `(icollect [_ val (ipairs [:foo :bar])] val)` is not a bare sequence.
 
 ### `?<name>`
 
@@ -47,11 +47,11 @@ this option has the following features:
   instead, or use them together.
   - Values in `?api-opts` has priority over those in `?extra-opts` when they are
     conflicted.
-- It must be raw sequence `[]`, but interpreted as if kv table `{}`. Boolean
+- It must be bare sequence `[]`, but interpreted as if kv table `{}`. Boolean
   key/value for `?api-opts` is set to `true` by key itself; the other keys
   expects the next values as their values respectively.
   - To set `false` to key, set it in `?api-opts` instead.
-  - Items for keys must be raw strings, for values can be any.
+  - Items for keys must be bare strings, for values can be any.
 
 ### `ex-<name>`
 
@@ -160,14 +160,14 @@ This macro also works as a syntax sugar in `augroup!`.
 - `augroup-name-or-id`: (string|integer) `augroup-name-or-id` is necessary
   unlike `vim.api.nvim_create_autocmd` unless this `autocmd!` macro within
   either `augroup!` or `augroup+` macro.
-- `events`: (string|string[]) You can set multiple events in a dot-separated raw
+- `events`: (string|string[]) You can set multiple events in a dot-separated bare
   string.
 - `pattern`: ('*'|string|string[]) You can set `:<buffer>` here to set `autocmd`
   to current buffer. Symbol `*` can be passed as if a string.
 - [`?extra-opts`][?extra-opts]: (sequence) You can set `:once` and/or `:nested`
   here to make them `true`. You can also set a string value for `:desc`.
 - `command-or-callback`: (string|function) A value for api options. Set either
-  vim-command or callback function of vim, lua or fennel. Any raw string here is
+  vim-command or callback function of vim, lua or fennel. Any bare string here is
   interpreted as vim-command; use `vim.fn` interface to set a Vimscript
   function.
 - [`?api-opts`][?api-opts]: (kv table) Optional autocmd attributes.
