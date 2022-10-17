@@ -110,8 +110,9 @@ Define an autocmd:
 (augroup! :your-augroup
   (autocmd! :FileType [:fennel :lua :vim] #(simple-expr))
   (autocmd! [:InsertEnter :InsertLeave] :<buffer> "echo 'foo'")
-  (autocmd! :VimEnter "*"
-       [:once :nested :desc "call vim autoload function"] #(vim.fn.foo#bar))
+  ;; Note: Within `augroup!`, `autocmd!` is just a syntax sugar macro for a sequence.
+  [:VimEnter "*"
+       [:once :nested :desc "call vim autoload function"] #(vim.fn.foo#bar)])
 ```
 
 is equivalent to
