@@ -36,7 +36,7 @@ It describes a value cannot be either symbol or list in compile time.
 
 ### `?<name>`
 
-`<name>` is optional.
+`<name>` is omittable.
 
 ### `?api-opts`
 
@@ -44,7 +44,6 @@ It is kv table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
 otherwise noted, this option has the following features:
 
 - It only accepts the same key/value described in `api.txt`.
-- It can be `nil`.
 
 ### `?extra-opts`
 
