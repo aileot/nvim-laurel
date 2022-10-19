@@ -727,12 +727,7 @@
         (when (= "*" api-opts.pattern)
           ;; Note: `*` is the default and redundant.
           (tset api-opts :pattern nil))
-        (let [es (if (str? events)
-                     ;; Expect dot-separated format: `:BufNewFile.BufReadPost`.
-                     (icollect [p (events:gmatch "[a-zA-Z]+")]
-                       p)
-                     events)]
-          `(vim.api.nvim_create_autocmd ,es ,api-opts)))))
+        `(vim.api.nvim_create_autocmd ,events ,api-opts))))
 
 (lambda define-augroup! [name opts ...]
   (if (= 0 (length [...]))
