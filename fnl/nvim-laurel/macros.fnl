@@ -26,7 +26,7 @@
     (= ?a x)))
 
 (fn nil? [x]
-  "Check if value of 'x' is nil."
+  "Check if value of `x` is nil."
   (= nil x))
 
 (fn str? [x]
@@ -34,7 +34,7 @@
   (= :string (type x)))
 
 (fn num? [x]
-  "Check if 'x' is of number type."
+  "Check if `x` is of number type."
   (= :number (type x)))
 
 (fn function? [x]
@@ -157,7 +157,7 @@
   ```
 
   - name-?flag: (string) Option name.
-    As long as the option name is literal string, i.e., neither symbol nor list,
+    As long as the option name is a bare string, i.e., neither symbol nor list,
     this macro has two advantages:
 
     1. A flag can be appended to the option name. Append `+`, `^`, or `-`,
@@ -171,35 +171,6 @@
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
     however, when the value is set in either symbol or list,
     this macro is expanding to `(tset vim.opt name val)` instead.
-
-  ```fennel
-  (set! :number true)
-  (set! :formatOptions [:1 :2 :c :B])
-  (set! :listchars {:space :_ :tab: :>~})
-  (set! :colorColumn+ :+1)
-  (set! :rtp^ [:/path/to/another/vimrc])
-
-  (local val :yes)
-  (set! :signColumn val)
-  (local opt :wrap)
-  (set! opt false)
-  ```
-
-  is equivalent to
-
-  ```lua
-  vim.api.nvim_set_option_value(\"number\", true)
-  vim.api.nvim_set_option_value(\"signcolumn\", \"yes\")
-  vim.api.nvim_set_option_value(\".formatoptions\", \"12cB\")
-  vim.api.nvim_set_option_value(\"listchars\", \"space:_,tab:>~\")
-  vim.opt_global.colorcolumn:append(\"+1\")
-  vim.opt_global.rtp:prepend(\"/path/to/another/vimrc\")
-
-  local val = \"yes\"
-  vim.opt.signcolumn = val
-  local opt = \"wrap\"
-  vim.opt[opt] = false
-  ```
 
   Note: There is no plan to support option prefix either `no` or `inv`; instead,
   set `false` or `(not vim.go.foo)` respectively.
@@ -412,12 +383,22 @@
 
 ;; Export ///2
 (lambda noremap! [modes ...]
+  "Map `lhs` to `rhs` in `modes` non-recursively.
+
+  ```fennel
+  (noremap! modes lhs ?extra-opts rhs ?api-opts)
+  ```"
   (let [default-opts {:noremap true}
         (lhs rhs api-opts) (keymap/varargs->api-args ...)]
     (merge-default-kv-table default-opts api-opts)
     (keymap/set-maps! modes lhs rhs api-opts)))
 
 (lambda map! [modes ...]
+  "Map `lhs` to `rhs` in `modes` recursively.
+
+  ```fennel
+  (noremap! modes lhs ?extra-opts rhs ?api-opts)
+  ```"
   (let [default-opts {}
         (lhs rhs api-opts) (keymap/varargs->api-args ...)]
     (merge-default-kv-table default-opts api-opts)
@@ -425,95 +406,245 @@
 
 ;; Wrapper ///3
 (lambda noremap-all! [...]
+  "Map `lhs` to `rhs` in all modes non-recursively.
+
+  ```fennel
+  (noremap-all! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
     [(noremap! "" lhs rhs api-opts)
      (noremap! "!" lhs rhs api-opts)
      (unpack (noremap! [:l :t] lhs rhs api-opts))]))
 
 (lambda noremap-input! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
+
+  ```fennel
+  (noremap-input! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! "!" ...))
 
 (lambda noremap-motion! [...]
+  "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
+  non-recursively.
+
+  ```fennel
+  (noremap-motion! lhs ?extra-opts rhs ?api-opts)
+  ```
+
+  Note: This macro `unmap`s `lhs` in Select mode for the performance.
+  To avoid this, use `(noremap! [:n :o :x] ...)` instead."
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
     [(noremap! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
 
 (lambda noremap-operator! [...]
+  "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
+
+  ```fennel
+  (noremap-operator! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! [:n :x] ...))
 
 (lambda noremap-textobj! [...]
+  "Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
+
+  ```fennel
+  (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! [:o :x] ...))
 
 (lambda nnoremap! [...]
+  "Map `lhs` to `rhs` in Normal mode non-recursively.
+
+  ```fennel
+  (nnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :n ...))
 
 (lambda vnoremap! [...]
+  "Map `lhs` to `rhs` in Visual/Select mode non-recursively.
+
+  ```fennel
+  (vnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :v ...))
 
 (lambda xnoremap! [...]
+  "Map `lhs` to `rhs` in Visual mode non-recursively.
+
+  ```fennel
+  (xnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :x ...))
 
 (lambda snoremap! [...]
+  "Map `lhs` to `rhs` in Select mode non-recursively.
+
+  ```fennel
+  (snoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :s ...))
 
 (lambda onoremap! [...]
+  "Map `lhs` to `rhs` in Operator-pending mode non-recursively.
+
+  ```fennel
+  (onoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :o ...))
 
 (lambda inoremap! [...]
+  "Map `lhs` to `rhs` in Insert mode non-recursively.
+
+  ```fennel
+  (inoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :i ...))
 
 (lambda lnoremap! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
+  `:h language-mapping` for the details.
+
+  ```fennel
+  (lnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :l ...))
 
 (lambda cnoremap! [...]
+  "Map `lhs` to `rhs` in Command-line mode non-recursively.
+
+  ```fennel
+  (cnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :c ...))
 
 (lambda tnoremap! [...]
+  "Map `lhs` to `rhs` in Terminal mode non-recursively.
+
+  ```fennel
+  (tnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (noremap! :t ...))
 
 (lambda map-all! [...]
+  "Map `lhs` to `rhs` in all modes recursively.
+
+  ```fennel
+  (map-all! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
     [(map! "" lhs rhs api-opts)
      (map! "!" lhs rhs api-opts)
      (unpack (map! [:l :t] lhs rhs api-opts))]))
 
 (lambda map-input! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode recursively.
+
+  ```fennel
+  (map-input! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! "!" ...))
 
 (lambda map-motion! [...]
+  "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
+  recursively.
+
+  ```fennel
+  (map-motion! lhs ?extra-opts rhs ?api-opts)
+  ```
+
+  Note: This macro `unmap`s `lhs` in Select mode for the performance.
+  To avoid this, use `(map! [:n :o :x] ...)` instead."
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
     [(map! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
 
 (lambda map-operator! [...]
+  "Map `lhs` to `rhs` in Normal/Visual mode recursively.
+
+  ```fennel
+  (map-operator! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! [:n :x] ...))
 
 (lambda map-textobj! [...]
+  "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
+
+  ```fennel
+  (map-textobj! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! [:o :x] ...))
 
 (lambda nmap! [...]
+  "Map `lhs` to `rhs` in Normal mode recursively.
+
+  ```fennel
+  (nmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :n ...))
 
 (lambda vmap! [...]
+  "Map `lhs` to `rhs` in Visual/Select mode recursively.
+
+  ```fennel
+  (vmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :v ...))
 
 (lambda xmap! [...]
+  "Map `lhs` to `rhs` in Visual mode recursively.
+
+  ```fennel
+  (xmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :x ...))
 
 (lambda smap! [...]
+  "Map `lhs` to `rhs` in Select mode recursively.
+
+  ```fennel
+  (smap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :s ...))
 
 (lambda omap! [...]
+  "Map `lhs` to `rhs` in Operator-pending mode recursively.
+
+  ```fennel
+  (omap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :o ...))
 
 (lambda imap! [...]
+  "Map `lhs` to `rhs` in Insert mode recursively.
+
+  ```fennel
+  (imap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :i ...))
 
 (lambda lmap! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
+  `:h language-mapping` for the details.
+
+  ```fennel
+  (lmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :l ...))
 
 (lambda cmap! [...]
+  "Map `lhs` to `rhs` in Command-line mode recursively.
+
+  ```fennel
+  (cmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :c ...))
 
 (lambda tmap! [...]
+  "Map `lhs` to `rhs` in Terminal mode recursively.
+
+  ```fennel
+  (tmap! lhs ?extra-opts rhs ?api-opts)
+  ```"
   (map! :t ...))
 
 ;; Command ///1
@@ -521,13 +652,12 @@
   "Define a user command.
 
   ```fennel
-  (command! ?extra-opts name command ?api-opts)
   (command! name ?extra-opts command ?api-opts)
   ```
 
-  - name: (string) Name of the new user command.
+  - `name`: (string) Name of the new user command.
     It must begin with an uppercase letter.
-  - ?extra-opts: (sequence) Optional command attributes.
+  - `?extra-opts`: (sequence) Optional command attributes.
     Neither symbol nor list can be placed here.
     This sequential table is treated as if a key/value table, except the
     boolean attributes.
@@ -537,34 +667,9 @@
     Additional attributes:
     - `<buffer>`: with this alone, command is set in current buffer instead.
     - `buffer`: with the next value, command is set to the buffer instead.
-  - command: (string|function) Replacement command.
-  - ?api-opts: (table) Optional command attributes.
-    The same as {opts} for `nvim_create_user_command`.
-
-  ```fennel
-  (command! :SayHello
-            \"echo 'Hello world!'\"
-            {:bang true :desc \"Hello world!\"})
-  (command! :Salute
-            [:bar :buffer 10 :desc \"Say Hello!\"]
-            #(print \"Salute!\")
-  ```
-
-  is equivalent to
-
-  ```lua
-  nvim_create_user_command(\"SayHello\", \"echo 'Hello world!'\", {
-                                         bang = true,
-                                         desc = \"Say Hello!\",
-                                         })
-  nvim_buf_create_user_command(10, \"Salute\",
-                               function()
-                                 print(\"'Hello world!'\")
-                               end, {
-                               bar = true,
-                               desc = \"Salute!\"
-                              })
-  ```"
+  - `command`: (string|function) Replacement command.
+  - `?api-opts`: (table) Optional command attributes.
+    The same as {opts} for `nvim_create_user_command`."
   (let [api-opts {}
         [name command ?api-opts] ;
         (accumulate [args [] _ varg (ipairs [...])]
@@ -592,23 +697,7 @@
                                                  ,api-opts))
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
-(lambda noautocmd! [callback]
-  "(experimental) Imitation of `:noautocmd`. It sets `&eventignore` to \"all\"
-  for the duration of callback.
-  callback: (string|function) If string or symbol prefixed by `ex-` is regarded
-      as vim Ex command; otherwise, it must be lua/fennel function."
-  `(let [save-ei# vim.g.eventignore]
-     (tset vim.g :eventignore :all)
-     ,(if (excmd? callback) `(vim.cmd ,callback)
-          (do
-            (assert-compile (or (sym? callback) (function? callback))
-                            (.. "callback must be a string or function, got "
-                                (type callback))
-                            callback)
-            `(,callback)))
-     (vim.schedule #(tset vim.g :eventignore save-ei#))))
-
-;; Autocmd/Augroup ///1
+;; Autocmd ///1
 (lambda define-autocmd! [...]
   (if (= 2 (length [...]))
       ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
@@ -665,64 +754,66 @@
   "Append `autocmd`s to an existing `augroup`."
   (define-augroup! name {:clear false} ...))
 
-(lambda au! [...]
+(lambda autocmd! [...]
   "Define an autocmd:
 
   ```fennel
-  (au! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
+  (autocmd! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
   ```
 
-  ```fennel
-  (augroup! :your-augroup
-    (au! :FileType * [\"some description\"] #(fnl-expr))
-    (au! :InsertEnter :<buffer> \"some Vimscript command\")
-    (au! :BufNewFile.BufRead \"{some,any}.ext\"
-         [:this-is-invalid-description]
-         #(vim.fn.foo))
-    (au! [:BufNewFile :BufRead] [:multi :patterns :for :events :in :sequence]
-         [:once :nested \"You can also set :once or :nested here\"] ...))
-  ```
-
-  This macro also works as a syntax sugar in `(augroup!)`.
-  - ?augroup-id (string|integer):
-    Actually, `?augroup-id` is not an optional argument unlike
-    `vim.api.nvim_create_autocmd()` unless you use this `au!` macro within
+  This macro also works as a syntax sugar in `augroup!`.
+  - `?augroup-name-or-id`: (string|integer)
+    Actually, `?augroup-name-or-id` is not an optional argument unlike
+    `vim.api.nvim_create_autocmd()` unless you use this `autocmd!` macro within
     either `augroup!` or `augroup+` macro.
-  - events (string|string[]):
-    You can set multiple events in a dot-separated raw string.
-  - pattern ('*'|string|string[]):
+  - `events`: (string|string[])
+    The event or events to register this autocommand.
+  - `pattern`: ('*'|string|string[])
     You can set `:<buffer>` here to set `autocmd` to current buffer.
     Symbol `*` can be passed as if a string.
-  - ?extra-opts (string[]?):
+  - `?extra-opts`: (string[])
     No symbol is available here.
     You can set `:once` and/or `:nested` here to make them `true`.
     You can also set a string value for `:desc` with a bit of restriction. The
     string for description must be a `\"double-quoted string\"` which contains
     at least one of any characters, on qwerty keyboard, which can compose
     `\"double-quoted string\"`, but cannot `:string-with-colon-ahead`.
-  - command-or-callback:
+  - `command-or-callback`: (string|function)
     A value for api options. Set either vim-command or callback function of vim,
     lua or fennel. Any raw string here is interpreted as vim-command; use
-    `vim.fn` table to set a Vimscript function.
-  "
+    `vim.fn` table to set a Vimscript function."
   (define-autocmd! ...))
 
-(lambda autocmd! [...]
-  "Same as `au!`"
+(lambda au! [...]
+  "An alias of `autocmd!`"
   (define-autocmd! ...))
+
+(lambda noautocmd! [callback]
+  "(experimental) Imitation of `:noautocmd`.
+
+  ```fennel
+  (noautocmd! callback)
+  ```
+
+  - `callback`: (string|function) If string or symbol prefixed by `ex-` is
+    regarded as vim Ex command; otherwise, it must be function."
+  `(let [save-ei# vim.g.eventignore]
+     (tset vim.g :eventignore :all)
+     ,(if (excmd? callback) `(vim.cmd ,callback)
+          (do
+            (assert-compile (or (sym? callback) (function? callback))
+                            (.. "callback must be a string or function, got "
+                                (type callback))
+                            callback)
+            `(,callback)))
+     (vim.schedule #(tset vim.g :eventignore save-ei#))))
 
 ;; Misc ///1
 (lambda str->keycodes [str]
   "Replace terminal codes and keycodes in a string.
 
   ```fennel
-  (str->keycodes :foo)
-  ```
-
-  is compiled to
-
-  ```lua
-  vim.api.nvim_replace_termcodes(\"foo\", true, false, true)
+  (str->keycodes str)
   ```"
   `(vim.api.nvim_replace_termcodes ,str true true true))
 
@@ -730,13 +821,7 @@
   "Equivalent to `vim.fn.feedkeys()`.
 
   ```fennel
-  (feedkeys! :foo :ni)
-  ```
-
-  is compiled to
-
-  ```lua
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(\"foo\", true, false, true) \"ni\", false)
+  (feedkeys! keys ?flags)
   ```"
   `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,?flags false))
 
@@ -745,14 +830,10 @@
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
 (lambda highlight! [...]
-  ;; FIXME: Compile error: Missing argument val
-  ;; [?namespace hl-name val]
   "Set a highlight group.
-  The first arg namespace is optional; without it, highlight is set globally.
 
   ```fennel
-  (highlight! hl-name {:fg :Red :bold true})
-  (highlight! hl-name {:link another-hl-name})
+  (highlight! ?ns-id name val)
  ```"
   (local [?namespace hl-name val] (match (length [...])
                                     2 [nil (select 1 ...) (select 2 ...)]
@@ -776,7 +857,7 @@
         `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))))
 
 (lambda hi! [...]
-  "Same as highlight!"
+  "An alias of `highlight!`"
   (highlight! ...))
 
 ;; Export ///1
