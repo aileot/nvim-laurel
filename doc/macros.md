@@ -171,8 +171,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
   unlike `vim.api.nvim_create_autocmd` unless this `autocmd!` macro within
   either `augroup!` or `augroup+`. To define `autocmd`s affiliated with no
   augroup, set `nil`.
-- `events`: (string|string[]) You can set multiple events in a dot-separated
-  bare string.
+- `events`: (string|string[]) The event or events to register this autocommand.
 - `pattern`: ('*'|string|string[]) You can set `:<buffer>` here to set `autocmd`
   to current buffer. Symbol `*` can be passed as if a string.
 - [`?extra-opts`][?extra-opts]: (bare sequence) You can set `:once` and/or

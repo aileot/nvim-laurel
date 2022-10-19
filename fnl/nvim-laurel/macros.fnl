@@ -767,7 +767,7 @@
     `vim.api.nvim_create_autocmd()` unless you use this `autocmd!` macro within
     either `augroup!` or `augroup+` macro.
   - `events`: (string|string[])
-    You can set multiple events in a dot-separated raw string.
+    The event or events to register this autocommand.
   - `pattern`: ('*'|string|string[])
     You can set `:<buffer>` here to set `autocmd` to current buffer.
     Symbol `*` can be passed as if a string.
