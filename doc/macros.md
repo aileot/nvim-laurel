@@ -175,8 +175,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
   bare string.
 - `pattern`: ('*'|string|string[]) You can set `:<buffer>` here to set `autocmd`
   to current buffer. Symbol `*` can be passed as if a string.
-- [`?extra-opts`][?extra-opts]: (sequence) You can set `:once` and/or `:nested`
-  here to make them `true`. You can also set a string value for `:desc`.
+- [`?extra-opts`][?extra-opts]: (bare sequence) You can set `:once` and/or
+  `:nested` here to make them `true`. You can also set a string value for
+  `:desc`.
 - `command-or-callback`: (string|function) A value for api options. Set either
   vim-command or callback function of vim, lua or fennel. Any bare string here
   is interpreted as vim-command; use `vim.fn` interface to set a Vimscript
@@ -442,7 +443,7 @@ Map `lhs` to `rhs` in `modes` recursively.
 
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
-- [`?extra-opts`][?extra-opts]: (sequence) Additional option:
+- [`?extra-opts`][?extra-opts]: (bare sequence) Additional option:
   - `<buffer>`: map `lhs` in current buffer.
   - `buffer`: map `lhs` to a buffer of the next value.
 - `lhs`: (string) Left-hand-side of the mapping.
@@ -740,7 +741,7 @@ Define a user command.
 
 - `name`: (string) Name of the new user command. It must begin with an uppercase
   letter.
-- [`?extra-opts`][?extra-opts]: (sequence) Optional command attributes.
+- [`?extra-opts`][?extra-opts]: (bare sequence) Optional command attributes.
   Additional attributes:
   - `<buffer>`: with this alone, command is set in current buffer.
   - `buffer`: with the next value, command is set to the buffer.
