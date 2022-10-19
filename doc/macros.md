@@ -168,13 +168,12 @@ vim.api.nvim_create_autocmd("VimEnter", {
 })
 ```
 
-This macro also works as a syntax sugar in `augroup!`.
-
-- `augroup-name-or-id`: (string|integer) `augroup-name-or-id` is necessary
+- `augroup-name-or-id`: (string|integer|nil) `augroup-name-or-id` is necessary
   unlike `vim.api.nvim_create_autocmd` unless this `autocmd!` macro within
-  either `augroup!` or `augroup+` macro.
-- `events`: (string|string[]) You can set multiple events in a dot-separated bare
-  string.
+  either `augroup!` or `augroup+`. To define `autocmd`s affiliated with no
+  augroup, set `nil`.
+- `events`: (string|string[]) You can set multiple events in a dot-separated
+  bare string.
 - `pattern`: ('*'|string|string[]) You can set `:<buffer>` here to set `autocmd`
   to current buffer. Symbol `*` can be passed as if a string.
 - [`?extra-opts`][?extra-opts]: (sequence) You can set `:once` and/or `:nested`
