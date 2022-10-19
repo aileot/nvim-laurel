@@ -54,7 +54,7 @@ this option has the following features:
   instead, or use them together.
   - Values in `?api-opts` has priority over those in `?extra-opts` when they are
     conflicted.
-- It must be bare sequence `[]`, but interpreted as if kv table `{}`. Boolean
+- It must be a bare sequence `[]`, but interpreted as if kv table `{}`. Boolean
   key/value for `?api-opts` is set to `true` by key itself; the other keys
   expects the next values as their values respectively.
   - To set `false` to key, set it in `?api-opts` instead.
