@@ -178,8 +178,8 @@ vim.api.nvim_create_autocmd("VimEnter", {
 - [`?extra-opts`][?extra-opts]: (sequence) You can set `:once` and/or `:nested`
   here to make them `true`. You can also set a string value for `:desc`.
 - `command-or-callback`: (string|function) A value for api options. Set either
-  vim-command or callback function of vim, lua or fennel. Any bare string here is
-  interpreted as vim-command; use `vim.fn` interface to set a Vimscript
+  vim-command or callback function of vim, lua or fennel. Any bare string here
+  is interpreted as vim-command; use `vim.fn` interface to set a Vimscript
   function.
 - [`?api-opts`][?api-opts]: (kv table) Optional autocmd attributes.
 
