@@ -11,6 +11,14 @@ usages are subject to change without notifications.
 
 ## Terminology
 
+### lhs
+
+Abbreviation of left-hand-side.
+
+### rhs
+
+Abbreviation of right-hand-side.
+
 ### sequence
 
 It is an alias of sequential table `[]`.
