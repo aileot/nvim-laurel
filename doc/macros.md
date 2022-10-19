@@ -60,6 +60,10 @@ this option has the following features:
   expects the next values as their values respectively.
   - To set `false` to key, set it in `?api-opts` instead.
   - Items for keys must be bare strings, for values can be any.
+- It can be set just before `rhs` as if to modify the attribute of `rhs`,
+  though, in Vim script, the equivalent options are to be set just after Ex
+  command to modify that of Ex command. This change makes it easier to insert
+  those options later by `A`, `I`, `o`, or `O`.
 
 ### `ex-<name>`
 
