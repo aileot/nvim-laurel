@@ -71,14 +71,17 @@
       (++ i))
     kv-table))
 
-(lambda infer-description [raw-rhs]
-  (let [base (-> (->str raw-rhs) (: :gsub "^ex%-" ""))
-        ?description (when (< 2 (length base))
-                       (.. (-> (base:sub 1 1)
-                               (: :upper))
-                           (-> (base:sub 2)
-                               (: :gsub "[-_]+" " "))))]
-    ?description))
+(lambda infer-description [raw-base]
+  "Infer description from the name of symbol.
+  Return nil if `raw-base` is not a symbol."
+  (when (sym? raw-base)
+    (let [base (-> (->str raw-base) (: :gsub "^ex%-" ""))
+          ?description (when (< 2 (length base))
+                         (.. (-> (base:sub 1 1)
+                                 (: :upper))
+                             (-> (base:sub 2)
+                                 (: :gsub "[-_]+" " "))))]
+      ?description)))
 
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
