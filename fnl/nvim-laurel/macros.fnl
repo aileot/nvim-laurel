@@ -71,6 +71,15 @@
       (++ i))
     kv-table))
 
+(lambda infer-description [raw-rhs]
+  (let [base (-> (->str raw-rhs) (: :gsub "^ex%-" ""))
+        ?description (when (< 2 (length base))
+                       (.. (-> (base:sub 1 1)
+                               (: :upper))
+                           (-> (base:sub 2)
+                               (: :gsub "[-_]+" " "))))]
+    ?description))
+
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
   "Concat kv table into a string for `vim.api.nvim_set_option_value`.
@@ -295,15 +304,6 @@
   (option/modify :global name val "-"))
 
 ;; Keymap ///1
-(lambda keymap/infer-description [raw-rhs]
-  (let [base (-> (->str raw-rhs) (: :gsub "^ex%-" ""))
-        ?description (when (< 2 (length base))
-                       (.. (-> (base:sub 1 1)
-                               (: :upper))
-                           (-> (base:sub 2)
-                               (: :gsub "[-_]+" " "))))]
-    ?description))
-
 (lambda keymap/varargs->api-args [...]
   ;; [default-opts modes ?extra-opts lhs rhs ?api-opts]
   "Merge extra options with default ones.
@@ -336,7 +336,7 @@
     (assert-compile lhs "lhs cannot be nil" lhs)
     (assert-compile rhs "rhs cannot be nil" rhs)
     (when (and (sym? raw-rhs) (nil? (?. api-opts :desc)))
-      (let [?description (keymap/infer-description raw-rhs)]
+      (let [?description (infer-description raw-rhs)]
         (when ?description
           (tset api-opts :desc ?description))))
     (values lhs rhs api-opts)))
