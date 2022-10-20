@@ -83,7 +83,6 @@ runtime.
 - [`augroup!`](#augroup)
 - [`augroup+`](#augroup-1)
 - [`autocmd!`](#autocmd)
-- [`noautocmd!`](#noautocmd)
 
 #### `augroup!`
 
@@ -186,19 +185,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
 #### `au!`
 
 An alias of `autocmd!`
-
-#### `noautocmd!`
-
-(experimental) Imitation of `:noautocmd`.
-
-```fennel
-(noautocmd! callback)
-```
-
-This will set `&eventignore` to "all" for the duration of callback.
-
-- `callback`: (string|function) If string or symbol prefixed by `ex-` is
-  regarded as vim Ex command; otherwise, it must be a function.
 
 ### Option
 

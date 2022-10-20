@@ -783,26 +783,6 @@
   "An alias of `autocmd!`"
   (define-autocmd! ...))
 
-(lambda noautocmd! [callback]
-  "(experimental) Imitation of `:noautocmd`.
-
-  ```fennel
-  (noautocmd! callback)
-  ```
-
-  - `callback`: (string|function) If string or symbol prefixed by `ex-` is
-    regarded as vim Ex command; otherwise, it must be function."
-  `(let [save-ei# vim.g.eventignore]
-     (tset vim.g :eventignore :all)
-     ,(if (excmd? callback) `(vim.cmd ,callback)
-          (do
-            (assert-compile (or (sym? callback) (function? callback))
-                            (.. "callback must be a string or function, got "
-                                (type callback))
-                            callback)
-            `(,callback)))
-     (vim.schedule #(tset vim.g :eventignore save-ei#))))
-
 ;; Misc ///1
 (lambda str->keycodes [str]
   "Replace terminal codes and keycodes in a string.
@@ -901,7 +881,6 @@
  : cmap!
  : tmap!
  : command!
- : noautocmd!
  : augroup!
  : augroup+
  : au!
