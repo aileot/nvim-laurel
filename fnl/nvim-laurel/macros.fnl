@@ -54,7 +54,7 @@
   "Check if is Ex command. A symbol prefixed by `ex-` must be Ex command."
   (or (str? cmd) ;
       (and (sym? cmd) ;
-           (string.match (->str cmd) :^ex-))))
+           (-> (->str cmd) (: :match "^ex%-")))))
 
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table.
