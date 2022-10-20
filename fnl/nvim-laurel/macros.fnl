@@ -338,10 +338,8 @@
                   ""))]
     (assert-compile lhs "lhs cannot be nil" lhs)
     (assert-compile rhs "rhs cannot be nil" rhs)
-    (when (and (sym? raw-rhs) (nil? (?. api-opts :desc)))
-      (let [?description (infer-description raw-rhs)]
-        (when ?description
-          (tset api-opts :desc ?description))))
+    (when (nil? api-opts.desc)
+      (set api-opts.desc (infer-description raw-rhs)))
     (values lhs rhs api-opts)))
 
 (lambda keymap/resolve-opts-compatibilities [api-opts]
