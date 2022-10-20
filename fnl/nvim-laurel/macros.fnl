@@ -711,10 +711,13 @@
               (let [extra-opts (seq->kv-table val [:once :nested])]
                 (each [k v (pairs extra-opts)]
                   (tset api-opts k v)))
-              (if (excmd? val)
-                  (tset api-opts :command val)
-                  ;; Ignore the possibility to set VimL callback function in string.
-                  (tset api-opts :callback val))))
+              (do
+                (when (nil? api-opts.desc)
+                  (set api-opts.desc (infer-description val)))
+                (if (excmd? val)
+                    (tset api-opts :command val)
+                    ;; Ignore the possibility to set VimL callback function in string.
+                    (tset api-opts :callback val)))))
         (when (and (str? pattern) (= pattern :<buffer>))
           (tset api-opts :buffer 0))
         (when (nil? api-opts.buffer)
