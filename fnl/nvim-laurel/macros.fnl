@@ -296,13 +296,13 @@
 
 ;; Keymap ///1
 (lambda keymap/infer-description [raw-rhs]
-  (let [raw-rhs (->str raw-rhs)
-        ?description (when (< 2 (length raw-rhs))
-                       (.. (-> raw-rhs
+  (let [base (-> (->str raw-rhs) (: :gsub "^ex%-" ""))
+        ?description (when (< 2 (length base))
+                       (.. (-> base
                                (: :sub 1 1)
                                (: :gsub "[-_]+" " ")
                                (: :upper))
-                           (raw-rhs:sub 2)))]
+                           (base:sub 2)))]
     ?description))
 
 (lambda keymap/varargs->api-args [...]
