@@ -298,11 +298,10 @@
 (lambda keymap/infer-description [raw-rhs]
   (let [base (-> (->str raw-rhs) (: :gsub "^ex%-" ""))
         ?description (when (< 2 (length base))
-                       (.. (-> base
-                               (: :sub 1 1)
-                               (: :gsub "[-_]+" " ")
+                       (.. (-> (base:sub 1 1)
                                (: :upper))
-                           (base:sub 2)))]
+                           (-> (base:sub 2)
+                               (: :gsub "[-_]+" " "))))]
     ?description))
 
 (lambda keymap/varargs->api-args [...]
