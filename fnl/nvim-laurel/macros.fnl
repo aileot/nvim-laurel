@@ -71,6 +71,18 @@
       (++ i))
     kv-table))
 
+(lambda infer-description [raw-base]
+  "Infer description from the name of symbol.
+  Return nil if `raw-base` is not a symbol."
+  (when (sym? raw-base)
+    (let [base (-> (->str raw-base) (: :gsub "^ex%-" ""))
+          ?description (when (< 2 (length base))
+                         (.. (-> (base:sub 1 1)
+                                 (: :upper))
+                             (-> (base:sub 2)
+                                 (: :gsub "[-_]+" " "))))]
+      ?description)))
+
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
   "Concat kv table into a string for `vim.api.nvim_set_option_value`.
@@ -295,16 +307,6 @@
   (option/modify :global name val "-"))
 
 ;; Keymap ///1
-(lambda keymap/infer-description [raw-rhs]
-  (let [raw-rhs (->str raw-rhs)
-        ?description (when (< 2 (length raw-rhs))
-                       (.. (-> raw-rhs
-                               (: :sub 1 1)
-                               (: :gsub "[-_]+" " ")
-                               (: :upper))
-                           (raw-rhs:sub 2)))]
-    ?description))
-
 (lambda keymap/varargs->api-args [...]
   ;; [default-opts modes ?extra-opts lhs rhs ?api-opts]
   "Merge extra options with default ones.
@@ -336,10 +338,8 @@
                   ""))]
     (assert-compile lhs "lhs cannot be nil" lhs)
     (assert-compile rhs "rhs cannot be nil" rhs)
-    (when (and (sym? raw-rhs) (nil? (?. api-opts :desc)))
-      (let [?description (keymap/infer-description raw-rhs)]
-        (when ?description
-          (tset api-opts :desc ?description))))
+    (when (nil? api-opts.desc)
+      (set api-opts.desc (infer-description raw-rhs)))
     (values lhs rhs api-opts)))
 
 (lambda keymap/resolve-opts-compatibilities [api-opts]
@@ -711,10 +711,13 @@
               (let [extra-opts (seq->kv-table val [:once :nested])]
                 (each [k v (pairs extra-opts)]
                   (tset api-opts k v)))
-              (if (excmd? val)
-                  (tset api-opts :command val)
-                  ;; Ignore the possibility to set VimL callback function in string.
-                  (tset api-opts :callback val))))
+              (do
+                (when (nil? api-opts.desc)
+                  (set api-opts.desc (infer-description val)))
+                (if (excmd? val)
+                    (tset api-opts :command val)
+                    ;; Ignore the possibility to set VimL callback function in string.
+                    (tset api-opts :callback val)))))
         (when (and (str? pattern) (= pattern :<buffer>))
           (tset api-opts :buffer 0))
         (when (nil? api-opts.buffer)

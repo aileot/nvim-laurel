@@ -13,6 +13,9 @@
 (lambda get-callback [mode lhs]
   (?. (get-mapargs mode lhs) :callback))
 
+(lambda get-desc [mode lhs]
+  (?. (get-mapargs mode lhs) :desc))
+
 (lambda buf-get-mapargs [bufnr mode lhs]
   (let [mappings (vim.api.nvim_buf_get_keymap bufnr mode)]
     (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
@@ -81,7 +84,23 @@
                                 (nnoremap! [:buffer bufnr] :lhs :rhs)
                                 (assert.is_nil (buf-get-rhs 0 :n :lhs))
                                 (assert.is.same :rhs
-                                                (buf-get-rhs bufnr :n :lhs))))))))
+                                                (buf-get-rhs bufnr :n :lhs)))))
+                        (it "infers description from rhs symbol"
+                            #(let [it-is-description :rhs
+                                   ex-prefix-is-dropped :ex-cmd]
+                               (nnoremap! :lhs1 it-is-description)
+                               (nnoremap! :lhs2 ex-prefix-is-dropped)
+                               (assert.is.same "It is description"
+                                               (get-desc :n :lhs1))
+                               (assert.is.same "Prefix is dropped"
+                                               (get-desc :n :lhs2))))
+                        (it "doesn't infer description if desc key has already value"
+                            (fn []
+                              (nnoremap! [:desc
+                                          "Prevent description inference"]
+                                         :lhs :rhs)
+                              (assert.is.same "Prevent description inference"
+                                              (get-desc :n :lhs)))))))
           (describe :unmap!
                     (fn []
                       (it "`unmap`s key"
