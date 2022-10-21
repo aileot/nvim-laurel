@@ -1,6 +1,10 @@
 (import-macros {: map! : noremap! : nnoremap! : unmap! : cmap! : map-all!}
                :nvim-laurel.macros)
 
+(fn refresh-buffer []
+  (vim.cmd.new)
+  (vim.cmd.only))
+
 (lambda get-mapargs [mode lhs]
   (let [mappings (vim.api.nvim_get_keymap mode)]
     (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
@@ -79,8 +83,7 @@
                         (it "maps to specific buffer with `buffer`"
                             (fn []
                               (let [bufnr (vim.api.nvim_get_current_buf)]
-                                (vim.cmd.new)
-                                (vim.cmd.only)
+                                (refresh-buffer)
                                 (nnoremap! [:buffer bufnr] :lhs :rhs)
                                 (assert.is_nil (buf-get-rhs 0 :n :lhs))
                                 (assert.is.same :rhs
