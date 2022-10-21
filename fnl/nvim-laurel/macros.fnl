@@ -335,11 +335,14 @@
                 raw-rhs
                 (do
                   (tset api-opts :callback raw-rhs)
-                  ""))]
+                  ""))
+        ?bufnr (if api-opts.<buffer> 0 api-opts.buffer)]
     (assert-compile lhs "lhs cannot be nil" lhs)
     (assert-compile rhs "rhs cannot be nil" rhs)
     (when (nil? api-opts.desc)
       (set api-opts.desc (infer-description raw-rhs)))
+    (when ?bufnr
+      (set api-opts.buffer ?bufnr))
     (values lhs rhs api-opts)))
 
 (lambda keymap/resolve-opts-compatibilities [api-opts]
@@ -435,7 +438,7 @@
   Note: This macro `unmap`s `lhs` in Select mode for the performance.
   To avoid this, use `(noremap! [:n :o :x] ...)` instead."
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(noremap! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
+    [(noremap! "" lhs rhs api-opts) (keymap/del-maps! api-opts.buffer :s lhs)]))
 
 (lambda noremap-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
@@ -556,7 +559,7 @@
   Note: This macro `unmap`s `lhs` in Select mode for the performance.
   To avoid this, use `(map! [:n :o :x] ...)` instead."
   (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(map! "" lhs rhs api-opts) (keymap/del-maps! :s lhs)]))
+    [(map! "" lhs rhs api-opts) (keymap/del-maps! api-opts.buffer :s lhs)]))
 
 (lambda map-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode recursively.
