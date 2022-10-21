@@ -1,4 +1,4 @@
-(import-macros {: map! : noremap! : nnoremap! : unmap! : cmap! : map-all!}
+(import-macros {: map! : noremap! : nnoremap! : unmap! : map-motion!}
                :nvim-laurel.macros)
 
 (fn refresh-buffer []
@@ -122,4 +122,16 @@
                               (nnoremap! [:buffer bufnr] :lhs :rhs)
                               (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
                               (unmap! bufnr :n :lhs)
-                              (assert.is_nil (buf-get-rhs bufnr :n :lhs))))))))
+                              (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))))
+          (describe :map-motion!
+                    (fn []
+                      (it "`unmap`s `smap` internally without errors"
+                          (fn []
+                            (assert.has_no.errors #(map-motion! :lhs :rhs))
+                            (let [bufnr (vim.api.nvim_get_current_buf)]
+                              (assert.has_no.errors #(map-motion! [:<buffer>]
+                                                                  :lhs :rhs))
+                              (refresh-buffer)
+                              (assert.has_no.errors #(map-motion! [:buffer
+                                                                   bufnr]
+                                                                  :lhs :rhs))))))))
