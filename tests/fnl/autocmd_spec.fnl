@@ -3,6 +3,8 @@
 (local default-augroup :default-test-augroup)
 (local default-event [:BufRead :BufNewFile])
 (local default-pattern [:sample1 :sample2])
+(local default-callback #:default-callback)
+(local ex-default-command :default-command)
 
 (lambda get-autocmds [?opts]
   (let [opts (or ?opts {:group default-augroup})]
@@ -23,27 +25,24 @@
                       (fn []
                         (it "can add an autocmd to an existing augroup"
                             (fn []
-                              (let [sample-callback #:sample-callback]
-                                (autocmd! default-augroup default-event
-                                          default-pattern sample-callback)
-                                (let [[autocmd] (get-autocmds)]
-                                  (assert.is.same autocmd.callback
-                                                  sample-callback)))))
+                              (autocmd! default-augroup default-event
+                                        default-pattern default-callback)
+                              (let [[autocmd] (get-autocmds)]
+                                (assert.is.same autocmd.callback
+                                                default-callback))))
                         (it "can add autocmds to an existing augroup within `augroup+`"
                             (fn []
-                              (let [sample-callback #:sample-callback]
-                                (augroup+ default-augroup
-                                          (au! default-event default-pattern
-                                               sample-callback))
-                                (let [[autocmd] (get-autocmds)]
-                                  (assert.is.same autocmd.callback
-                                                  sample-callback)))))
+                              (augroup+ default-augroup
+                                        (au! default-event default-pattern
+                                             default-callback))
+                              (let [[autocmd] (get-autocmds)]
+                                (assert.is.same autocmd.callback
+                                                default-callback))))
                         (it "can set Ex command in autocmds with prefix `ex-`"
                             (fn []
-                              (let [ex-sample-command :sample-command]
-                                (augroup! default-augroup
-                                          (au! default-event default-pattern
-                                               ex-sample-command))
-                                (let [[autocmd] (get-autocmds)]
-                                  (assert.is.same autocmd.command
-                                                  ex-sample-command)))))))))
+                              (augroup! default-augroup
+                                        (au! default-event default-pattern
+                                             ex-default-command))
+                              (let [[autocmd] (get-autocmds)]
+                                (assert.is.same autocmd.command
+                                                ex-default-command))))))))
