@@ -43,6 +43,10 @@
   (let [ref (?. x 1 1)]
     (contains? [:fn :hashfn :lambda :partial] ref)))
 
+(lambda hidden-in-compile-time? [x]
+  "Check if the value of `x` is hidden in compile time."
+  (or (sym? x) (list? x)))
+
 ;; Specific Utils ///1
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
@@ -70,6 +74,17 @@
             (tset kv-table x (. xs (++ i)))))
       (++ i))
     kv-table))
+
+(lambda merge-api-opts [api-opts ?extra-opts]
+  "Merge `api-opts` into `?extra-opts` safely."
+  (if (nil? ?extra-opts) (if (hidden-in-compile-time? api-opts)
+                             `(or ,api-opts {})
+                             api-opts)
+      (hidden-in-compile-time? api-opts)
+      `(collect [k# v# (pairs ,api-opts) &into ,?extra-opts]
+         (values k# v#)) ;
+      (collect [k v (pairs api-opts) &into ?extra-opts]
+        (values k v))))
 
 (lambda infer-description [raw-base]
   "Infer description from the name of symbol.
@@ -651,6 +666,11 @@
   (map! :t ...))
 
 ;; Command ///1
+(lambda command/->compatible-opts! [opts]
+  (set opts.buffer nil)
+  (set opts.<buffer> nil)
+  opts)
+
 (lambda command! [...]
   "Define a user command.
 
@@ -673,31 +693,27 @@
   - `command`: (string|function) Replacement command.
   - `?api-opts`: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
-  (let [api-opts {}
+  (let [extra-opts {}
         [name command ?api-opts] ;
         (accumulate [args [] _ varg (ipairs [...])]
           (do
             (if (sequence? varg)
-                (let [extra-opts (seq->kv-table varg
-                                                [:bar
-                                                 :bang
-                                                 :<buffer>
-                                                 :register
-                                                 :keepscript])]
-                  (each [k v (pairs extra-opts)]
-                    (tset api-opts k v)))
+                (let [opts (seq->kv-table varg
+                                          [:bar
+                                           :bang
+                                           :<buffer>
+                                           :register
+                                           :keepscript])]
+                  (each [k v (pairs opts)]
+                    (tset extra-opts k v)))
                 (table.insert args varg))
             args))
-        ?bufnr (if api-opts.<buffer> 0 api-opts.buffer)]
-    (when ?api-opts
-      (collect [k v (pairs ?api-opts) &into api-opts]
-        (values k v)))
+        ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
+        api-opts (if (nil? ?api-opts) (command/->compatible-opts! extra-opts)
+                     (merge-api-opts ?api-opts
+                                     (command/->compatible-opts! extra-opts)))]
     (if ?bufnr
-        (do
-          (tset api-opts :buffer nil)
-          (tset api-opts :<buffer> nil)
-          `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command
-                                                 ,api-opts))
+        `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command ,api-opts)
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
 ;; Autocmd ///1
