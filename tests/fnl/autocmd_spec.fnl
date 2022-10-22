@@ -58,7 +58,8 @@
                                     event2 :BufNewFile]
                                 (augroup! default-augroup
                                           (au! event1 :pat1 it-is-description)
-                                          (au! event2 :pat2 ex-prefix-is-dropped))
+                                          (au! event2 :pat2
+                                               ex-prefix-is-dropped))
                                 (let [[au1] (get-autocmds {:event event1})
                                       [au2] (get-autocmds {:event event2})]
                                   (assert.is.same "It is description" au1.desc)
