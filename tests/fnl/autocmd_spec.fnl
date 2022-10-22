@@ -2,7 +2,6 @@
 
 (local default-augroup :default-test-augroup)
 (local default-event [:BufRead :BufNewFile])
-(local default-pattern [:sample1 :sample2])
 (local default-callback #:default-callback)
 (local ex-default-command :default-command)
 
@@ -26,14 +25,14 @@
                         (it "can add an autocmd to an existing augroup"
                             (fn []
                               (autocmd! default-augroup default-event
-                                        default-pattern default-callback)
+                                        [:pat1 :pat2] default-callback)
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same autocmd.callback
                                                 default-callback))))
                         (it "can add autocmds to an existing augroup within `augroup+`"
                             (fn []
                               (augroup+ default-augroup
-                                        (au! default-event default-pattern
+                                        (au! default-event [:pat1 :pat2]
                                              default-callback))
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same autocmd.callback
@@ -41,7 +40,7 @@
                         (it "can set Ex command in autocmds with prefix `ex-`"
                             (fn []
                               (augroup! default-augroup
-                                        (au! default-event default-pattern
+                                        (au! default-event [:pat1 :pat2]
                                              ex-default-command))
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same autocmd.command
@@ -50,21 +49,18 @@
                             (fn []
                               (let [it-is-description #:sample-callback
                                     ex-prefix-is-dropped :sample-command
-                                    pattern1 :BufRead
-                                    pattern2 :BufNewFile]
+                                    event1 :BufRead
+                                    event2 :BufNewFile]
                                 (augroup! default-augroup
-                                          (au! default-event pattern1
-                                               it-is-description)
-                                          (au! default-event pattern2
-                                               ex-prefix-is-dropped))
-                                (let [[au1] (get-autocmds {:pattern pattern1})
-                                      [au2] (get-autocmds {:pattern pattern2})]
+                                          (au! event1 :pat1 it-is-description)
+                                          (au! event2 :pat2 ex-prefix-is-dropped))
+                                (let [[au1] (get-autocmds {:event event1})
+                                      [au2] (get-autocmds {:event event2})]
                                   (assert.is.same "It is description" au1.desc)
                                   (assert.is.same "Prefix is dropped" au2.desc)))))
                         (it "doesn't infer description if desc key has already value"
                             (fn []
-                              (au! default-augroup default-event
-                                   default-pattern
+                              (au! default-augroup default-event [:pat1 :pat2]
                                    [:desc "Prevent description inference"]
                                    default-callback)
                               (let [[autocmd] (get-autocmds)]
