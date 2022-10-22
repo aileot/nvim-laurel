@@ -109,20 +109,18 @@ Define an autocmd:
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
-(autocmd! augroup-name-or-id events pattern ?extra-opts command-or-callback ?api-opts)
-(augroup! augroup-name-or-id
-  (autocmd! events api-opts))
-(augroup! augroup-name-or-id
-  (autocmd! events pattern ?extra-opts command-or-callback ?api-opts))
+(autocmd! name-or-id events ?pattern ?extra-opts command-or-callback ?api-opts)
+(augroup! name-or-id
+  (autocmd! events ?pattern ?extra-opts command-or-callback ?api-opts))
 ```
 
 ```fennel
 (augroup! :your-augroup
   (autocmd! :FileType [:fennel :lua :vim] #(simple-expr))
-  (autocmd! [:InsertEnter :InsertLeave] :<buffer> "echo 'foo'")
+  (autocmd! [:InsertEnter :InsertLeave] [:<buffer>] "echo 'foo'")
+  (autocmd! :BufRead [:pattern (.. dir "/" fname)] "Do something"))
   ;; Note: Within `augroup!`, `autocmd!` is just a syntax sugar macro for a sequence.
-  [:VimEnter "*"
-       [:once :nested :desc "call vim autoload function"] #(vim.fn.foo#bar)])
+  [:VimEnter [:once :nested :desc "call vim autoload function"] #(vim.fn.foo#bar)])
 ```
 
 is equivalent to
@@ -132,6 +130,7 @@ augroup your-augroup
   autocmd!
   autocmd FileType fennel,lua,vim " Anonymous function is unavailable.
   autocmd InsertEnter,InsertLeave <buffer> echo 'foo'
+  execute 'autocmd BufRead' dir . '/' . fname 'Do something'
   autocmd VimEnter * ++once ++nested call foo#bar()
 augroup END
 ```
@@ -150,36 +149,32 @@ vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
   buffer = 0,
   command = "echo 'foo'",
 })
+vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
+  group = id,
+  pattern = dir .. "/" .. fname,
+  command = "Do something",
+})
 vim.api.nvim_create_autocmd("VimEnter", {
   group = id,
   once = true,
   nested = true,
   desc = "call vim autoload function",
   callback = "foo#bar",
-  --  or
-  callback = function()
-    -- Because callback will get a single table (`:h nvim_create_autocmd` for the details),
-    -- general vim function must be wrapped in anonymous function to avoid the error:
-    -- "E118: Too many arguments for function"
-    vim.fn["foo#bar"]()
-  end,
 })
 ```
 
-- `augroup-name-or-id`: (string|integer|nil) `augroup-name-or-id` is necessary
-  unlike `vim.api.nvim_create_autocmd` unless this `autocmd!` macro within
-  either `augroup!` or `augroup+`. To define `autocmd`s affiliated with no
-  augroup, set `nil`.
-- `events`: (string|string[]) The event or events to register this autocommand.
-- `pattern`: ('*'|string|string[]) You can set `:<buffer>` here to set `autocmd`
-  to current buffer. Symbol `*` can be passed as if a string.
-- [`?extra-opts`][?extra-opts]: (bare sequence) You can set `:once` and/or
-  `:nested` here to make them `true`. You can also set a string value for
-  `:desc`.
-- `command-or-callback`: (string|function) A value for api options. Set either
-  vim-command or callback function of vim, lua or fennel. Any bare string here
-  is interpreted as vim-command; use `vim.fn` interface to set a Vimscript
-  function.
+- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
+  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
+  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
+  define `autocmd`s affiliated with no augroup.
+- `events`: (string|string[]) The event or events to register this autocmd.
+- `?pattern`: (bare string|bare sequence) To set `pattern` in symbol or list,
+  set it in either `extra-opts` or `api-opts` instead.
+- [`?extra-opts`][?extra-opts]: (bare sequence) Addition to `api-opts` keys,
+  `:<buffer>` is available to set `autocmd` to current buffer.
+- `command-or-callback`: (string|function) Set either vim Ex command or callback
+  function. Any bare string here is interpreted as vim Ex command; use `vim.fn`
+  interface to set a Vim script function.
 - [`?api-opts`][?api-opts]: (kv table) Optional autocmd attributes.
 
 #### `au!`
