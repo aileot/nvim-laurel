@@ -418,7 +418,7 @@ Prepend a value to string-style local options. Almost equivalent to
 Map `lhs` to `rhs` in `modes` recursively.
 
 ```fennel
-(noremap! modes lhs ?extra-opts rhs ?api-opts)
+(map! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
