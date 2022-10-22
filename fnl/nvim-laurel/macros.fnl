@@ -78,15 +78,19 @@
       (++ i))
     kv-table))
 
-(lambda merge-api-opts [api-opts ?extra-opts]
-  "Merge `api-opts` into `?extra-opts` safely."
-  (if (nil? ?extra-opts) (if (hidden-in-compile-time? api-opts)
-                             `(or ,api-opts {})
-                             api-opts)
-      (hidden-in-compile-time? api-opts)
-      `(collect [k# v# (pairs ,api-opts) &into ,?extra-opts]
-         (values k# v#)) ;
-      (collect [k v (pairs api-opts) &into ?extra-opts]
+(lambda merge-api-opts [?api-opts ?extra-opts]
+  "Merge `?api-opts` into `?extra-opts` safely.
+
+  @param ?api-opts table
+  @param ?extra-opts table Not a sequence.
+  @return table"
+  (if (hidden-in-compile-time? ?api-opts)
+      (if (nil? ?extra-opts) `(or ,?api-opts {})
+          `(collect [k# v# (pairs ,?api-opts) &into ,?extra-opts]
+             (values k# v#)))
+      (nil? ?api-opts)
+      (or ?extra-opts {})
+      (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
 (lambda infer-description [raw-base]
