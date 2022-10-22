@@ -2,7 +2,6 @@
 
 (local default-augroup :default-test-augroup)
 (local default-event [:BufRead :BufNewFile])
-(local default-pattern [:sample1 :sample2])
 (local default-callback #:default-callback)
 (local ex-default-command :default-command)
 
@@ -26,14 +25,14 @@
                         (it "can add an autocmd to an existing augroup"
                             (fn []
                               (autocmd! default-augroup default-event
-                                        default-pattern default-callback)
+                                        [:pat1 :pat2] default-callback)
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same autocmd.callback
                                                 default-callback))))
                         (it "can add autocmds to an existing augroup within `augroup+`"
                             (fn []
                               (augroup+ default-augroup
-                                        (au! default-event default-pattern
+                                        (au! default-event [:pat1 :pat2]
                                              default-callback))
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same autocmd.callback
@@ -41,7 +40,7 @@
                         (it "can set Ex command in autocmds with prefix `ex-`"
                             (fn []
                               (augroup! default-augroup
-                                        (au! default-event default-pattern
+                                        (au! default-event [:pat1 :pat2]
                                              ex-default-command))
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same autocmd.command
@@ -63,8 +62,7 @@
                                   (assert.is.same "Prefix is dropped" au2.desc)))))
                         (it "doesn't infer description if desc key has already value"
                             (fn []
-                              (au! default-augroup default-event
-                                   default-pattern
+                              (au! default-augroup default-event [:pat1 :pat2]
                                    [:desc "Prevent description inference"]
                                    default-callback)
                               (let [[autocmd] (get-autocmds)]
