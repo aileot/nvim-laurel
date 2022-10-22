@@ -29,6 +29,11 @@
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same autocmd.callback
                                                 default-callback))))
+                        (it "can add autocmd with no patterns for macro"
+                            (fn []
+                              (assert.has_no.errors #(autocmd! default-augroup
+                                                               default-event
+                                                               default-callback))))
                         (it "can add autocmds to an existing augroup within `augroup+`"
                             (fn []
                               (augroup+ default-augroup
