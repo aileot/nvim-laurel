@@ -27,16 +27,16 @@ It is an alias of sequential table `[]`.
 
 It is an alias of key/value table `{}`.
 
-### bare `<type-name>`
+### bare `{type-name}`
 
 It describes a value cannot be either symbol or list in compile time.
 
 - `(.. :foo :bar)` is not a bare string.
 - `(icollect [_ val (ipairs [:foo :bar])] val)` is not a bare sequence.
 
-### `?<name>`
+### `?{name}`
 
-`<name>` is omittable.
+`{name}` is omittable.
 
 ### `?api-opts`
 
@@ -64,7 +64,7 @@ this option has the following features:
   command to modify that of Ex command. This change makes it easier to insert
   those options later by `A`, `I`, `o`, or `O`.
 
-### `ex-<name>`
+### `ex-{name}`
 
 A special symbol name. With prefix `ex-`, some of nvim-laurel macros in compile
 time can tell that the named symbol will result in a string of vim Ex command in
