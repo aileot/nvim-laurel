@@ -43,8 +43,11 @@
   (let [ref (?. x 1 1)]
     (contains? [:fn :hashfn :lambda :partial] ref)))
 
-(lambda hidden-in-compile-time? [x]
-  "Check if the value of `x` is hidden in compile time."
+(fn hidden-in-compile-time? [x]
+  "Check if the value of `x` is hidden in compile time.
+
+  @param x any
+  @return boolean"
   (or (sym? x) (list? x)))
 
 ;; Specific Utils ///1
@@ -75,15 +78,19 @@
       (++ i))
     kv-table))
 
-(lambda merge-api-opts [api-opts ?extra-opts]
-  "Merge `api-opts` into `?extra-opts` safely."
-  (if (nil? ?extra-opts) (if (hidden-in-compile-time? api-opts)
-                             `(or ,api-opts {})
-                             api-opts)
-      (hidden-in-compile-time? api-opts)
-      `(collect [k# v# (pairs ,api-opts) &into ,?extra-opts]
-         (values k# v#)) ;
-      (collect [k v (pairs api-opts) &into ?extra-opts]
+(lambda merge-api-opts [?api-opts ?extra-opts]
+  "Merge `?api-opts` into `?extra-opts` safely.
+
+  @param ?api-opts table
+  @param ?extra-opts table Not a sequence.
+  @return table"
+  (if (hidden-in-compile-time? ?api-opts)
+      (if (nil? ?extra-opts) `(or ,?api-opts {})
+          `(collect [k# v# (pairs ,?api-opts) &into ,?extra-opts]
+             (values k# v#)))
+      (nil? ?api-opts)
+      (or ?extra-opts {})
+      (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
 (lambda infer-description [raw-base]
@@ -709,9 +716,8 @@
                 (table.insert args varg))
             args))
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-        api-opts (if (nil? ?api-opts) (command/->compatible-opts! extra-opts)
-                     (merge-api-opts ?api-opts
-                                     (command/->compatible-opts! extra-opts)))]
+        api-opts (merge-api-opts ?api-opts
+                                 (command/->compatible-opts! extra-opts))]
     (if ?bufnr
         `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command ,api-opts)
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
