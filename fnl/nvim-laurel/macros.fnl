@@ -43,8 +43,11 @@
   (let [ref (?. x 1 1)]
     (contains? [:fn :hashfn :lambda :partial] ref)))
 
-(lambda hidden-in-compile-time? [x]
-  "Check if the value of `x` is hidden in compile time."
+(fn hidden-in-compile-time? [x]
+  "Check if the value of `x` is hidden in compile time.
+
+  @param x any
+  @return boolean"
   (or (sym? x) (list? x)))
 
 ;; Specific Utils ///1
