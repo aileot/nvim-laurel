@@ -32,4 +32,23 @@
                     (command! :Foo [:buffer bufnr] :Bar)
                     (assert.is_not_nil (get-buf-command bufnr :Foo))
                     (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr
-                                                                             :Foo)))))))
+                                                                             :Foo)))))
+            (describe :api-opts
+                      (fn []
+                        (it "gives priority api-opts over extra-opts"
+                            (fn []
+                              (command! :Foo [:bar :bang] :FooBar)
+                              (assert.is_true (-> (get-command :Foo) (. :bang)))
+                              (assert.is_true (-> (get-command :Foo) (. :bar)))
+                              (command! :Bar [:bar :bang] :FooBar {:bar false})
+                              (assert.is_false (-> (get-command :Bar) (. :bar)))
+                              (let [tbl-opts {:bar false}
+                                    fn-opts #{:bang false}]
+                                (command! :Baz [:bar :bang] :FooBar tbl-opts)
+                                (command! :Qux [:bar :bang] :FooBar (fn-opts))
+                                (let [cmd-baz (get-command :Baz)
+                                      cmd-qux (get-command :Qux)]
+                                  (assert.is_false cmd-baz.bar)
+                                  (assert.is_true cmd-baz.bang)
+                                  (assert.is_true cmd-qux.bar)
+                                  (assert.is_false cmd-qux.bang)))))))))
