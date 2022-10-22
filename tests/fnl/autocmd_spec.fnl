@@ -49,15 +49,13 @@
                             (fn []
                               (let [it-is-description #:sample-callback
                                     ex-prefix-is-dropped :sample-command
-                                    pattern1 :BufRead
-                                    pattern2 :BufNewFile]
+                                    event1 :BufRead
+                                    event2 :BufNewFile]
                                 (augroup! default-augroup
-                                          (au! default-event pattern1
-                                               it-is-description)
-                                          (au! default-event pattern2
-                                               ex-prefix-is-dropped))
-                                (let [[au1] (get-autocmds {:pattern pattern1})
-                                      [au2] (get-autocmds {:pattern pattern2})]
+                                          (au! event1 :pat1 it-is-description)
+                                          (au! event2 :pat2 ex-prefix-is-dropped))
+                                (let [[au1] (get-autocmds {:event event1})
+                                      [au2] (get-autocmds {:event event2})]
                                   (assert.is.same "It is description" au1.desc)
                                   (assert.is.same "Prefix is dropped" au2.desc)))))
                         (it "doesn't infer description if desc key has already value"
