@@ -746,33 +746,27 @@
                                :nested])
 
 (lambda define-autocmd! [...]
-  "Define an autocmd:
-
-  ```fennel
-  (autocmd! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
-  ```
-
+  "Define an autocmd.
   This macro also works as a syntax sugar in `augroup!`.
-  - `?augroup-name-or-id`: (string|integer)
-    Actually, `?augroup-name-or-id` is not an optional argument unlike
-    `vim.api.nvim_create_autocmd()` unless you use this `autocmd!` macro within
-    either `augroup!` or `augroup+` macro.
-  - `events`: (string|string[])
-    The event or events to register this autocommand.
-  - `pattern`: ('*'|string|string[])
+
+  @param name-or-id string|integer|nil:
+    The autocmd group name or id to match against. It is necessary unlike
+    `vim.api.nvim_create_autocmd()` unless this `autocmd!` macro is within
+    either `augroup!` or `augroup+` macro. Set it to `nil` to define `autocmd`s
+    affiliated with no augroup.
+  @param events string|string[]:
+    The event or events to register this autocmd.
+  @param pattern bare-string|bare-sequence
     You can set `:<buffer>` here to set `autocmd` to current buffer.
-    Symbol `*` can be passed as if a string.
-  - `?extra-opts`: (string[])
-    No symbol is available here.
-    You can set `:once` and/or `:nested` here to make them `true`.
-    You can also set a string value for `:desc` with a bit of restriction. The
-    string for description must be a `\"double-quoted string\"` which contains
-    at least one of any characters, on qwerty keyboard, which can compose
-    `\"double-quoted string\"`, but cannot `:string-with-colon-ahead`.
-  - `command-or-callback`: (string|function)
-    A value for api options. Set either vim-command or callback function of vim,
-    lua or fennel. Any raw string here is interpreted as vim-command; use
-    `vim.fn` table to set a Vimscript function."
+  @param ?extra-opts bare-sequence:
+    Addition to `api-opts` keys, `:<buffer>` is available to set `autocmd` to
+    current buffer.
+  @param command-or-callback string|function:
+    Set either vim Ex command, or function. Any bare string here is interpreted
+    as vim Ex command; use `vim.fn` interface instead to set a Vimscript
+    function.
+  @param ?api-opts kv-table:
+    Optional autocmd attributes."
   (match (length [...])
     ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
     ;; args are provided.
