@@ -746,6 +746,33 @@
                                :nested])
 
 (lambda define-autocmd! [...]
+  "Define an autocmd:
+
+  ```fennel
+  (autocmd! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
+  ```
+
+  This macro also works as a syntax sugar in `augroup!`.
+  - `?augroup-name-or-id`: (string|integer)
+    Actually, `?augroup-name-or-id` is not an optional argument unlike
+    `vim.api.nvim_create_autocmd()` unless you use this `autocmd!` macro within
+    either `augroup!` or `augroup+` macro.
+  - `events`: (string|string[])
+    The event or events to register this autocommand.
+  - `pattern`: ('*'|string|string[])
+    You can set `:<buffer>` here to set `autocmd` to current buffer.
+    Symbol `*` can be passed as if a string.
+  - `?extra-opts`: (string[])
+    No symbol is available here.
+    You can set `:once` and/or `:nested` here to make them `true`.
+    You can also set a string value for `:desc` with a bit of restriction. The
+    string for description must be a `\"double-quoted string\"` which contains
+    at least one of any characters, on qwerty keyboard, which can compose
+    `\"double-quoted string\"`, but cannot `:string-with-colon-ahead`.
+  - `command-or-callback`: (string|function)
+    A value for api options. Set either vim-command or callback function of vim,
+    lua or fennel. Any raw string here is interpreted as vim-command; use
+    `vim.fn` table to set a Vimscript function."
   (match (length [...])
     ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
     ;; args are provided.
@@ -814,40 +841,6 @@
 (lambda augroup+ [name ...]
   "Append `autocmd`s to an existing `augroup`."
   (define-augroup! name {:clear false} ...))
-
-(lambda autocmd! [...]
-  "Define an autocmd:
-
-  ```fennel
-  (autocmd! ?augroup-id events pattern ?extra-opts command-or-callback ?api-opts)
-  ```
-
-  This macro also works as a syntax sugar in `augroup!`.
-  - `?augroup-name-or-id`: (string|integer)
-    Actually, `?augroup-name-or-id` is not an optional argument unlike
-    `vim.api.nvim_create_autocmd()` unless you use this `autocmd!` macro within
-    either `augroup!` or `augroup+` macro.
-  - `events`: (string|string[])
-    The event or events to register this autocommand.
-  - `pattern`: ('*'|string|string[])
-    You can set `:<buffer>` here to set `autocmd` to current buffer.
-    Symbol `*` can be passed as if a string.
-  - `?extra-opts`: (string[])
-    No symbol is available here.
-    You can set `:once` and/or `:nested` here to make them `true`.
-    You can also set a string value for `:desc` with a bit of restriction. The
-    string for description must be a `\"double-quoted string\"` which contains
-    at least one of any characters, on qwerty keyboard, which can compose
-    `\"double-quoted string\"`, but cannot `:string-with-colon-ahead`.
-  - `command-or-callback`: (string|function)
-    A value for api options. Set either vim-command or callback function of vim,
-    lua or fennel. Any raw string here is interpreted as vim-command; use
-    `vim.fn` table to set a Vimscript function."
-  (define-autocmd! ...))
-
-(lambda au! [...]
-  "An alias of `autocmd!`"
-  (define-autocmd! ...))
 
 ;; Misc ///1
 (lambda str->keycodes [str]
@@ -949,8 +942,8 @@
  : command!
  : augroup!
  : augroup+
- : au!
- : autocmd!
+ :au! define-autocmd!
+ :autocmd! define-autocmd!
  : str->keycodes
  : feedkeys!
  : highlight!
