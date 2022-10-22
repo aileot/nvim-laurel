@@ -170,12 +170,12 @@ vim.api.nvim_create_autocmd("VimEnter", {
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare string|bare sequence) To set `pattern` in symbol or list,
   set it in either `extra-opts` or `api-opts` instead.
-- [`?extra-opts`][?extra-opts]: (bare sequence) Addition to `api-opts` keys,
+- [`?extra-opts`][#extra-opts]: (bare sequence) Addition to `api-opts` keys,
   `:<buffer>` is available to set `autocmd` to current buffer.
 - `command-or-callback`: (string|function) Set either vim Ex command or callback
   function. Any bare string here is interpreted as vim Ex command; use `vim.fn`
   interface to set a Vim script function.
-- [`?api-opts`][?api-opts]: (kv table) Optional autocmd attributes.
+- [`?api-opts`][#api-opts]: (kv table) Optional autocmd attributes.
 
 #### `au!`
 
@@ -423,14 +423,14 @@ Map `lhs` to `rhs` in `modes` recursively.
 
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
-- [`?extra-opts`][?extra-opts]: (bare sequence) Additional option:
+- [`?extra-opts`][#extra-opts]: (bare sequence) Additional option:
   - `<buffer>`: map `lhs` in current buffer.
   - `buffer`: map `lhs` to a buffer of the next value.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a string, or
   prefix `ex-` to a symbol name, to set Ex command for `rhs`; otherwise, it is
   regarded as a function.
-- [`?api-opts`][?api-opts]: (kv table) `:h nvim_set_keymap`.
+- [`?api-opts`][#api-opts]: (kv table) `:h nvim_set_keymap`.
 
 #### `noremap!`
 
@@ -721,12 +721,12 @@ Define a user command.
 
 - `name`: (string) Name of the new user command. It must begin with an uppercase
   letter.
-- [`?extra-opts`][?extra-opts]: (bare sequence) Optional command attributes.
+- [`?extra-opts`][#extra-opts]: (bare sequence) Optional command attributes.
   Additional attributes:
   - `<buffer>`: with this alone, command is set in current buffer.
   - `buffer`: with the next value, command is set to the buffer.
 - `command`: (string|function) Replacement command.
-- [`?api-opts`][?api-opts]: (kv table) Optional command attributes. The same as
+- [`?api-opts`][#api-opts]: (kv table) Optional command attributes. The same as
   `opts` for `nvim_create_user_command`.
 
 ```fennel
@@ -819,6 +819,3 @@ nvim_set_nl(0, "Foo", {
 #### `hi!`
 
 An alias of `highlight!`
-
-[?extra-opts]: #?extra-opts
-[?api-opts]: #?api-opts
