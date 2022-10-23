@@ -114,6 +114,20 @@ Define an autocmd:
   (autocmd! events ?pattern ?extra-opts command-or-callback ?api-opts))
 ```
 
+- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
+  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
+  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
+  define `autocmd`s affiliated with no augroup.
+- `events`: (string|string[]) The event or events to register this autocmd.
+- `?pattern`: (bare string|bare sequence) To set `pattern` in symbol or list,
+  set it in either `extra-opts` or `api-opts` instead.
+- [`?extra-opts`](#extra-opts): (bare sequence) Addition to `api-opts` keys,
+  `:<buffer>` is available to set `autocmd` to current buffer.
+- `command-or-callback`: (string|function) Set either vim Ex command or callback
+  function. Any bare string here is interpreted as vim Ex command; use `vim.fn`
+  interface to set a Vim script function.
+- [`?api-opts`](#api-opts): (kv table) Optional autocmd attributes.
+
 ```fennel
 (augroup! :your-augroup
   (autocmd! :FileType [:fennel :lua :vim] #(simple-expr))
@@ -162,20 +176,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
   callback = "foo#bar",
 })
 ```
-
-- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
-  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
-  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
-  define `autocmd`s affiliated with no augroup.
-- `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare string|bare sequence) To set `pattern` in symbol or list,
-  set it in either `extra-opts` or `api-opts` instead.
-- [`?extra-opts`](#extra-opts): (bare sequence) Addition to `api-opts` keys,
-  `:<buffer>` is available to set `autocmd` to current buffer.
-- `command-or-callback`: (string|function) Set either vim Ex command or callback
-  function. Any bare string here is interpreted as vim Ex command; use `vim.fn`
-  interface to set a Vim script function.
-- [`?api-opts`](#api-opts): (kv table) Optional autocmd attributes.
 
 #### `au!`
 
