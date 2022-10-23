@@ -27,12 +27,12 @@ It is an alias of sequential table `[]`.
 
 It is an alias of key/value table `{}`.
 
-### bare `{type-name}`
+### bare-`{type-name}`
 
 It describes a value cannot be either symbol or list in compile time.
 
-- `(.. :foo :bar)` is not a bare string.
-- `(icollect [_ val (ipairs [:foo :bar])] val)` is not a bare sequence.
+- `(.. :foo :bar)` is not a bare-string.
+- `(icollect [_ val (ipairs [:foo :bar])] val)` is not a bare-sequence.
 
 ### `?{name}`
 
@@ -54,11 +54,11 @@ this option has the following features:
   instead, or use them together.
   - Values in `?api-opts` has priority over those in `?extra-opts` when they are
     conflicted.
-- It must be a bare sequence `[]`, but interpreted as if kv-table `{}`. Boolean
+- It must be a bare-sequence `[]`, but interpreted as if kv-table `{}`. Boolean
   key/value for `?api-opts` is set to `true` by key itself; the other keys
   expects the next values as their values respectively.
   - To set `false` to key, set it in `?api-opts` instead.
-  - Items for keys must be bare strings, for values can be any.
+  - Items for keys must be bare-strings, for values can be any.
 - It can be set just before `rhs` as if to modify the attribute of `rhs`,
   though, in Vim script, the equivalent options are to be set just after Ex
   command to modify that of Ex command. This change makes it easier to insert
@@ -119,12 +119,12 @@ Define an autocmd:
   `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
   define `autocmd`s affiliated with no augroup.
 - `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare string|bare sequence) To set `pattern` in symbol or list,
+- `?pattern`: (bare-string|bare-sequence) To set `pattern` in symbol or list,
   set it in either `extra-opts` or `api-opts` instead.
-- [`?extra-opts`](#extra-opts): (bare sequence) Addition to `api-opts` keys,
+- [`?extra-opts`](#extra-opts): (bare-sequence) Addition to `api-opts` keys,
   `:<buffer>` is available to set `autocmd` to current buffer.
 - `command-or-callback`: (string|function) Set either vim Ex command or callback
-  function. Any bare string here is interpreted as vim Ex command; use `vim.fn`
+  function. Any bare-string here is interpreted as vim Ex command; use `vim.fn`
   interface to set a Vim script function.
 - [`?api-opts`](#api-opts): (kv-table) Optional autocmd attributes.
 
@@ -423,7 +423,7 @@ Map `lhs` to `rhs` in `modes` recursively.
 
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
-- [`?extra-opts`](#extra-opts): (bare sequence) Additional option:
+- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: map `lhs` in current buffer.
   - `buffer`: map `lhs` to a buffer of the next value.
 - `lhs`: (string) Left-hand-side of the mapping.
@@ -721,7 +721,7 @@ Define a user command.
 
 - `name`: (string) Name of the new user command. It must begin with an uppercase
   letter.
-- [`?extra-opts`](#extra-opts): (bare sequence) Optional command attributes.
+- [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
   Additional attributes:
   - `<buffer>`: with this alone, command is set in current buffer.
   - `buffer`: with the next value, command is set to the buffer.
