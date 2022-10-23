@@ -38,7 +38,7 @@ $(vusted): ## Install a busted wrapper for testing neovim plugin
 	luarocks --lua-version=5.1 init
 	luarocks --lua-version=5.1 install vusted
 
-%.lua: %.fnl ## Compile fnl file into lua
+%_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
 	@fennel \
 		--correlate \
 		--add-macro-path "$(REPO_MACRO_PATH)" \
