@@ -114,9 +114,9 @@ Define an autocmd:
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
-(autocmd! name-or-id events ?pattern ?extra-opts command-or-callback ?api-opts)
+(autocmd! name-or-id events ?pattern ?extra-opts callback ?api-opts)
 (augroup! name-or-id
-  (autocmd! events ?pattern ?extra-opts command-or-callback ?api-opts))
+  (autocmd! events ?pattern ?extra-opts callback ?api-opts))
 ```
 
 - `name-or-id`: (string|integer|nil) The autocmd group name or id to match
@@ -128,9 +128,9 @@ Define an autocmd:
   set it in either `extra-opts` or `api-opts` instead.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: with this alone, create autocmd to current buffer.
-- `command-or-callback`: (string|function) Set either vim Ex command or callback
-  function. Any bare-string here is interpreted as vim Ex command; use `vim.fn`
-  interface to set a Vim script function.
+- `callback`: (string|function) Set either vim Ex command or callback function.
+  Any bare-string here is interpreted as vim Ex command; use `vim.fn` interface
+  to set a Vim script function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
 
 ```fennel
