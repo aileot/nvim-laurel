@@ -35,9 +35,9 @@ repo = "aileot/nvim-laurel"
 
 1. Download nvim-laurel where you feel like
 
-```sh
-git clone https://github.com/aileot/nvim-laurel /path/to/install
-```
+   ```sh
+   git clone https://github.com/aileot/nvim-laurel /path/to/install
+   ```
 
 2. Compile your fennel files with macro path for nvim-laurel:
 
@@ -45,11 +45,26 @@ git clone https://github.com/aileot/nvim-laurel /path/to/install
 
    For example, in your Makefile,
 
-```make
-%.lua: %.fnl
-	fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
-		--compile $< > $@
-```
+   ```make
+   %.lua: %.fnl
+     fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
+       --compile $< > $@
+   ```
+
+3. Enable helper functions, which deal with values hidden in compile time.
+
+   1. Compile fennel files under `fnl/`, except `macros.fnl`, into `lua/`. Run
+      the command below in shell.
+
+   ```sh
+   make runtimes
+   ```
+
+   2. Add `/path/to/nvim-laurel` to `&runtimepath` in your Neovim config file.
+
+   ```lua
+   vim.go.rtp:append("/path/to/nvim-laurel")
+   ```
 
 ## Usage
 
@@ -59,7 +74,7 @@ git clone https://github.com/aileot/nvim-laurel /path/to/install
 
 See
 [doc/macros.md](https://github.com/aileot/nvim-laurel/blob/main/doc/macros.md)
-for each macro usage in detail.
+for each macro usage in details.
 
 ## Alternatives
 

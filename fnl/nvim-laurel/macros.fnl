@@ -104,8 +104,8 @@
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
-          `(collect [k# v# (pairs ,?api-opts) &into ,?extra-opts]
-             (values k# v#)))
+          `((. (require :nvim-laurel._wrapper) :merge-api-opts) ,?api-opts
+                                                                ,?extra-opts))
       (nil? ?api-opts)
       (or ?extra-opts {})
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
