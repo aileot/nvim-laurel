@@ -415,6 +415,18 @@
               (set-keymap m))))))
 
 ;; Export ///2
+(lambda <C-u> [x]
+  "Return \":<C-u>`x`<CR>\""
+  (if (str? x)
+      (.. ":<C-u>" x :<CR>)
+      `(.. ":<C-u>" ,x :<CR>)))
+
+(lambda <Cmd> [x]
+  "Return \"<Cmd>`x`<CR>\""
+  (if (str? x)
+      (.. :<Cmd> x :<CR>)
+      `(.. :<Cmd> ,x :<CR>)))
+
 (lambda noremap! [modes ...]
   "Map `lhs` to `rhs` in `modes` non-recursively.
 
@@ -933,6 +945,8 @@
  : lmap!
  : cmap!
  : tmap!
+ : <C-u>
+ : <Cmd>
  : command!
  : augroup!
  : augroup+
