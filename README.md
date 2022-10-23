@@ -35,9 +35,9 @@ repo = "aileot/nvim-laurel"
 
 1. Download nvim-laurel where you feel like
 
-```sh
-git clone https://github.com/aileot/nvim-laurel /path/to/install
-```
+   ```sh
+   git clone https://github.com/aileot/nvim-laurel /path/to/install
+   ```
 
 2. Compile your fennel files with macro path for nvim-laurel:
 
@@ -45,11 +45,11 @@ git clone https://github.com/aileot/nvim-laurel /path/to/install
 
    For example, in your Makefile,
 
-```make
-%.lua: %.fnl
-	fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
-		--compile $< > $@
-```
+   ```make
+   %.lua: %.fnl
+     fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
+       --compile $< > $@
+   ```
 
 ## Usage
 
