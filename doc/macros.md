@@ -49,28 +49,25 @@ For example,
 It is kv-table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
 otherwise noted, this option has the following features:
 
-- It is omittable.
 - It only accepts the same key/value described in `api.txt`.
+- Its values have the highest priority over those set in the other arguments if
+  conflicted.
 
 ### extra-opts
 
-Some macros accept an optional argument `extra-opts`. Unless otherwise noted,
-this option has the following features:
+An alternative form for `api-opts`. Unless otherwise noted, this option has the
+following features:
 
-- It is omittable.
-- It is only intended as shorthand; for complicated usage, use `api-opts`
-  instead, or use them together.
-  - Values in `api-opts` has priority over those in `extra-opts` when they are
-    conflicted.
-- It must be a bare-sequence `[]`, but interpreted as if kv-table `{}`. Boolean
-  key/value for `api-opts` is set to `true` by key itself; the other keys
-  expects the next values as their values respectively.
-  - To set `false` to key, set it in `api-opts` instead.
-  - Items for keys must be bare-strings, for values can be any.
-- It can be set just before `rhs` as if to modify the attribute of `rhs`,
-  though, in Vim script, the equivalent options are to be set just after Ex
-  command to modify that of Ex command. This change makes it easier to insert
-  those options later by `A`, `I`, `o`, or `O`.
+- It is bare-sequence `[]`, but is interpreted as if kv-table `{}` in the
+  following manner:
+  - Items for keys **must** be bare-strings; items for values can be of any
+    type.
+  - Boolean key/value for `api-opts` is set to `true` by key itself; the other
+    keys expects the next items as their values respectively.
+  - To set `false` to boolean key/value, set it in `api-opts` instead.
+- It is intended as shorthand; for complicated usage, use `api-opts` instead or
+  use them together.
+- It could accept some additional keys which are unavailable in `api-opts`.
 
 ### ex-{name}
 
@@ -129,12 +126,12 @@ Define an autocmd:
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare-string|bare-sequence) To set `pattern` in symbol or list,
   set it in either `extra-opts` or `api-opts` instead.
-- [`?extra-opts`](#extra-opts): (bare-sequence) Addition to `api-opts` keys,
-  `:<buffer>` is available to set `autocmd` to current buffer.
+- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+  - `<buffer>`: with this alone, create autocmd to current buffer.
 - `command-or-callback`: (string|function) Set either vim Ex command or callback
   function. Any bare-string here is interpreted as vim Ex command; use `vim.fn`
   interface to set a Vim script function.
-- [`?api-opts`](#api-opts): (kv-table) Optional autocmd attributes.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
 
 ```fennel
 (augroup! :your-augroup
