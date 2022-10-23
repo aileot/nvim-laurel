@@ -16,7 +16,7 @@ TEST_ROOT:=$(REPO_ROOT)/tests
 TEST_DEPS:=$(TEST_ROOT)/.test-deps
 vusted:=$(REPO_ROOT)/lua_modules/bin/vusted
 
-FNL_TESTS:=$(wildcard tests/fnl/*_spec.fnl)
+FNL_TESTS:=$(wildcard tests/*_spec.fnl)
 LUA_TESTS:=$(FNL_TESTS:%.fnl=%.lua)
 
 REPO_MACRO_DIR := $(REPO_ROOT)/fnl
