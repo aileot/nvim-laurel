@@ -2,3 +2,4 @@ luarocks
 lua
 lua_modules
 .luarocks
+*_spec.lua
