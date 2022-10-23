@@ -389,6 +389,8 @@ Prepend a value to string-style local options. Almost equivalent to
 - [`map!`](#map)
 - [`noremap!`](#noremap)
 - [`unmap!`](#unmap)
+- [`<Cmd>`](#Cmd)
+- [`<C-u>`](#C-u)
 - [`map-all!`](#map-all)
 - [`map-input!`](#map-input)
 - [`map-motion!`](#map-motion)
@@ -476,6 +478,26 @@ vim.api.nvim_del_keymap("n", "foo")
 vim.api.nvim_buf_del_keymap(0, "o", "bar")
 vim.api.nvim_buf_del_keymap(10, "x", "baz")
 ```
+
+#### `<Cmd>`
+
+Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
+
+```fennel
+(<Cmd> text)
+```
+
+- `text`: (string)
+
+#### `<C-u>`
+
+Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
+
+```fennel
+(<C-u> text)
+```
+
+- `text`: (string)
 
 #### `map-all!`
 
