@@ -38,26 +38,28 @@ It describes a value cannot be either symbol or list in compile time.
 
 `{name}` is omittable.
 
-### `?api-opts`
+### `api-opts`
 
 It is kv-table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
 otherwise noted, this option has the following features:
 
+- It is omittable.
 - It only accepts the same key/value described in `api.txt`.
 
-### `?extra-opts`
+### `extra-opts`
 
-Some macros accept an optional argument `?extra-opts`. Unless otherwise noted,
+Some macros accept an optional argument `extra-opts`. Unless otherwise noted,
 this option has the following features:
 
-- It is only intended as shorthand; for complicated usage, use `?api-opts`
+- It is omittable.
+- It is only intended as shorthand; for complicated usage, use `api-opts`
   instead, or use them together.
-  - Values in `?api-opts` has priority over those in `?extra-opts` when they are
+  - Values in `api-opts` has priority over those in `extra-opts` when they are
     conflicted.
 - It must be a bare-sequence `[]`, but interpreted as if kv-table `{}`. Boolean
-  key/value for `?api-opts` is set to `true` by key itself; the other keys
+  key/value for `api-opts` is set to `true` by key itself; the other keys
   expects the next values as their values respectively.
-  - To set `false` to key, set it in `?api-opts` instead.
+  - To set `false` to key, set it in `api-opts` instead.
   - Items for keys must be bare-strings, for values can be any.
 - It can be set just before `rhs` as if to modify the attribute of `rhs`,
   though, in Vim script, the equivalent options are to be set just after Ex
