@@ -10,21 +10,6 @@
      ,...))
 
 ;; General Utils ///1
-(fn ->str [x]
-  "Convert `x` to a string, or get the name if `x` is a symbol."
-  (tostring x))
-
-(lambda first [xs]
-  "Return the first value in `xs`"
-  (. xs 1))
-
-(lambda slice [xs ?first ?last ?step]
-  (let [first (or ?first 1)
-        last (or ?last (length xs))
-        step (or ?step 1)]
-    (fcollect [i first last step] ;
-              (. xs i))))
-
 ;; Predicates ///2
 (lambda contains? [xs ?a]
   "Check if `?a` is in `xs`."
@@ -57,6 +42,31 @@
   @param x any
   @return boolean"
   (or (sym? x) (list? x)))
+
+;; Misc ///1
+(fn ->str [x]
+  "Convert `x` to a string, or get the name if `x` is a symbol."
+  (tostring x))
+
+(lambda first [xs]
+  "Return the first value in `xs`"
+  (. xs 1))
+
+(lambda slice [xs ?first ?last ?step]
+  (let [first (or ?first 1)
+        last (or ?last (length xs))
+        step (or ?step 1)]
+    (fcollect [i first last step] ;
+              (. xs i))))
+
+(lambda first-symbol [x]
+  "Return the first symbol in list `x`"
+  ;; TODO: Check if `x` is list.
+  ;; (assert-compile (or (list? x) (table? x))
+  ;;                 (.. "expected list or table, got " (type x)) x)
+  (let [first-item (first x)]
+    (if (str? first-item) first-item ;
+        (first-symbol first-item))))
 
 ;; Specific Utils ///1
 (lambda merge-default-kv-table [default another]
@@ -361,7 +371,9 @@
         api-opts (if (nil? ?api-opts) extra-opts
                      (collect [k v (pairs ?api-opts) &into extra-opts]
                        (values k v)))
-        rhs (if (excmd? raw-rhs)
+        rhs (if (or (excmd? raw-rhs)
+                    (and (list? raw-rhs)
+                         (contains? [:<Cmd> :<C-u>] (first-symbol raw-rhs))))
                 raw-rhs
                 (do
                   (tset api-opts :callback raw-rhs)
@@ -415,6 +427,18 @@
               (set-keymap m))))))
 
 ;; Export ///2
+(lambda <C-u> [x]
+  "Return \":<C-u>`x`<CR>\""
+  (if (str? x)
+      (.. ":<C-u>" x :<CR>)
+      `(.. ":<C-u>" ,x :<CR>)))
+
+(lambda <Cmd> [x]
+  "Return \"<Cmd>`x`<CR>\""
+  (if (str? x)
+      (.. :<Cmd> x :<CR>)
+      `(.. :<Cmd> ,x :<CR>)))
+
 (lambda noremap! [modes ...]
   "Map `lhs` to `rhs` in `modes` non-recursively.
 
@@ -821,7 +845,9 @@
       `(vim.api.nvim_create_augroup ,name ,opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
          ,(icollect [_ args (ipairs [...])]
-            (let [au-args (if (contains? [:au! :autocmd!] (?. args 1 1))
+            (let [au-args (if (and (list? args)
+                                   (contains? [:au! :autocmd!]
+                                              (first-symbol args)))
                               (slice args 2)
                               args)]
               (define-autocmd! `id# (unpack au-args)))))))
@@ -933,6 +959,8 @@
  : lmap!
  : cmap!
  : tmap!
+ : <C-u>
+ : <Cmd>
  : command!
  : augroup!
  : augroup+
