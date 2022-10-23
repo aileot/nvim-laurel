@@ -10,21 +10,6 @@
      ,...))
 
 ;; General Utils ///1
-(fn ->str [x]
-  "Convert `x` to a string, or get the name if `x` is a symbol."
-  (tostring x))
-
-(lambda first [xs]
-  "Return the first value in `xs`"
-  (. xs 1))
-
-(lambda slice [xs ?first ?last ?step]
-  (let [first (or ?first 1)
-        last (or ?last (length xs))
-        step (or ?step 1)]
-    (fcollect [i first last step] ;
-              (. xs i))))
-
 ;; Predicates ///2
 (lambda contains? [xs ?a]
   "Check if `?a` is in `xs`."
@@ -57,6 +42,22 @@
   @param x any
   @return boolean"
   (or (sym? x) (list? x)))
+
+;; Misc ///1
+(fn ->str [x]
+  "Convert `x` to a string, or get the name if `x` is a symbol."
+  (tostring x))
+
+(lambda first [xs]
+  "Return the first value in `xs`"
+  (. xs 1))
+
+(lambda slice [xs ?first ?last ?step]
+  (let [first (or ?first 1)
+        last (or ?last (length xs))
+        step (or ?step 1)]
+    (fcollect [i first last step] ;
+              (. xs i))))
 
 ;; Specific Utils ///1
 (lambda merge-default-kv-table [default another]
