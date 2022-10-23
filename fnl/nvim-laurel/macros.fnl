@@ -59,6 +59,15 @@
     (fcollect [i first last step] ;
               (. xs i))))
 
+(lambda first-symbol [x]
+  "Return the first symbol in list `x`"
+  ;; TODO: Check if `x` is list.
+  ;; (assert-compile (or (list? x) (table? x))
+  ;;                 (.. "expected list or table, got " (type x)) x)
+  (let [first-item (first x)]
+    (if (str? first-item) first-item ;
+        (first-symbol first-item))))
+
 ;; Specific Utils ///1
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
