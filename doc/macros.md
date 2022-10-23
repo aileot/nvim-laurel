@@ -23,48 +23,53 @@ Abbreviation of right-hand-side.
 
 It is an alias of sequential table `[]`.
 
-### kv table
+### kv-table
 
 It is an alias of key/value table `{}`.
 
-### bare `<type-name>`
+### bare-{type}
 
-It describes a value cannot be either symbol or list in compile time.
+It describes the `{type}` value must be neither symbol nor list in compile time.
+For example,
 
-- `(.. :foo :bar)` is not a bare string.
-- `(icollect [_ val (ipairs [:foo :bar])] val)` is not a bare sequence.
+- `:foobar` is a `bare-string`.
+- `(.. :foo :bar)` is not a `bare-string`.
+- `[:foo :bar]` is a `bare-sequence` and also a `bare-string[]`.
+- `[baz]` where `baz` is either symbol or list is a `bare-sequence`, but not a
+  `bare-string[]`.
+- `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence` nor
+  `bare-string[]`.
 
-### `?<name>`
+### ?{name}
 
-`<name>` is omittable.
+`{name}` is omittable.
 
-### `?api-opts`
+### api-opts
 
-It is kv table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
+It is kv-table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
 otherwise noted, this option has the following features:
 
 - It only accepts the same key/value described in `api.txt`.
+- Its values have the highest priority over those set in the other arguments if
+  conflicted.
 
-### `?extra-opts`
+### extra-opts
 
-Some macros accept an optional argument `?extra-opts`. Unless otherwise noted,
-this option has the following features:
+An alternative form for `api-opts`. Unless otherwise noted, this option has the
+following features:
 
-- It is only intended as shorthand; for complicated usage, use `?api-opts`
-  instead, or use them together.
-  - Values in `?api-opts` has priority over those in `?extra-opts` when they are
-    conflicted.
-- It must be a bare sequence `[]`, but interpreted as if kv table `{}`. Boolean
-  key/value for `?api-opts` is set to `true` by key itself; the other keys
-  expects the next values as their values respectively.
-  - To set `false` to key, set it in `?api-opts` instead.
-  - Items for keys must be bare strings, for values can be any.
-- It can be set just before `rhs` as if to modify the attribute of `rhs`,
-  though, in Vim script, the equivalent options are to be set just after Ex
-  command to modify that of Ex command. This change makes it easier to insert
-  those options later by `A`, `I`, `o`, or `O`.
+- It is bare-sequence `[]`, but is interpreted as if kv-table `{}` in the
+  following manner:
+  - Items for keys **must** be bare-strings; items for values can be of any
+    type.
+  - Boolean key/value for `api-opts` is set to `true` by key itself; the other
+    keys expects the next items as their values respectively.
+  - To set `false` to boolean key/value, set it in `api-opts` instead.
+- It is intended as shorthand; for complicated usage, use `api-opts` instead or
+  use them together.
+- It could accept some additional keys which are unavailable in `api-opts`.
 
-### `ex-<name>`
+### ex-{name}
 
 A special symbol name. With prefix `ex-`, some of nvim-laurel macros in compile
 time can tell that the named symbol will result in a string of vim Ex command in
@@ -109,10 +114,24 @@ Define an autocmd:
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
-(autocmd! name-or-id events ?pattern ?extra-opts command-or-callback ?api-opts)
+(autocmd! name-or-id events ?pattern ?extra-opts callback ?api-opts)
 (augroup! name-or-id
-  (autocmd! events ?pattern ?extra-opts command-or-callback ?api-opts))
+  (autocmd! events ?pattern ?extra-opts callback ?api-opts))
 ```
+
+- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
+  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
+  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
+  define `autocmd`s affiliated with no augroup.
+- `events`: (string|string[]) The event or events to register this autocmd.
+- `?pattern`: (bare-string|bare-sequence) To set `pattern` in symbol or list,
+  set it in either `extra-opts` or `api-opts` instead.
+- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+  - `<buffer>`: with this alone, create autocmd to current buffer.
+- `callback`: (string|function) Set either vim Ex command or callback function.
+  Any bare-string here is interpreted as vim Ex command; use `vim.fn` interface
+  to set a Vim script function.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
 
 ```fennel
 (augroup! :your-augroup
@@ -128,7 +147,7 @@ is equivalent to
 ```vim
 augroup your-augroup
   autocmd!
-  autocmd FileType fennel,lua,vim " Anonymous function is unavailable.
+  autocmd FileType fennel,lua,vim " Anonymous function is unavailable in Vim script.
   autocmd InsertEnter,InsertLeave <buffer> echo 'foo'
   execute 'autocmd BufRead' dir . '/' . fname 'Do something'
   autocmd VimEnter * ++once ++nested call foo#bar()
@@ -162,20 +181,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
   callback = "foo#bar",
 })
 ```
-
-- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
-  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
-  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
-  define `autocmd`s affiliated with no augroup.
-- `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare string|bare sequence) To set `pattern` in symbol or list,
-  set it in either `extra-opts` or `api-opts` instead.
-- [`?extra-opts`](#extra-opts): (bare sequence) Addition to `api-opts` keys,
-  `:<buffer>` is available to set `autocmd` to current buffer.
-- `command-or-callback`: (string|function) Set either vim Ex command or callback
-  function. Any bare string here is interpreted as vim Ex command; use `vim.fn`
-  interface to set a Vim script function.
-- [`?api-opts`](#api-opts): (kv table) Optional autocmd attributes.
 
 #### `au!`
 
@@ -418,19 +423,19 @@ Prepend a value to string-style local options. Almost equivalent to
 Map `lhs` to `rhs` in `modes` recursively.
 
 ```fennel
-(noremap! modes lhs ?extra-opts rhs ?api-opts)
+(map! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
-- [`?extra-opts`](#extra-opts): (bare sequence) Additional option:
+- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: map `lhs` in current buffer.
   - `buffer`: map `lhs` to a buffer of the next value.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a string, or
   prefix `ex-` to a symbol name, to set Ex command for `rhs`; otherwise, it is
   regarded as a function.
-- [`?api-opts`](#api-opts): (kv table) `:h nvim_set_keymap`.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
 
@@ -721,12 +726,12 @@ Define a user command.
 
 - `name`: (string) Name of the new user command. It must begin with an uppercase
   letter.
-- [`?extra-opts`](#extra-opts): (bare sequence) Optional command attributes.
+- [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
   Additional attributes:
   - `<buffer>`: with this alone, command is set in current buffer.
   - `buffer`: with the next value, command is set to the buffer.
 - `command`: (string|function) Replacement command.
-- [`?api-opts`](#api-opts): (kv table) Optional command attributes. The same as
+- [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same as
   `opts` for `nvim_create_user_command`.
 
 ```fennel
