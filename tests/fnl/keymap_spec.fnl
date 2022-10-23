@@ -1,5 +1,10 @@
-(import-macros {: map! : noremap! : nnoremap! : unmap! : map-motion!}
-               :nvim-laurel.macros)
+(import-macros {: map!
+                : noremap!
+                : nnoremap!
+                : unmap!
+                : map-motion!
+                : <C-u>
+                : <Cmd>} :nvim-laurel.macros)
 
 (fn refresh-buffer []
   (vim.cmd.new)
@@ -134,4 +139,17 @@
                               (refresh-buffer)
                               (assert.has_no.errors #(map-motion! [:buffer
                                                                    bufnr]
-                                                                  :lhs :rhs))))))))
+                                                                  :lhs :rhs))))))
+                    (describe :<Cmd>/<C-u>
+                              (fn []
+                                (it "is set to rhs as a string"
+                                    (fn []
+                                      (assert.has_no.errors #(nnoremap! :lhs
+                                                                        (<Cmd> "Do something")))
+                                      (assert.is.same "<Cmd>Do something<CR>"
+                                                      (get-rhs :n :lhs))
+                                      (assert.has_no.errors #(nnoremap! [:<buffer>]
+                                                                        :lhs
+                                                                        (<C-u> "Do something")))
+                                      (assert.is.same ":<C-U>Do something<CR>"
+                                                      (buf-get-rhs 0 :n :lhs))))))))
