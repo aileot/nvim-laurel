@@ -23,7 +23,7 @@ Abbreviation of right-hand-side.
 
 It is an alias of sequential table `[]`.
 
-### kv table
+### kv-table
 
 It is an alias of key/value table `{}`.
 
@@ -40,7 +40,7 @@ It describes a value cannot be either symbol or list in compile time.
 
 ### `?api-opts`
 
-It is kv table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
+It is kv-table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
 otherwise noted, this option has the following features:
 
 - It only accepts the same key/value described in `api.txt`.
@@ -54,7 +54,7 @@ this option has the following features:
   instead, or use them together.
   - Values in `?api-opts` has priority over those in `?extra-opts` when they are
     conflicted.
-- It must be a bare sequence `[]`, but interpreted as if kv table `{}`. Boolean
+- It must be a bare sequence `[]`, but interpreted as if kv-table `{}`. Boolean
   key/value for `?api-opts` is set to `true` by key itself; the other keys
   expects the next values as their values respectively.
   - To set `false` to key, set it in `?api-opts` instead.
@@ -126,7 +126,7 @@ Define an autocmd:
 - `command-or-callback`: (string|function) Set either vim Ex command or callback
   function. Any bare string here is interpreted as vim Ex command; use `vim.fn`
   interface to set a Vim script function.
-- [`?api-opts`](#api-opts): (kv table) Optional autocmd attributes.
+- [`?api-opts`](#api-opts): (kv-table) Optional autocmd attributes.
 
 ```fennel
 (augroup! :your-augroup
@@ -430,7 +430,7 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a string, or
   prefix `ex-` to a symbol name, to set Ex command for `rhs`; otherwise, it is
   regarded as a function.
-- [`?api-opts`](#api-opts): (kv table) `:h nvim_set_keymap`.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
 
@@ -726,7 +726,7 @@ Define a user command.
   - `<buffer>`: with this alone, command is set in current buffer.
   - `buffer`: with the next value, command is set to the buffer.
 - `command`: (string|function) Replacement command.
-- [`?api-opts`](#api-opts): (kv table) Optional command attributes. The same as
+- [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same as
   `opts` for `nvim_create_user_command`.
 
 ```fennel
