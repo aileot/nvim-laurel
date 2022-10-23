@@ -150,7 +150,7 @@ is equivalent to
 ```vim
 augroup your-augroup
   autocmd!
-  autocmd FileType fennel,lua,vim " Anonymous function is unavailable.
+  autocmd FileType fennel,lua,vim " Anonymous function is unavailable in Vim script.
   autocmd InsertEnter,InsertLeave <buffer> echo 'foo'
   execute 'autocmd BufRead' dir . '/' . fname 'Do something'
   autocmd VimEnter * ++once ++nested call foo#bar()
