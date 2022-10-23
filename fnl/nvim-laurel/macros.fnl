@@ -371,7 +371,9 @@
         api-opts (if (nil? ?api-opts) extra-opts
                      (collect [k v (pairs ?api-opts) &into extra-opts]
                        (values k v)))
-        rhs (if (excmd? raw-rhs)
+        rhs (if (or (excmd? raw-rhs)
+                    (and (list? raw-rhs)
+                         (contains? [:<Cmd> :<C-u>] (first-symbol raw-rhs))))
                 raw-rhs
                 (do
                   (tset api-opts :callback raw-rhs)
