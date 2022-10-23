@@ -51,6 +51,21 @@ repo = "aileot/nvim-laurel"
        --compile $< > $@
    ```
 
+3. Enable helper functions, which deal with values hidden in compile time.
+
+   1. Compile fennel files under `fnl/`, except `macros.fnl`, into `lua/`. Run
+      the command below in shell.
+
+   ```sh
+   make runtimes
+   ```
+
+   2. Add `/path/to/nvim-laurel` to `&runtimepath` in your Neovim config file.
+
+   ```lua
+   vim.go.rtp:append("/path/to/nvim-laurel")
+   ```
+
 ## Usage
 
 ```fennel
