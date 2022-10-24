@@ -108,7 +108,14 @@
                                           "Prevent description inference"]
                                          :lhs :rhs)
                               (assert.is.same "Prevent description inference"
-                                              (get-desc :n :lhs)))))))
+                                              (get-desc :n :lhs))))
+                        (it "set a list which will result in string without callback"
+                            (fn []
+                              (nnoremap! :lhs (.. :r :h :s))
+                              (nnoremap! :lhs1 (.. (<Cmd> :foobar) :<Esc>))
+                              (assert.is.same :rhs (get-rhs :n :lhs))
+                              (assert.is.same :<Cmd>foobar<CR><Esc>
+                                              (get-rhs :n :lhs1)))))))
           (describe :unmap!
                     (fn []
                       (it "`unmap`s key"
