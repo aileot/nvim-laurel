@@ -74,12 +74,23 @@
     (when (nil? (?. another :k))
       (tset another k v))))
 
+(fn ->str? [x]
+  "Check if `x` will result in string at runtime."
+  (when (list? x)
+    (let [general-str-constructors [".."
+                                    :table.concat
+                                    :string.format
+                                    :tostring
+                                    :->str
+                                    :->string]]
+      (contains? general-str-constructors (first-symbol x)))))
+
 ;; cspell:word excmd
-(lambda excmd? [cmd]
-  "Check if is Ex command. A symbol prefixed by `ex-` must be Ex command."
-  (or (str? cmd) ;
-      (and (sym? cmd) ;
-           (-> (->str cmd) (: :match "^ex%-")))))
+(fn excmd? [x]
+  "Check if `x` is Ex command. A symbol prefixed by `ex-` must be Ex command."
+  (or (str? x) (->str? x)
+      (when (sym? x)
+        (-> (->str x) (: :match "^ex%-")))))
 
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table.
