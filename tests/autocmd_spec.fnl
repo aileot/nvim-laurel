@@ -27,8 +27,8 @@
                               (autocmd! default-augroup default-event
                                         [:pat1 :pat2] default-callback)
                               (let [[autocmd] (get-autocmds)]
-                                (assert.is.same autocmd.callback
-                                                default-callback))))
+                                (assert.is.same default-callback
+                                                autocmd.callback))))
                         (it "can add autocmd with no patterns for macro"
                             (fn []
                               (assert.has_no.errors #(autocmd! default-augroup
@@ -40,16 +40,28 @@
                                         (au! default-event [:pat1 :pat2]
                                              default-callback))
                               (let [[autocmd] (get-autocmds)]
-                                (assert.is.same autocmd.callback
-                                                default-callback))))
+                                (assert.is.same default-callback
+                                                autocmd.callback))))
                         (it "can set Ex command in autocmds with prefix `ex-`"
                             (fn []
                               (augroup! default-augroup
                                         (au! default-event [:pat1 :pat2]
                                              ex-default-command))
                               (let [[autocmd] (get-autocmds)]
-                                (assert.is.same autocmd.command
-                                                ex-default-command))))
+                                (assert.is.same ex-default-command
+                                                autocmd.command))))
+                        (it "sets vim.fn.Test to callback in string"
+                            (fn []
+                              (vim.cmd "
+                                      function! g:Test() abort
+                                      endfunction
+                                      ")
+                              (assert.has_no.errors #(autocmd! default-augroup
+                                                               default-event
+                                                               vim.fn.Test))
+                              (let [[autocmd] (get-autocmds)]
+                                (assert.is.same "<vim function: Test>"
+                                                autocmd.callback))))
                         (it "infers description from symbol name"
                             (fn []
                               (let [it-is-description #:sample-callback

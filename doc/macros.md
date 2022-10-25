@@ -129,8 +129,9 @@ Define an autocmd:
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: with this alone, create autocmd to current buffer.
 - `callback`: (string|function) Set either vim Ex command or callback function.
-  Any bare-string here is interpreted as vim Ex command; use `vim.fn` interface
-  to set a Vim script function.
+  Set a bare-string, or prefix `ex-` to a symbol name, to set Ex command; set
+  `vim.fn.foobar` to set Vim script function without table arg from
+  `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
 
 ```fennel
@@ -434,9 +435,9 @@ Map `lhs` to `rhs` in `modes` recursively.
   - `<buffer>`: map `lhs` in current buffer.
   - `buffer`: map `lhs` to a buffer of the next value.
 - `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Set a string, or
-  prefix `ex-` to a symbol name, to set Ex command for `rhs`; otherwise, it is
-  regarded as a function.
+- `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
+  prefix `ex-` to a symbol name, to set Ex command; otherwise, it is regarded as
+  a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`

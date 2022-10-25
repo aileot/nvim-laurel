@@ -134,6 +134,13 @@
                                  (: :gsub "[-_]+" " "))))]
       ?description)))
 
+(lambda extract-?vim-fn-name [x]
+  "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`."
+  (when (multi-sym? x)
+    (let [(fn-name pos) (-> (->str x) (: :gsub "^vim%.fn%." ""))]
+      (when (< 0 pos)
+        fn-name))))
+
 ;; Option ///1
 (lambda option/concat-kv-table [kv-table]
   "Concat kv table into a string for `vim.api.nvim_set_option_value`.
@@ -840,8 +847,14 @@
                 (set extra-opts.pattern ?pattern))
       (if (excmd? excmd-or-callback)
           (set extra-opts.command excmd-or-callback)
-          ;; Ignore the possibility to set VimL callback function in string.
-          (set extra-opts.callback excmd-or-callback))
+          ;; Note: Ignore the possibility to set Vimscript function to callback
+          ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
+          ;; to "callback" key because functions written in Vim script are
+          ;; rarely supposed to expect the table from `nvim_create_autocmd` for
+          ;; its first arg.
+          (set extra-opts.callback
+               (or (extract-?vim-fn-name excmd-or-callback) ;
+                   excmd-or-callback)))
       (when (nil? extra-opts.desc)
         (set extra-opts.desc (infer-description excmd-or-callback)))
       (let [api-opts (merge-api-opts ?api-opts
