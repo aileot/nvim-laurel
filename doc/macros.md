@@ -91,41 +91,24 @@ runtime.
 
 #### `augroup!`
 
-Define/Override an augroup.
+Create an augroup, or redefine an existing augroup.
 
 ```fennel
-(augroup! name)
+(augroup! name) ; Only this format returns the augroup id.
 (augroup! name
-  (autocmd! ...))
+  [events ?pattern ?extra-opts callback ?api-opts]
+  ...)
+(augroup! name
+  ;; Wrap args in `autocmd!` or `au!` instead of brackets.
+  (autocmd! events ?pattern ?extra-opts callback ?api-opts)
+  ...)
 ```
 
-#### `augroup+`
-
-Add `autocmd`s to an existing `augroup`.
-
-```fennel
-(augroup+ name
-  (autocmd! ...))
-```
-
-#### `autocmd!`
-
-Define an autocmd:
-
-```fennel
-(autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
-(autocmd! name-or-id events ?pattern ?extra-opts callback ?api-opts)
-(augroup! name-or-id
-  (autocmd! events ?pattern ?extra-opts callback ?api-opts))
-```
-
-- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
-  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
-  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
-  define `autocmd`s affiliated with no augroup.
+- `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare-string|bare-sequence) To set `pattern` in symbol or list,
-  set it in either `extra-opts` or `api-opts` instead.
+- `?pattern`: (bare-string|bare-sequence) A pattern or patterns to match
+  against. To set `pattern` in symbol or list, set it in either `extra-opts` or
+  `api-opts` instead.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: with this alone, create autocmd to current buffer.
 - `callback`: (string|function) Set either vim Ex command or callback function.
@@ -135,57 +118,110 @@ Define an autocmd:
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
 
 ```fennel
-(augroup! :your-augroup
-  (autocmd! :FileType [:fennel :lua :vim] #(simple-expr))
-  (autocmd! [:InsertEnter :InsertLeave] [:<buffer>] "echo 'foo'")
-  (autocmd! :BufRead [:pattern (.. dir "/" fname)] "Do something"))
-  ;; Note: Within `augroup!`, `autocmd!` is just a syntax sugar macro for a sequence.
-  [:VimEnter [:once :nested :desc "call vim autoload function"] #(vim.fn.foo#bar)])
+(augroup! :sample-augroup
+  [:TextYankPost #(pcall #(vim.highlight.on_yank {:timeout 450 :on_visual false}))]
+  (autocmd! :BufWritePre [:pattern (.. (vim.fn.stdpath :config) "/*")]
+      vim.lsp.buf.format)
+  (autocmd! [:InsertEnter :InsertLeave]
+      [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
+  (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
+      #(vim.fn.baz#qux $.match)))
+  (autocmd! :LspAttach
+      #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
 ```
 
 is equivalent to
 
 ```vim
-augroup your-augroup
+augroup sample-augroup
   autocmd!
-  autocmd FileType fennel,lua,vim " Anonymous function is unavailable in Vim script.
-  autocmd InsertEnter,InsertLeave <buffer> echo 'foo'
-  execute 'autocmd BufRead' dir . '/' . fname 'Do something'
-  autocmd VimEnter * ++once ++nested call foo#bar()
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank {timeout=450, on_visual=false}
+  execute 'autocmd BufWritePre' stdpath('config') .'/* lua vim.lsp.buf.format()'
+  autocmd InsertEnter,InsertLeave <buffer> call foo#bar()
+  autocmd VimEnter * ++once ++nested call baz#qux(expand('<amatch>'))
+  autocmd LspAttach * au sample-augroup CursorHold <buffer>
+  \ lua vim.lsp.buf.document_highlight()
 augroup END
 ```
 
 ```lua
-local id = vim.api.nvim_create_augroup('your-augroup')
-vim.api.nvim_create_autocmd("FileType", {
+local id = vim.api.nvim_create_augroup("sample-augroup", {})
+vim.api.nvim_create_autocmd("TextYankPost", {
   group = id,
-  pattern = {"fennel", "lua", "vim"},
   callback = function()
-      -- simple expr
+    pcall(vim.highlight.on_yank, {timeout=450, on_visual=false})
   end,
+})
+vim.api.nvim_create_autocmd("BufWritePre", {
+  group = id,
+  pattern = vim.fn.stdpath "config" .. "/*",
+  callback = vim.lsp.buf.format,
 })
 vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
   group = id,
   buffer = 0,
-  command = "echo 'foo'",
-})
-vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
-  group = id,
-  pattern = dir .. "/" .. fname,
-  command = "Do something",
+  desc = "call foo#bar() without any args",
+  callback = "foo#bar",
 })
 vim.api.nvim_create_autocmd("VimEnter", {
   group = id,
   once = true,
   nested = true,
-  desc = "call vim autoload function",
-  callback = "foo#bar",
+  desc = "call baz#qux() with <amatch>",
+  callback = function(args)
+    vim.fn["baz#qux"](args.match)
+  end,
+})
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = id,
+  callback = function(args)
+    vim.api.nvim_create_autocmd("CursorHold", {
+      group = args.group,
+      buffer = args.buf,
+      callback = vim.lsp.buf.document_highlight,
+    })
+  end,
 })
 ```
 
+c.f. [`augroup+`](#augroup-1), [`autocmd!`](#autocmd)
+
+#### `augroup+`
+
+Define/Get an augroup. This macro also lets us add `autocmd`s in an existing
+`augroup` without clearing `autocmd`s already defined there.
+
+```fennel
+(augroup+ name) ; This format returns existing augroup id.
+(augroup+ name
+  [events ?pattern ?extra-opts callback ?api-opts]
+  ...)
+(augroup+ name
+  (autocmd! events ?pattern ?extra-opts callback ?api-opts)
+  ...)
+```
+
+c.f. [`augroup!`](#augroup), [`autocmd!`](#autocmd)
+
+#### `autocmd!`
+
+Define an autocmd:
+
+```fennel
+(autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
+(autocmd! name-or-id events ?pattern ?extra-opts callback ?api-opts)
+```
+
+- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
+  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
+  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
+  define `autocmd`s affiliated with no augroup.
+
+See [`augroup!`](#augroup) for the rest.
+
 #### `au!`
 
-An alias of `autocmd!`
+An alias of [`autocmd!`](#autocmd)
 
 ### Option
 
