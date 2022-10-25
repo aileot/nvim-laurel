@@ -817,10 +817,7 @@
                       rest-v1
                       (sequence? r1)
                       (when-not (contains? autocmd/extra-opt-keys (first r1))
-                                rest-v1)
-                      (sym? r1)
-                      (when (-> (->str r1) (: :match "%*"))
-                        [(->str r1) (unpack (slice rest-v1 2))]))))
+                                rest-v1)))) ;
               [])
           rest-v2 (if (= 0 (length ?rest-v2)) rest-v1 ?rest-v2)
           [?extra-opts excmd-or-callback ?api-opts] ;
