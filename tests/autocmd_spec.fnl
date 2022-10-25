@@ -18,7 +18,7 @@
             (describe :augroup!
                       (fn []
                         (it "returns augroup id without autocmds insides"
-                            (let [id (augroup! :sample)]
+                            (let [id (augroup! default-augroup)]
                               (assert.has_no.errors #(vim.api.nvim_del_augroup_by_id id))))))
             (describe :au!/autocmd!
                       (fn []
