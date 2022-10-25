@@ -19,7 +19,15 @@
                       (fn []
                         (it "returns augroup id without autocmds insides"
                             #(let [id (augroup! default-augroup)]
-                               (assert.has_no.errors #(vim.api.nvim_del_augroup_by_id id))))))
+                               (assert.has_no.errors #(vim.api.nvim_del_augroup_by_id id))))
+                        (it "can create augroup with sequence and `au!` macro mixed"
+                            (fn []
+                              (assert.has_no.errors #(augroup! default-augroup
+                                                               [default-event
+                                                                default-callback]
+                                                               (au! :FileType
+                                                                    [:foo :bar]
+                                                                    #:foobar)))))))
             (describe :augroup+
                       (fn []
                         (it "gets an existing augroup id"
