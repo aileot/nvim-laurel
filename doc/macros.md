@@ -434,9 +434,9 @@ Map `lhs` to `rhs` in `modes` recursively.
   - `<buffer>`: map `lhs` in current buffer.
   - `buffer`: map `lhs` to a buffer of the next value.
 - `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Set a string, or
-  prefix `ex-` to a symbol name, to set Ex command for `rhs`; otherwise, it is
-  regarded as a function.
+- `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
+  prefix `ex-` to a symbol name, to set Ex command; otherwise, it is regarded as
+  a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
