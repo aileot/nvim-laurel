@@ -129,8 +129,9 @@ Define an autocmd:
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: with this alone, create autocmd to current buffer.
 - `callback`: (string|function) Set either vim Ex command or callback function.
-  Any bare-string here is interpreted as vim Ex command; use `vim.fn` interface
-  to set a Vim script function.
+  Set a bare-string, or prefix `ex-` to a symbol name, to set Ex command; set
+  `vim.fn.foobar` to set Vim script function without table arg from
+  `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
 
 ```fennel
