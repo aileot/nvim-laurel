@@ -50,6 +50,18 @@
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same ex-default-command
                                                 autocmd.command))))
+                        (it "sets vim.fn.Test to callback in string"
+                            (fn []
+                              (vim.cmd "
+                                      function! g:Test() abort
+                                      endfunction
+                                      ")
+                              (assert.has_no.errors #(autocmd! default-augroup
+                                                               default-event
+                                                               vim.fn.Test))
+                              (let [[autocmd] (get-autocmds)]
+                                (assert.is.same "<vim function: Test>"
+                                                autocmd.callback))))
                         (it "infers description from symbol name"
                             (fn []
                               (let [it-is-description #:sample-callback
