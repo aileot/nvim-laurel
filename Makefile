@@ -14,7 +14,6 @@ REPO_ROOT:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 TEST_ROOT:=$(REPO_ROOT)/tests
 
 TEST_DEPS:=$(TEST_ROOT)/.test-deps
-vusted:=$(REPO_ROOT)/lua_modules/bin/vusted
 
 FNL_TESTS:=$(wildcard tests/*_spec.fnl)
 LUA_TESTS:=$(FNL_TESTS:%.fnl=%.lua)
@@ -41,11 +40,6 @@ help: ## Show this help
 	@echo 'Targets:'
 	@egrep -h '^\S+: .*## \S+' $(MAKEFILE_LIST) | sed 's/: .*##/:/' | column -t -c 2 -s ':' | sed 's/^/  /'
 	@echo
-
-# TODO: Install vusted into $(test-deps)
-$(vusted): ## Install a busted wrapper for testing neovim plugin
-	luarocks --lua-version=5.1 init
-	luarocks --lua-version=5.1 install vusted
 
 lua/:
 	mkdir lua/
@@ -74,10 +68,10 @@ clean: ## Clean lua test files compiled from fnl
 	@rm $(LUA_TESTS) || exit 0
 
 .PHONY: test
-test: clean runtimes $(LUA_TESTS) $(vusted) ## Run test
+test: clean runtimes $(LUA_TESTS) ## Run test
 	@RTP_DEP="$(REPO_ROOT)" \
 		VUSTED_ARGS="--headless --clean -u $(TEST_ROOT)/init.lua" \
-		$(vusted) \
+		vusted \
 		--shuffle \
 		--output=utfTerminal \
 		./tests
