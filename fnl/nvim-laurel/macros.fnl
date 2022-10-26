@@ -90,7 +90,9 @@
   "Check if `x` is Ex command. A symbol prefixed by `ex-` must be Ex command."
   (or (str? x) (->str? x)
       (when (sym? x)
-        (-> (->str x) (: :match "^ex%-")))))
+        (-> (->str x) (: :match "^ex%-")))
+      (when (list? x)
+        (-> (first-symbol x) (: :match "^ex%-")))))
 
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table.
@@ -382,10 +384,13 @@
         extra-opts (if (nil? ?extra-opts) {}
                        (seq->kv-table ?extra-opts
                                       [:<buffer>
-                                       :expr
-                                       :literal
+                                       :nowait
+                                       :silent
                                        :script
-                                       :unique]))
+                                       :unique
+                                       :expr
+                                       :replace_keycodes
+                                       :literal]))
         api-opts (if (nil? ?api-opts) extra-opts
                      (collect [k v (pairs ?api-opts) &into extra-opts]
                        (values k v)))
