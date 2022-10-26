@@ -90,7 +90,9 @@
   "Check if `x` is Ex command. A symbol prefixed by `ex-` must be Ex command."
   (or (str? x) (->str? x)
       (when (sym? x)
-        (-> (->str x) (: :match "^ex%-")))))
+        (-> (->str x) (: :match "^ex%-")))
+      (when (list? x)
+        (-> (first-symbol x) (: :match "^ex%-")))))
 
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table.
