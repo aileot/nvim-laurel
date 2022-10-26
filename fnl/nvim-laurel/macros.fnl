@@ -382,10 +382,13 @@
         extra-opts (if (nil? ?extra-opts) {}
                        (seq->kv-table ?extra-opts
                                       [:<buffer>
-                                       :expr
-                                       :literal
+                                       :nowait
+                                       :silent
                                        :script
-                                       :unique]))
+                                       :unique
+                                       :expr
+                                       :replace_keycodes
+                                       :literal]))
         api-opts (if (nil? ?api-opts) extra-opts
                      (collect [k v (pairs ?api-opts) &into extra-opts]
                        (values k v)))
