@@ -93,12 +93,8 @@
 
 ;; cspell:word excmd
 (fn excmd? [x]
-  "Check if `x` is Ex command. A symbol prefixed by `ex-` must be Ex command."
-  (or (str? x) (->str? x)
-      (when (sym? x)
-        (-> (->str x) (: :match "^ex%-")))
-      (when (list? x)
-        (-> (first-symbol x) (: :match "^ex%-")))))
+  "Check if `x` is Ex command."
+  (or (str? x) (->str? x)))
 
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table.
