@@ -127,15 +127,16 @@
         (values k v))))
 
 (lambda infer-description [raw-base]
-  "Infer description from the name of symbol.
+  "Infer description from the name of hyphenated symbol, which is likely to be
+  named by end user.
   Return nil if `raw-base` is not a symbol."
   (when (sym? raw-base)
-    (let [base (-> (->str raw-base) (: :gsub "^ex%-" ""))
-          ?description (when (< 2 (length base))
+    (let [base (->str raw-base)
+          ?description (when (and (< 2 (length base)) (base:match "%-"))
                          (.. (-> (base:sub 1 1)
                                  (: :upper))
                              (-> (base:sub 2)
-                                 (: :gsub "[-_]+" " "))))]
+                                 (: :gsub "%-+" " "))))]
       ?description)))
 
 (lambda extract-?vim-fn-name [x]
