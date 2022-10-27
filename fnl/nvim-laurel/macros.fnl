@@ -391,6 +391,7 @@
         (let [?extra-opts (when (sequence? v1)
                             (seq->kv-table v1
                                            [:<buffer>
+                                            :ex
                                             :<command>
                                             :nowait
                                             :silent
@@ -401,7 +402,7 @@
                                             :literal]))
               [_ lhs raw-rhs ?api-opts] (if ?extra-opts [...] [nil ...])
               extra-opts (or ?extra-opts {})
-              rhs (if (or extra-opts.<command> (excmd? raw-rhs)
+              rhs (if (or extra-opts.<command> extra-opts.ex (excmd? raw-rhs)
                           (and (list? raw-rhs)
                                (contains? [:<Cmd> :<C-u>]
                                           (first-symbol raw-rhs))))
@@ -420,6 +421,7 @@
   (set opts.buffer nil)
   (set opts.<buffer> nil)
   (set opts.<command> nil)
+  (set opts.ex nil)
   (when (and opts.expr (not= false opts.replace_keycodes))
     (set opts.replace_keycodes true))
   (when opts.literal
@@ -793,12 +795,14 @@
 (lambda autocmd/->compatible-opts! [opts]
   (set opts.<buffer> nil)
   (set opts.<command> nil)
+  (set opts.ex nil)
   opts)
 
 (local autocmd/extra-opt-keys [:group
                                :pattern
                                :buffer
                                :<buffer>
+                               :ex
                                :<command>
                                :desc
                                :callback
@@ -858,14 +862,18 @@
                          "\ndump:\n" (view rest-v2))))
           extra-opts (if (nil? ?extra-opts) {}
                          (seq->kv-table ?extra-opts
-                                        [:once :nested :<buffer> :<command>]))
+                                        [:once
+                                         :nested
+                                         :<buffer>
+                                         :ex
+                                         :<command>]))
           ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
       (set extra-opts.group ?id)
       (set extra-opts.buffer ?bufnr)
       (when-not (and (str? ?pattern) (= "*" ?pattern))
                 ;; Note: `*` is the default pattern and redundant.
                 (set extra-opts.pattern ?pattern))
-      (if (or extra-opts.<command> (excmd? excmd-or-callback))
+      (if (or extra-opts.<command> extra-opts.ex (excmd? excmd-or-callback))
           (set extra-opts.command excmd-or-callback)
           ;; Note: Ignore the possibility to set Vimscript function to callback
           ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
