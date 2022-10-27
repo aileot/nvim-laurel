@@ -13,19 +13,19 @@ usages are subject to change without notifications.
 
 ### lhs
 
-Abbreviation of left-hand-side.
+An abbreviation of left-hand-side.
 
 ### rhs
 
-Abbreviation of right-hand-side.
+An abbreviation of right-hand-side.
 
 ### sequence
 
-It is an alias of sequential table `[]`.
+An alias of sequential table `[]`.
 
 ### kv-table
 
-It is an alias of key/value table `{}`.
+An alias of key/value table `{}`.
 
 ### bare-{type}
 
@@ -84,14 +84,14 @@ runtime.
 
 ### Autocmd
 
-- [`au!`](#au)
 - [`augroup!`](#augroup)
 - [`augroup+`](#augroup-1)
 - [`autocmd!`](#autocmd)
+- [`au!`](#au)
 
 #### `augroup!`
 
-Create an augroup, or redefine an existing augroup.
+Create or get an augroup, or override an existing augroup.
 
 ```fennel
 (augroup! name) ; Only this format returns the augroup id.
@@ -115,7 +115,7 @@ Create an augroup, or redefine an existing augroup.
   Set a bare-string, or prefix `ex-` to a symbol name, to set Ex command; set
   `vim.fn.foobar` to set Vim script function without table arg from
   `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
 
 ```fennel
 (augroup! :sample-augroup
@@ -188,7 +188,7 @@ c.f. [`augroup+`](#augroup-1), [`autocmd!`](#autocmd)
 
 #### `augroup+`
 
-Define/Get an augroup. This macro also lets us add `autocmd`s in an existing
+Create or get an augroup. This macro also lets us add `autocmd`s in an existing
 `augroup` without clearing `autocmd`s already defined there.
 
 ```fennel
@@ -205,7 +205,7 @@ c.f. [`augroup!`](#augroup), [`autocmd!`](#autocmd)
 
 #### `autocmd!`
 
-Define an autocmd:
+Create an autocmd.
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
@@ -221,7 +221,7 @@ See [`augroup!`](#augroup) for the rest.
 
 #### `au!`
 
-An alias of [`autocmd!`](#autocmd)
+An alias of [`autocmd!`](#autocmd).
 
 ### Option
 
@@ -489,7 +489,7 @@ Map `lhs` to `rhs` in `modes` non-recursively.
 Delete keymap.
 
 ```fennel
-(unmap! ?bufnr mode lhs).
+(unmap! ?bufnr mode lhs)
 ```
 
 - `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
@@ -777,7 +777,7 @@ Map `lhs` to `rhs` in Terminal mode non-recursively.
 
 #### `command!`
 
-Define a user command.
+Create a user command.
 
 ```fennel
 (command! name ?extra-opts command ?api-opts)
@@ -882,4 +882,4 @@ nvim_set_nl(0, "Foo", {
 
 #### `hi!`
 
-An alias of `highlight!`
+An alias of [`highlight!`](#highlight).
