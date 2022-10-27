@@ -471,8 +471,8 @@ Map `lhs` to `rhs` in `modes` recursively.
   - `ex`: an alias of `<command>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
-  set `<command>` key in `extra-opts`, to set Ex command; otherwise, it is
-  regarded as a Lua function.
+  set `<command>` key in `extra-opts`, to set an execution of Normal commands;
+  otherwise, it is regarded as a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
