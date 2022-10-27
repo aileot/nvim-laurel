@@ -110,7 +110,7 @@ Create or get an augroup, or override an existing augroup.
   against. To set `pattern` in symbol or list, set it in either `extra-opts` or
   `api-opts` instead.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `<buffer>`: with this alone, create autocmd to current buffer.
+  - `<buffer>`: create autocmd to current buffer by itself.
   - `<command>`: it indicates the callback must be Ex command by itself.
   - `ex`: an alias of `<command>` key.
 - `callback`: (string|function) Set either vim Ex command or callback function.
@@ -470,7 +470,7 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `<buffer>`: map `lhs` in current buffer.
+  - `<buffer>`: map `lhs` in current buffer by itself.
   - `buffer`: map `lhs` to a buffer of the next value.
   - `<command>`: it indicates `rhs` must be an execution of Normal mode commands
     by itself.
@@ -792,8 +792,8 @@ Create a user command.
   letter.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
   Additional attributes:
-  - `<buffer>`: with this alone, command is set in current buffer.
-  - `buffer`: with the next value, command is set to the buffer.
+  - `<buffer>`: create command in current buffer by itself.
+  - `buffer`: create command in the buffer of the next value.
 - `command`: (string|function) Replacement command.
 - [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same as
   `opts` for `nvim_create_user_command`.
