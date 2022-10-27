@@ -69,12 +69,6 @@ following features:
   use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
-### ex-{name}
-
-A special symbol name. With prefix `ex-`, some of nvim-laurel macros in compile
-time can tell that the named symbol will result in a string of vim Ex command in
-runtime.
-
 ## Macros
 
 - [Autocmd](#Autocmd)
@@ -114,8 +108,8 @@ Create or get an augroup, or override an existing augroup.
   - `<command>`: it indicates the callback must be Ex command by itself.
   - `ex`: an alias of `<command>` key.
 - `callback`: (string|function) Set either vim Ex command or callback function.
-  Set a bare-string, or prefix `ex-` to a symbol name, to set Ex command; set
-  `vim.fn.foobar` to set Vim script function without table arg from
+  Set a bare-string, or set `<command>` key in `extra-opts`, to set Ex command;
+  set `vim.fn.foobar` to set Vim script function without table arg from
   `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
 
@@ -477,8 +471,8 @@ Map `lhs` to `rhs` in `modes` recursively.
   - `ex`: an alias of `<command>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
-  prefix `ex-` to a symbol name, to set Ex command; otherwise, it is regarded as
-  a Lua function.
+  set `<command>` key in `extra-opts`, to set Ex command; otherwise, it is
+  regarded as a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
