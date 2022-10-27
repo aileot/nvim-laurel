@@ -128,9 +128,9 @@
 
 (lambda infer-description [raw-base]
   "Infer description from the name of hyphenated symbol, which is likely to be
-  named by end user.
+  named by end user. It doesn't infer from any multi-symbol.
   Return nil if `raw-base` is not a symbol."
-  (when (sym? raw-base)
+  (when (and (sym? raw-base) (not (multi-sym? raw-base)))
     (let [base (->str raw-base)
           ?description (when (and (< 2 (length base)) (base:match "%-"))
                          (.. (-> (base:sub 1 1)
