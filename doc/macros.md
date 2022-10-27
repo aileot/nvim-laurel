@@ -882,4 +882,4 @@ nvim_set_nl(0, "Foo", {
 
 #### `hi!`
 
-An alias of `highlight!`
+An alias of [`highlight!`](#highlight).
