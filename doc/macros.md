@@ -13,19 +13,19 @@ usages are subject to change without notifications.
 
 ### lhs
 
-Abbreviation of left-hand-side.
+An abbreviation of left-hand-side.
 
 ### rhs
 
-Abbreviation of right-hand-side.
+An abbreviation of right-hand-side.
 
 ### sequence
 
-It is an alias of sequential table `[]`.
+An alias of sequential table `[]`.
 
 ### kv-table
 
-It is an alias of key/value table `{}`.
+An alias of key/value table `{}`.
 
 ### bare-{type}
 
