@@ -111,6 +111,8 @@ Create or get an augroup, or override an existing augroup.
   `api-opts` instead.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: with this alone, create autocmd to current buffer.
+  - `<command>`: it indicates the callback must be Ex command by itself.
+  - `ex`: an alias of `<command>` key.
 - `callback`: (string|function) Set either vim Ex command or callback function.
   Set a bare-string, or prefix `ex-` to a symbol name, to set Ex command; set
   `vim.fn.foobar` to set Vim script function without table arg from
@@ -470,6 +472,9 @@ Map `lhs` to `rhs` in `modes` recursively.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: map `lhs` in current buffer.
   - `buffer`: map `lhs` to a buffer of the next value.
+  - `<command>`: it indicates `rhs` must be an execution of Normal mode commands
+    by itself.
+  - `ex`: an alias of `<command>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
   prefix `ex-` to a symbol name, to set Ex command; otherwise, it is regarded as
