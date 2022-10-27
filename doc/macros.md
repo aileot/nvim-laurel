@@ -115,7 +115,7 @@ Create or get an augroup, or override an existing augroup.
   Set a bare-string, or prefix `ex-` to a symbol name, to set Ex command; set
   `vim.fn.foobar` to set Vim script function without table arg from
   `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
 
 ```fennel
 (augroup! :sample-augroup
@@ -221,7 +221,7 @@ See [`augroup!`](#augroup) for the rest.
 
 #### `au!`
 
-An alias of [`autocmd!`](#autocmd)
+An alias of [`autocmd!`](#autocmd).
 
 ### Option
 
