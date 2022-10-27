@@ -43,6 +43,12 @@
   @return boolean"
   (or (sym? x) (list? x)))
 
+(fn kv-table? [x]
+  "Check if the value of `x` is kv-table.
+  @param x any
+  @return boolean"
+  (and (table? x) (not (sequence? x))))
+
 ;; Misc ///1
 (fn ->str [x]
   "Convert `x` to a string, or get the name if `x` is a symbol."
@@ -367,48 +373,46 @@
   (option/modify :global name val "-"))
 
 ;; Keymap ///1
-(lambda keymap/varargs->api-args [...]
-  ;; [default-opts modes ?extra-opts lhs rhs ?api-opts]
-  "Merge extra options with default ones.
-   `(map modes ?extra-opts lhs rhs ?api-opts)` where
-   - `?extra-opts` must be a sequence of raw strings.
-   - `?api-opts` must be a dictionary which accepts the same arguments as
-     `vim.api.nvim_set_keymap()` accepts.
-  `desc` will be filled based on `rhs` which is a function."
-  (let [v1 (select 1 ...)
-        ?extra-opts (when (sequence? v1)
-                      v1)
-        [lhs raw-rhs ?api-opts] (if ?extra-opts
-                                    (slice [...] 2)
-                                    [...])
-        extra-opts (if (nil? ?extra-opts) {}
-                       (seq->kv-table ?extra-opts
-                                      [:<buffer>
-                                       :nowait
-                                       :silent
-                                       :script
-                                       :unique
-                                       :expr
-                                       :replace_keycodes
-                                       :literal]))
-        api-opts (if (nil? ?api-opts) extra-opts
-                     (collect [k v (pairs ?api-opts) &into extra-opts]
-                       (values k v)))
-        rhs (if (or (excmd? raw-rhs)
-                    (and (list? raw-rhs)
-                         (contains? [:<Cmd> :<C-u>] (first-symbol raw-rhs))))
-                raw-rhs
-                (do
-                  (tset api-opts :callback raw-rhs)
-                  ""))
-        ?bufnr (if api-opts.<buffer> 0 api-opts.buffer)]
-    (assert-compile lhs "lhs cannot be nil" lhs)
-    (assert-compile rhs "rhs cannot be nil" rhs)
-    (when (nil? api-opts.desc)
-      (set api-opts.desc (infer-description raw-rhs)))
-    (when ?bufnr
-      (set api-opts.buffer ?bufnr))
-    (values lhs rhs api-opts)))
+(lambda keymap/parse-varargs [...]
+  "Parse varargs.
+  ```fennel
+  (keymap/parse-varargs ?extra-opts lhs rhs ?api-opts)
+  ```
+  @param ?extra-opts sequence|kv-table
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table
+  @return extra-opts kv-table
+  @return lhs string
+  @return rhs string|function
+  @return ?api-opts kv-table"
+  (let [v1 (select 1 ...)]
+    (if (kv-table? v1) (values ...)
+        (let [?extra-opts (when (sequence? v1)
+                            (seq->kv-table v1
+                                           [:<buffer>
+                                            :nowait
+                                            :silent
+                                            :script
+                                            :unique
+                                            :expr
+                                            :replace_keycodes
+                                            :literal]))
+              [_ lhs raw-rhs ?api-opts] (if ?extra-opts [...] [nil ...])
+              extra-opts (or ?extra-opts {})
+              rhs (if (or (excmd? raw-rhs)
+                          (and (list? raw-rhs)
+                               (contains? [:<Cmd> :<C-u>]
+                                          (first-symbol raw-rhs))))
+                      raw-rhs
+                      (do
+                        (set extra-opts.callback raw-rhs)
+                        ""))
+              ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
+          (set extra-opts.buffer ?bufnr)
+          (when (nil? extra-opts.desc)
+            (set extra-opts.desc (infer-description raw-rhs)))
+          (values extra-opts lhs rhs ?api-opts)))))
 
 (lambda keymap/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
@@ -430,24 +434,25 @@
         `(vim.api.nvim_buf_del_keymap ,?bufnr ,mode ,lhs)
         `(vim.api.nvim_del_keymap ,mode ,lhs))))
 
-(lambda keymap/set-maps! [modes lhs rhs raw-api-opts]
-  (if (or (sym? modes) (sym? rhs))
-      ;; Note: We cannot tell whether or not `rhs` should be set to callback in
-      ;; compile time. Keep the compiled results simple.
-      `(vim.keymap.set ,modes ,lhs ,rhs ,raw-api-opts)
-      (let [?bufnr (if raw-api-opts.<buffer> 0 raw-api-opts.buffer)
-            api-opts (keymap/->compatible-opts! raw-api-opts)
-            set-keymap (if ?bufnr
-                           (lambda [mode]
-                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                           ,rhs ,api-opts))
-                           (lambda [mode]
-                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                       ,api-opts)))]
-        (if (str? modes)
-            (set-keymap modes)
-            (icollect [_ m (ipairs modes)]
-              (set-keymap m))))))
+(lambda keymap/set-maps! [modes extra-opts lhs rhs ?api-opts]
+  (let [?bufnr extra-opts.buffer
+        api-opts (merge-api-opts ?api-opts
+                                 (keymap/->compatible-opts! extra-opts))]
+    (if (or (sym? modes) (sym? rhs))
+        ;; Note: We cannot tell whether or not `rhs` should be set to callback
+        ;; in compile time. Keep the compiled results simple.
+        `(vim.keymap.set ,modes ,lhs ,rhs ,api-opts)
+        (let [set-keymap (if ?bufnr
+                             (lambda [mode]
+                               `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                             ,rhs ,api-opts))
+                             (lambda [mode]
+                               `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
+                                                         ,api-opts)))]
+          (if (str? modes)
+              (set-keymap modes)
+              (icollect [_ m (ipairs modes)]
+                (set-keymap m)))))))
 
 ;; Export ///2
 (lambda <C-u> [x]
@@ -469,9 +474,9 @@
   (noremap! modes lhs ?extra-opts rhs ?api-opts)
   ```"
   (let [default-opts {:noremap true}
-        (lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    (merge-default-kv-table default-opts api-opts)
-    (keymap/set-maps! modes lhs rhs api-opts)))
+        (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
+    (merge-default-kv-table default-opts extra-opts)
+    (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
 
 (lambda map! [modes ...]
   "Map `lhs` to `rhs` in `modes` recursively.
@@ -480,9 +485,9 @@
   (noremap! modes lhs ?extra-opts rhs ?api-opts)
   ```"
   (let [default-opts {}
-        (lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    (merge-default-kv-table default-opts api-opts)
-    (keymap/set-maps! modes lhs rhs api-opts)))
+        (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
+    (merge-default-kv-table default-opts extra-opts)
+    (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
 
 ;; Wrapper ///3
 (lambda noremap-all! [...]
@@ -491,10 +496,10 @@
   ```fennel
   (noremap-all! lhs ?extra-opts rhs ?api-opts)
   ```"
-  (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(noremap! "" lhs rhs api-opts)
-     (noremap! "!" lhs rhs api-opts)
-     (unpack (noremap! [:l :t] lhs rhs api-opts))]))
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
+    [(noremap! "" extra-opts lhs rhs ?api-opts)
+     (noremap! "!" extra-opts lhs rhs ?api-opts)
+     (unpack (noremap! [:l :t] extra-opts lhs rhs ?api-opts))]))
 
 (lambda noremap-input! [...]
   "Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
@@ -514,8 +519,12 @@
 
   Note: This macro `unmap`s `lhs` in Select mode for the performance.
   To avoid this, use `(noremap! [:n :o :x] ...)` instead."
-  (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(noremap! "" lhs rhs api-opts) (keymap/del-maps! api-opts.buffer :s lhs)]))
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
+        ;; Note: With unknown reason, keymap/del-maps! fails to get
+        ;; `extra-opts.buffer` only to find it `nil` unless it's set to `?bufnr`.
+        ?bufnr extra-opts.buffer]
+    [(noremap! "" extra-opts lhs rhs ?api-opts)
+     (keymap/del-maps! ?bufnr :s lhs)]))
 
 (lambda noremap-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
@@ -612,10 +621,10 @@
   ```fennel
   (map-all! lhs ?extra-opts rhs ?api-opts)
   ```"
-  (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(map! "" lhs rhs api-opts)
-     (map! "!" lhs rhs api-opts)
-     (unpack (map! [:l :t] lhs rhs api-opts))]))
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
+    [(map! "" extra-opts lhs rhs ?api-opts)
+     (map! "!" extra-opts lhs rhs ?api-opts)
+     (unpack (map! [:l :t] extra-opts lhs rhs ?api-opts))]))
 
 (lambda map-input! [...]
   "Map `lhs` to `rhs` in Insert/Command-line mode recursively.
@@ -635,8 +644,9 @@
 
   Note: This macro `unmap`s `lhs` in Select mode for the performance.
   To avoid this, use `(map! [:n :o :x] ...)` instead."
-  (let [(lhs rhs api-opts) (keymap/varargs->api-args ...)]
-    [(map! "" lhs rhs api-opts) (keymap/del-maps! api-opts.buffer :s lhs)]))
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
+        ?bufnr extra-opts.buffer]
+    [(map! "" extra-opts lhs rhs ?api-opts) (keymap/del-maps! ?bufnr :s lhs)]))
 
 (lambda map-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode recursively.
