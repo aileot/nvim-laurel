@@ -425,7 +425,7 @@
   "Delete keymap in such format as
   `(del-keymap :n :lhs)`, or `(del-keymap bufnr :n :lhs)`."
   ;; Note: nvim_del_keymap itself cannot delete mappings in multi mode at once.
-  (let [[?bufnr mode lhs] (if (= 3 (select "#" ...)) [...] [nil ...])]
+  (let [[?bufnr mode lhs] (if (select 3 ...) [...] [nil ...])]
     (if ?bufnr
         `(vim.api.nvim_buf_del_keymap ,?bufnr ,mode ,lhs)
         `(vim.api.nvim_del_keymap ,mode ,lhs))))
