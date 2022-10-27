@@ -24,22 +24,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: date +%F > todays-date
-      - name: Restore test dependencies
+      # - name: Restore Neovim
+      #   uses: actions/cache@v3
+      #   id: cache-nvim
+      #   with:
+      #     path: /home/runner/nvim-*
+      #     key: ${{ runner.os }}-${{ hashFiles('todays-date') }}-nvim-${{ matrix.nvim_version }}
+      - name: Restore test dependencies in Luarocks
         uses: actions/cache@v3
+        id: cache-luarocks
         with:
-          path: |
-            nvim-*/
-            .luarocks/
-          key: ${{ runner.os }}-${{ matrix.nvim_version }}-${{ hashFiles('todays-date') }}
-      - uses: notomo/action-setup-nvim-lua@v1
-      - run: luarocks --lua-version=5.1 install fennel
-      - run: luarocks --lua-version=5.1 install vusted
+          path: /home/runner/.local/.luarocks
+          key: ${{ runner.os }}-${{ hashFiles('todays-date') }}-luarocks
+      - name: Set up environment for Neovim plugin written in Lua
+        uses: notomo/action-setup-nvim-lua@v1
+      - name: Install test dependencies in Luarocks
+        if: steps.cache-luarocks.outputs.cache-hit != 'true'
+        run: |
+          luarocks --lua-version=5.1 install fennel
+          luarocks --lua-version=5.1 install vusted
       - uses: rhysd/action-setup-vim@v1
         id: vim
         with:
           neovim: true
           version: ${{ matrix.nvim_version }}
-      - run: make test
+      - name: Run tests
+        run: make test
         env:
           VUSTED_NVIM: ${{ steps.vim.outputs.executable }}
         timeout-minutes: 5

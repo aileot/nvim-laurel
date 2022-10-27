@@ -10,6 +10,9 @@ SHELL := /usr/bin/bash
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --warn-undefined-variables
 
+FENNEL ?= fennel
+VUSTED ?= vusted
+
 REPO_ROOT:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 TEST_ROOT:=$(REPO_ROOT)/tests
 
@@ -48,7 +51,7 @@ lua/%: lua/
 	mkdir -p $@
 
 lua/%.lua: fnl/%.fnl lua/ ## Compile runtime fnl file into lua
-	@fennel \
+	@$(FENNEL) \
 		--correlate \
 		--add-macro-path "$(REPO_MACRO_PATH)" \
 		--compile $< > $@
@@ -57,7 +60,7 @@ lua/%.lua: fnl/%.fnl lua/ ## Compile runtime fnl file into lua
 runtimes: clean $(LUA_RUNTIME_DIRS) $(LUA_RUNTIMES)
 
 %_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
-	@fennel \
+	@$(FENNEL) \
 		--correlate \
 		--add-macro-path "$(REPO_MACRO_PATH)" \
 		--compile $< > $@
@@ -71,7 +74,7 @@ clean: ## Clean lua test files compiled from fnl
 test: clean runtimes $(LUA_TESTS) ## Run test
 	@RTP_DEP="$(REPO_ROOT)" \
 		VUSTED_ARGS="--headless --clean -u $(TEST_ROOT)/init.lua" \
-		vusted \
+		$(VUSTED) \
 		--shuffle \
 		--output=utfTerminal \
 		./tests
