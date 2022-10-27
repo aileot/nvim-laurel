@@ -91,7 +91,7 @@ runtime.
 
 #### `augroup!`
 
-Create an augroup, or override an existing augroup.
+Create or get an augroup, or override an existing augroup.
 
 ```fennel
 (augroup! name) ; Only this format returns the augroup id.
@@ -188,7 +188,7 @@ c.f. [`augroup+`](#augroup-1), [`autocmd!`](#autocmd)
 
 #### `augroup+`
 
-Define/Get an augroup. This macro also lets us add `autocmd`s in an existing
+Create or get an augroup. This macro also lets us add `autocmd`s in an existing
 `augroup` without clearing `autocmd`s already defined there.
 
 ```fennel
@@ -205,7 +205,7 @@ c.f. [`augroup!`](#augroup), [`autocmd!`](#autocmd)
 
 #### `autocmd!`
 
-Define an autocmd:
+Create an autocmd:
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
@@ -777,7 +777,7 @@ Map `lhs` to `rhs` in Terminal mode non-recursively.
 
 #### `command!`
 
-Define a user command.
+Create a user command.
 
 ```fennel
 (command! name ?extra-opts command ?api-opts)
