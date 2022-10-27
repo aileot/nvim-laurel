@@ -91,7 +91,7 @@ runtime.
 
 #### `augroup!`
 
-Create an augroup, or redefine an existing augroup.
+Create an augroup, or override an existing augroup.
 
 ```fennel
 (augroup! name) ; Only this format returns the augroup id.
