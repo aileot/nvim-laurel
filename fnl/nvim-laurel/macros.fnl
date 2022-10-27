@@ -49,7 +49,7 @@
   @return boolean"
   (and (table? x) (not (sequence? x))))
 
-;; Misc ///1
+;; Misc ///2
 (fn ->str [x]
   "Convert `x` to a string, or get the name if `x` is a symbol."
   (tostring x))
