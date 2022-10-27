@@ -3,7 +3,7 @@
 (local default-augroup :default-test-augroup)
 (local default-event [:BufRead :BufNewFile])
 (local default-callback #:default-callback)
-(local ex-default-command :default-command)
+(local default-command :default-command)
 
 (lambda get-autocmds [?opts]
   (let [opts (or ?opts {:group default-augroup})]
@@ -55,14 +55,20 @@
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same default-callback
                                                 autocmd.callback))))
-                        (it "can set Ex command in autocmds with prefix `ex-`"
+                        (it "can set Ex command in autocmds with `<command>` or `ex` key"
                             (fn []
-                              (augroup! default-augroup
-                                        (au! default-event [:pat1 :pat2]
-                                             ex-default-command))
-                              (let [[autocmd] (get-autocmds)]
-                                (assert.is.same ex-default-command
-                                                autocmd.command))))
+                              (let [another-command :foobar]
+                                (augroup! default-augroup
+                                          (au! default-event :pat1 [:<command>]
+                                               default-command)
+                                          (au! default-event :pat2 [:ex]
+                                               another-command))
+                                (let [[autocmd1] (get-autocmds {:pattern :pat1})
+                                      [autocmd2] (get-autocmds {:pattern :pat2})]
+                                  (assert.is.same default-command
+                                                  autocmd1.command)
+                                  (assert.is.same another-command
+                                                  autocmd2.command)))))
                         (it "sets vim.fn.Test to callback in string"
                             (fn []
                               (vim.cmd "
@@ -77,18 +83,21 @@
                                                 autocmd.callback))))
                         (it "infers description from symbol name"
                             (fn []
-                              (let [it-is-description #:sample-callback
-                                    ex-prefix-is-dropped :sample-command
+                              (let [callback-description #:sample-callback
+                                    command-description :sample-command
                                     event1 :BufRead
                                     event2 :BufNewFile]
                                 (augroup! default-augroup
-                                          (au! event1 :pat1 it-is-description)
-                                          (au! event2 :pat2
-                                               ex-prefix-is-dropped))
+                                          (au! event1 :pat1
+                                               callback-description)
+                                          (au! event2 :pat2 [:<command>]
+                                               command-description))
                                 (let [[au1] (get-autocmds {:event event1})
                                       [au2] (get-autocmds {:event event2})]
-                                  (assert.is.same "It is description" au1.desc)
-                                  (assert.is.same "Prefix is dropped" au2.desc)))))
+                                  (assert.is.same "Callback description"
+                                                  au1.desc)
+                                  (assert.is.same "Command description"
+                                                  au2.desc)))))
                         (it "doesn't infer description if desc key has already value"
                             (fn []
                               (au! default-augroup default-event [:pat1 :pat2]
