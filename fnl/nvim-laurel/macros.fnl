@@ -71,7 +71,7 @@
 ;; Specific Utils ///1
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
-    (when (nil? (?. another :k))
+    (when (nil? (. another k))
       (tset another k v))))
 
 (fn ->str? [x]
