@@ -205,7 +205,7 @@ c.f. [`augroup!`](#augroup), [`autocmd!`](#autocmd)
 
 #### `autocmd!`
 
-Create an autocmd:
+Create an autocmd.
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
