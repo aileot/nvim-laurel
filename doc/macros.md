@@ -466,12 +466,12 @@ Map `lhs` to `rhs` in `modes` recursively.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: map `lhs` in current buffer by itself.
   - `buffer`: map `lhs` to a buffer of the next value.
-  - `<command>`: it indicates `rhs` must be an execution of Normal mode commands
-    by itself.
+  - `<command>`: it indicates `rhs` must be Normal mode command execution by
+    itself.
   - `ex`: an alias of `<command>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
-  set `<command>` key in `extra-opts`, to set an execution of Normal commands;
+  set `<command>` key in `extra-opts`, to set Normal mode command execution;
   otherwise, it is regarded as a Lua function.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
