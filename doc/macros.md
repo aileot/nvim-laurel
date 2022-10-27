@@ -84,10 +84,10 @@ runtime.
 
 ### Autocmd
 
-- [`au!`](#au)
 - [`augroup!`](#augroup)
 - [`augroup+`](#augroup-1)
 - [`autocmd!`](#autocmd)
+- [`au!`](#au)
 
 #### `augroup!`
 
