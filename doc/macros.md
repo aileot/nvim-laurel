@@ -489,7 +489,7 @@ Map `lhs` to `rhs` in `modes` non-recursively.
 Delete keymap.
 
 ```fennel
-(unmap! ?bufnr mode lhs).
+(unmap! ?bufnr mode lhs)
 ```
 
 - `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
