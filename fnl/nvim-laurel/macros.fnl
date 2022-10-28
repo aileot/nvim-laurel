@@ -825,7 +825,7 @@
   @param ?extra-opts bare-sequence:
     Addition to `api-opts` keys, `:<buffer>` is available to set `autocmd` to
     current buffer.
-  @param command-or-callback string|function:
+  @param callback string|function:
     Set either vim Ex command, or function. Any bare string here is interpreted
     as vim Ex command; use `vim.fn` interface instead to set a Vimscript
     function.
@@ -849,7 +849,7 @@
                                 rest-v1)))) ;
               [])
           rest-v2 (if (= 0 (length ?rest-v2)) rest-v1 ?rest-v2)
-          [?extra-opts excmd-or-callback ?api-opts] ;
+          [?extra-opts callback ?api-opts] ;
           (match (length rest-v2)
             3 rest-v2
             1 [nil (first rest-v2)]
@@ -872,18 +872,18 @@
       (when-not (and (str? ?pattern) (= "*" ?pattern))
                 ;; Note: `*` is the default pattern and redundant.
                 (set extra-opts.pattern ?pattern))
-      (if (or extra-opts.<command> extra-opts.ex (excmd? excmd-or-callback))
-          (set extra-opts.command excmd-or-callback)
+      (if (or extra-opts.<command> extra-opts.ex (excmd? callback))
+          (set extra-opts.command callback)
           ;; Note: Ignore the possibility to set Vimscript function to callback
           ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
           ;; to "callback" key because functions written in Vim script are
           ;; rarely supposed to expect the table from `nvim_create_autocmd` for
           ;; its first arg.
           (set extra-opts.callback
-               (or (extract-?vim-fn-name excmd-or-callback) ;
-                   excmd-or-callback)))
+               (or (extract-?vim-fn-name callback) ;
+                   callback)))
       (when (nil? extra-opts.desc)
-        (set extra-opts.desc (infer-description excmd-or-callback)))
+        (set extra-opts.desc (infer-description callback)))
       (let [api-opts (merge-api-opts ?api-opts
                                      (autocmd/->compatible-opts! extra-opts))]
         `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
