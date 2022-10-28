@@ -65,9 +65,9 @@
                         ;;          (assert.is.same 0 noremap))))
                         (it "maps symbol prefixed by `ex-` to rhs"
                             #(let [mode :n
-                                   ex-rhs :rhs]
-                               (map! mode :lhs ex-rhs)
-                               (assert.is.same ex-rhs (get-rhs mode :lhs))))
+                                   rhs :rhs]
+                               (map! mode [:<command>] :lhs rhs)
+                               (assert.is.same rhs (get-rhs mode :lhs))))
                         (it "maps symbol without prefix `ex-` to callback instead"
                             #(let [mode :n
                                    rhs #:rhs]
@@ -94,13 +94,13 @@
                                 (assert.is.same :rhs
                                                 (buf-get-rhs bufnr :n :lhs)))))
                         (it "infers description from rhs symbol"
-                            #(let [it-is-description :rhs
-                                   ex-prefix-is-dropped :ex-cmd]
-                               (nnoremap! :lhs1 it-is-description)
-                               (nnoremap! :lhs2 ex-prefix-is-dropped)
-                               (assert.is.same "It is description"
+                            #(let [callback-description :rhs
+                                   command-description :ex-cmd]
+                               (nnoremap! :lhs1 callback-description)
+                               (nnoremap! :lhs2 command-description)
+                               (assert.is.same "Callback description"
                                                (get-desc :n :lhs1))
-                               (assert.is.same "Prefix is dropped"
+                               (assert.is.same "Command description"
                                                (get-desc :n :lhs2))))
                         (it "doesn't infer description if desc key has already value"
                             (fn []

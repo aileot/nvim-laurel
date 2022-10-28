@@ -75,6 +75,9 @@
         (first-symbol first-item))))
 
 ;; Specific Utils ///1
+(lambda wrapper [key ...]
+  `(. (require :nvim-laurel._wrapper) ,key ,...))
+
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
     (when (nil? (. another k))
@@ -93,12 +96,8 @@
 
 ;; cspell:word excmd
 (fn excmd? [x]
-  "Check if `x` is Ex command. A symbol prefixed by `ex-` must be Ex command."
-  (or (str? x) (->str? x)
-      (when (sym? x)
-        (-> (->str x) (: :match "^ex%-")))
-      (when (list? x)
-        (-> (first-symbol x) (: :match "^ex%-")))))
+  "Check if `x` is Ex command."
+  (or (str? x) (->str? x)))
 
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table.
@@ -123,23 +122,23 @@
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
-          `((. (require :nvim-laurel._wrapper) :merge-api-opts) ,?api-opts
-                                                                ,?extra-opts))
+          `(,(wrapper :merge-api-opts) ,?api-opts ,?extra-opts))
       (nil? ?api-opts)
       (or ?extra-opts {})
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
 (lambda infer-description [raw-base]
-  "Infer description from the name of symbol.
+  "Infer description from the name of hyphenated symbol, which is likely to be
+  named by end user. It doesn't infer from any multi-symbol.
   Return nil if `raw-base` is not a symbol."
-  (when (sym? raw-base)
-    (let [base (-> (->str raw-base) (: :gsub "^ex%-" ""))
-          ?description (when (< 2 (length base))
+  (when (and (sym? raw-base) (not (multi-sym? raw-base)))
+    (let [base (->str raw-base)
+          ?description (when (and (< 2 (length base)) (base:match "%-"))
                          (.. (-> (base:sub 1 1)
                                  (: :upper))
                              (-> (base:sub 2)
-                                 (: :gsub "[-_]+" " "))))]
+                                 (: :gsub "%-+" " "))))]
       ?description)))
 
 (lambda extract-?vim-fn-name [x]
@@ -391,6 +390,8 @@
         (let [?extra-opts (when (sequence? v1)
                             (seq->kv-table v1
                                            [:<buffer>
+                                            :ex
+                                            :<command>
                                             :nowait
                                             :silent
                                             :script
@@ -400,7 +401,7 @@
                                             :literal]))
               [_ lhs raw-rhs ?api-opts] (if ?extra-opts [...] [nil ...])
               extra-opts (or ?extra-opts {})
-              rhs (if (or (excmd? raw-rhs)
+              rhs (if (or extra-opts.<command> extra-opts.ex (excmd? raw-rhs)
                           (and (list? raw-rhs)
                                (contains? [:<Cmd> :<C-u>]
                                           (first-symbol raw-rhs))))
@@ -418,6 +419,8 @@
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
   (set opts.<buffer> nil)
+  (set opts.<command> nil)
+  (set opts.ex nil)
   (when (and opts.expr (not= false opts.replace_keycodes))
     (set opts.replace_keycodes true))
   (when opts.literal
@@ -438,7 +441,7 @@
   (let [?bufnr extra-opts.buffer
         api-opts (merge-api-opts ?api-opts
                                  (keymap/->compatible-opts! extra-opts))]
-    (if (or (sym? modes) (sym? rhs))
+    (if (or (sym? modes) (list? modes))
         ;; Note: We cannot tell whether or not `rhs` should be set to callback
         ;; in compile time. Keep the compiled results simple.
         `(vim.keymap.set ,modes ,lhs ,rhs ,api-opts)
@@ -790,12 +793,16 @@
 ;; Autocmd ///1
 (lambda autocmd/->compatible-opts! [opts]
   (set opts.<buffer> nil)
+  (set opts.<command> nil)
+  (set opts.ex nil)
   opts)
 
 (local autocmd/extra-opt-keys [:group
                                :pattern
                                :buffer
                                :<buffer>
+                               :ex
+                               :<command>
                                :desc
                                :callback
                                :command
@@ -818,7 +825,7 @@
   @param ?extra-opts bare-sequence:
     Addition to `api-opts` keys, `:<buffer>` is available to set `autocmd` to
     current buffer.
-  @param command-or-callback string|function:
+  @param callback string|function:
     Set either vim Ex command, or function. Any bare string here is interpreted
     as vim Ex command; use `vim.fn` interface instead to set a Vimscript
     function.
@@ -842,7 +849,7 @@
                                 rest-v1)))) ;
               [])
           rest-v2 (if (= 0 (length ?rest-v2)) rest-v1 ?rest-v2)
-          [?extra-opts excmd-or-callback ?api-opts] ;
+          [?extra-opts callback ?api-opts] ;
           (match (length rest-v2)
             3 rest-v2
             1 [nil (first rest-v2)]
@@ -853,25 +860,30 @@
             _ (error (.. "[autocmd!] unexpected number args: " (length rest-v2)
                          "\ndump:\n" (view rest-v2))))
           extra-opts (if (nil? ?extra-opts) {}
-                         (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
+                         (seq->kv-table ?extra-opts
+                                        [:once
+                                         :nested
+                                         :<buffer>
+                                         :ex
+                                         :<command>]))
           ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
       (set extra-opts.group ?id)
       (set extra-opts.buffer ?bufnr)
       (when-not (and (str? ?pattern) (= "*" ?pattern))
                 ;; Note: `*` is the default pattern and redundant.
                 (set extra-opts.pattern ?pattern))
-      (if (excmd? excmd-or-callback)
-          (set extra-opts.command excmd-or-callback)
+      (if (or extra-opts.<command> extra-opts.ex (excmd? callback))
+          (set extra-opts.command callback)
           ;; Note: Ignore the possibility to set Vimscript function to callback
           ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
           ;; to "callback" key because functions written in Vim script are
           ;; rarely supposed to expect the table from `nvim_create_autocmd` for
           ;; its first arg.
           (set extra-opts.callback
-               (or (extract-?vim-fn-name excmd-or-callback) ;
-                   excmd-or-callback)))
+               (or (extract-?vim-fn-name callback) ;
+                   callback)))
       (when (nil? extra-opts.desc)
-        (set extra-opts.desc (infer-description excmd-or-callback)))
+        (set extra-opts.desc (infer-description callback)))
       (let [api-opts (merge-api-opts ?api-opts
                                      (autocmd/->compatible-opts! extra-opts))]
         `(vim.api.nvim_create_autocmd ,events ,api-opts)))))

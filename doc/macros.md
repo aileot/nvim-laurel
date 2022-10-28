@@ -69,12 +69,6 @@ following features:
   use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
-### ex-{name}
-
-A special symbol name. With prefix `ex-`, some of nvim-laurel macros in compile
-time can tell that the named symbol will result in a string of vim Ex command in
-runtime.
-
 ## Macros
 
 - [Autocmd](#Autocmd)
@@ -110,11 +104,21 @@ Create or get an augroup, or override an existing augroup.
   against. To set `pattern` in symbol or list, set it in either `extra-opts` or
   `api-opts` instead.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `<buffer>`: with this alone, create autocmd to current buffer.
+  - `<buffer>`: create autocmd to current buffer by itself.
+  - `<command>`: it indicates the callback must be Ex command by itself.
+  - `ex`: an alias of `<command>` key.
 - `callback`: (string|function) Set either vim Ex command or callback function.
-  Set a bare-string, or prefix `ex-` to a symbol name, to set Ex command; set
-  `vim.fn.foobar` to set Vim script function without table arg from
-  `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
+  Set a bare-string, or set `<command>` key in `extra-opts`, to set Ex command;
+  set `vim.fn.foobar` to set Vim script function `foobar()` without table arg
+  from `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
+  Exceptionally, a list which starts with one of the following symbols is also
+  regarded as Ex command:
+  - `..`
+  - `table.concat`
+  - `string.format`
+  - `tostring`
+  - `->string`
+  - `->str`
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
 
 ```fennel
@@ -468,12 +472,25 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `<buffer>`: map `lhs` in current buffer.
+  - `<buffer>`: map `lhs` in current buffer by itself.
   - `buffer`: map `lhs` to a buffer of the next value.
+  - `<command>`: it indicates `rhs` must be Normal mode command execution by
+    itself.
+  - `ex`: an alias of `<command>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
-  prefix `ex-` to a symbol name, to set Ex command; otherwise, it is regarded as
-  a Lua function.
+  set `<command>` key in `extra-opts`, to set Normal mode command execution;
+  otherwise, it is regarded as a Lua function. Exceptionally, a list which
+  starts with one of the following symbols is also regarded as Normal command
+  execution:
+  - `..`
+  - `table.concat`
+  - `string.format`
+  - `tostring`
+  - `->string`
+  - `->str`
+  - [`<Cmd>`](#Cmd)
+  - [`<C-u>`](#C-u)
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
@@ -787,8 +804,8 @@ Create a user command.
   letter.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
   Additional attributes:
-  - `<buffer>`: with this alone, command is set in current buffer.
-  - `buffer`: with the next value, command is set to the buffer.
+  - `<buffer>`: create command in current buffer by itself.
+  - `buffer`: create command in the buffer of the next value.
 - `command`: (string|function) Replacement command.
 - [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same as
   `opts` for `nvim_create_user_command`.
