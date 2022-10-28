@@ -111,6 +111,14 @@ Create or get an augroup, or override an existing augroup.
   Set a bare-string, or set `<command>` key in `extra-opts`, to set Ex command;
   set `vim.fn.foobar` to set Vim script function without table arg from
   `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
+  Exceptionally, a list which starts with one of the following symbols is also
+  regarded as Ex command:
+  - `..`
+  - `table.concat`
+  - `string.format`
+  - `tostring`
+  - `->string`
+  - `->str`
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
 
 ```fennel
@@ -472,7 +480,17 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
   set `<command>` key in `extra-opts`, to set Normal mode command execution;
-  otherwise, it is regarded as a Lua function.
+  otherwise, it is regarded as a Lua function. Exceptionally, a list which
+  starts with one of the following symbols is also regarded as Normal command
+  execution:
+  - `..`
+  - `table.concat`
+  - `string.format`
+  - `tostring`
+  - `->string`
+  - `->str`
+  - [`<Cmd>`](#Cmd)
+  - [`<C-u>`](#C-u)
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
