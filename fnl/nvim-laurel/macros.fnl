@@ -75,6 +75,9 @@
         (first-symbol first-item))))
 
 ;; Specific Utils ///1
+(lambda wrapper [key ...]
+  `(. (require :nvim-laurel._wrapper) ,key ,...))
+
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
     (when (nil? (. another k))
@@ -119,8 +122,7 @@
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
-          `((. (require :nvim-laurel._wrapper) :merge-api-opts) ,?api-opts
-                                                                ,?extra-opts))
+          `(,(wrapper :merge-api-opts) ,?api-opts ,?extra-opts))
       (nil? ?api-opts)
       (or ?extra-opts {})
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
