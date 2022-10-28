@@ -109,8 +109,8 @@ Create or get an augroup, or override an existing augroup.
   - `ex`: an alias of `<command>` key.
 - `callback`: (string|function) Set either vim Ex command or callback function.
   Set a bare-string, or set `<command>` key in `extra-opts`, to set Ex command;
-  set `vim.fn.foobar` to set Vim script function without table arg from
-  `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
+  set `vim.fn.foobar` to set Vim script function `foobar()` without table arg
+  from `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
   Exceptionally, a list which starts with one of the following symbols is also
   regarded as Ex command:
   - `..`
