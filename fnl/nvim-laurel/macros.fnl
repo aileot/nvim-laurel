@@ -441,7 +441,7 @@
   (let [?bufnr extra-opts.buffer
         api-opts (merge-api-opts ?api-opts
                                  (keymap/->compatible-opts! extra-opts))]
-    (if (or (sym? modes) (sym? rhs))
+    (if (or (sym? modes) (list? modes))
         ;; Note: We cannot tell whether or not `rhs` should be set to callback
         ;; in compile time. Keep the compiled results simple.
         `(vim.keymap.set ,modes ,lhs ,rhs ,api-opts)
