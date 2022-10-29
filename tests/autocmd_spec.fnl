@@ -105,4 +105,18 @@
                                    default-callback)
                               (let [[autocmd] (get-autocmds)]
                                 (assert.is.same "Prevent description inference"
-                                                autocmd.desc))))))))
+                                                autocmd.desc))))
+                        (it "creates buffer-local autocmd with `buffer` key"
+                            (fn []
+                              (let [bufnr (vim.api.nvim_get_current_buf)
+                                    au1 (au! default-augroup default-event
+                                             [:buffer bufnr] default-callback)]
+                                (vim.cmd.new)
+                                (vim.cmd.only)
+                                (let [au2 (au! default-augroup default-event
+                                               [:<buffer>] default-callback)
+                                      [autocmd1] (get-autocmds {:buffer bufnr})
+                                      [autocmd2] ;
+                                      (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
+                                  (assert.is.same au1 autocmd1.id)
+                                  (assert.is.same au2 autocmd2.id)))))))))
