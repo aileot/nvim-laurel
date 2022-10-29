@@ -76,7 +76,7 @@
 
 ;; Specific Utils ///1
 (lambda wrapper [key ...]
-  `(. (require :nvim-laurel._wrapper) ,key ,...))
+  `(. (require :nvim-laurel.wrapper) ,key ,...))
 
 (lambda merge-default-kv-table [default another]
   (each [k v (pairs default)]
