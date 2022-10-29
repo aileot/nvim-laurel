@@ -429,23 +429,21 @@
         `(vim.api.nvim_del_keymap ,mode ,lhs))))
 
 (lambda keymap/set-maps! [modes extra-opts lhs rhs ?api-opts]
-  (let [?bufnr extra-opts.buffer
-        api-opts (merge-api-opts ?api-opts
-                                 (keymap/->compatible-opts! extra-opts))]
-    (if (or (sym? modes) (list? modes))
-        ;; Note: We cannot tell whether or not `rhs` should be set to callback
-        ;; in compile time. Keep the compiled results simple.
-        `(vim.keymap.set ,modes ,lhs ,rhs ,api-opts)
-        (let [set-keymap (lambda [mode]
-                           (if ?bufnr
-                               `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                             ,rhs ,api-opts)
-                               `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                         ,api-opts)))]
-          (if (str? modes)
-              (set-keymap modes)
-              (icollect [_ m (ipairs modes)]
-                (set-keymap m)))))))
+  (if (or (sym? modes) (list? modes))
+      `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
+      (let [?bufnr extra-opts.buffer
+            api-opts (merge-api-opts ?api-opts
+                                     (keymap/->compatible-opts! extra-opts))
+            set-keymap (lambda [mode]
+                         (if ?bufnr
+                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                           ,rhs ,api-opts)
+                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
+                                                       ,api-opts)))]
+        (if (str? modes)
+            (set-keymap modes)
+            (icollect [_ m (ipairs modes)]
+              (set-keymap m))))))
 
 ;; Export ///2
 (lambda <C-u> [x]
