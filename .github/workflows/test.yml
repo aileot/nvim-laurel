@@ -25,13 +25,7 @@ jobs:
       LUAROCKS_HOME: /home/runner/.local/.luarocks
     steps:
       - uses: actions/checkout@v3
-      - run: date +%F > todays-date
-      # - name: Restore Neovim
-      #   uses: actions/cache@v3
-      #   id: cache-nvim
-      #   with:
-      #     path: /home/runner/nvim-*
-      #     key: ${{ runner.os }}-${{ hashFiles('todays-date') }}-nvim-${{ matrix.nvim_version }}
+      - run: date +%Y%W > weekly
       - name: Restore test dependencies in Luarocks
         uses: actions/cache@v3
         id: cache-luarocks
@@ -39,7 +33,7 @@ jobs:
           path: |
             /home/runner/.local/.luarocks
             /home/runner/.local/LuaJIT-*
-          key: ${{ runner.os }}-${{ hashFiles('todays-date') }}-luarocks
+          key: ${{ runner.os }}-${{ hashFiles('weekly') }}-luarocks
       - name: Set up environment for Neovim plugin written in Lua
         if: steps.cache-luarocks.outputs.cache-hit != 'true'
         uses: notomo/action-setup-nvim-lua@v1
