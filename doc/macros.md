@@ -3,6 +3,7 @@
 - [CAUTION](#CAUTION)
 - [Terminology](#Terminology)
 - [Macros](#Macros)
+- [Anti-Patterns](#Anti-Patterns)
 
 ## CAUTION
 
@@ -123,7 +124,7 @@ Create or get an augroup, or override an existing augroup.
 
 ```fennel
 (augroup! :sample-augroup
-  [:TextYankPost #(pcall #(vim.highlight.on_yank {:timeout 450 :on_visual false}))]
+  [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! :BufWritePre [:pattern (.. (vim.fn.stdpath :config) "/*")]
       vim.lsp.buf.format)
   (autocmd! [:InsertEnter :InsertLeave]
@@ -139,7 +140,7 @@ is equivalent to
 ```vim
 augroup sample-augroup
   autocmd!
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank {timeout=450, on_visual=false}
+  autocmd TextYankPost * lua vim.highlight.on_yank {timeout=450, on_visual=false}
   execute 'autocmd BufWritePre' stdpath('config') .'/* lua vim.lsp.buf.format()'
   autocmd InsertEnter,InsertLeave <buffer> call foo#bar()
   autocmd VimEnter * ++once ++nested call baz#qux(expand('<amatch>'))
@@ -153,7 +154,7 @@ local id = vim.api.nvim_create_augroup("sample-augroup", {})
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = id,
   callback = function()
-    pcall(vim.highlight.on_yank, {timeout=450, on_visual=false})
+   vim.highlight.on_yank {timeout=450, on_visual=false}
   end,
 })
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -901,3 +902,43 @@ nvim_set_nl(0, "Foo", {
 #### `hi!`
 
 An alias of [`highlight!`](#highlight).
+
+## Anti-Patterns
+
+### [`autocmd!`](#autocmd)
+
+#### `pcall` in the end of callback
+
+It could be an unexpected behavior that `autocmd` whose callback ends with
+`pcall` is executed only once because of the combination:
+
+- Fennel `list` returns the last value.
+- `pcall` returns `true` when the call succeeds without errors.
+- `nvim_create_autocmd` deletes itself when its callback function returns
+  `true`.
+
+##### Anti-Pattern
+
+```fennel
+(autocmd! events #(pcall foobar))
+(autocmd! events (fn []
+                   ;; Do something else
+                   (pcall foobar)))
+```
+
+##### Pattern
+
+```fennel
+(macro ->nil [...]
+  "Make sure to return `nil`."
+  `(do
+     ,...
+     nil))
+
+(autocmd! events #(->nil (pcall foobar)))
+(autocmd! events (fn []
+                   ;; Do something else
+                   (pcall foobar)
+                   ;; Return any other value than `true`.
+                   nil))
+```
