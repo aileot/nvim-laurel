@@ -1,3 +1,7 @@
+(local {: keymap/->compatible-opts!
+        : command/->compatible-opts!
+        : autocmd/->compatible-opts!} (require :nvim-laurel.utils))
+
 ;; General Macros ///1
 (macro ++ [x]
   "Increment `x` by 1"
@@ -415,19 +419,6 @@
             (set extra-opts.desc (infer-description raw-rhs)))
           (values extra-opts lhs rhs ?api-opts)))))
 
-(lambda keymap/->compatible-opts! [opts]
-  "Remove invalid keys of `opts` for the api functions."
-  (set opts.buffer nil)
-  (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  (when (and opts.expr (not= false opts.replace_keycodes))
-    (set opts.replace_keycodes true))
-  (when opts.literal
-    (set opts.literal nil)
-    (set opts.replace_keycodes nil))
-  opts)
-
 (lambda keymap/del-maps! [...]
   "Delete keymap in such format as
   `(del-keymap :n :lhs)`, or `(del-keymap bufnr :n :lhs)`."
@@ -740,11 +731,6 @@
   (map! :t ...))
 
 ;; Command ///1
-(lambda command/->compatible-opts! [opts]
-  (set opts.buffer nil)
-  (set opts.<buffer> nil)
-  opts)
-
 (lambda command! [...]
   "Define a user command.
 
@@ -790,12 +776,6 @@
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
 ;; Autocmd ///1
-(lambda autocmd/->compatible-opts! [opts]
-  (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  opts)
-
 (local autocmd/extra-opt-keys [:group
                                :pattern
                                :buffer
