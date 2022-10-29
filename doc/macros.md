@@ -123,7 +123,7 @@ Create or get an augroup, or override an existing augroup.
 
 ```fennel
 (augroup! :sample-augroup
-  [:TextYankPost #(pcall #(vim.highlight.on_yank {:timeout 450 :on_visual false}))]
+  [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! :BufWritePre [:pattern (.. (vim.fn.stdpath :config) "/*")]
       vim.lsp.buf.format)
   (autocmd! [:InsertEnter :InsertLeave]
@@ -139,7 +139,7 @@ is equivalent to
 ```vim
 augroup sample-augroup
   autocmd!
-  autocmd TextYankPost * silent! lua vim.highlight.on_yank {timeout=450, on_visual=false}
+  autocmd TextYankPost * lua vim.highlight.on_yank {timeout=450, on_visual=false}
   execute 'autocmd BufWritePre' stdpath('config') .'/* lua vim.lsp.buf.format()'
   autocmd InsertEnter,InsertLeave <buffer> call foo#bar()
   autocmd VimEnter * ++once ++nested call baz#qux(expand('<amatch>'))
@@ -153,7 +153,7 @@ local id = vim.api.nvim_create_augroup("sample-augroup", {})
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = id,
   callback = function()
-    pcall(vim.highlight.on_yank, {timeout=450, on_visual=false})
+   vim.highlight.on_yank {timeout=450, on_visual=false}
   end,
 })
 vim.api.nvim_create_autocmd("BufWritePre", {
