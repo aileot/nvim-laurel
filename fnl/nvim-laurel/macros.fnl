@@ -445,11 +445,10 @@
         ;; Note: We cannot tell whether or not `rhs` should be set to callback
         ;; in compile time. Keep the compiled results simple.
         `(vim.keymap.set ,modes ,lhs ,rhs ,api-opts)
-        (let [set-keymap (if ?bufnr
-                             (lambda [mode]
+        (let [set-keymap (lambda [mode]
+                           (if ?bufnr
                                `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                             ,rhs ,api-opts))
-                             (lambda [mode]
+                                                             ,rhs ,api-opts)
                                `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
                                                          ,api-opts)))]
           (if (str? modes)
