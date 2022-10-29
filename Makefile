@@ -65,6 +65,7 @@ runtimes: clean $(LUA_RUNTIME_DIRS) $(LUA_RUNTIMES)
 %_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
 	@$(FENNEL) \
 		--correlate \
+		--add-package-path "$(REPO_LUA_PATH)" \
 		--add-macro-path "$(REPO_MACRO_PATH)" \
 		--compile $< > $@
 
