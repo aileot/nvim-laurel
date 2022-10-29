@@ -958,10 +958,6 @@
                             (view val.ctermbg)) val)
         `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))))
 
-(lambda hi! [...]
-  "An alias of `highlight!`"
-  (highlight! ...))
-
 ;; Export ///1
 
 {: set!
@@ -1017,6 +1013,6 @@
  : str->keycodes
  : feedkeys!
  : highlight!
- : hi!}
+ :hi! highlight!}
 
 ;; vim:fdm=marker:foldmarker=///,"""
