@@ -3,6 +3,7 @@
 - [CAUTION](#CAUTION)
 - [Terminology](#Terminology)
 - [Macros](#Macros)
+- [Anti-Patterns](#Anti-Patterns)
 
 ## CAUTION
 
@@ -901,3 +902,43 @@ nvim_set_nl(0, "Foo", {
 #### `hi!`
 
 An alias of [`highlight!`](#highlight).
+
+## Anti-Patterns
+
+### [`autocmd!`](#autocmd)
+
+#### `pcall` in the end of callback
+
+It could be an unexpected behavior that `autocmd` whose callback ends with
+`pcall` is executed only once because of the combination:
+
+- Fennel `list` returns the last value.
+- `pcall` returns `true` when the call succeeds without errors.
+- `nvim_create_autocmd` deletes itself when its callback function returns
+  `true`.
+
+##### Anti-Pattern
+
+```fennel
+(autocmd! events #(pcall foobar))
+(autocmd! events (fn []
+                   ;; Do something else
+                   (pcall foobar)))
+```
+
+##### Pattern
+
+```fennel
+(macro ->nil [...]
+  "Make sure to return `nil`."
+  `(do
+     ,...
+     nil))
+
+(autocmd! events #(->nil (pcall foobar)))
+(autocmd! events (fn []
+                   ;; Do something else
+                   (pcall foobar)
+                   ;; Return any other value than `true`.
+                   nil))
+```
