@@ -750,8 +750,7 @@
   - `command`: (string|function) Replacement command.
   - `?api-opts`: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
-  (let [extra-opts {}
-        ?seq-extra-opts (if (sequence? a1) a1
+  (let [?seq-extra-opts (if (sequence? a1) a1
                             (sequence? a2) a2)
         ?extra-opts (when ?seq-extra-opts
                       (seq->kv-table ?seq-extra-opts
@@ -760,8 +759,7 @@
                                       :<buffer>
                                       :register
                                       :keepscript]))
-        [extra-opts name command ?api-opts] (if-not ?extra-opts
-                                                    [{} a1 a2 ?a3]
+        [extra-opts name command ?api-opts] (if-not ?extra-opts [{} a1 a2 ?a3]
                                                     (sequence? a1)
                                                     [?extra-opts a2 ?a3 ?a4]
                                                     [?extra-opts a1 ?a3 ?a4])
