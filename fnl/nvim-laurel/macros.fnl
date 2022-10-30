@@ -384,6 +384,7 @@
   "Parse varargs.
   ```fennel
   (keymap/parse-varargs ?extra-opts lhs rhs ?api-opts)
+  (keymap/parse-varargs lhs ?extra-opts rhs ?api-opts)
   ```
   @param ?extra-opts sequence|kv-table
   @param lhs string
