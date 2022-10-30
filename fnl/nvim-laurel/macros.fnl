@@ -733,7 +733,7 @@
   (map! :t ...))
 
 ;; Command ///1
-(lambda command! [...]
+(lambda command! [a1 a2 ?a3 ?a4]
   "Define a user command.
 
   ```fennel
@@ -751,20 +751,20 @@
   - `?api-opts`: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
   (let [extra-opts {}
-        [name command ?api-opts] ;
-        (accumulate [args [] _ varg (ipairs [...])]
-          (do
-            (if (sequence? varg)
-                (let [opts (seq->kv-table varg
-                                          [:bar
-                                           :bang
-                                           :<buffer>
-                                           :register
-                                           :keepscript])]
-                  (each [k v (pairs opts)]
-                    (tset extra-opts k v)))
-                (table.insert args varg))
-            args))
+        ?seq-extra-opts (if (sequence? a1) a1
+                            (sequence? a2) a2)
+        ?extra-opts (when ?seq-extra-opts
+                      (seq->kv-table ?seq-extra-opts
+                                     [:bar
+                                      :bang
+                                      :<buffer>
+                                      :register
+                                      :keepscript]))
+        [extra-opts name command ?api-opts] (if-not ?extra-opts
+                                                    [{} a1 a2 ?a3]
+                                                    (sequence? a1)
+                                                    [?extra-opts a2 ?a3 ?a4]
+                                                    [?extra-opts a1 ?a3 ?a4])
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts ?api-opts
                                  (command/->compatible-opts! extra-opts))]
