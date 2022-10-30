@@ -798,15 +798,16 @@ Map `lhs` to `rhs` in Terminal mode non-recursively.
 Create a user command.
 
 ```fennel
+(command! ?extra-opts name command ?api-opts)
 (command! name ?extra-opts command ?api-opts)
 ```
 
-- `name`: (string) Name of the new user command. It must begin with an uppercase
-  letter.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
   Additional attributes:
   - `<buffer>`: create command in current buffer by itself.
   - `buffer`: create command in the buffer of the next value.
+- `name`: (string) Name of the new user command. It must begin with an uppercase
+  letter.
 - `command`: (string|function) Replacement command.
 - [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same as
   `opts` for `nvim_create_user_command`.
