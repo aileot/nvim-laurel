@@ -58,11 +58,16 @@
                                  (assert.is.same :rhs (get-rhs mode :lhs)))))))
             (describe :map!
                       (fn []
-                        ;; (it "maps lhs to rhs with `noremap` set to `false` represented by `1`"
-                        ;;     #(let [mode :n]
-                        ;;        (map! mode :lhs :rhs)
-                        ;;        (let [{: noremap} (get-mapargs mode :lhs)]
-                        ;;          (assert.is.same 0 noremap))))
+                        (it "maps lhs to rhs with `noremap` set to `false` represented by `1`"
+                            #(let [mode :n
+                                   modes [:n :o :t]]
+                               (map! mode :lhs :rhs)
+                               (map! modes :lhs :rhs)
+                               (let [{: noremap} (get-mapargs mode :lhs)]
+                                 (assert.is.same 0 noremap))
+                               (each [_ m (ipairs modes)]
+                                 (let [{: noremap} (get-mapargs m :lhs)]
+                                   (assert.is.same 0 noremap)))))
                         (it "maps symbol prefixed by `ex-` to rhs"
                             #(let [mode :n
                                    rhs :rhs]
