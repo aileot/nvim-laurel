@@ -380,7 +380,7 @@
   (option/modify :global name val "-"))
 
 ;; Keymap ///1
-(lambda keymap/parse-varargs [...]
+(lambda keymap/parse-varargs [a1 a2 ?a3 ?a4]
   "Parse varargs.
   ```fennel
   (keymap/parse-varargs ?extra-opts lhs rhs ?api-opts)
@@ -394,35 +394,37 @@
   @return lhs string
   @return rhs string|function
   @return ?api-opts kv-table"
-  (let [v1 (select 1 ...)]
-    (if (kv-table? v1) (values ...)
-        (let [?extra-opts (when (sequence? v1)
-                            (seq->kv-table v1
-                                           [:<buffer>
-                                            :ex
-                                            :<command>
-                                            :nowait
-                                            :silent
-                                            :script
-                                            :unique
-                                            :expr
-                                            :replace_keycodes
-                                            :literal]))
-              [_ lhs raw-rhs ?api-opts] (if ?extra-opts [...] [nil ...])
-              extra-opts (or ?extra-opts {})
-              rhs (if (or extra-opts.<command> extra-opts.ex (excmd? raw-rhs)
-                          (and (list? raw-rhs)
-                               (contains? [:<Cmd> :<C-u>]
-                                          (first-symbol raw-rhs))))
-                      raw-rhs
-                      (do
-                        (set extra-opts.callback raw-rhs)
-                        ""))
-              ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
-          (set extra-opts.buffer ?bufnr)
-          (when (nil? extra-opts.desc)
-            (set extra-opts.desc (infer-description raw-rhs)))
-          (values extra-opts lhs rhs ?api-opts)))))
+  (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
+      (let [?seq-extra-opts (if (sequence? a1) a1
+                                (sequence? a2) a2)
+            ?extra-opts (when ?seq-extra-opts
+                          (seq->kv-table ?seq-extra-opts
+                                         [:<buffer>
+                                          :ex
+                                          :<command>
+                                          :nowait
+                                          :silent
+                                          :script
+                                          :unique
+                                          :expr
+                                          :replace_keycodes
+                                          :literal]))
+            [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts [{} a1 a2]
+                                                       (sequence? a1)
+                                                       [?extra-opts a2 ?a3 ?a4]
+                                                       [?extra-opts a1 ?a3 ?a4])
+            rhs (if (or extra-opts.<command> extra-opts.ex (excmd? raw-rhs)
+                        (and (list? raw-rhs)
+                             (contains? [:<Cmd> :<C-u>] (first-symbol raw-rhs))))
+                    raw-rhs
+                    (do
+                      (set extra-opts.callback raw-rhs)
+                      ""))
+            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
+        (set extra-opts.buffer ?bufnr)
+        (when (nil? extra-opts.desc)
+          (set extra-opts.desc (infer-description raw-rhs)))
+        (values extra-opts lhs rhs ?api-opts))))
 
 (lambda keymap/del-maps! [...]
   "Delete keymap in such format as
