@@ -13,6 +13,10 @@
   `(when (not ,cond)
      ,...))
 
+(macro if-not [cond ...]
+  `(if (not ,cond)
+       ,...))
+
 ;; General Utils ///1
 ;; Predicates ///2
 (lambda contains? [xs ?a]
@@ -729,43 +733,38 @@
   (map! :t ...))
 
 ;; Command ///1
-(lambda command! [...]
+(lambda command! [a1 a2 ?a3 ?a4]
   "Define a user command.
 
   ```fennel
+  (command! ?extra-opts name command ?api-opts)
   (command! name ?extra-opts command ?api-opts)
   ```
 
-  - `name`: (string) Name of the new user command.
-    It must begin with an uppercase letter.
   - `?extra-opts`: (sequence) Optional command attributes.
-    Neither symbol nor list can be placed here.
-    This sequential table is treated as if a key/value table, except the
-    boolean attributes.
-    The boolean attributes are set to `true` just being there alone.
-    To set some attributes to `false`, set them instead in `?api-opts` below.
-    All the keys must be raw string there.
     Additional attributes:
     - `<buffer>`: with this alone, command is set in current buffer instead.
     - `buffer`: with the next value, command is set to the buffer instead.
+  - `name`: (string) Name of the new user command.
+    It must begin with an uppercase letter.
   - `command`: (string|function) Replacement command.
   - `?api-opts`: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
   (let [extra-opts {}
-        [name command ?api-opts] ;
-        (accumulate [args [] _ varg (ipairs [...])]
-          (do
-            (if (sequence? varg)
-                (let [opts (seq->kv-table varg
-                                          [:bar
-                                           :bang
-                                           :<buffer>
-                                           :register
-                                           :keepscript])]
-                  (each [k v (pairs opts)]
-                    (tset extra-opts k v)))
-                (table.insert args varg))
-            args))
+        ?seq-extra-opts (if (sequence? a1) a1
+                            (sequence? a2) a2)
+        ?extra-opts (when ?seq-extra-opts
+                      (seq->kv-table ?seq-extra-opts
+                                     [:bar
+                                      :bang
+                                      :<buffer>
+                                      :register
+                                      :keepscript]))
+        [extra-opts name command ?api-opts] (if-not ?extra-opts
+                                                    [{} a1 a2 ?a3]
+                                                    (sequence? a1)
+                                                    [?extra-opts a2 ?a3 ?a4]
+                                                    [?extra-opts a1 ?a3 ?a4])
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts ?api-opts
                                  (command/->compatible-opts! extra-opts))]

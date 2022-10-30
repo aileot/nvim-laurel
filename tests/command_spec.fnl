@@ -33,6 +33,12 @@
                     (assert.is_not_nil (get-buf-command bufnr :Foo))
                     (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr
                                                                              :Foo)))))
+            (describe :extra-opts
+                      (fn []
+                        (it "can be either first arg or second arg"
+                            (fn []
+                              (assert.has_no_error #(command! [:bang] :Foo :Bar))
+                              (assert.has_no_error #(command! :Foo [:bang] :Bar))))))
             (describe :api-opts
                       (fn []
                         (it "gives priority api-opts over extra-opts"
