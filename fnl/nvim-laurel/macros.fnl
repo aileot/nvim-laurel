@@ -13,6 +13,10 @@
   `(when (not ,cond)
      ,...))
 
+(macro if-not [cond ...]
+  `(if (not ,cond)
+       ,...))
+
 ;; General Utils ///1
 ;; Predicates ///2
 (lambda contains? [xs ?a]
