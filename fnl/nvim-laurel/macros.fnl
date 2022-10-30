@@ -733,21 +733,16 @@
   "Define a user command.
 
   ```fennel
+  (command! ?extra-opts name command ?api-opts)
   (command! name ?extra-opts command ?api-opts)
   ```
 
-  - `name`: (string) Name of the new user command.
-    It must begin with an uppercase letter.
   - `?extra-opts`: (sequence) Optional command attributes.
-    Neither symbol nor list can be placed here.
-    This sequential table is treated as if a key/value table, except the
-    boolean attributes.
-    The boolean attributes are set to `true` just being there alone.
-    To set some attributes to `false`, set them instead in `?api-opts` below.
-    All the keys must be raw string there.
     Additional attributes:
     - `<buffer>`: with this alone, command is set in current buffer instead.
     - `buffer`: with the next value, command is set to the buffer instead.
+  - `name`: (string) Name of the new user command.
+    It must begin with an uppercase letter.
   - `command`: (string|function) Replacement command.
   - `?api-opts`: (table) Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
