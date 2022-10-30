@@ -1,3 +1,7 @@
+(local {: keymap/->compatible-opts!
+        : command/->compatible-opts!
+        : autocmd/->compatible-opts!} (require :nvim-laurel.utils))
+
 ;; General Macros ///1
 (macro ++ [x]
   "Increment `x` by 1"
@@ -415,19 +419,6 @@
             (set extra-opts.desc (infer-description raw-rhs)))
           (values extra-opts lhs rhs ?api-opts)))))
 
-(lambda keymap/->compatible-opts! [opts]
-  "Remove invalid keys of `opts` for the api functions."
-  (set opts.buffer nil)
-  (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  (when (and opts.expr (not= false opts.replace_keycodes))
-    (set opts.replace_keycodes true))
-  (when opts.literal
-    (set opts.literal nil)
-    (set opts.replace_keycodes nil))
-  opts)
-
 (lambda keymap/del-maps! [...]
   "Delete keymap in such format as
   `(del-keymap :n :lhs)`, or `(del-keymap bufnr :n :lhs)`."
@@ -438,24 +429,21 @@
         `(vim.api.nvim_del_keymap ,mode ,lhs))))
 
 (lambda keymap/set-maps! [modes extra-opts lhs rhs ?api-opts]
-  (let [?bufnr extra-opts.buffer
-        api-opts (merge-api-opts ?api-opts
-                                 (keymap/->compatible-opts! extra-opts))]
-    (if (or (sym? modes) (list? modes))
-        ;; Note: We cannot tell whether or not `rhs` should be set to callback
-        ;; in compile time. Keep the compiled results simple.
-        `(vim.keymap.set ,modes ,lhs ,rhs ,api-opts)
-        (let [set-keymap (if ?bufnr
-                             (lambda [mode]
-                               `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                             ,rhs ,api-opts))
-                             (lambda [mode]
-                               `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                         ,api-opts)))]
-          (if (str? modes)
-              (set-keymap modes)
-              (icollect [_ m (ipairs modes)]
-                (set-keymap m)))))))
+  (if (or (sym? modes) (list? modes))
+      `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
+      (let [?bufnr extra-opts.buffer
+            api-opts (merge-api-opts ?api-opts
+                                     (keymap/->compatible-opts! extra-opts))
+            set-keymap (lambda [mode]
+                         (if ?bufnr
+                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                           ,rhs ,api-opts)
+                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
+                                                       ,api-opts)))]
+        (if (str? modes)
+            (set-keymap modes)
+            (icollect [_ m (ipairs modes)]
+              (set-keymap m))))))
 
 ;; Export ///2
 (lambda <C-u> [x]
@@ -741,11 +729,6 @@
   (map! :t ...))
 
 ;; Command ///1
-(lambda command/->compatible-opts! [opts]
-  (set opts.buffer nil)
-  (set opts.<buffer> nil)
-  opts)
-
 (lambda command! [...]
   "Define a user command.
 
@@ -791,12 +774,6 @@
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
 ;; Autocmd ///1
-(lambda autocmd/->compatible-opts! [opts]
-  (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  opts)
-
 (local autocmd/extra-opt-keys [:group
                                :pattern
                                :buffer

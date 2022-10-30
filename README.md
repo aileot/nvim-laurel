@@ -47,7 +47,9 @@ repo = "aileot/nvim-laurel"
 
    ```make
    %.lua: %.fnl
-     fennel --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl"
+     fennel \
+        --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl" \
+        --add-package-path "/path/to/nvim-laurel/lua/?.lua;/path/to/nvim-laurel/lua/?/init.lua" \
        --compile $< > $@
    ```
 

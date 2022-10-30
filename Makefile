@@ -32,6 +32,8 @@ REPO_FNL_DIR := $(REPO_ROOT)/fnl
 REPO_FNL_PATH := $(REPO_FNL_DIR)/?.fnl;$(REPO_FNL_DIR)/?/init.fnl
 REPO_MACRO_DIR := $(REPO_FNL_DIR)
 REPO_MACRO_PATH := $(REPO_MACRO_DIR)/?.fnl;$(REPO_MACRO_DIR)/?/init.fnl
+REPO_LUA_DIR := $(REPO_ROOT)/lua
+REPO_LUA_PATH := $(REPO_FNL_DIR)/?.lua;$(REPO_FNL_DIR)/?/init.lua
 
 .DEFAULT_GOAL := help
 .PHONY: help
@@ -53,6 +55,7 @@ lua/%: lua/
 lua/%.lua: fnl/%.fnl lua/ ## Compile runtime fnl file into lua
 	@$(FENNEL) \
 		--correlate \
+		--add-package-path "$(REPO_LUA_PATH)" \
 		--add-macro-path "$(REPO_MACRO_PATH)" \
 		--compile $< > $@
 
@@ -62,6 +65,7 @@ runtimes: clean $(LUA_RUNTIME_DIRS) $(LUA_RUNTIMES)
 %_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
 	@$(FENNEL) \
 		--correlate \
+		--add-package-path "$(REPO_LUA_PATH)" \
 		--add-macro-path "$(REPO_MACRO_PATH)" \
 		--compile $< > $@
 
