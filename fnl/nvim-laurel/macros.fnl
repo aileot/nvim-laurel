@@ -816,7 +816,7 @@
                                :once
                                :nested])
 
-(lambda define-autocmd! [...]
+(lambda define-autocmd! [?a1 a2 ?a3 ?x ?y ?z]
   "Define an autocmd.
   This macro also works as a syntax sugar in `augroup!`.
 
@@ -827,8 +827,7 @@
     affiliated with no augroup.
   @param events string|string[]:
     The event or events to register this autocmd.
-  @param ?pattern bare-string|bare-sequence
-    You can set `:<buffer>` here to set `autocmd` to current buffer.
+  @param ?pattern bare-sequence
   @param ?extra-opts bare-sequence:
     Addition to `api-opts` keys, `:<buffer>` is available to set `autocmd` to
     current buffer.
@@ -838,62 +837,51 @@
     function.
   @param ?api-opts kv-table:
     Optional autocmd attributes."
-  (match (length [...])
-    ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
-    ;; args are provided.
-    2
-    (let [(events api-opts) ...]
-      `(vim.api.nvim_create_autocmd ,events ,api-opts))
-    _
-    (let [[?id events & rest-v1] [...]
-          [?pattern & ?rest-v2] ;
-          (or (when (< 1 (length rest-v1))
-                (let [r1 (first rest-v1)]
-                  (if (str? r1)
-                      rest-v1
-                      (sequence? r1)
-                      (when-not (contains? autocmd/extra-opt-keys (first r1))
-                                rest-v1)))) ;
-              [])
-          rest-v2 (if (= 0 (length ?rest-v2)) rest-v1 ?rest-v2)
-          [?extra-opts callback ?api-opts] ;
-          (match (length rest-v2)
-            3 rest-v2
-            1 [nil (first rest-v2)]
-            2 (if (sequence? (first rest-v2))
-                  rest-v2
-                  ;; TODO: Is callback unnecessary?
-                  [nil (unpack rest-v2)])
-            _ (error (.. "[autocmd!] unexpected number args: " (length rest-v2)
-                         "\ndump:\n" (view rest-v2))))
-          extra-opts (if (nil? ?extra-opts) {}
-                         (seq->kv-table ?extra-opts
-                                        [:once
-                                         :nested
-                                         :<buffer>
-                                         :ex
-                                         :<command>]))
-          ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
-      (set extra-opts.group ?id)
-      (set extra-opts.buffer ?bufnr)
-      (when-not (and (str? ?pattern) (= "*" ?pattern))
-                ;; Note: `*` is the default pattern and redundant.
-                (set extra-opts.pattern ?pattern))
-      (if (or extra-opts.<command> extra-opts.ex (excmd? callback))
-          (set extra-opts.command callback)
-          ;; Note: Ignore the possibility to set Vimscript function to callback
-          ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
-          ;; to "callback" key because functions written in Vim script are
-          ;; rarely supposed to expect the table from `nvim_create_autocmd` for
-          ;; its first arg.
-          (set extra-opts.callback
-               (or (extract-?vim-fn-name callback) ;
-                   callback)))
-      (when (nil? extra-opts.desc)
-        (set extra-opts.desc (infer-description callback)))
-      (let [api-opts (merge-api-opts ?api-opts
-                                     (autocmd/->compatible-opts! extra-opts))]
-        `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
+  (if (nil? ?a3)
+      ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
+      ;; args are provided.
+      (let [[events api-opts] [?a1 a2]]
+        `(vim.api.nvim_create_autocmd ,events ,api-opts))
+      (let [[?id events] [?a1 a2]
+            [?pattern ?extra-opts callback ?api-opts] ;
+            (match [?a3 ?x ?y ?z]
+              [cb nil nil nil] [nil nil cb nil]
+              (where [a ex-opts c ?d] (sequence? ex-opts)) [a ex-opts c ?d]
+              [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
+                               [nil nil a b]
+                               (contains? autocmd/extra-opt-keys (first a))
+                               [nil a b ?c] ;
+                               [a nil b ?c])
+              _ (error (string.format "unexpected args:\n%s\n%s\n%s\n%s"
+                                      (view ?a3) (view ?x) (view ?y) (view ?z))))
+            extra-opts (if (nil? ?extra-opts) {}
+                           (seq->kv-table ?extra-opts
+                                          [:once
+                                           :nested
+                                           :<buffer>
+                                           :ex
+                                           :<command>]))
+            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
+        (set extra-opts.group ?id)
+        (set extra-opts.buffer ?bufnr)
+        (when-not (and (str? ?pattern) (= "*" ?pattern))
+                  ;; Note: `*` is the default pattern and redundant.
+                  (set extra-opts.pattern ?pattern))
+        (if (or extra-opts.<command> extra-opts.ex (excmd? callback))
+            (set extra-opts.command callback)
+            ;; Note: Ignore the possibility to set Vimscript function to callback
+            ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
+            ;; to "callback" key because functions written in Vim script are
+            ;; rarely supposed to expect the table from `nvim_create_autocmd` for
+            ;; its first arg.
+            (set extra-opts.callback
+                 (or (extract-?vim-fn-name callback) ;
+                     callback)))
+        (when (nil? extra-opts.desc)
+          (set extra-opts.desc (infer-description callback)))
+        (let [api-opts (merge-api-opts ?api-opts
+                                       (autocmd/->compatible-opts! extra-opts))]
+          `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (lambda define-augroup! [name opts ...]
   (if (= 0 (length [...]))
