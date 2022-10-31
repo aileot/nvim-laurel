@@ -827,7 +827,7 @@
     affiliated with no augroup.
   @param events string|string[]:
     The event or events to register this autocmd.
-  @param pattern bare-string|bare-sequence
+  @param ?pattern bare-string|bare-sequence
     You can set `:<buffer>` here to set `autocmd` to current buffer.
   @param ?extra-opts bare-sequence:
     Addition to `api-opts` keys, `:<buffer>` is available to set `autocmd` to
