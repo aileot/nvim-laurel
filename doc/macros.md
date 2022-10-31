@@ -101,9 +101,9 @@ Create or get an augroup, or override an existing augroup.
 
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare-string|bare-sequence) A pattern or patterns to match
-  against. To set `pattern` in symbol or list, set it in either `extra-opts` or
-  `api-opts` instead.
+- `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
+  symbol or list, set it in either `extra-opts` or `api-opts` instead. The first
+  pattern in string cannot be any of the keys used in `?extra-opts`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: create autocmd to current buffer by itself.
   - `<command>`: it indicates the callback must be Ex command by itself.
