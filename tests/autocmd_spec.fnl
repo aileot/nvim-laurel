@@ -9,6 +9,9 @@
   (let [opts (or ?opts {:group default-augroup})]
     (vim.api.nvim_get_autocmds opts)))
 
+(lambda get-first-autocmd [?opts]
+  (. (get-autocmds ?opts) 1))
+
 (describe :autocmd ;
           (fn []
             (before_each (fn []
