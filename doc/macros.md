@@ -467,6 +467,7 @@ Prepend a value to string-style local options. Almost equivalent to
 Map `lhs` to `rhs` in `modes` recursively.
 
 ```fennel
+(map! modes ?extra-opts lhs rhs ?api-opts)
 (map! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -499,6 +500,7 @@ Map `lhs` to `rhs` in `modes` recursively.
 Map `lhs` to `rhs` in `modes` non-recursively.
 
 ```fennel
+(noremap! modes ?extra-opts lhs rhs ?api-opts)
 (noremap! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -559,6 +561,7 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 Map `lhs` to `rhs` in all modes recursively.
 
 ```fennel
+(map-all! ?extra-opts rhs ?api-opts)
 (map-all! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -567,6 +570,7 @@ Map `lhs` to `rhs` in all modes recursively.
 Map `lhs` to `rhs` in Insert/Command-line mode recursively.
 
 ```fennel
+(map-input! ?extra-opts lhs rhs ?api-opts)
 (map-input! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -575,6 +579,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode recursively.
 Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively.
 
 ```fennel
+(map-motion! ?extra-opts lhs rhs ?api-opts)
 (map-motion! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -586,6 +591,7 @@ avoid this, use `(map! [:n :o :x] ...)` instead.
 Map `lhs` to `rhs` in Normal/Visual mode recursively.
 
 ```fennel
+(map-operator! ?extra-opts lhs rhs ?api-opts)
 (map-operator! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -594,6 +600,7 @@ Map `lhs` to `rhs` in Normal/Visual mode recursively.
 Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
 
 ```fennel
+(map-textobj! ?extra-opts lhs rhs ?api-opts)
 (map-textobj! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -602,6 +609,7 @@ Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
 Map `lhs` to `rhs` in Normal mode recursively.
 
 ```fennel
+(nmap! ?extra-opts lhs rhs ?api-opts)
 (nmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -610,6 +618,7 @@ Map `lhs` to `rhs` in Normal mode recursively.
 Map `lhs` to `rhs` in Visual/Select mode recursively.
 
 ```fennel
+(vmap! ?extra-opts lhs rhs ?api-opts)
 (vmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -618,6 +627,7 @@ Map `lhs` to `rhs` in Visual/Select mode recursively.
 Map `lhs` to `rhs` in Visual mode recursively.
 
 ```fennel
+(xmap! ?extra-opts lhs rhs ?api-opts)
 (xmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -626,6 +636,7 @@ Map `lhs` to `rhs` in Visual mode recursively.
 Map `lhs` to `rhs` in Select mode recursively.
 
 ```fennel
+(smap! ?extra-opts lhs rhs ?api-opts)
 (smap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -634,6 +645,7 @@ Map `lhs` to `rhs` in Select mode recursively.
 Map `lhs` to `rhs` in Operator-pending mode recursively.
 
 ```fennel
+(omap! ?extra-opts lhs rhs ?api-opts)
 (omap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -642,6 +654,7 @@ Map `lhs` to `rhs` in Operator-pending mode recursively.
 Map `lhs` to `rhs` in Insert mode recursively.
 
 ```fennel
+(imap! ?extra-opts lhs rhs ?api-opts)
 (imap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -651,6 +664,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
 `:h language-mapping` for the details.
 
 ```fennel
+(lmap! ?extra-opts lhs rhs ?api-opts)
 (lmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -659,6 +673,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
 Map `lhs` to `rhs` in Command-line mode recursively.
 
 ```fennel
+(cmap! ?extra-opts lhs rhs ?api-opts)
 (cmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -667,6 +682,7 @@ Map `lhs` to `rhs` in Command-line mode recursively.
 Map `lhs` to `rhs` in Terminal mode recursively.
 
 ```fennel
+(tmap! ?extra-opts lhs rhs ?api-opts)
 (tmap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -675,6 +691,7 @@ Map `lhs` to `rhs` in Terminal mode recursively.
 Map `lhs` to `rhs` in all modes non-recursively.
 
 ```fennel
+(noremap-all! ?extra-opts lhs rhs ?api-opts)
 (noremap-all! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -683,6 +700,7 @@ Map `lhs` to `rhs` in all modes non-recursively.
 Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
 
 ```fennel
+(noremap-input! ?extra-opts lhs rhs ?api-opts)
 (noremap-input! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -691,6 +709,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
 Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode non-recursively.
 
 ```fennel
+(noremap-motion! ?extra-opts lhs rhs ?api-opts)
 (noremap-motion! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -702,6 +721,7 @@ avoid this, use `(noremap! [:n :o :x] ...)` instead.
 Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
 
 ```fennel
+(noremap-operator! ?extra-opts lhs rhs ?api-opts)
 (noremap-operator! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -710,6 +730,7 @@ Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
 Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
 
 ```fennel
+(noremap-textobj! ?extra-opts lhs rhs ?api-opts)
 (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -718,6 +739,7 @@ Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
 Map `lhs` to `rhs` in Normal mode non-recursively.
 
 ```fennel
+(nnoremap! ?extra-opts lhs rhs ?api-opts)
 (nnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -726,6 +748,7 @@ Map `lhs` to `rhs` in Normal mode non-recursively.
 Map `lhs` to `rhs` in Visual/Select mode non-recursively.
 
 ```fennel
+(vnoremap! ?extra-opts lhs rhs ?api-opts)
 (vnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -734,6 +757,7 @@ Map `lhs` to `rhs` in Visual/Select mode non-recursively.
 Map `lhs` to `rhs` in Visual mode non-recursively.
 
 ```fennel
+(xnoremap! ?extra-opts lhs rhs ?api-opts)
 (xnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -742,6 +766,7 @@ Map `lhs` to `rhs` in Visual mode non-recursively.
 Map `lhs` to `rhs` in Select mode non-recursively.
 
 ```fennel
+(snoremap! ?extra-opts lhs rhs ?api-opts)
 (snoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -750,6 +775,7 @@ Map `lhs` to `rhs` in Select mode non-recursively.
 Map `lhs` to `rhs` in Operator-pending mode non-recursively.
 
 ```fennel
+(onoremap! ?extra-opts lhs rhs ?api-opts)
 (onoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -758,6 +784,7 @@ Map `lhs` to `rhs` in Operator-pending mode non-recursively.
 Map `lhs` to `rhs` in Insert mode non-recursively.
 
 ```fennel
+(inoremap! ?extra-opts lhs rhs ?api-opts)
 (inoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -767,6 +794,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
 `:h language-mapping` for the details.
 
 ```fennel
+(lnoremap! ?extra-opts lhs rhs ?api-opts)
 (lnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -775,6 +803,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
 Map `lhs` to `rhs` in Command-line mode non-recursively.
 
 ```fennel
+(cnoremap! ?extra-opts lhs rhs ?api-opts)
 (cnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 
@@ -783,6 +812,7 @@ Map `lhs` to `rhs` in Command-line mode non-recursively.
 Map `lhs` to `rhs` in Terminal mode non-recursively.
 
 ```fennel
+(tnoremap! ?extra-opts lhs rhs ?api-opts)
 (tnoremap! lhs ?extra-opts rhs ?api-opts)
 ```
 

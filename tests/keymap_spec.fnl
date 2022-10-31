@@ -86,6 +86,12 @@
                                  (assert.is.same :rhs (get-rhs mode :lhs)))))))
             (describe :nnoremap!
                       (fn []
+                        (it "can include extra-opts in either first or second arg"
+                            (fn []
+                              (assert.has_no.errors #(nnoremap! [:nowait] :lhs
+                                                                :rhs))
+                              (assert.has_no.errors #(nnoremap! :lhs [:nowait]
+                                                                :rhs))))
                         (it "maps to current buffer with `<buffer>`"
                             (fn []
                               (nnoremap! [:<buffer>] :lhs :rhs)
