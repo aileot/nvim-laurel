@@ -122,4 +122,8 @@
                                       [autocmd2] ;
                                       (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
                                   (assert.is.same au1 autocmd1.id)
-                                  (assert.is.same au2 autocmd2.id)))))))))
+                                  (assert.is.same au2 autocmd2.id)))))
+                        (it "can define autocmd without any augroup"
+                            (fn []
+                              (assert.has_no.errors #(au! nil default-event
+                                                          default-callback))))))))
