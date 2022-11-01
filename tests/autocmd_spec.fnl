@@ -6,8 +6,13 @@
 (local default-command :default-command)
 
 (lambda get-autocmds [?opts]
-  (let [opts (or ?opts {:group default-augroup})]
+  (let [opts (collect [k v (pairs (or ?opts {})) ;
+                       &into {:group default-augroup}]
+               (values k v))]
     (vim.api.nvim_get_autocmds opts)))
+
+(lambda get-first-autocmd [?opts]
+  (. (get-autocmds ?opts) 1))
 
 (describe :autocmd ;
           (fn []
@@ -35,6 +40,72 @@
                                (assert.is.same id (augroup+ default-augroup))))))
             (describe :au!/autocmd!
                       (fn []
+                        (describe "detects 2 args:"
+                                  (fn []
+                                    (it "sequence pattern and string callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    :callback)))
+                                    (it "sequence pattern and function callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    #:callback)))
+                                    (it "sequence pattern and symbol callback"
+                                        (fn []
+                                          (let [cb :callback]
+                                            (autocmd! default-augroup
+                                                      default-event [:pat] cb))))
+                                    (it "extra-opts and string callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    :callback)))
+                                    (it "extra-opts and function callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    #:callback)))
+                                    (it "extra-opts and symbol callback"
+                                        (fn []
+                                          (let [cb :callback]
+                                            (autocmd! default-augroup
+                                                      default-event [:pat] cb))))
+                                    (it "string callback and api-opts in table"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event :callback
+                                                    {:nested true})))
+                                    (it "string callback and api-opts in symbol"
+                                        (fn []
+                                          (let [opts {:nested true}]
+                                            (autocmd! default-augroup
+                                                      default-event :callback
+                                                      opts))))
+                                    (it "function callback and api-opts in table"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event #:callback
+                                                    {:nested true})))
+                                    (it "function callback and api-opts in symbol"
+                                        (fn []
+                                          (let [opts {:nested true}]
+                                            (autocmd! default-augroup
+                                                      default-event #:callback
+                                                      opts))))
+                                    (it "symbol callback and api-opts in table"
+                                        (fn []
+                                          (let [cb :callback]
+                                            (autocmd! default-augroup
+                                                      default-event cb
+                                                      {:nested true}))))
+                                    (it "symbol callback and api-opts in symbol"
+                                        (fn []
+                                          (let [cb :callback
+                                                opts {:nested true}]
+                                            (autocmd! default-augroup
+                                                      default-event cb opts))))))
                         (it "can add an autocmd to an existing augroup"
                             (fn []
                               (autocmd! default-augroup default-event
@@ -88,9 +159,9 @@
                                     event1 :BufRead
                                     event2 :BufNewFile]
                                 (augroup! default-augroup
-                                          (au! event1 :pat1
+                                          (au! event1 [:pat1]
                                                callback-description)
-                                          (au! event2 :pat2 [:<command>]
+                                          (au! event2 [:pat2] [:<command>]
                                                command-description))
                                 (let [[au1] (get-autocmds {:event event1})
                                       [au2] (get-autocmds {:event event2})]
@@ -119,4 +190,26 @@
                                       [autocmd2] ;
                                       (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
                                   (assert.is.same au1 autocmd1.id)
-                                  (assert.is.same au2 autocmd2.id)))))))))
+                                  (assert.is.same au2 autocmd2.id)))))
+                        (it "can define autocmd without any augroup"
+                            (fn []
+                              (assert.has_no.errors #(let [id (au! nil
+                                                                   default-event
+                                                                   default-callback)]
+                                                       (vim.api.nvim_del_autocmd id)))))
+                        (it "gives lowest priority to `pattern` as (< raw seq tbl)"
+                            (fn []
+                              (let [seq-pat :seq-pat
+                                    tbl-pat :tbl-pat]
+                                (au! default-augroup default-event
+                                     [:raw-seq-pat] default-callback)
+                                (au! default-augroup default-event
+                                     [:pattern seq-pat] default-callback)
+                                (au! default-augroup default-event
+                                     default-callback {:pattern tbl-pat})
+                                (let [au (get-first-autocmd {:pattern [:raw-seq-pat]})]
+                                  (assert.is.same :raw-seq-pat au.pattern))
+                                (let [au (get-first-autocmd {:pattern seq-pat})]
+                                  (assert.is.same seq-pat au.pattern))
+                                (let [au (get-first-autocmd {:pattern tbl-pat})]
+                                  (assert.is.same tbl-pat au.pattern)))))))))
