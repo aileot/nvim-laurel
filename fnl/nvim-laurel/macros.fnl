@@ -864,9 +864,10 @@
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.group ?id)
         (set extra-opts.buffer ?bufnr)
-        (when-not (and (str? ?pattern) (= "*" ?pattern))
-                  ;; Note: `*` is the default pattern and redundant.
-                  (set extra-opts.pattern ?pattern))
+        (when (and ?pattern (nil? extra-opts.pattern))
+          (when-not (and (str? ?pattern) (= "*" ?pattern))
+                    ;; Note: `*` is the default pattern and redundant.
+                    (set extra-opts.pattern ?pattern)))
         (if (or extra-opts.<command> extra-opts.ex (excmd? callback))
             (set extra-opts.command callback)
             ;; Note: Ignore the possibility to set Vimscript function to callback
