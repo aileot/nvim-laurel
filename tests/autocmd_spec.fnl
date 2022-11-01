@@ -193,8 +193,10 @@
                                   (assert.is.same au2 autocmd2.id)))))
                         (it "can define autocmd without any augroup"
                             (fn []
-                              (assert.has_no.errors #(au! nil default-event
-                                                          default-callback))))
+                              (assert.has_no.errors #(let [id (au! nil
+                                                                   default-event
+                                                                   default-callback)]
+                                                       (vim.api.nvim_del_autocmd id)))))
                         (it "gives lowest priority to `pattern` as (< raw seq tbl)"
                             (fn []
                               (let [seq-pat :seq-pat
