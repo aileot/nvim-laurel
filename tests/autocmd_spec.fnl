@@ -6,7 +6,9 @@
 (local default-command :default-command)
 
 (lambda get-autocmds [?opts]
-  (let [opts (or ?opts {:group default-augroup})]
+  (let [opts (collect [k v (pairs (or ?opts {})) ;
+                       &into {:group default-augroup}]
+               (values k v))]
     (vim.api.nvim_get_autocmds opts)))
 
 (lambda get-first-autocmd [?opts]
