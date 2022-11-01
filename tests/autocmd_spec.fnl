@@ -91,9 +91,9 @@
                                     event1 :BufRead
                                     event2 :BufNewFile]
                                 (augroup! default-augroup
-                                          (au! event1 :pat1
+                                          (au! event1 [:pat1]
                                                callback-description)
-                                          (au! event2 :pat2 [:<command>]
+                                          (au! event2 [:pat2] [:<command>]
                                                command-description))
                                 (let [[au1] (get-autocmds {:event event1})
                                       [au2] (get-autocmds {:event event2})]
