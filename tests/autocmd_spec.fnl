@@ -38,6 +38,72 @@
                                (assert.is.same id (augroup+ default-augroup))))))
             (describe :au!/autocmd!
                       (fn []
+                        (describe "detects 2 args:"
+                                  (fn []
+                                    (it "sequence pattern and string callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    :callback)))
+                                    (it "sequence pattern and function callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    #:callback)))
+                                    (it "sequence pattern and symbol callback"
+                                        (fn []
+                                          (let [cb :callback]
+                                            (autocmd! default-augroup
+                                                      default-event [:pat] cb))))
+                                    (it "extra-opts and string callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    :callback)))
+                                    (it "extra-opts and function callback"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event [:pat]
+                                                    #:callback)))
+                                    (it "extra-opts and symbol callback"
+                                        (fn []
+                                          (let [cb :callback]
+                                            (autocmd! default-augroup
+                                                      default-event [:pat] cb))))
+                                    (it "string callback and api-opts in table"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event :callback
+                                                    {:nested true})))
+                                    (it "string callback and api-opts in symbol"
+                                        (fn []
+                                          (let [opts {:nested true}]
+                                            (autocmd! default-augroup
+                                                      default-event :callback
+                                                      opts))))
+                                    (it "function callback and api-opts in table"
+                                        (fn []
+                                          (autocmd! default-augroup
+                                                    default-event #:callback
+                                                    {:nested true})))
+                                    (it "function callback and api-opts in symbol"
+                                        (fn []
+                                          (let [opts {:nested true}]
+                                            (autocmd! default-augroup
+                                                      default-event #:callback
+                                                      opts))))
+                                    (it "symbol callback and api-opts in table"
+                                        (fn []
+                                          (let [cb :callback]
+                                            (autocmd! default-augroup
+                                                      default-event cb
+                                                      {:nested true}))))
+                                    (it "symbol callback and api-opts in symbol"
+                                        (fn []
+                                          (let [cb :callback
+                                                opts {:nested true}]
+                                            (autocmd! default-augroup
+                                                      default-event cb opts))))))
                         (it "can add an autocmd to an existing augroup"
                             (fn []
                               (autocmd! default-augroup default-event
@@ -126,4 +192,20 @@
                         (it "can define autocmd without any augroup"
                             (fn []
                               (assert.has_no.errors #(au! nil default-event
-                                                          default-callback))))))))
+                                                          default-callback))))
+                        (it "gives lowest priority to `pattern` as (< raw seq tbl)"
+                            (fn []
+                              (let [seq-pat :seq-pat
+                                    tbl-pat :tbl-pat]
+                                (au! default-augroup default-event
+                                     [:raw-seq-pat] default-callback)
+                                (au! default-augroup default-event
+                                     [:pattern seq-pat] default-callback)
+                                (au! default-augroup default-event
+                                     default-callback {:pattern tbl-pat})
+                                (let [au (get-first-autocmd {:pattern [:raw-seq-pat]})]
+                                  (assert.is.same :raw-seq-pat au.pattern))
+                                (let [au (get-first-autocmd {:pattern seq-pat})]
+                                  (assert.is.same seq-pat au.pattern))
+                                (let [au (get-first-autocmd {:pattern tbl-pat})]
+                                  (assert.is.same tbl-pat au.pattern)))))))))
