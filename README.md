@@ -41,10 +41,7 @@ repo = "aileot/nvim-laurel"
    git clone https://github.com/aileot/nvim-laurel /path/to/install
    ```
 
-2. Compile your fennel files with macro path for nvim-laurel:
-
-   `/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl`
-
+2. Compile your fennel files with macro path and package path for nvim-laurel.
    For example, in your Makefile,
 
    ```make
