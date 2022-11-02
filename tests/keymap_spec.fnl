@@ -126,7 +126,24 @@
                               (nnoremap! :lhs1 (.. (<Cmd> :foobar) :<Esc>))
                               (assert.is.same :rhs (get-rhs :n :lhs))
                               (assert.is.same :<Cmd>foobar<CR><Esc>
-                                              (get-rhs :n :lhs1)))))))
+                                              (get-rhs :n :lhs1))))
+                        (it "enables `replace_keycodes` when `expr` is set in `extra-opts`"
+                            (fn []
+                              (nnoremap! :lhs [:expr] :rhs)
+                              (nnoremap! :lhs1 :rhs {:expr true})
+                              (let [opt {:expr true}]
+                                (nnoremap! :lhs2 :rhs opt))
+                              (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+                                (assert.is.same 1 replace_keycodes))
+                              (let [{: replace_keycodes} (get-mapargs :n :lhs1)]
+                                (assert.is_nil replace_keycodes))
+                              (let [{: replace_keycodes} (get-mapargs :n :lhs2)]
+                                (assert.is_nil replace_keycodes))))
+                        (it "disables `replace_keycodes` when `literal` is set in `extra-opts`"
+                            (fn []
+                              (nnoremap! :lhs [:expr :literal] :rhs)
+                              (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+                                (assert.is_nil replace_keycodes)))))))
           (describe :unmap!
                     (fn []
                       (it "`unmap`s key"

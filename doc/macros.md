@@ -474,6 +474,8 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+  - `literal`: disable `replace_keycodes`, which is automatically enabled when
+    `expr` is set in `extra-opts`.
   - `<buffer>`: map `lhs` in current buffer by itself.
   - `buffer`: map `lhs` to a buffer of the next value.
   - `<command>`: it indicates `rhs` must be Normal mode command execution by
