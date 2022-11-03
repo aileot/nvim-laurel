@@ -109,6 +109,8 @@ Create or get an augroup, or override an existing augroup.
   - `<buffer>`: Create autocmd to current buffer by itself.
   - `<command>`: It indicates the callback must be Ex command by itself.
   - `ex`: An alias of `<command>` key.
+  - `<callback>`: It indicates that `rhs` must be callback function by itself.
+  - `cb`: An alias of `<callback>` key.
 - `callback`: (string|function) Set either callback function or vim Ex command.
   Symbol, and anonymous function constructed by `fn`, `hashfn`, `lambda`, and
   `partial`, is regared as Lua function; otherwise, as Ex command.
@@ -601,6 +603,8 @@ Map `lhs` to `rhs` in `modes` recursively.
   - `<command>`: It indicates `rhs` must be Normal mode command execution by
     itself.
   - `ex`: An alias of `<command>` key.
+  - `<callback>`: It indicates that `rhs` must be callback function by itself.
+  - `cb`: An alias of `<callback>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Symbol, and anonymous
   function constructed by `fn`, `hashfn`, `lambda`, and `partial`, is regared as
