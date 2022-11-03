@@ -441,13 +441,12 @@
                                                        (sequence? a1)
                                                        [?extra-opts a2 ?a3 ?a4]
                                                        [?extra-opts a1 ?a3 ?a4])
-            rhs (if (or extra-opts.<command> extra-opts.ex (excmd? raw-rhs)
-                        (and (list? raw-rhs)
-                             (contains? [:<Cmd> :<C-u>] (first-symbol raw-rhs))))
-                    raw-rhs
+            rhs (if (or extra-opts.<command> extra-opts.ex) raw-rhs
+                    (or (sym? raw-rhs) (anonymous-function? raw-rhs)) ;
                     (do
                       (set extra-opts.callback raw-rhs)
-                      ""))
+                      "")
+                    raw-rhs)
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
         (when (nil? extra-opts.desc)
