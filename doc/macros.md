@@ -578,15 +578,18 @@ Map `lhs` to `rhs` in Insert/Command-line mode recursively.
 
 #### `map-motion!`
 
-Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively.
+Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively. As long
+as `lhs` is bare-string and doesn't include any invisible keys like `<Plug>`,
+`<Esc>`, `<Left>`, `<C-f>`, and so on, it also map `lhs` to `rhs` in Select
+mode.
 
 ```fennel
 (map-motion! ?extra-opts lhs rhs ?api-opts)
 (map-motion! lhs ?extra-opts rhs ?api-opts)
 ```
 
-Note: This macro deletes mapping to `lhs` in Select mode for the performance. To
-avoid this, use `(map! [:n :o :x] ...)` instead.
+Note: This macro could delete mapping to `lhs` in Select mode for the
+performance. To avoid this, use `(map! [:n :o :x] ...)` instead.
 
 #### `map-operator!`
 
