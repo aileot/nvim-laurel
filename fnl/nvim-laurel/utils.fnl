@@ -4,6 +4,7 @@
   (set opts.<buffer> nil)
   (set opts.<command> nil)
   (set opts.ex nil)
+  (set opts.<callback> nil)
   (when (and opts.expr (not= false opts.replace_keycodes))
     (set opts.replace_keycodes true))
   (when opts.literal
@@ -20,6 +21,7 @@
   (set opts.<buffer> nil)
   (set opts.<command> nil)
   (set opts.ex nil)
+  (set opts.<callback> nil)
   opts)
 
 {: keymap/->compatible-opts!
