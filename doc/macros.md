@@ -578,15 +578,18 @@ Map `lhs` to `rhs` in Insert/Command-line mode recursively.
 
 #### `map-motion!`
 
-Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively.
+Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively. As long
+as `lhs` is bare-string and doesn't include any invisible keys like `<Plug>`,
+`<Esc>`, `<Left>`, `<C-f>`, and so on, it also map `lhs` to `rhs` in Select
+mode.
 
 ```fennel
 (map-motion! ?extra-opts lhs rhs ?api-opts)
 (map-motion! lhs ?extra-opts rhs ?api-opts)
 ```
 
-Note: This macro deletes mapping to `lhs` in Select mode for the performance. To
-avoid this, use `(map! [:n :o :x] ...)` instead.
+Note: This macro could delete mapping to `lhs` in Select mode for the
+performance. To avoid this, use `(map! [:n :o :x] ...)` instead.
 
 #### `map-operator!`
 
@@ -690,7 +693,7 @@ Map `lhs` to `rhs` in Terminal mode recursively.
 
 #### `noremap-all!`
 
-Map `lhs` to `rhs` in all modes non-recursively.
+Same as [`map-all!`](#map-all), but non-recursively.
 
 ```fennel
 (noremap-all! ?extra-opts lhs rhs ?api-opts)
@@ -699,7 +702,7 @@ Map `lhs` to `rhs` in all modes non-recursively.
 
 #### `noremap-input!`
 
-Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
+Same as [`map-input!`](#map-input), but non-recursively.
 
 ```fennel
 (noremap-input! ?extra-opts lhs rhs ?api-opts)
@@ -708,19 +711,16 @@ Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
 
 #### `noremap-motion!`
 
-Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode non-recursively.
+Same as [`map-motion!`](#map-motion), but non-recursively.
 
 ```fennel
 (noremap-motion! ?extra-opts lhs rhs ?api-opts)
 (noremap-motion! lhs ?extra-opts rhs ?api-opts)
 ```
 
-Note: This macro deletes mapping to `lhs` in Select mode for the performance. To
-avoid this, use `(noremap! [:n :o :x] ...)` instead.
-
 #### `noremap-operator!`
 
-Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
+Same as [`map-operator!`](#map-operator), but non-recursively.
 
 ```fennel
 (noremap-operator! ?extra-opts lhs rhs ?api-opts)
@@ -729,7 +729,7 @@ Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
 
 #### `noremap-textobj!`
 
-Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
+Same as [`map-textobj!`](#map-textobj), but non-recursively.
 
 ```fennel
 (noremap-textobj! ?extra-opts lhs rhs ?api-opts)
@@ -738,7 +738,7 @@ Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
 
 #### `nnoremap!`
 
-Map `lhs` to `rhs` in Normal mode non-recursively.
+Same as [`nmap!`](#nmap!), but non-recursively.
 
 ```fennel
 (nnoremap! ?extra-opts lhs rhs ?api-opts)
@@ -747,7 +747,7 @@ Map `lhs` to `rhs` in Normal mode non-recursively.
 
 #### `vnoremap!`
 
-Map `lhs` to `rhs` in Visual/Select mode non-recursively.
+Same as [`vmap!`](#vmap!), but non-recursively.
 
 ```fennel
 (vnoremap! ?extra-opts lhs rhs ?api-opts)
@@ -756,7 +756,7 @@ Map `lhs` to `rhs` in Visual/Select mode non-recursively.
 
 #### `xnoremap!`
 
-Map `lhs` to `rhs` in Visual mode non-recursively.
+Same as [`xmap!`](#xmap), but non-recursively.
 
 ```fennel
 (xnoremap! ?extra-opts lhs rhs ?api-opts)
@@ -765,7 +765,7 @@ Map `lhs` to `rhs` in Visual mode non-recursively.
 
 #### `snoremap!`
 
-Map `lhs` to `rhs` in Select mode non-recursively.
+Same as [`smap!`](#smap), but non-recursively.
 
 ```fennel
 (snoremap! ?extra-opts lhs rhs ?api-opts)
@@ -774,7 +774,7 @@ Map `lhs` to `rhs` in Select mode non-recursively.
 
 #### `onoremap!`
 
-Map `lhs` to `rhs` in Operator-pending mode non-recursively.
+Same as [`omap!`](#omap), but non-recursively.
 
 ```fennel
 (onoremap! ?extra-opts lhs rhs ?api-opts)
@@ -783,7 +783,7 @@ Map `lhs` to `rhs` in Operator-pending mode non-recursively.
 
 #### `inoremap!`
 
-Map `lhs` to `rhs` in Insert mode non-recursively.
+Same as [`imap!`](#imap), but non-recursively.
 
 ```fennel
 (inoremap! ?extra-opts lhs rhs ?api-opts)
@@ -792,8 +792,7 @@ Map `lhs` to `rhs` in Insert mode non-recursively.
 
 #### `lnoremap!`
 
-Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
-`:h language-mapping` for the details.
+Same as [`lmap!`](#lmap), but non-recursively.
 
 ```fennel
 (lnoremap! ?extra-opts lhs rhs ?api-opts)
@@ -802,7 +801,7 @@ Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
 
 #### `cnoremap!`
 
-Map `lhs` to `rhs` in Command-line mode non-recursively.
+Same as [`cmap!`](#cmap), but non-recursively.
 
 ```fennel
 (cnoremap! ?extra-opts lhs rhs ?api-opts)
@@ -811,7 +810,7 @@ Map `lhs` to `rhs` in Command-line mode non-recursively.
 
 #### `tnoremap!`
 
-Map `lhs` to `rhs` in Terminal mode non-recursively.
+Same as [`tmap!`](#tmap), but non-recursively.
 
 ```fennel
 (tnoremap! ?extra-opts lhs rhs ?api-opts)

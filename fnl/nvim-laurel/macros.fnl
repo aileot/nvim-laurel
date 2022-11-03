@@ -452,6 +452,17 @@
             (icollect [_ m (ipairs modes)]
               (set-keymap m))))))
 
+(lambda keymap/invisible-key? [lhs]
+  "Check if lhs is invisible key."
+  (or ;; cspell:ignore acdms
+      ;; <C-f>, <M-b>, ...
+      (and (lhs:match "<[acdmsACDMS]%-[a-zA-Z0-9]+>")
+           (not (lhs:match "<[sS]%-[a-zA-Z]>"))) ;
+      ;; <CR>, <Left>, ...
+      (lhs:match "<[a-zA-Z][a-zA-Z]+>") ;
+      ;; <k0>, <F5>, ...
+      (lhs:match "<[fkFK][0-9]>")))
+
 ;; Export ///2
 (lambda <C-u> [x]
   "Return \":<C-u>`x`<CR>\""
@@ -526,8 +537,12 @@
         ;; Note: With unknown reason, keymap/del-maps! fails to get
         ;; `extra-opts.buffer` only to find it `nil` unless it's set to `?bufnr`.
         ?bufnr extra-opts.buffer]
-    [(noremap! "" extra-opts lhs rhs ?api-opts)
-     (keymap/del-maps! ?bufnr :s lhs)]))
+    (if (str? lhs)
+        (if (keymap/invisible-key? lhs)
+            (noremap! "" extra-opts lhs rhs ?api-opts)
+            [(noremap! "" extra-opts lhs rhs ?api-opts)
+             (keymap/del-maps! ?bufnr :s lhs)])
+        (noremap! [:n :o :x] extra-opts lhs rhs ?api-opts))))
 
 (lambda noremap-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
@@ -663,7 +678,12 @@
   To avoid this, use `(map! [:n :o :x] ...)` instead."
   (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
         ?bufnr extra-opts.buffer]
-    [(map! "" extra-opts lhs rhs ?api-opts) (keymap/del-maps! ?bufnr :s lhs)]))
+    (if (str? lhs)
+        (if (keymap/invisible-key? lhs)
+            (map! "" extra-opts lhs rhs ?api-opts)
+            [(map! "" extra-opts lhs rhs ?api-opts)
+             (keymap/del-maps! ?bufnr :s lhs)])
+        (map! [:n :o :x] extra-opts lhs rhs ?api-opts))))
 
 (lambda map-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode recursively.
