@@ -430,6 +430,7 @@
                                          [:<buffer>
                                           :ex
                                           :<command>
+                                          :<callback>
                                           :nowait
                                           :silent
                                           :script
@@ -442,10 +443,17 @@
                                                        [?extra-opts a2 ?a3 ?a4]
                                                        [?extra-opts a1 ?a3 ?a4])
             rhs (if (or extra-opts.<command> extra-opts.ex) raw-rhs
-                    (or (sym? raw-rhs) (anonymous-function? raw-rhs)) ;
+                    (or extra-opts.<callback> ;
+                        (sym? raw-rhs) ;
+                        (anonymous-function? raw-rhs)) ;
                     (do
+                      ;; Hack: `->compatible-opts` must remove `<callback>` key
+                      ;; instead, but it doesn't at present. It should be
+                      ;; reported to Fennel repository, but no idea how to
+                      ;; reproduce it in minimal codes.
+                      (set extra-opts.<callback> nil)
                       (set extra-opts.callback raw-rhs)
-                      "")
+                      "") ;
                     raw-rhs)
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
@@ -907,7 +915,8 @@
                                            :nested
                                            :<buffer>
                                            :ex
-                                           :<command>]))
+                                           :<command>
+                                           :<callback>]))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.group ?id)
         (set extra-opts.buffer ?bufnr)
@@ -917,7 +926,9 @@
                     (set extra-opts.pattern ?pattern)))
         (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
-            (or (sym? callback) (anonymous-function? callback))
+            (or extra-opts.<callback> ;
+                (sym? callback) ;
+                (anonymous-function? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
             ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
             ;; to "callback" key because functions written in Vim script are
