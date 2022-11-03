@@ -605,11 +605,11 @@ Map `lhs` to `rhs` in `modes` recursively.
     itself.
   - `ex`: An alias of `<command>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
-  set `<command>` key in `extra-opts`, to set Normal mode command execution;
+- `rhs`: (string|function) Right-hand-side of the mapping. Symbol, and anonymous
+  function constructed by `fn`, `hashfn`, `lambda`, and `partial`, is regared as
   Lua function; otherwise, as Normal mode command execution.
 
-  Note: To set string via symbol, insert `<command>` key in `extra-opts`.
+  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
