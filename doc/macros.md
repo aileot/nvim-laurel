@@ -106,9 +106,9 @@ Create or get an augroup, or override an existing augroup.
   symbol or list, set it in either `extra-opts` or `api-opts` instead. The first
   pattern in string cannot be any of the keys used in `?extra-opts`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `<buffer>`: create autocmd to current buffer by itself.
-  - `<command>`: it indicates the callback must be Ex command by itself.
-  - `ex`: an alias of `<command>` key.
+  - `<buffer>`: Create autocmd to current buffer by itself.
+  - `<command>`: It indicates the callback must be Ex command by itself.
+  - `ex`: An alias of `<command>` key.
 - `callback`: (string|function) Set either vim Ex command or callback function.
   Set a bare-string, or set `<command>` key in `extra-opts`, to set Ex command;
   set `vim.fn.foobar` to set Vim script function `foobar()` without table arg
@@ -597,27 +597,19 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `literal`: disable `replace_keycodes`, which is automatically enabled when
+  - `literal`: Disable `replace_keycodes`, which is automatically enabled when
     `expr` is set in `extra-opts`.
-  - `<buffer>`: map `lhs` in current buffer by itself.
-  - `buffer`: map `lhs` to a buffer of the next value.
-  - `<command>`: it indicates `rhs` must be Normal mode command execution by
+  - `<buffer>`: Map `lhs` in current buffer by itself.
+  - `buffer`: Map `lhs` to a buffer of the next value.
+  - `<command>`: It indicates `rhs` must be Normal mode command execution by
     itself.
-  - `ex`: an alias of `<command>` key.
+  - `ex`: An alias of `<command>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set a bare-string, or
   set `<command>` key in `extra-opts`, to set Normal mode command execution;
-  otherwise, it is regarded as a Lua function. Exceptionally, a list which
-  starts with one of the following symbols is also regarded as Normal command
-  execution:
-  - `..`
-  - `table.concat`
-  - `string.format`
-  - `tostring`
-  - `->string`
-  - `->str`
-  - [`<Cmd>`](#Cmd)
-  - [`<C-u>`](#C-u)
+  Lua function; otherwise, as Normal mode command execution.
+
+  Note: To set string via symbol, insert `<command>` key in `extra-opts`.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
 
 #### `noremap!`
@@ -638,8 +630,8 @@ Delete keymap.
 ```
 
 - `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
-- `mode`: (string) mode to unmap.
-- `lhs`: (string) left-hand-side key to unmap.
+- `mode`: (string) Mode to unmap.
+- `lhs`: (string) Left-hand-side key to unmap.
 
 ```fennel
 (unmap! :n :foo)
@@ -958,8 +950,8 @@ Create a user command.
 
 - [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
   Additional attributes:
-  - `<buffer>`: create command in current buffer by itself.
-  - `buffer`: create command in the buffer of the next value.
+  - `<buffer>`: Create command in current buffer by itself.
+  - `buffer`: Create command in the buffer of the next value.
 - `name`: (string) Name of the new user command. It must begin with an uppercase
   letter.
 - `command`: (string|function) Replacement command.
