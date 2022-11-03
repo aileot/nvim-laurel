@@ -109,18 +109,15 @@ Create or get an augroup, or override an existing augroup.
   - `<buffer>`: Create autocmd to current buffer by itself.
   - `<command>`: It indicates the callback must be Ex command by itself.
   - `ex`: An alias of `<command>` key.
-- `callback`: (string|function) Set either vim Ex command or callback function.
-  Set a bare-string, or set `<command>` key in `extra-opts`, to set Ex command;
-  set `vim.fn.foobar` to set Vim script function `foobar()` without table arg
-  from `nvim_create_autocmd`; otherwise, it is regarded as a Lua function.
-  Exceptionally, a list which starts with one of the following symbols is also
-  regarded as Ex command:
-  - `..`
-  - `table.concat`
-  - `string.format`
-  - `tostring`
-  - `->string`
-  - `->str`
+- `callback`: (string|function) Set either callback function or vim Ex command.
+  Symbol, and anonymous function constructed by `fn`, `hashfn`, `lambda`, and
+  `partial`, is regared as Lua function; otherwise, as Ex command.
+
+  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
+
+  Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
+  arg from `nvim_create_autocmd`; instead, set `#(vim.fn.foobar $)` to call
+  `foobar` with the table arg.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
 
 ```fennel
