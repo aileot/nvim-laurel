@@ -915,8 +915,9 @@
           (when-not (and (str? ?pattern) (= "*" ?pattern))
                     ;; Note: `*` is the default pattern and redundant.
                     (set extra-opts.pattern ?pattern)))
-        (if (or extra-opts.<command> extra-opts.ex (excmd? callback))
+        (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
+            (or (sym? callback) (anonymous-function? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
             ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
             ;; to "callback" key because functions written in Vim script are
@@ -924,7 +925,8 @@
             ;; its first arg.
             (set extra-opts.callback
                  (or (extract-?vim-fn-name callback) ;
-                     callback)))
+                     callback))
+            (set extra-opts.command callback))
         (when (nil? extra-opts.desc)
           (set extra-opts.desc (infer-description callback)))
         (let [api-opts (merge-api-opts ?api-opts
