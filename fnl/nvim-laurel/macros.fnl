@@ -379,6 +379,33 @@
   ```"
   (option/modify :global name val "-"))
 
+;; Variable ///1
+
+(lambda g! [name val]
+  `(vim.api.nvim_set_var ,name ,val))
+
+(lambda b! [id|name name|val ?val]
+  (if ?val
+      `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
+      `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
+
+(lambda w! [id|name name|val ?val]
+  (if ?val
+      `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
+      `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
+
+(lambda t! [id|name name|val ?val]
+  (if ?val
+      `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
+      `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
+
+(lambda v! [name val]
+  `(vim.api.nvim_set_vvar ,name ,val))
+
+(lambda env! [name val]
+  (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
+    `(vim.fn.setenv ,new-name ,val)))
+
 ;; Keymap ///1
 (lambda keymap/parse-varargs [a1 a2 ?a3 ?a4]
   "Parse varargs.
@@ -988,6 +1015,12 @@
  : setglobal+
  : setglobal^
  : setglobal-
+ : g!
+ : b!
+ : w!
+ : t!
+ : v!
+ : env!
  : noremap!
  : map!
  :unmap! keymap/del-maps!
