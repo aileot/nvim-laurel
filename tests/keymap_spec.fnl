@@ -2,6 +2,7 @@
                 : noremap!
                 : nnoremap!
                 : unmap!
+                : smap!
                 : map-motion!
                 : <C-u>
                 : <Cmd>} :nvim-laurel.macros)
@@ -162,7 +163,27 @@
           (let [bufnr (vim.api.nvim_get_current_buf)]
             (assert.has_no.errors #(map-motion! [:<buffer>] :lhs :rhs))
             (refresh-buffer)
-            (assert.has_no.errors #(map-motion! [:buffer bufnr] :lhs :rhs))))))
+            (assert.has_no.errors #(map-motion! [:buffer bufnr] :lhs :rhs)))))
+      (it "`sunmap`s when lhs is visible key in compile time."
+        #(let [lhs :sym]
+           (smap! :lhs :old)
+           (smap! lhs :old)
+           (smap! :<Esc> :old)
+           (smap! :<C-f> :old)
+           (smap! :<k9> :old)
+           (smap! :<S-f> :old)
+           (assert.has_no.errors #(map-motion! :lhs :new))
+           (assert.has_no.errors #(map-motion! lhs :new))
+           (assert.has_no.errors #(map-motion! :<Esc> :new))
+           (assert.has_no.errors #(map-motion! :<C-f> :new))
+           (assert.has_no.errors #(map-motion! :<k9> :new))
+           (assert.has_no.errors #(map-motion! :<S-f> :new))
+           (assert.is_nil (get-rhs :s :lhs))
+           (assert.is.same :old (get-rhs :s lhs))
+           (assert.is.same :new (get-rhs :s :<Esc>))
+           (assert.is.same :new (get-rhs :s :<C-F>))
+           (assert.is.same :new (get-rhs :s :<k9>))
+           (assert.is_nil (get-rhs :s :<S-f>)))))
     (describe :<Cmd>/<C-u>
       (fn []
         (it "is set to rhs as a string"
