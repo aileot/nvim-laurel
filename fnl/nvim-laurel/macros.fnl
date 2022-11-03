@@ -38,12 +38,6 @@
   "Check if `x` is of number type."
   (= :number (type x)))
 
-(fn function? [x]
-  "(Compile time) Check if type of `x` is function.
-  Note: It cannot detect a function set in a symbol."
-  (let [ref (?. x 1 1)]
-    (contains? [:fn :hashfn :lambda :partial] ref)))
-
 (fn hidden-in-compile-time? [x]
   "Check if the value of `x` is hidden in compile time.
 
@@ -81,6 +75,13 @@
   (let [first-item (first x)]
     (if (str? first-item) first-item ;
         (first-symbol first-item))))
+
+;; Additional predicates ///2
+
+(fn anonymous-function? [x]
+  "(Compile time) Check if type of `x` is anonymous function."
+  (and (list? x) ;
+       (contains? [:fn :hashfn :lambda :partial] (first-symbol x))))
 
 ;; Specific Utils ///1
 (lambda wrapper [key ...]
