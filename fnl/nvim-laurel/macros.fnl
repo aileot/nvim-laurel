@@ -462,10 +462,10 @@
                           (sym? raw-rhs) ;
                           (anonymous-function? raw-rhs)) ;
                       (do
-                        ;; Hack: `->compatible-opts` must remove `cb`/`<callback>`
-                        ;; key instead, but it doesn't at present. It should be
-                        ;; reported to Fennel repository, but no idea how to
-                        ;; reproduce it in minimal codes.
+                        ;; Hack: `->compatible-opts` must remove
+                        ;; `cb`/`<callback>` key instead, but it doesn't at
+                        ;; present. It should be reported to Fennel repository,
+                        ;; but no idea how to reproduce it in minimal codes.
                         (set extra-opts.cb nil)
                         (set extra-opts.<callback> nil)
                         (set extra-opts.callback raw-rhs)
