@@ -3,6 +3,7 @@
         : autocmd/->compatible-opts!} (require :nvim-laurel.utils))
 
 ;; General Macros ///1
+
 (macro ++ [x]
   "Increment `x` by 1"
   `(do
@@ -19,6 +20,7 @@
 
 ;; General Utils ///1
 ;; Predicates ///2
+
 (lambda contains? [xs ?a]
   "Check if `?a` is in `xs`."
   (accumulate [eq? false ;
@@ -52,6 +54,7 @@
   (and (table? x) (not (sequence? x))))
 
 ;; Misc ///2
+
 (fn ->str [x]
   "Convert `x` to a string, or get the name if `x` is a symbol."
   (tostring x))
@@ -64,8 +67,9 @@
   (let [first (or ?first 1)
         last (or ?last (length xs))
         step (or ?step 1)]
-    (fcollect [i first last step] ;
-              (. xs i))))
+    (fcollect [i first last step]
+      ;
+      (. xs i))))
 
 (lambda first-symbol [x]
   "Return the first symbol in list `x`"
@@ -84,6 +88,7 @@
        (contains? [:fn :hashfn :lambda :partial] (first-symbol x))))
 
 ;; Specific Utils ///1
+
 (lambda wrapper [key ...]
   `(. (require :nvim-laurel.wrapper) ,key ,...))
 
@@ -104,6 +109,7 @@
       (contains? general-str-constructors (first-symbol x)))))
 
 ;; cspell:word excmd
+
 (fn excmd? [x]
   "Check if `x` is Ex command."
   (or (str? x) (->str? x)))
@@ -158,6 +164,7 @@
         fn-name))))
 
 ;; Option ///1
+
 (lambda option/concat-kv-table [kv-table]
   "Concat kv table into a string for `vim.api.nvim_set_option_value`.
   For example,
@@ -234,6 +241,7 @@
     (option/modify scope name ?val ?flag)))
 
 ;; Export ///2
+
 (lambda set! [name-?flag ?val]
   "Set value to the option.
   Almost equivalent to `:set` in Vim script.
@@ -408,6 +416,7 @@
     `(vim.fn.setenv ,new-name ,val)))
 
 ;; Keymap ///1
+
 (lambda keymap/parse-varargs [a1 a2 ?a3 ?a4]
   "Parse varargs.
   ```fennel
@@ -439,28 +448,29 @@
                                           :expr
                                           :replace_keycodes
                                           :literal]))
-            [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts [{} a1 a2]
-                                                       (sequence? a1)
-                                                       [?extra-opts a2 ?a3 ?a4]
-                                                       [?extra-opts a1 ?a3 ?a4])
+            [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
+                                                 [{} a1 a2]
+                                                 (sequence? a1)
+                                                 [?extra-opts a2 ?a3 ?a4]
+                                                 [?extra-opts a1 ?a3 ?a4])
             rhs (do
                   (when (and (or extra-opts.<command> extra-opts.ex)
                              (or extra-opts.<callback> extra-opts.cb))
                     (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
                   (if (or extra-opts.<command> extra-opts.ex) raw-rhs
-                    (or extra-opts.<callback> extra-opts.cb ;
-                        (sym? raw-rhs) ;
-                        (anonymous-function? raw-rhs)) ;
-                    (do
-                      ;; Hack: `->compatible-opts` must remove `cb`/`<callback>`
-                      ;; key instead, but it doesn't at present. It should be
-                      ;; reported to Fennel repository, but no idea how to
-                      ;; reproduce it in minimal codes.
-                      (set extra-opts.cb nil)
-                      (set extra-opts.<callback> nil)
-                      (set extra-opts.callback raw-rhs)
-                      "") ;
-                    raw-rhs))
+                      (or extra-opts.<callback> extra-opts.cb ;
+                          (sym? raw-rhs) ;
+                          (anonymous-function? raw-rhs)) ;
+                      (do
+                        ;; Hack: `->compatible-opts` must remove `cb`/`<callback>`
+                        ;; key instead, but it doesn't at present. It should be
+                        ;; reported to Fennel repository, but no idea how to
+                        ;; reproduce it in minimal codes.
+                        (set extra-opts.cb nil)
+                        (set extra-opts.<callback> nil)
+                        (set extra-opts.callback raw-rhs)
+                        "") ;
+                      raw-rhs))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
         (when (nil? extra-opts.desc)
@@ -505,6 +515,7 @@
       (lhs:match "<[fkFK][0-9]>")))
 
 ;; Export ///2
+
 (lambda <C-u> [x]
   "Return \":<C-u>`x`<CR>\""
   (if (str? x)
@@ -542,6 +553,7 @@
     (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
 
 ;; Wrapper ///3
+
 (lambda noremap-all! [...]
   "Map `lhs` to `rhs` in all modes non-recursively.
 
@@ -827,6 +839,7 @@
   (map! :t ...))
 
 ;; Command ///1
+
 (lambda command! [a1 a2 ?a3 ?a4]
   "Define a user command.
 
@@ -853,10 +866,11 @@
                                       :<buffer>
                                       :register
                                       :keepscript]))
-        [extra-opts name command ?api-opts] (if-not ?extra-opts [{} a1 a2 ?a3]
-                                                    (sequence? a1)
-                                                    [?extra-opts a2 ?a3 ?a4]
-                                                    [?extra-opts a1 ?a3 ?a4])
+        [extra-opts name command ?api-opts] (if-not ?extra-opts
+                                              [{} a1 a2 ?a3]
+                                              (sequence? a1)
+                                              [?extra-opts a2 ?a3 ?a4]
+                                              [?extra-opts a1 ?a3 ?a4])
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts ?api-opts
                                  (command/->compatible-opts! extra-opts))]
@@ -865,6 +879,7 @@
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
 
 ;; Autocmd ///1
+
 (local autocmd/extra-opt-keys [:group
                                :pattern
                                :buffer
@@ -929,8 +944,8 @@
         (set extra-opts.buffer ?bufnr)
         (when (and ?pattern (nil? extra-opts.pattern))
           (when-not (and (str? ?pattern) (= "*" ?pattern))
-                    ;; Note: `*` is the default pattern and redundant.
-                    (set extra-opts.pattern ?pattern)))
+            ;; Note: `*` is the default pattern and redundant.
+            (set extra-opts.pattern ?pattern)))
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
           (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
@@ -967,6 +982,7 @@
               (define-autocmd! `id# (unpack au-args)))))))
 
 ;; Export ///2
+
 (lambda augroup! [name ...]
   "Define/Override an augroup."
   ;; "clear" value is true by default.
@@ -977,6 +993,7 @@
   (define-augroup! name {:clear false} ...))
 
 ;; Misc ///1
+
 (lambda str->keycodes [str]
   "Replace terminal codes and keycodes in a string.
 
