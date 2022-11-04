@@ -113,7 +113,7 @@
 (lambda wrapper [key ...]
   `(. (require :nvim-laurel.wrapper) ,key ,...))
 
-(lambda merge-default-kv-table [default another]
+(lambda merge-default-kv-table! [default another]
   "Fill key-value table with default values.
   @param default kv-table
   @param another kv-table"
@@ -549,7 +549,7 @@
   ```"
   (let [default-opts {:noremap true}
         (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-    (merge-default-kv-table default-opts extra-opts)
+    (merge-default-kv-table! default-opts extra-opts)
     (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
 
 (lambda map! [modes ...]
@@ -560,7 +560,7 @@
   ```"
   (let [default-opts {}
         (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-    (merge-default-kv-table default-opts extra-opts)
+    (merge-default-kv-table! default-opts extra-opts)
     (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
 
 ;; Wrapper ///3
