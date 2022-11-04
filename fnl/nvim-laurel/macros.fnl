@@ -4,11 +4,13 @@
 
 ;; General Macros ///1
 
-(macro ++ [x]
-  "Increment `x` by 1"
+(macro ++ [num]
+  "Increment `num` by 1
+  @param num number
+  @return number"
   `(do
-     (set ,x (+ 1 ,x))
-     ,x))
+     (set ,num (+ 1 ,num))
+     ,num))
 
 (macro when-not [cond ...]
   `(when (not ,cond)
