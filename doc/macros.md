@@ -118,9 +118,10 @@ Create or get an augroup, or override an existing augroup.
 
   Note: Insert `<command>` key in `extra-opts` to set string via symbol.
 
-  Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
-  arg from `nvim_create_autocmd`; instead, set `#(vim.fn.foobar $)` to call
-  `foobar` with the table arg.
+  Note: Set `vim.fn.foobar`, or set `:foobar` to `callback` with `<command>` key
+  in `extra-opts`, to call Vim script function `foobar` without table arg from
+  `nvim_create_autocmd`; instead, set `#(vim.fn.foobar $)` to call `foobar` with
+  the table arg.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
 
 ```fennel
