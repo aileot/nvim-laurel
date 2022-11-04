@@ -107,9 +107,10 @@ Create or get an augroup, or override an existing augroup.
   pattern in string cannot be any of the keys used in `?extra-opts`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
-  - `<command>`: It indicates the callback must be Ex command by itself.
+  - `<command>`: It indicates that `callback` must be Ex command by itself.
   - `ex`: An alias of `<command>` key.
-  - `<callback>`: It indicates that `rhs` must be callback function by itself.
+  - `<callback>`: It indicates that `callback` must be callback function by
+    itself.
   - `cb`: An alias of `<callback>` key.
 - `callback`: (string|function) Set either callback function or vim Ex command.
   Symbol, and anonymous function constructed by `fn`, `hashfn`, `lambda`, and
@@ -600,8 +601,8 @@ Map `lhs` to `rhs` in `modes` recursively.
     `expr` is set in `extra-opts`.
   - `<buffer>`: Map `lhs` in current buffer by itself.
   - `buffer`: Map `lhs` to a buffer of the next value.
-  - `<command>`: It indicates `rhs` must be Normal mode command execution by
-    itself.
+  - `<command>`: It indicates that `rhs` must be Normal mode command execution
+    by itself.
   - `ex`: An alias of `<command>` key.
   - `<callback>`: It indicates that `rhs` must be callback function by itself.
   - `cb`: An alias of `<callback>` key.
