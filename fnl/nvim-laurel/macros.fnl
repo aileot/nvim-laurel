@@ -430,6 +430,7 @@
                                          [:<buffer>
                                           :ex
                                           :<command>
+                                          :cb
                                           :<callback>
                                           :nowait
                                           :silent
@@ -442,19 +443,24 @@
                                                        (sequence? a1)
                                                        [?extra-opts a2 ?a3 ?a4]
                                                        [?extra-opts a1 ?a3 ?a4])
-            rhs (if (or extra-opts.<command> extra-opts.ex) raw-rhs
-                    (or extra-opts.<callback> ;
+            rhs (do
+                  (when (and (or extra-opts.<command> extra-opts.ex)
+                             (or extra-opts.<callback> extra-opts.cb))
+                    (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
+                  (if (or extra-opts.<command> extra-opts.ex) raw-rhs
+                    (or extra-opts.<callback> extra-opts.cb ;
                         (sym? raw-rhs) ;
                         (anonymous-function? raw-rhs)) ;
                     (do
-                      ;; Hack: `->compatible-opts` must remove `<callback>` key
-                      ;; instead, but it doesn't at present. It should be
+                      ;; Hack: `->compatible-opts` must remove `cb`/`<callback>`
+                      ;; key instead, but it doesn't at present. It should be
                       ;; reported to Fennel repository, but no idea how to
                       ;; reproduce it in minimal codes.
+                      (set extra-opts.cb nil)
                       (set extra-opts.<callback> nil)
                       (set extra-opts.callback raw-rhs)
                       "") ;
-                    raw-rhs)
+                    raw-rhs))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
         (when (nil? extra-opts.desc)
@@ -916,6 +922,7 @@
                                            :<buffer>
                                            :ex
                                            :<command>
+                                           :cb
                                            :<callback>]))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.group ?id)
@@ -924,9 +931,12 @@
           (when-not (and (str? ?pattern) (= "*" ?pattern))
                     ;; Note: `*` is the default pattern and redundant.
                     (set extra-opts.pattern ?pattern)))
+        (when (and (or extra-opts.<command> extra-opts.ex)
+                   (or extra-opts.<callback> extra-opts.cb))
+          (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
         (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
-            (or extra-opts.<callback> ;
+            (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;
                 (anonymous-function? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
