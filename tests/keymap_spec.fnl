@@ -7,6 +7,11 @@
                 : <C-u>
                 : <Cmd>} :nvim-laurel.macros)
 
+(local default-rhs :default-rhs)
+(local default-callback #:default-callback)
+(local new-callback #(fn []
+                       $))
+
 (fn refresh-buffer []
   (vim.cmd.new)
   (vim.cmd.only))
@@ -119,6 +124,31 @@
             (nnoremap! :lhs1 (.. (<Cmd> :foobar) :<Esc>))
             (assert.is.same :rhs (get-rhs :n :lhs))
             (assert.is.same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1))))
+        (it "can set Ex command in autocmds with `<command>` key"
+          (fn []
+            (nnoremap! :lhs1 [:<command>] default-rhs)
+            (nnoremap! :lhs2 [:<command>] (.. :foo :bar))
+            (assert.is.same default-rhs (get-rhs :n :lhs1))
+            (assert.is.same :foobar (get-rhs :n :lhs2))))
+        (it "can set Ex command in autocmds with `ex` key"
+          (fn []
+            (nnoremap! :lhs1 [:ex] default-rhs)
+            (nnoremap! :lhs2 [:ex] (.. :foo :bar))
+            (assert.is.same default-rhs (get-rhs :n :lhs1))
+            (assert.is.same :foobar (get-rhs :n :lhs2))))
+        (it "can set callback function in autocmds with `<callback>` key"
+          (fn []
+            (nnoremap! :lhs1 [:<callback>] default-callback)
+            ;; Note: vim.api.nvim_get_keymap cannot get vim function.
+            (nnoremap! :lhs2 [:<callback>] (new-callback (.. :foo :bar)))
+            (assert.is.same default-callback (get-callback :n :lhs1))
+            (assert.is_true (= :function (type (get-callback :n :lhs2))))))
+        (it "can set callback function in autocmds with `cb` key"
+          (fn []
+            (nnoremap! :lhs1 [:cb] default-callback)
+            (nnoremap! :lhs2 [:cb] (new-callback (.. :foo :bar)))
+            (assert.is.same default-callback (get-callback :n :lhs1))
+            (assert.is_true (= :function (type (get-callback :n :lhs2))))))
         (it "enables `replace_keycodes` when `expr` is set in `extra-opts`"
           (fn []
             (nnoremap! :lhs [:expr] :rhs)
