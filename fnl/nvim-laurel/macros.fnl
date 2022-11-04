@@ -38,12 +38,6 @@
   "Check if `x` is of number type."
   (= :number (type x)))
 
-(fn function? [x]
-  "(Compile time) Check if type of `x` is function.
-  Note: It cannot detect a function set in a symbol."
-  (let [ref (?. x 1 1)]
-    (contains? [:fn :hashfn :lambda :partial] ref)))
-
 (fn hidden-in-compile-time? [x]
   "Check if the value of `x` is hidden in compile time.
 
@@ -81,6 +75,13 @@
   (let [first-item (first x)]
     (if (str? first-item) first-item ;
         (first-symbol first-item))))
+
+;; Additional predicates ///2
+
+(fn anonymous-function? [x]
+  "(Compile time) Check if type of `x` is anonymous function."
+  (and (list? x) ;
+       (contains? [:fn :hashfn :lambda :partial] (first-symbol x))))
 
 ;; Specific Utils ///1
 (lambda wrapper [key ...]
@@ -429,6 +430,8 @@
                                          [:<buffer>
                                           :ex
                                           :<command>
+                                          :cb
+                                          :<callback>
                                           :nowait
                                           :silent
                                           :script
@@ -440,13 +443,24 @@
                                                        (sequence? a1)
                                                        [?extra-opts a2 ?a3 ?a4]
                                                        [?extra-opts a1 ?a3 ?a4])
-            rhs (if (or extra-opts.<command> extra-opts.ex (excmd? raw-rhs)
-                        (and (list? raw-rhs)
-                             (contains? [:<Cmd> :<C-u>] (first-symbol raw-rhs))))
-                    raw-rhs
+            rhs (do
+                  (when (and (or extra-opts.<command> extra-opts.ex)
+                             (or extra-opts.<callback> extra-opts.cb))
+                    (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
+                  (if (or extra-opts.<command> extra-opts.ex) raw-rhs
+                    (or extra-opts.<callback> extra-opts.cb ;
+                        (sym? raw-rhs) ;
+                        (anonymous-function? raw-rhs)) ;
                     (do
+                      ;; Hack: `->compatible-opts` must remove `cb`/`<callback>`
+                      ;; key instead, but it doesn't at present. It should be
+                      ;; reported to Fennel repository, but no idea how to
+                      ;; reproduce it in minimal codes.
+                      (set extra-opts.cb nil)
+                      (set extra-opts.<callback> nil)
                       (set extra-opts.callback raw-rhs)
-                      ""))
+                      "") ;
+                    raw-rhs))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
         (when (nil? extra-opts.desc)
@@ -907,7 +921,9 @@
                                            :nested
                                            :<buffer>
                                            :ex
-                                           :<command>]))
+                                           :<command>
+                                           :cb
+                                           :<callback>]))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.group ?id)
         (set extra-opts.buffer ?bufnr)
@@ -915,8 +931,14 @@
           (when-not (and (str? ?pattern) (= "*" ?pattern))
                     ;; Note: `*` is the default pattern and redundant.
                     (set extra-opts.pattern ?pattern)))
-        (if (or extra-opts.<command> extra-opts.ex (excmd? callback))
+        (when (and (or extra-opts.<command> extra-opts.ex)
+                   (or extra-opts.<callback> extra-opts.cb))
+          (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
+        (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
+            (or extra-opts.<callback> extra-opts.cb ;
+                (sym? callback) ;
+                (anonymous-function? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
             ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
             ;; to "callback" key because functions written in Vim script are
@@ -924,7 +946,8 @@
             ;; its first arg.
             (set extra-opts.callback
                  (or (extract-?vim-fn-name callback) ;
-                     callback)))
+                     callback))
+            (set extra-opts.command callback))
         (when (nil? extra-opts.desc)
           (set extra-opts.desc (infer-description callback)))
         (let [api-opts (merge-api-opts ?api-opts
