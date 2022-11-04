@@ -44,7 +44,6 @@
 
 (fn hidden-in-compile-time? [x]
   "Check if the value of `x` is hidden in compile time.
-
   @param x any
   @return boolean"
   (or (sym? x) (list? x)))
@@ -114,7 +113,6 @@
 
 (lambda merge-api-opts [?api-opts ?extra-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
-
   @param ?api-opts table
   @param ?extra-opts table Not a sequence.
   @return table"
@@ -228,34 +226,27 @@
 (lambda set! [name-?flag ?val]
   "Set value to the option.
   Almost equivalent to `:set` in Vim script.
-
   ```fennel
   (set! name-?flag ?val)
   ```
-
   - name-?flag: (string) Option name.
     As long as the option name is a bare string, i.e., neither symbol nor list,
     this macro has two advantages:
-
     1. A flag can be appended to the option name. Append `+`, `^`, or `-`,
        to append, prepend, or remove values, respectively.
     2. Option name is case-insensitive. You can improve readability a bit with
        camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
        `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
-
   - ?val: (boolean|number|string|table) New option value.
     If not provided, the value is supposed to be `true` (experimental).
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
     however, when the value is set in either symbol or list,
     this macro is expanding to `(tset vim.opt name val)` instead.
-
   Note: There is no plan to support option prefix either `no` or `inv`; instead,
   set `false` or `(not vim.go.foo)` respectively.
-
   Note: This macro has no support for either symbol or list with any flag
   at option name; instead, use `set+`, `set^`, or `set-`, respectively for such
   usage:
-
   ```fennel
   ;; Invalid usage!
   (let [opt :formatOptions+]
@@ -269,18 +260,15 @@
 (lambda setlocal! [name-?flag ?val]
   "Set local value to the option.
   Almost equivalent to `:setlocal` in Vim script.
-
   ```fennel
   (setlocal! name-?flag ?val)
   ```
-
   See `set!` for the details."
   (option/set :local name-?flag ?val))
 
 (lambda setglobal! [name-?flag ?val]
   "Set global value to the option.
   Almost equivalent to `:setglobal` in Vim script.
-
   ```fennel
   (setglobal! name-?flag ?val)
   ```
@@ -290,7 +278,6 @@
 (lambda set+ [name val]
   "Append a value to string-style options.
   Almost equivalent to `:set {option}+={value}` in Vim script.
-
   ```fennel
   (set+ name val)
   ```"
@@ -299,7 +286,6 @@
 (lambda set^ [name val]
   "Prepend a value to string-style options.
   Almost equivalent to `:set {option}^={value}` in Vim script.
-
   ```fennel
   (set^ name val)
   ```"
@@ -308,7 +294,6 @@
 (lambda set- [name val]
   "Remove a value from string-style options.
   Almost equivalent to `:set {option}-={value}` in Vim script.
-
   ```fennel
   (set- name val)
   ```"
@@ -317,7 +302,6 @@
 (lambda setlocal+ [name val]
   "Append a value to string-style local options.
   Almost equivalent to `:setlocal {option}+={value}` in Vim script.
-
   ```fennel
   (setlocal+ name val)
   ```"
@@ -326,7 +310,6 @@
 (lambda setlocal^ [name val]
   "Prepend a value to string-style local options.
   Almost equivalent to `:setlocal {option}^={value}` in Vim script.
-
   ```fennel
   (setlocal^ name val)
   ```"
@@ -335,7 +318,6 @@
 (lambda setlocal- [name val]
   "Remove a value from string-style local options.
   Almost equivalent to `:setlocal {option}-={value}` in Vim script.
-
   ```fennel
   (setlocal- name val)
   ```"
@@ -344,11 +326,9 @@
 (lambda setglobal+ [name val]
   "Append a value to string-style global options.
   Almost equivalent to `:setglobal {option}+={value}` in Vim script.
-
   ```fennel
   (setglobal+ name val)
   ```
-
   - name: (string) Option name.
   - val: (string) Additional option value."
   (option/modify :global name val "+"))
@@ -356,7 +336,6 @@
 (lambda setglobal^ [name val]
   "Prepend a value from string-style global options.
   Almost equivalent to `:setglobal {option}^={value}` in Vim script.
-
   ```fennel
   (setglobal^ name val)
   ```"
@@ -365,7 +344,6 @@
 (lambda setglobal- [name val]
   "Remove a value from string-style global options.
   Almost equivalent to `:setglobal {option}-={value}` in Vim script.
-
   ```fennel
   (setglobal- name val)
   ```"
@@ -513,7 +491,6 @@
 
 (lambda noremap! [modes ...]
   "Map `lhs` to `rhs` in `modes` non-recursively.
-
   ```fennel
   (noremap! modes ?extra-opts lhs rhs ?api-opts)
   (noremap! modes lhs ?extra-opts rhs ?api-opts)
@@ -525,7 +502,6 @@
 
 (lambda map! [modes ...]
   "Map `lhs` to `rhs` in `modes` recursively.
-
   ```fennel
   (noremap! modes ?extra-opts lhs rhs ?api-opts)
   (noremap! modes lhs ?extra-opts rhs ?api-opts)
@@ -539,7 +515,6 @@
 
 (lambda noremap-all! [...]
   "Map `lhs` to `rhs` in all modes non-recursively.
-
   ```fennel
   (noremap-all! ?extra-opts lhs rhs ?api-opts)
   (noremap-all! lhs ?extra-opts rhs ?api-opts)
@@ -551,7 +526,6 @@
 
 (lambda noremap-input! [...]
   "Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
-
   ```fennel
   (noremap-input! ?extra-opts lhs rhs ?api-opts)
   (noremap-input! lhs ?extra-opts rhs ?api-opts)
@@ -561,12 +535,10 @@
 (lambda noremap-motion! [...]
   "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
   non-recursively.
-
   ```fennel
   (noremap-motion! ?extra-opts lhs rhs ?api-opts)
   (noremap-motion! lhs ?extra-opts rhs ?api-opts)
   ```
-
   Note: This macro `unmap`s `lhs` in Select mode for the performance.
   To avoid this, use `(noremap! [:n :o :x] ...)` instead."
   (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
@@ -582,7 +554,6 @@
 
 (lambda noremap-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
-
   ```fennel
   (noremap-operator! ?extra-opts lhs rhs ?api-opts)
   (noremap-operator! lhs ?extra-opts rhs ?api-opts)
@@ -591,7 +562,6 @@
 
 (lambda noremap-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
-
   ```fennel
   (noremap-textobj! ?extra-opts lhs rhs ?api-opts)
   (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
@@ -600,7 +570,6 @@
 
 (lambda nnoremap! [...]
   "Map `lhs` to `rhs` in Normal mode non-recursively.
-
   ```fennel
   (nnoremap! ?extra-opts lhs rhs ?api-opts)
   (nnoremap! lhs ?extra-opts rhs ?api-opts)
@@ -609,7 +578,6 @@
 
 (lambda vnoremap! [...]
   "Map `lhs` to `rhs` in Visual/Select mode non-recursively.
-
   ```fennel
   (vnoremap! ?extra-opts lhs rhs ?api-opts)
   (vnoremap! lhs ?extra-opts rhs ?api-opts)
@@ -618,7 +586,6 @@
 
 (lambda xnoremap! [...]
   "Map `lhs` to `rhs` in Visual mode non-recursively.
-
   ```fennel
   (xnoremap! ?extra-opts lhs rhs ?api-opts)
   (xnoremap! lhs ?extra-opts rhs ?api-opts)
@@ -627,7 +594,6 @@
 
 (lambda snoremap! [...]
   "Map `lhs` to `rhs` in Select mode non-recursively.
-
   ```fennel
   (snoremap! ?extra-opts lhs rhs ?api-opts)
   (snoremap! lhs ?extra-opts rhs ?api-opts)
@@ -636,7 +602,6 @@
 
 (lambda onoremap! [...]
   "Map `lhs` to `rhs` in Operator-pending mode non-recursively.
-
   ```fennel
   (onoremap! ?extra-opts lhs rhs ?api-opts)
   (onoremap! lhs ?extra-opts rhs ?api-opts)
@@ -645,7 +610,6 @@
 
 (lambda inoremap! [...]
   "Map `lhs` to `rhs` in Insert mode non-recursively.
-
   ```fennel
   (inoremap! ?extra-opts lhs rhs ?api-opts)
   (inoremap! lhs ?extra-opts rhs ?api-opts)
@@ -655,7 +619,6 @@
 (lambda lnoremap! [...]
   "Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
   `:h language-mapping` for the details.
-
   ```fennel
   (lnoremap! ?extra-opts lhs rhs ?api-opts)
   (lnoremap! lhs ?extra-opts rhs ?api-opts)
@@ -664,7 +627,6 @@
 
 (lambda cnoremap! [...]
   "Map `lhs` to `rhs` in Command-line mode non-recursively.
-
   ```fennel
   (cnoremap! ?extra-opts lhs rhs ?api-opts)
   (cnoremap! lhs ?extra-opts rhs ?api-opts)
@@ -673,7 +635,6 @@
 
 (lambda tnoremap! [...]
   "Map `lhs` to `rhs` in Terminal mode non-recursively.
-
   ```fennel
   (tnoremap! ?extra-opts lhs rhs ?api-opts)
   (tnoremap! lhs ?extra-opts rhs ?api-opts)
@@ -682,7 +643,6 @@
 
 (lambda map-all! [...]
   "Map `lhs` to `rhs` in all modes recursively.
-
   ```fennel
   (map-all! ?extra-opts lhs rhs ?api-opts)
   (map-all! lhs ?extra-opts rhs ?api-opts)
@@ -694,7 +654,6 @@
 
 (lambda map-input! [...]
   "Map `lhs` to `rhs` in Insert/Command-line mode recursively.
-
   ```fennel
   (map-input! ?extra-opts lhs rhs ?api-opts)
   (map-input! lhs ?extra-opts rhs ?api-opts)
@@ -704,12 +663,10 @@
 (lambda map-motion! [...]
   "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
   recursively.
-
   ```fennel
   (map-motion! ?extra-opts lhs rhs ?api-opts)
   (map-motion! lhs ?extra-opts rhs ?api-opts)
   ```
-
   Note: This macro `unmap`s `lhs` in Select mode for the performance.
   To avoid this, use `(map! [:n :o :x] ...)` instead."
   (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
@@ -723,7 +680,6 @@
 
 (lambda map-operator! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode recursively.
-
   ```fennel
   (map-operator! ?extra-opts lhs rhs ?api-opts)
   (map-operator! lhs ?extra-opts rhs ?api-opts)
@@ -732,7 +688,6 @@
 
 (lambda map-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
-
   ```fennel
   (map-textobj! ?extra-opts lhs rhs ?api-opts)
   (map-textobj! lhs ?extra-opts rhs ?api-opts)
@@ -741,7 +696,6 @@
 
 (lambda nmap! [...]
   "Map `lhs` to `rhs` in Normal mode recursively.
-
   ```fennel
   (nmap! ?extra-opts lhs rhs ?api-opts)
   (nmap! lhs ?extra-opts rhs ?api-opts)
@@ -750,7 +704,6 @@
 
 (lambda vmap! [...]
   "Map `lhs` to `rhs` in Visual/Select mode recursively.
-
   ```fennel
   (vmap! ?extra-opts lhs rhs ?api-opts)
   (vmap! lhs ?extra-opts rhs ?api-opts)
@@ -759,7 +712,6 @@
 
 (lambda xmap! [...]
   "Map `lhs` to `rhs` in Visual mode recursively.
-
   ```fennel
   (xmap! ?extra-opts lhs rhs ?api-opts)
   (xmap! lhs ?extra-opts rhs ?api-opts)
@@ -768,7 +720,6 @@
 
 (lambda smap! [...]
   "Map `lhs` to `rhs` in Select mode recursively.
-
   ```fennel
   (smap! ?extra-opts lhs rhs ?api-opts)
   (smap! lhs ?extra-opts rhs ?api-opts)
@@ -777,7 +728,6 @@
 
 (lambda omap! [...]
   "Map `lhs` to `rhs` in Operator-pending mode recursively.
-
   ```fennel
   (omap! ?extra-opts lhs rhs ?api-opts)
   (omap! lhs ?extra-opts rhs ?api-opts)
@@ -786,7 +736,6 @@
 
 (lambda imap! [...]
   "Map `lhs` to `rhs` in Insert mode recursively.
-
   ```fennel
   (imap! ?extra-opts lhs rhs ?api-opts)
   (imap! lhs ?extra-opts rhs ?api-opts)
@@ -796,7 +745,6 @@
 (lambda lmap! [...]
   "Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
   `:h language-mapping` for the details.
-
   ```fennel
   (lmap! ?extra-opts lhs rhs ?api-opts)
   (lmap! lhs ?extra-opts rhs ?api-opts)
@@ -805,7 +753,6 @@
 
 (lambda cmap! [...]
   "Map `lhs` to `rhs` in Command-line mode recursively.
-
   ```fennel
   (cmap! ?extra-opts lhs rhs ?api-opts)
   (cmap! lhs ?extra-opts rhs ?api-opts)
@@ -814,7 +761,6 @@
 
 (lambda tmap! [...]
   "Map `lhs` to `rhs` in Terminal mode recursively.
-
   ```fennel
   (tmap! ?extra-opts lhs rhs ?api-opts)
   (tmap! lhs ?extra-opts rhs ?api-opts)
@@ -825,12 +771,10 @@
 
 (lambda command! [a1 a2 ?a3 ?a4]
   "Define a user command.
-
   ```fennel
   (command! ?extra-opts name command ?api-opts)
   (command! name ?extra-opts command ?api-opts)
   ```
-
   - `?extra-opts`: (sequence) Optional command attributes.
     Additional attributes:
     - `<buffer>`: with this alone, command is set in current buffer instead.
@@ -878,7 +822,6 @@
 (lambda define-autocmd! [?a1 a2 ?a3 ?x ?y ?z]
   "Define an autocmd.
   This macro also works as a syntax sugar in `augroup!`.
-
   @param name-or-id string|integer|nil:
     The autocmd group name or id to match against. It is necessary unlike
     `vim.api.nvim_create_autocmd()` unless this `autocmd!` macro is within
@@ -979,7 +922,6 @@
 
 (lambda str->keycodes [str]
   "Replace terminal codes and keycodes in a string.
-
   ```fennel
   (str->keycodes str)
   ```"
@@ -987,7 +929,6 @@
 
 (lambda feedkeys! [keys ?flags]
   "Equivalent to `vim.fn.feedkeys()`.
-
   ```fennel
   (feedkeys! keys ?flags)
   ```"
@@ -999,7 +940,6 @@
 
 (lambda highlight! [...]
   "Set a highlight group.
-
   ```fennel
   (highlight! ?ns-id name val)
  ```"
