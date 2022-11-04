@@ -97,23 +97,6 @@
     (when (nil? (. another k))
       (tset another k v))))
 
-(fn ->str? [x]
-  "Check if `x` will result in string at runtime."
-  (when (list? x)
-    (let [general-str-constructors [".."
-                                    :table.concat
-                                    :string.format
-                                    :tostring
-                                    :->str
-                                    :->string]]
-      (contains? general-str-constructors (first-symbol x)))))
-
-;; cspell:word excmd
-
-(fn excmd? [x]
-  "Check if `x` is Ex command."
-  (or (str? x) (->str? x)))
-
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table.
   The value for `x` listed in `?trues` is set to `true`.
