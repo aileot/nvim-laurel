@@ -24,22 +24,31 @@
 ;; Predicates ///2
 
 (lambda contains? [xs ?a]
-  "Check if `?a` is in `xs`."
+  "Check if `?a` is in `xs`.
+  @param xs sequence
+  @param ?a any
+  @return boolean"
   (accumulate [eq? false ;
                _ x (ipairs xs) ;
                &until eq?]
     (= ?a x)))
 
 (fn nil? [x]
-  "Check if value of `x` is nil."
+  "Check if `x` is `nil`.
+  @param x any
+  @return boolean"
   (= nil x))
 
 (fn str? [x]
-  "Check if `x` is of string type."
+  "Check if `x` is `string`.
+  @param x any
+  @return boolean"
   (= :string (type x)))
 
 (fn num? [x]
-  "Check if `x` is of number type."
+  "Check if `x` is `number`.
+  @param x any
+  @return boolean"
   (= :number (type x)))
 
 (fn hidden-in-compile-time? [x]
@@ -57,21 +66,32 @@
 ;; Misc ///2
 
 (fn ->str [x]
-  "Convert `x` to a string, or get the name if `x` is a symbol."
+  "Convert `x` to a string, or get the name if `x` is a symbol.
+  @param x any
+  @return string"
   (tostring x))
 
 (lambda first [xs]
-  "Return the first value in `xs`"
+  "Return the first value in `xs`
+  @param xs sequence
+  @return undefined"
   (. xs 1))
 
 (lambda slice [xs ?start ?end]
+  "Return sequence from `?start` to `?end`.
+  @param xs sequence
+  @param ?start integer
+  @param ?end integer
+  @return sequence"
   (let [first (or ?start 1)
         last (or ?end (length xs))]
     (fcollect [i first last]
       (. xs i))))
 
 (lambda first-symbol [x]
-  "Return the first symbol in list `x`"
+  "Return the first symbol in list `x`
+  @param x list
+  @return string"
   ;; TODO: Check if `x` is list.
   ;; (assert-compile (or (list? x) (table? x))
   ;;                 (.. "expected list or table, got " (type x)) x)
@@ -82,7 +102,9 @@
 ;; Additional predicates ///2
 
 (fn anonymous-function? [x]
-  "(Compile time) Check if type of `x` is anonymous function."
+  "(Compile time) Check if type of `x` is anonymous function.
+  @param x any
+  @return boolean"
   (and (list? x) ;
        (contains? [:fn :hashfn :lambda :partial] (first-symbol x))))
 
@@ -92,14 +114,20 @@
   `(. (require :nvim-laurel.wrapper) ,key ,...))
 
 (lambda merge-default-kv-table [default another]
+  "Fill key-value table with default values.
+  @param default kv-table
+  @param another kv-table"
   (each [k v (pairs default)]
     (when (nil? (. another k))
       (tset another k v))))
 
 (lambda seq->kv-table [xs ?trues]
-  "Convert `xs` into a kv-table.
-  The value for `x` listed in `?trues` is set to `true`.
-  The value for the rest of `x`s is set to the next value in `xs`."
+  "Convert `xs` into a kv-table as follows:
+  - The values for `x` listed in `?trues` are set to `true`.
+  - The values for the rest of `x`s are set to the next value in `xs`.
+  @param xs sequence
+  @param ?trues string[] The sequence of keys set to `true`.
+  @return kv-table"
   (let [kv-table {}
         max (length xs)]
     (var i 1)
@@ -127,7 +155,9 @@
 (lambda infer-description [raw-base]
   "Infer description from the name of hyphenated symbol, which is likely to be
   named by end user. It doesn't infer from any multi-symbol.
-  Return nil if `raw-base` is not a symbol."
+  Return nil if `raw-base` is not a symbol.
+  @param raw-base any
+  @return string|nil"
   (when (and (sym? raw-base) (not (multi-sym? raw-base)))
     (let [base (->str raw-base)
           ?description (when (and (< 2 (length base)) (base:match "%-"))
@@ -138,7 +168,9 @@
       ?description)))
 
 (lambda extract-?vim-fn-name [x]
-  "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`."
+  "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`.
+  @param x any
+  @return string|nil"
   (when (multi-sym? x)
     (let [(fn-name pos) (-> (->str x) (: :gsub "^vim%.fn%." ""))]
       (when (< 0 pos)
@@ -229,7 +261,7 @@
   ```fennel
   (set! name-?flag ?val)
   ```
-  - name-?flag: (string) Option name.
+  @param name-?flag string Option name.
     As long as the option name is a bare string, i.e., neither symbol nor list,
     this macro has two advantages:
     1. A flag can be appended to the option name. Append `+`, `^`, or `-`,
@@ -237,7 +269,7 @@
     2. Option name is case-insensitive. You can improve readability a bit with
        camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
        `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
-  - ?val: (boolean|number|string|table) New option value.
+  @param ?val boolean|number|string|table New option value.
     If not provided, the value is supposed to be `true` (experimental).
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
     however, when the value is set in either symbol or list,
@@ -439,8 +471,13 @@
         (values extra-opts lhs rhs ?api-opts))))
 
 (lambda keymap/del-maps! [...]
-  "Delete keymap in such format as
-  `(del-keymap :n :lhs)`, or `(del-keymap bufnr :n :lhs)`."
+  "Delete keymap.
+  ```fennel
+  (keymap/del-keymap! ?bufnr mode lhs)
+  ```
+  @param ?bufnr integer Buffer handle, or 0 for current buffer
+  @param mode string
+  @param lhs string"
   ;; Note: nvim_del_keymap itself cannot delete mappings in multi mode at once.
   (let [[?bufnr mode lhs] (if (select 3 ...) [...] [nil ...])]
     (if ?bufnr
@@ -448,6 +485,15 @@
         `(vim.api.nvim_del_keymap ,mode ,lhs))))
 
 (lambda keymap/set-maps! [modes extra-opts lhs rhs ?api-opts]
+  "Set keymap
+  ```fennel
+  (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param extra-opts kv-table
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (if (or (sym? modes) (list? modes))
       `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
       (let [?bufnr extra-opts.buffer
@@ -465,7 +511,9 @@
               (set-keymap m))))))
 
 (lambda keymap/invisible-key? [lhs]
-  "Check if lhs is invisible key."
+  "Check if `lhs` is invisible key like `<Plug>`, `<CR>`, `<C-f>`, `<F5>`, etc.
+  @param lhs string
+  @return boolean"
   (or ;; cspell:ignore acdms
       ;; <C-f>, <M-b>, ...
       (and (lhs:match "<[acdmsACDMS]%-[a-zA-Z0-9]+>")
@@ -478,13 +526,17 @@
 ;; Export ///2
 
 (lambda <C-u> [x]
-  "Return \":<C-u>`x`<CR>\""
+  "Return \":<C-u>`x`<CR>\"
+  @param x string
+  @return string"
   (if (str? x)
       (.. ":<C-u>" x :<CR>)
       `(.. ":<C-u>" ,x :<CR>)))
 
 (lambda <Cmd> [x]
-  "Return \"<Cmd>`x`<CR>\""
+  "Return \"<Cmd>`x`<CR>\"
+  @param x string
+  @return string"
   (if (str? x)
       (.. :<Cmd> x :<CR>)
       `(.. :<Cmd> ,x :<CR>)))
@@ -775,14 +827,14 @@
   (command! ?extra-opts name command ?api-opts)
   (command! name ?extra-opts command ?api-opts)
   ```
-  - `?extra-opts`: (sequence) Optional command attributes.
+  @param ?extra-opts sequence Optional command attributes.
     Additional attributes:
-    - `<buffer>`: with this alone, command is set in current buffer instead.
-    - `buffer`: with the next value, command is set to the buffer instead.
-  - `name`: (string) Name of the new user command.
+    - <buffer>: with this alone, command is set in current buffer instead.
+    - buffer: with the next value, command is set to the buffer instead.
+  @param name string Name of the new user command.
     It must begin with an uppercase letter.
-  - `command`: (string|function) Replacement command.
-  - `?api-opts`: (table) Optional command attributes.
+  @param command string|function Replacement command.
+  @param ?api-opts kv-table Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
   (let [?seq-extra-opts (if (sequence? a1) a1
                             (sequence? a2) a2)
@@ -820,25 +872,24 @@
                                :nested])
 
 (lambda define-autocmd! [?a1 a2 ?a3 ?x ?y ?z]
-  "Define an autocmd.
-  This macro also works as a syntax sugar in `augroup!`.
-  @param name-or-id string|integer|nil:
-    The autocmd group name or id to match against. It is necessary unlike
-    `vim.api.nvim_create_autocmd()` unless this `autocmd!` macro is within
-    either `augroup!` or `augroup+` macro. Set it to `nil` to define `autocmd`s
-    affiliated with no augroup.
-  @param events string|string[]:
-    The event or events to register this autocmd.
+  "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
+  ```fennel
+  (define-autocmd! events api-opts)
+  (define-autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
+  ```
+  @param name|id string|integer|nil The autocmd group name or id to match
+      against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
+      this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
+      Set it to `nil` to define `autocmd`s affiliated with no augroup.
+  @param events string|string[] The event or events to register this autocmd.
   @param ?pattern bare-sequence
-  @param ?extra-opts bare-sequence:
-    Addition to `api-opts` keys, `:<buffer>` is available to set `autocmd` to
-    current buffer.
-  @param callback string|function:
-    Set either vim Ex command, or function. Any bare string here is interpreted
-    as vim Ex command; use `vim.fn` interface instead to set a Vimscript
-    function.
-  @param ?api-opts kv-table:
-    Optional autocmd attributes."
+  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
+      available to set `autocmd` to current buffer.
+  @param callback string|function Set either vim Ex command, or function. Any
+      bare string here is interpreted as vim Ex command; use `vim.fn` interface
+      instead to set a Vimscript function.
+  @param ?api-opts kv-table Optional autocmd attributes.
+  @return undefined The return value of `nvim_create_autocmd`"
   (if (nil? ?a3)
       ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
       ;; args are provided.
@@ -896,6 +947,18 @@
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (lambda define-augroup! [name opts ...]
+  "Define an augroup.
+  ```fennel
+  (define-augroup! name opts [events ?pattern ?extra-opts callback ?api-opts])
+  (define-augroup! name opts (au! events ?pattern ?extra-opts callback ?api-opts))
+  (define-augroup! name opts (autocmd! events ?pattern ?extra-opts callback ?api-opts))
+  ```
+  @param name string Augroup name.
+  @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
+  @param ... undefined Parameters for `define-autocmd!` if any.
+  @return undefined Without `...`, the return value of `nvim_create_augroup`;
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
+      augroup."
   (if (= 0 (length [...]))
       `(vim.api.nvim_create_augroup ,name ,opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
@@ -910,12 +973,34 @@
 ;; Export ///2
 
 (lambda augroup! [name ...]
-  "Define/Override an augroup."
+  "Create, or override, an augroup.
+  ```fennel
+  (augroup! name
+    ?[events ?pattern ?extra-opts callback ?api-opts]
+    ?(au! events ?pattern ?extra-opts callback ?api-opts)
+    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
+    ?...)
+  ```
+  @param name string Augroup name.
+  @return undefined Without `...`, the return value of `nvim_create_augroup`;
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
+      augroup."
   ;; "clear" value is true by default.
   (define-augroup! name {} ...))
 
 (lambda augroup+ [name ...]
-  "Append `autocmd`s to an existing `augroup`."
+  "Create, or get, an augroup.
+  ```fennel
+  (augroup+ name
+    ?[events ?pattern ?extra-opts callback ?api-opts]
+    ?(au! events ?pattern ?extra-opts callback ?api-opts)
+    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
+    ?...)
+  ```
+  @param name string Augroup name.
+  @return undefined Without `...`, the return value of `nvim_create_augroup`;
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
+      augroup."
   (define-augroup! name {:clear false} ...))
 
 ;; Misc ///1
@@ -924,25 +1009,34 @@
   "Replace terminal codes and keycodes in a string.
   ```fennel
   (str->keycodes str)
-  ```"
+  ```
+  @param str string
+  @return string"
   `(vim.api.nvim_replace_termcodes ,str true true true))
 
 (lambda feedkeys! [keys ?flags]
   "Equivalent to `vim.fn.feedkeys()`.
   ```fennel
   (feedkeys! keys ?flags)
-  ```"
+  ```
+  @param keys string
+  @param ?flags string"
   `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,?flags false))
 
 (lambda cterm-color? [?color]
-  "`:h cterm-colors`"
+  "`:h cterm-colors`
+  @param ?color any
+  @return boolean"
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
 (lambda highlight! [...]
   "Set a highlight group.
   ```fennel
   (highlight! ?ns-id name val)
- ```"
+ ```
+ @param ?ns-id integer
+ @param name string
+ @param val kv-table"
   (local [?namespace hl-name val] (match (length [...])
                                     2 [nil (select 1 ...) (select 2 ...)]
                                     3 [...]))
