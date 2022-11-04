@@ -1062,10 +1062,10 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 ##### Anti-Pattern
 
 ```fennel
-(autocmd! events #(pcall foobar))
-(autocmd! events (fn []
-                   ;; Do something else
-                   (pcall foobar)))
+(autocmd! group events #(pcall foobar))
+(autocmd! group events (fn []
+                         ;; Do something else
+                         (pcall foobar)))
 ```
 
 ##### Pattern
@@ -1077,10 +1077,10 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
      ,...
      nil))
 
-(autocmd! events #(->nil (pcall foobar)))
-(autocmd! events (fn []
-                   ;; Do something else
-                   (pcall foobar)
-                   ;; Return any other value than `true`.
-                   nil))
+(autocmd! group events #(->nil (pcall foobar)))
+(autocmd! group events (fn []
+                         ;; Do something else
+                         (pcall foobar)
+                         ;; Return any other value than `true`.
+                         nil))
 ```
