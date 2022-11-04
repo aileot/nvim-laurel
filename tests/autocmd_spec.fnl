@@ -100,16 +100,42 @@
                       (au! default-event [:pat1 :pat2] default-callback))
             (let [[autocmd] (get-autocmds)]
               (assert.is.same default-callback autocmd.callback))))
-        (it "can set Ex command in autocmds with `<command>` or `ex` key"
+        (it "can set Ex command in autocmds with `<command>` key"
           (fn []
-            (let [another-command :foobar]
-              (augroup! default-augroup
-                (au! default-event :pat1 [:<command>] default-command)
-                (au! default-event :pat2 [:ex] another-command))
-              (let [[autocmd1] (get-autocmds {:pattern :pat1})
-                    [autocmd2] (get-autocmds {:pattern :pat2})]
-                (assert.is.same default-command autocmd1.command)
-                (assert.is.same another-command autocmd2.command)))))
+            (augroup! default-augroup
+              (au! default-event [:pat1] [:<command>] default-command)
+              (au! default-event [:pat2] [:<command>] (.. :foo :bar)))
+            (let [[autocmd1] (get-autocmds {:pattern :pat1})
+                  [autocmd2] (get-autocmds {:pattern :pat2})]
+              (assert.is.same default-command autocmd1.command)
+              (assert.is.same :foobar autocmd2.command))))
+        (it "can set Ex command in autocmds with `ex` key"
+          (fn []
+            (augroup! default-augroup
+              (au! default-event [:pat1] [:ex] default-command)
+              (au! default-event [:pat2] [:ex] (.. :foo :bar)))
+            (let [[autocmd1] (get-autocmds {:pattern :pat1})
+                  [autocmd2] (get-autocmds {:pattern :pat2})]
+              (assert.is.same default-command autocmd1.command)
+              (assert.is.same :foobar autocmd2.command))))
+        (it "can set callback function in autocmds with `<callback>` key"
+          (fn []
+            (augroup! default-augroup
+              (au! default-event [:pat1] [:<callback>] default-callback)
+              (au! default-event [:pat2] [:<callback>] (.. :foo :bar)))
+            (let [[autocmd1] (get-autocmds {:pattern :pat1})
+                  [autocmd2] (get-autocmds {:pattern :pat2})]
+              (assert.is.same default-callback autocmd1.callback)
+              (assert.is.same "<vim function: foobar>" autocmd2.callback))))
+        (it "can set callback function in autocmds with `cb` key"
+          (fn []
+            (augroup! default-augroup
+              (au! default-event [:pat1] [:cb] default-callback)
+              (au! default-event [:pat2] [:cb] (.. :foo :bar)))
+            (let [[autocmd1] (get-autocmds {:pattern :pat1})
+                  [autocmd2] (get-autocmds {:pattern :pat2})]
+              (assert.is.same default-callback autocmd1.callback)
+              (assert.is.same "<vim function: foobar>" autocmd2.callback))))
         (it "sets vim.fn.Test to callback in string"
           (fn []
             (vim.cmd "
