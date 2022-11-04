@@ -65,7 +65,7 @@ repo = "aileot/nvim-laurel"
 ```
 
 See
-[doc/macros.md](https://github.com/aileot/nvim-laurel/blob/main/doc/macros.md)
+[doc/MACROS.md](https://github.com/aileot/nvim-laurel/blob/main/doc/MACROS.md)
 for each macro usage in details.
 
 ## Alternatives
