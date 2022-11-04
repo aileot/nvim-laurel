@@ -65,12 +65,11 @@
   "Return the first value in `xs`"
   (. xs 1))
 
-(lambda slice [xs ?first ?last ?step]
-  (let [first (or ?first 1)
-        last (or ?last (length xs))
+(lambda slice [xs ?start ?end ?step]
+  (let [first (or ?start 1)
+        last (or ?end (length xs))
         step (or ?step 1)]
     (fcollect [i first last step]
-      ;
       (. xs i))))
 
 (lambda first-symbol [x]
