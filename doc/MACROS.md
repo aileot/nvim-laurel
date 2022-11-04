@@ -1084,3 +1084,24 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
                          ;; Return any other value than `true`.
                          nil))
 ```
+
+#### Nested anonymous function in callback
+
+`$` in the outermost hash function represents the single table argument from
+`nvim_create_autocmd`; on the other hand, `$` in any hash functions included in
+another anonymous function is meaningless in many cases.
+
+##### Anti-Pattern
+
+```fennel
+(autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
+(autocmd! group events (fn []
+                         (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+```
+
+##### Pattern
+
+```fennel
+(autocmd! group events #(vim.schedule (fn []
+                                        (nnoremap [:buffer $.buf] :lhs :rhs))))
+```
