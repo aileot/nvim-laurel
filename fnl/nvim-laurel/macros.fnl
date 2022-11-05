@@ -1222,7 +1222,7 @@
   @return boolean"
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
-(lambda highlight! [...]
+(lambda highlight! [ns-id|name name|val ?val]
   "Set a highlight group.
   ```fennel
   (highlight! ?ns-id name val)
@@ -1230,26 +1230,25 @@
  @param ?ns-id integer
  @param name string
  @param val kv-table"
-  (local [?namespace hl-name val] (match (length [...])
-                                    2 [nil (select 1 ...) (select 2 ...)]
-                                    3 [...]))
-  (if (?. val :link)
-      (each [k _ (pairs val)]
-        (assert-compile (= k :link) ;
-                        (.. "With `link` key, no other options are invalid: " k)
-                        val))
-      (do
-        (when (nil? val.ctermfg)
-          (set val.ctermfg (?. val :cterm :fg)))
-        (when (nil? val.ctermbg)
-          (set val.ctermbg (?. val :cterm :bg)))
-        (assert-compile (cterm-color? val.ctermfg)
-                        (.. "ctermfg expects 256 color, got "
-                            (view val.ctermfg)) val)
-        (assert-compile (cterm-color? val.ctermbg)
-                        (.. "ctermbg expects 256 color, got "
-                            (view val.ctermbg)) val)
-        `(vim.api.nvim_set_hl ,(or ?namespace 0) ,hl-name ,val))))
+  (let [[?ns-id name val] (if ?val [ns-id|name name|val ?val]
+                              [nil ns-id|name name|val])]
+    (if (?. val :link)
+        (each [k _ (pairs val)]
+          (assert-compile (= k :link) ;
+                          (.. "With `link` key, no other options are invalid: "
+                              k) val))
+        (do
+          (when (nil? val.ctermfg)
+            (set val.ctermfg (?. val :cterm :fg)))
+          (when (nil? val.ctermbg)
+            (set val.ctermbg (?. val :cterm :bg)))
+          (assert-compile (cterm-color? val.ctermfg)
+                          (.. "ctermfg expects 256 color, got "
+                              (view val.ctermfg)) val)
+          (assert-compile (cterm-color? val.ctermbg)
+                          (.. "ctermbg expects 256 color, got "
+                              (view val.ctermbg)) val)
+          `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))))
 
 ;; Export ///1
 
