@@ -435,6 +435,78 @@ Prepend a value to string-style local options. Almost equivalent to
 (setlocal^ name val)
 ```
 
+#### `go!`
+
+An alias of [`setglobal!`](#setglobal).
+
+```fennel
+(go! name value)
+```
+
+#### `bo!`
+
+Set a buffer option value. `:h nvim_buf_set_option`.
+
+```fennel
+(bo! ?id name value)
+```
+
+- `?id`: (integer) Buffer handle, or 0 for current buffer.
+- `name`: (string) Option name. Case-insensitive as long as in bare-string.
+- `value`: (any) Option value.
+
+```fennel
+(bo! :fileType :fennel)
+(bo! 10 :bufType :nofile)
+```
+
+is equivalent to
+
+```lua
+vim.api.nvim_buf_set_option(0, "filetype", "fennel")
+vim.api.nvim_buf_set_option(10, "buftype", "nofile")
+-- Or with `vim.bo`
+vim.bo.filetype = "fennel"
+vim.bo[10].buftype = "nofile"
+```
+
+```vim
+call setbufvar(0, '&filetype', 'fennel')
+call setbufvar(10, '&buftype', 'nofile')
+```
+
+#### `wo!`
+
+Set a window option value. `:h nvim_win_set_option`.
+
+```fennel
+(wo! ?id name value)
+```
+
+- `?id`: (integer) Window handle, or 0 for current window.
+- `name`: (string) Option name. Case-insensitive as long as in bare-string.
+- `value`: (any) Option value.
+
+```fennel
+(wo! :number false)
+(wo! 10 :signColumn :no)
+```
+
+is equivalent to
+
+```lua
+vim.api.nvim_win_set_option(0, "number", false)
+vim.api.nvim_win_set_option(10, "signcolumn", "no")
+-- Or with `vim.wo`
+vim.wo.number = false
+vim.wo[10].signcolumn = "no"
+```
+
+```vim
+call setwinvar(0, '&number', v:false)
+call setwinvar(10, '&signcolumn', 'no')
+```
+
 ### Variable
 
 - [`g!`](#g)
