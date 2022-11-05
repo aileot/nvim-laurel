@@ -524,6 +524,7 @@ Set environment variable in the editor session.
 (env! :$NVIM_CONFIG_HOME (vim.fn.stdpath :config))
 (env! :$NVIM_DATA_HOME (vim.fn.stdpath :data))
 (env! :$NVIM_STATE_HOME (vim.fn.stdpath :state))
+(env! :$PLUGIN_CACHE_HOME (vim.fs.normalize :$NVIM_CACHE_HOME/to/plugin/home))
 ```
 
 is equivalent to
@@ -533,6 +534,7 @@ vim.env.NVIM_CACHE_HOME = vim.fn.stdpath "cache"
 vim.env.NVIM_CONFIG_HOME = vim.fn.stdpath "config"
 vim.env.NVIM_DATA_HOME = vim.fn.stdpath "data"
 vim.env.NVIM_STATE_HOME = vim.fn.stdpath "state"
+vim.env.PLUGIN_CACHE_HOME vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
 ```
 
 ```vim
@@ -540,6 +542,7 @@ let $NVIM_CACHE_HOME = stdpath('cache')
 let $NVIM_CONFIG_HOME = stdpath('config')
 let $NVIM_DATA_HOME = stdpath('data')
 let $NVIM_STATE_HOME = stdpath('state')
+let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 ```
 
 ### Keymap
