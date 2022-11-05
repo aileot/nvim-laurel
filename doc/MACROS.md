@@ -127,8 +127,6 @@ Create or get an augroup, or override an existing augroup.
 ```fennel
 (augroup! :sample-augroup
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
-  (autocmd! :BufWritePre [:pattern (.. (vim.fn.stdpath :config) "/*")]
-      vim.lsp.buf.format)
   (autocmd! [:InsertEnter :InsertLeave]
       [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
   (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
@@ -143,7 +141,6 @@ is equivalent to
 augroup sample-augroup
   autocmd!
   autocmd TextYankPost * lua vim.highlight.on_yank {timeout=450, on_visual=false}
-  execute 'autocmd BufWritePre' stdpath('config') .'/* lua vim.lsp.buf.format()'
   autocmd InsertEnter,InsertLeave <buffer> call foo#bar()
   autocmd VimEnter * ++once ++nested call baz#qux(expand('<amatch>'))
   autocmd LspAttach * au sample-augroup CursorHold <buffer>
@@ -158,11 +155,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
    vim.highlight.on_yank {timeout=450, on_visual=false}
   end,
-})
-vim.api.nvim_create_autocmd("BufWritePre", {
-  group = id,
-  pattern = vim.fn.stdpath "config" .. "/*",
-  callback = vim.lsp.buf.format,
 })
 vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
   group = id,
@@ -268,7 +260,9 @@ Set value to the option. Almost equivalent to `:set` in Vim script.
 ```fennel
 (set! :number true)
 (set! :formatOptions [:1 :2 :c :B])
+(set! :completeOpt [:menu :menuone :noselect])
 (set! :listchars {:space :_ :tab: :>~})
+
 (set! :colorColumn+ :+1)
 (set! :rtp^ [:/path/to/another/dir])
 
@@ -284,7 +278,9 @@ is equivalent to
 set number
 set signcolumn=yes
 set formatoptions=12cB
+set completeopt=menu,menuone,noselect
 set listchars=space:_,tab:>~
+
 set colorcolumn+=+1
 set rtp^=/path/to/another/dir
 
@@ -298,7 +294,18 @@ execute 'set no' opt
 vim.api.nvim_set_option_value("number", true)
 vim.api.nvim_set_option_value("signcolumn", "yes")
 vim.api.nvim_set_option_value("formatoptions", "12cB")
+vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect")
 vim.api.nvim_set_option_value("listchars", "space:_,tab:>~")
+-- Or either with `vim.go` or with `vim.opt_global`,
+vim.go.number = true
+vim.go.signcolumn = "yes"
+vim.go.formatoptions = "12cB"
+vim.go.completeopt = ["menu", "menuone", "noselect"]
+vim.go.listchars = {
+  space = "_",
+  tab = ">~",
+}
+
 vim.opt_global.colorcolumn:append("+1")
 vim.opt_global.rtp:prepend("/path/to/another/dir")
 
@@ -469,6 +476,9 @@ integer to access variables for specific buffer.
 is equivalent to
 
 ```lua
+vim.api.nvim_buf_set_var(0, "foo", "bar")
+vim.api.nvim_buf_set_var(8, "foo", "bar")
+-- Or with `vim.b`,
 vim.b.foo = "bar"
 vim.b[8].baz = "qux"
 ```
@@ -532,6 +542,7 @@ Set environment variable in the editor session.
 (env! :$NVIM_CONFIG_HOME (vim.fn.stdpath :config))
 (env! :$NVIM_DATA_HOME (vim.fn.stdpath :data))
 (env! :$NVIM_STATE_HOME (vim.fn.stdpath :state))
+(env! :$PLUGIN_CACHE_HOME (vim.fs.normalize :$NVIM_CACHE_HOME/to/plugin/home))
 ```
 
 is equivalent to
@@ -541,6 +552,7 @@ vim.env.NVIM_CACHE_HOME = vim.fn.stdpath "cache"
 vim.env.NVIM_CONFIG_HOME = vim.fn.stdpath "config"
 vim.env.NVIM_DATA_HOME = vim.fn.stdpath "data"
 vim.env.NVIM_STATE_HOME = vim.fn.stdpath "state"
+vim.env.PLUGIN_CACHE_HOME vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
 ```
 
 ```vim
@@ -548,6 +560,7 @@ let $NVIM_CACHE_HOME = stdpath('cache')
 let $NVIM_CONFIG_HOME = stdpath('config')
 let $NVIM_DATA_HOME = stdpath('data')
 let $NVIM_STATE_HOME = stdpath('state')
+let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 ```
 
 ### Keymap
@@ -1070,10 +1083,10 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 ##### Anti-Pattern
 
 ```fennel
-(autocmd! events #(pcall foobar))
-(autocmd! events (fn []
-                   ;; Do something else
-                   (pcall foobar)))
+(autocmd! group events #(pcall foobar))
+(autocmd! group events (fn []
+                         ;; Do something else
+                         (pcall foobar)))
 ```
 
 ##### Pattern
@@ -1085,10 +1098,31 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
      ,...
      nil))
 
-(autocmd! events #(->nil (pcall foobar)))
-(autocmd! events (fn []
-                   ;; Do something else
-                   (pcall foobar)
-                   ;; Return any other value than `true`.
-                   nil))
+(autocmd! group events #(->nil (pcall foobar)))
+(autocmd! group events (fn []
+                         ;; Do something else
+                         (pcall foobar)
+                         ;; Return any other value than `true`.
+                         nil))
+```
+
+#### Nested anonymous function in callback
+
+`$` in the outermost hash function represents the single table argument from
+`nvim_create_autocmd`; on the other hand, `$` in any hash functions included in
+another anonymous function is meaningless in many cases.
+
+##### Anti-Pattern
+
+```fennel
+(autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
+(autocmd! group events (fn []
+                         (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+```
+
+##### Pattern
+
+```fennel
+(autocmd! group events #(vim.schedule (fn []
+                                        (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
