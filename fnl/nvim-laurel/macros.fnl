@@ -384,27 +384,70 @@
 ;; Variable ///1
 
 (lambda g! [name val]
+  "Set global (`g:`) editor variable.
+  ```fennel
+  (g! name val)
+  ```
+  @param name string Variable name.
+  @param val any Variable value."
   `(vim.api.nvim_set_var ,name ,val))
 
 (lambda b! [id|name name|val ?val]
+  "Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
+  with an integer to access variables for specific buffer.
+  ```fennel
+  (b! ?id name val)
+  ```
+  @param ?id integer Buffer handle, or 0 for current buffer.
+  @param name string Variable name.
+  @param val any Variable value."
   (if ?val
       `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
 
 (lambda w! [id|name name|val ?val]
+  "Set window-scoped (`w:`) variable for the current window. Can be indexed
+  with an integer to access variables for specific window.
+  ```fennel
+  (w! ?id name val)
+  ```
+  @param ?id integer Window handle, or 0 for current window.
+  @param name string Variable name.
+  @param val any Variable value."
   (if ?val
       `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
 
 (lambda t! [id|name name|val ?val]
+  "Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
+  with an integer to access variables for specific tabpage.
+  ```fennel
+  (t! ?id name val)
+  ```
+  @param ?id integer Tabpage handle, or 0 for current tabpage.
+  @param name string Variable name.
+  @param val any Variable value."
   (if ?val
       `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
 
 (lambda v! [name val]
+  "Set `v:` variable if not readonly.
+  ```fennel
+  (v! name val)
+  ```
+  @param name string Variable name.
+  @param val any Variable value."
   `(vim.api.nvim_set_vvar ,name ,val))
 
 (lambda env! [name val]
+  "Set environment variable in the editor session.
+  ```fennel
+  (env! name val)
+  ```
+  @param name string Variable name. A bare-string can starts with `$` (ignored
+    internally), which helps `gf` jump to the path.
+  @param val any Variable value."
   (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
     `(vim.fn.setenv ,new-name ,val)))
 
@@ -546,7 +589,12 @@
   ```fennel
   (noremap! modes ?extra-opts lhs rhs ?api-opts)
   (noremap! modes lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (let [default-opts {:noremap true}
         (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
     (merge-default-kv-table! default-opts extra-opts)
@@ -557,7 +605,12 @@
   ```fennel
   (noremap! modes ?extra-opts lhs rhs ?api-opts)
   (noremap! modes lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (let [default-opts {}
         (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
     (merge-default-kv-table! default-opts extra-opts)
@@ -570,7 +623,12 @@
   ```fennel
   (noremap-all! ?extra-opts lhs rhs ?api-opts)
   (noremap-all! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
     [(noremap! "" extra-opts lhs rhs ?api-opts)
      (noremap! "!" extra-opts lhs rhs ?api-opts)
@@ -581,7 +639,12 @@
   ```fennel
   (noremap-input! ?extra-opts lhs rhs ?api-opts)
   (noremap-input! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! "!" ...))
 
 (lambda noremap-motion! [...]
@@ -591,7 +654,12 @@
   (noremap-motion! ?extra-opts lhs rhs ?api-opts)
   (noremap-motion! lhs ?extra-opts rhs ?api-opts)
   ```
-  Note: This macro `unmap`s `lhs` in Select mode for the performance.
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table
+  Note: This macro could `unmap` `lhs` in Select mode for the performance.
   To avoid this, use `(noremap! [:n :o :x] ...)` instead."
   (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
         ;; Note: With unknown reason, keymap/del-maps! fails to get
@@ -609,7 +677,12 @@
   ```fennel
   (noremap-operator! ?extra-opts lhs rhs ?api-opts)
   (noremap-operator! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! [:n :x] ...))
 
 (lambda noremap-textobj! [...]
@@ -617,7 +690,12 @@
   ```fennel
   (noremap-textobj! ?extra-opts lhs rhs ?api-opts)
   (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! [:o :x] ...))
 
 (lambda nnoremap! [...]
@@ -625,7 +703,12 @@
   ```fennel
   (nnoremap! ?extra-opts lhs rhs ?api-opts)
   (nnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :n ...))
 
 (lambda vnoremap! [...]
@@ -633,7 +716,12 @@
   ```fennel
   (vnoremap! ?extra-opts lhs rhs ?api-opts)
   (vnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :v ...))
 
 (lambda xnoremap! [...]
@@ -641,7 +729,12 @@
   ```fennel
   (xnoremap! ?extra-opts lhs rhs ?api-opts)
   (xnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :x ...))
 
 (lambda snoremap! [...]
@@ -649,7 +742,12 @@
   ```fennel
   (snoremap! ?extra-opts lhs rhs ?api-opts)
   (snoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :s ...))
 
 (lambda onoremap! [...]
@@ -657,7 +755,12 @@
   ```fennel
   (onoremap! ?extra-opts lhs rhs ?api-opts)
   (onoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :o ...))
 
 (lambda inoremap! [...]
@@ -665,7 +768,12 @@
   ```fennel
   (inoremap! ?extra-opts lhs rhs ?api-opts)
   (inoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :i ...))
 
 (lambda lnoremap! [...]
@@ -674,7 +782,12 @@
   ```fennel
   (lnoremap! ?extra-opts lhs rhs ?api-opts)
   (lnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :l ...))
 
 (lambda cnoremap! [...]
@@ -682,7 +795,12 @@
   ```fennel
   (cnoremap! ?extra-opts lhs rhs ?api-opts)
   (cnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :c ...))
 
 (lambda tnoremap! [...]
@@ -690,7 +808,12 @@
   ```fennel
   (tnoremap! ?extra-opts lhs rhs ?api-opts)
   (tnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (noremap! :t ...))
 
 (lambda map-all! [...]
@@ -698,7 +821,12 @@
   ```fennel
   (map-all! ?extra-opts lhs rhs ?api-opts)
   (map-all! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
     [(map! "" extra-opts lhs rhs ?api-opts)
      (map! "!" extra-opts lhs rhs ?api-opts)
@@ -709,7 +837,12 @@
   ```fennel
   (map-input! ?extra-opts lhs rhs ?api-opts)
   (map-input! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! "!" ...))
 
 (lambda map-motion! [...]
@@ -719,7 +852,12 @@
   (map-motion! ?extra-opts lhs rhs ?api-opts)
   (map-motion! lhs ?extra-opts rhs ?api-opts)
   ```
-  Note: This macro `unmap`s `lhs` in Select mode for the performance.
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table
+    Note: This macro could `unmap` `lhs` in Select mode for the performance.
   To avoid this, use `(map! [:n :o :x] ...)` instead."
   (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
         ?bufnr extra-opts.buffer]
@@ -735,7 +873,12 @@
   ```fennel
   (map-operator! ?extra-opts lhs rhs ?api-opts)
   (map-operator! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! [:n :x] ...))
 
 (lambda map-textobj! [...]
@@ -743,7 +886,12 @@
   ```fennel
   (map-textobj! ?extra-opts lhs rhs ?api-opts)
   (map-textobj! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! [:o :x] ...))
 
 (lambda nmap! [...]
@@ -751,7 +899,12 @@
   ```fennel
   (nmap! ?extra-opts lhs rhs ?api-opts)
   (nmap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :n ...))
 
 (lambda vmap! [...]
@@ -759,7 +912,12 @@
   ```fennel
   (vmap! ?extra-opts lhs rhs ?api-opts)
   (vmap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :v ...))
 
 (lambda xmap! [...]
@@ -767,7 +925,12 @@
   ```fennel
   (xmap! ?extra-opts lhs rhs ?api-opts)
   (xmap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :x ...))
 
 (lambda smap! [...]
@@ -775,7 +938,12 @@
   ```fennel
   (smap! ?extra-opts lhs rhs ?api-opts)
   (smap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :s ...))
 
 (lambda omap! [...]
@@ -783,7 +951,12 @@
   ```fennel
   (omap! ?extra-opts lhs rhs ?api-opts)
   (omap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :o ...))
 
 (lambda imap! [...]
@@ -791,7 +964,12 @@
   ```fennel
   (imap! ?extra-opts lhs rhs ?api-opts)
   (imap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :i ...))
 
 (lambda lmap! [...]
@@ -800,7 +978,12 @@
   ```fennel
   (lmap! ?extra-opts lhs rhs ?api-opts)
   (lmap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :l ...))
 
 (lambda cmap! [...]
@@ -808,7 +991,12 @@
   ```fennel
   (cmap! ?extra-opts lhs rhs ?api-opts)
   (cmap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :c ...))
 
 (lambda tmap! [...]
@@ -816,7 +1004,12 @@
   ```fennel
   (tmap! ?extra-opts lhs rhs ?api-opts)
   (tmap! lhs ?extra-opts rhs ?api-opts)
-  ```"
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
   (map! :t ...))
 
 ;; Command ///1
@@ -827,7 +1020,7 @@
   (command! ?extra-opts name command ?api-opts)
   (command! name ?extra-opts command ?api-opts)
   ```
-  @param ?extra-opts sequence Optional command attributes.
+  @param ?extra-opts bare-sequence Optional command attributes.
     Additional attributes:
     - <buffer>: with this alone, command is set in current buffer instead.
     - buffer: with the next value, command is set to the buffer instead.
@@ -973,7 +1166,7 @@
 ;; Export ///2
 
 (lambda augroup! [name ...]
-  "Create, or override, an augroup.
+  "Create, or override, an augroup, and add `autocmd` to the augroup.
   ```fennel
   (augroup! name
     ?[events ?pattern ?extra-opts callback ?api-opts]
@@ -989,7 +1182,7 @@
   (define-augroup! name {} ...))
 
 (lambda augroup+ [name ...]
-  "Create, or get, an augroup.
+  "Create, or get, an augroup, or add `autocmd`s to an existing augroup.
   ```fennel
   (augroup+ name
     ?[events ?pattern ?extra-opts callback ?api-opts]
@@ -1121,4 +1314,4 @@
  : highlight!
  :hi! highlight!}
 
-;; vim:fdm=marker:foldmarker=///,"""
+;; vim:fdm=marker:foldmarker=///,""")
