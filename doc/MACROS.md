@@ -260,7 +260,9 @@ Set value to the option. Almost equivalent to `:set` in Vim script.
 ```fennel
 (set! :number true)
 (set! :formatOptions [:1 :2 :c :B])
+(set! :completeOpt [:menu :menuone :noselect])
 (set! :listchars {:space :_ :tab: :>~})
+
 (set! :colorColumn+ :+1)
 (set! :rtp^ [:/path/to/another/dir])
 
@@ -276,7 +278,9 @@ is equivalent to
 set number
 set signcolumn=yes
 set formatoptions=12cB
+set completeopt=menu,menuone,noselect
 set listchars=space:_,tab:>~
+
 set colorcolumn+=+1
 set rtp^=/path/to/another/dir
 
@@ -290,7 +294,18 @@ execute 'set no' opt
 vim.api.nvim_set_option_value("number", true)
 vim.api.nvim_set_option_value("signcolumn", "yes")
 vim.api.nvim_set_option_value("formatoptions", "12cB")
+vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect")
 vim.api.nvim_set_option_value("listchars", "space:_,tab:>~")
+-- Or either with `vim.go` or with `vim.opt_global`,
+vim.go.number = true
+vim.go.signcolumn = "yes"
+vim.go.formatoptions = "12cB"
+vim.go.completeopt = ["menu", "menuone", "noselect"]
+vim.go.listchars = {
+  space = "_",
+  tab = ">~",
+}
+
 vim.opt_global.colorcolumn:append("+1")
 vim.opt_global.rtp:prepend("/path/to/another/dir")
 
