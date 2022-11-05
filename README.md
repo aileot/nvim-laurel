@@ -64,9 +64,7 @@ repo = "aileot/nvim-laurel"
 (import-macros {: setglobal! : augroup! :au! ...} :nvim-laurel.macros)
 ```
 
-See
-[doc/MACROS.md](https://github.com/aileot/nvim-laurel/blob/main/doc/MACROS.md)
-for each macro usage in details.
+See [doc/MACROS.md](./doc/MACROS.md) for each macro usage in details.
 
 ## Alternatives
 
