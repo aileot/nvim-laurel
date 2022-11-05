@@ -7,7 +7,7 @@ nvim-laurel provides syntax sugar macros for Neovim. The macros are developped
 with [fennel-language-server][fennel-language-server], and tested with
 [vusted][vusted].
 
-![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/200101707-e30ed5f2-f9b9-4930-9199-43b545848e98.png)
+![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/200104542-629da3b9-41de-435c-b665-b609199a5fd4.png)
 
 ## Requirements
 
