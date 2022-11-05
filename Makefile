@@ -18,7 +18,7 @@ TEST_ROOT:=$(REPO_ROOT)/tests
 
 TEST_DEPS:=$(TEST_ROOT)/.test-deps
 
-FNL_TESTS:=$(wildcard tests/*_spec.fnl)
+FNL_TESTS:=$(wildcard tests/spec/*_spec.fnl)
 LUA_TESTS:=$(FNL_TESTS:%.fnl=%.lua)
 
 FNL_SRC:=$(wildcard fnl/nvim-laurel/*.fnl)
