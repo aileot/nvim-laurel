@@ -20,6 +20,13 @@ An abbreviation of left-hand-side.
 
 An abbreviation of right-hand-side.
 
+### #({expr})
+
+Hash function, where `$1` through `$9` and `$...` are available as the argument.
+`$` is an alias for `$1`. See the
+[reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
+for the detail.
+
 ### sequence
 
 An alias of sequential table `[]`.
