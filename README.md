@@ -61,10 +61,11 @@ repo = "aileot/nvim-laurel"
 ## Usage
 
 ```fennel
-(import-macros {: setglobal! : augroup! :au! ...} :nvim-laurel.macros)
+(import-macros {: setglobal! : augroup! : au! ...} :nvim-laurel.macros)
 ```
 
 See [doc/MACROS.md](./doc/MACROS.md) for each macro usage in details.
+[Discussions][Discussions] would inspire you, too.
 
 ## Alternatives
 
@@ -78,3 +79,4 @@ See [doc/MACROS.md](./doc/MACROS.md) for each macro usage in details.
 [fennel-language-server]: https://github.com/rydesun/fennel-language-server
 [vusted]: https://github.com/notomo/vusted
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
+[Discussions]: https://github.com/aileot/nvim-laurel/discussions/
