@@ -1214,7 +1214,10 @@
   ```
   @param keys string
   @param ?flags string"
-  `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,?flags false))
+  (let [flags (if (str? ?flags)
+                  (or ?flags "")
+                  `(or ,?flags ""))]
+    `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,flags false)))
 
 (lambda cterm-color? [?color]
   "`:h cterm-colors`
