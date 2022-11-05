@@ -231,18 +231,11 @@ An alias of [`autocmd!`](#autocmd).
 
 ### Option
 
-- [`set!`](#set)
-- [`set+`](#set-1)
-- [`set-`](#set-)
-- [`set^`](#set-2)
-- [`setglobal!`](#setglobal)
-- [`setglobal+`](#setglobal-1)
-- [`setglobal-`](#setglobal-)
-- [`setglobal^`](#setglobal-2)
-- [`setlocal!`](#setlocal)
-- [`setlocal+`](#setlocal-1)
-- [`setlocal-`](#setlocal-)
-- [`setlocal^`](#setlocal-2)
+| Set (`!`)                  | Append (`+`)               | Remove (`-`)               | Prepend (`^`)              |
+| :------------------------- | :------------------------- | :------------------------- | :------------------------- |
+| [`set!`](#set)             | [`set+`](#set)             | [`set-`](#set)             | [`set^`](#set)             |
+| [`setglobal!`](#setglobal) | [`setglobal+`](#setglobal) | [`setglobal-`](#setglobal) | [`setglobal^`](#setglobal) |
+| [`setlocal!`](#setlocal)   | [`setlocal+`](#setlocal)   | [`setlocal-`](#setlocal)   | [`setlocal^`](#setlocal)   |
 
 #### `set!`
 
