@@ -476,6 +476,9 @@ integer to access variables for specific buffer.
 is equivalent to
 
 ```lua
+vim.api.nvim_buf_set_var(0, "foo", "bar")
+vim.api.nvim_buf_set_var(8, "foo", "bar")
+-- Or with `vim.b`,
 vim.b.foo = "bar"
 vim.b[8].baz = "qux"
 ```
