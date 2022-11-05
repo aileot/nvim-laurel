@@ -20,6 +20,13 @@ An abbreviation of left-hand-side.
 
 An abbreviation of right-hand-side.
 
+### #({expr})
+
+Hash function, where `$1` through `$9` and `$...` are available as the argument.
+`$` is an alias for `$1`. See the
+[reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
+for the detail.
+
 ### sequence
 
 An alias of sequential table `[]`.
@@ -261,7 +268,7 @@ Set value to the option. Almost equivalent to `:set` in Vim script.
 (set! :number true)
 (set! :formatOptions [:1 :2 :c :B])
 (set! :completeOpt [:menu :menuone :noselect])
-(set! :listchars {:space :_ :tab: :>~})
+(set! :listChars {:space :_ :tab: ">~"})
 
 (set! :colorColumn+ :+1)
 (set! :rtp^ [:/path/to/another/dir])
@@ -981,7 +988,7 @@ Create a user command.
           {:desc "Say Hello!"})
 (command! :Salute
           [:bar :<buffer> :desc "Salute!"]
-          #(print "Hello world!")
+          #(print "Hello world!"))
 ```
 
 is equivalent to
@@ -1038,9 +1045,9 @@ Set a highlight group.
 ```
 
 ```fennel
-(highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic})
+(highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic}})
 ;; or
-(highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :cterm {:fg 103 :bold true :italic})
+(highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :cterm {:fg 103 :bold true :italic}})
 ```
 
 is equivalent to
