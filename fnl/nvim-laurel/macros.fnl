@@ -506,6 +506,7 @@
                         (set extra-opts.<callback> nil)
                         (set extra-opts.callback raw-rhs)
                         "") ;
+                      ;; Otherwise, Normal mode commands.
                       raw-rhs))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
