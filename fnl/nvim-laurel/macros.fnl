@@ -506,6 +506,7 @@
                         (set extra-opts.<callback> nil)
                         (set extra-opts.callback raw-rhs)
                         "") ;
+                      ;; Otherwise, Normal mode commands.
                       raw-rhs))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
@@ -537,6 +538,11 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
+  (when (and extra-opts.callback (not extra-opts.expr)
+             (or (nil? ?api-opts)
+                 (and (not ?api-opts.expr)
+                      (not (hidden-in-compile-time? ?api-opts)))))
+    (set extra-opts.noremap nil))
   (if (or (sym? modes) (list? modes))
       `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
       (let [?bufnr extra-opts.buffer
