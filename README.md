@@ -3,7 +3,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![test](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg)](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml)
 
-nvim-laurel provides syntax sugar macros for Neovim. The macros are developped
+nvim-laurel provides syntax sugar macros for Neovim. The macros are developed
 with [fennel-language-server][fennel-language-server], and tested with
 [vusted][vusted].
 
