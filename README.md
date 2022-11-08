@@ -72,6 +72,7 @@ See [doc/MACROS.md](./doc/MACROS.md) for each macro usage in details.
 - [aniseed](https://github.com/Olical/aniseed)
 - [hibiscus.nvim](https://github.com/udayvir-singh/hibiscus.nvim)
 - [katcros-fnl](https://github.com/katawful/katcros-fnl)
+- [nyoom.nvim](https://github.com/shaunsingh/nyoom.nvim)
 - [themis.nvim](https://github.com/datwaft/themis.nvim)
 - [zest.nvim](https://github.com/tsbohc/zest.nvim)
 
