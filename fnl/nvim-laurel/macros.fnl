@@ -152,21 +152,6 @@
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
-(lambda infer-description [raw-base]
-  "Infer description from the name of hyphenated symbol, which is likely to be
-  named by end user. It doesn't infer from any multi-symbol.
-  Return nil if `raw-base` is not a symbol.
-  @param raw-base any
-  @return string|nil"
-  (when (and (sym? raw-base) (not (multi-sym? raw-base)))
-    (let [base (->str raw-base)
-          ?description (when (and (< 2 (length base)) (base:match "%-"))
-                         (.. (-> (base:sub 1 1)
-                                 (: :upper))
-                             (-> (base:sub 2)
-                                 (: :gsub "%-+" " "))))]
-      ?description)))
-
 (lambda extract-?vim-fn-name [x]
   "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`.
   @param x any
@@ -510,8 +495,6 @@
                       raw-rhs))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
-        (when (nil? extra-opts.desc)
-          (set extra-opts.desc (infer-description raw-rhs)))
         (values extra-opts lhs rhs ?api-opts))))
 
 (lambda keymap/del-maps! [...]
@@ -1139,8 +1122,6 @@
                  (or (extract-?vim-fn-name callback) ;
                      callback))
             (set extra-opts.command callback))
-        (when (nil? extra-opts.desc)
-          (set extra-opts.desc (infer-description callback)))
         (let [api-opts (merge-api-opts ?api-opts
                                        (autocmd/->compatible-opts! extra-opts))]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
