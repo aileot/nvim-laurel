@@ -28,9 +28,6 @@
 (lambda get-callback [mode lhs]
   (?. (get-mapargs mode lhs) :callback))
 
-(lambda get-desc [mode lhs]
-  (?. (get-mapargs mode lhs) :desc))
-
 (lambda buf-get-mapargs [bufnr mode lhs]
   (let [mappings (vim.api.nvim_buf_get_keymap bufnr mode)]
     (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
@@ -107,17 +104,6 @@
               (nnoremap! [:buffer bufnr] :lhs :rhs)
               (assert.is_nil (buf-get-rhs 0 :n :lhs))
               (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs)))))
-        (it "infers description from rhs symbol"
-          #(let [callback-description :rhs
-                 command-description :ex-cmd]
-             (nnoremap! :lhs1 callback-description)
-             (nnoremap! :lhs2 command-description)
-             (assert.is.same "Callback description" (get-desc :n :lhs1))
-             (assert.is.same "Command description" (get-desc :n :lhs2))))
-        (it "doesn't infer description if desc key has already value"
-          (fn []
-            (nnoremap! [:desc "Prevent description inference"] :lhs :rhs)
-            (assert.is.same "Prevent description inference" (get-desc :n :lhs))))
         (it "set a list which will result in string without callback"
           (fn []
             (nnoremap! :lhs (.. :r :h :s))
