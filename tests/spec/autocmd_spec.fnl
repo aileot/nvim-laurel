@@ -146,25 +146,6 @@
                                              vim.fn.Test))
             (let [[autocmd] (get-autocmds)]
               (assert.is.same "<vim function: Test>" autocmd.callback))))
-        (it "infers description from symbol name"
-          (fn []
-            (let [callback-description #:sample-callback
-                  command-description :sample-command
-                  event1 :BufRead
-                  event2 :BufNewFile]
-              (augroup! default-augroup
-                (au! event1 [:pat1] callback-description)
-                (au! event2 [:pat2] [:<command>] command-description))
-              (let [[au1] (get-autocmds {:event event1})
-                    [au2] (get-autocmds {:event event2})]
-                (assert.is.same "Callback description" au1.desc)
-                (assert.is.same "Command description" au2.desc)))))
-        (it "doesn't infer description if desc key has already value"
-          (fn []
-            (au! default-augroup default-event [:pat1 :pat2]
-                 [:desc "Prevent description inference"] default-callback)
-            (let [[autocmd] (get-autocmds)]
-              (assert.is.same "Prevent description inference" autocmd.desc))))
         (it "creates buffer-local autocmd with `buffer` key"
           (fn []
             (let [bufnr (vim.api.nvim_get_current_buf)
