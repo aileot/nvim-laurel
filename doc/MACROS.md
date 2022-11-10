@@ -294,7 +294,7 @@ set rtp^=/path/to/another/dir
 let val = 'yes'
 let &signcolumn = val
 let opt = 'wrap'
-execute 'set no' opt
+execute 'set no'. opt
 ```
 
 ```lua
