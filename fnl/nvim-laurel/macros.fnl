@@ -1154,13 +1154,16 @@
                                            :<command>
                                            :cb
                                            :<callback>]))
-            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
+            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
+            ?pat (or extra-opts.pattern ?pattern)]
         (set extra-opts.group ?id)
         (set extra-opts.buffer ?bufnr)
-        (when (and ?pattern (nil? extra-opts.pattern))
-          (when-not (and (str? ?pattern) (= "*" ?pattern))
-            ;; Note: `*` is the default pattern and redundant.
-            (set extra-opts.pattern ?pattern)))
+        (let [pattern (if (and (sequence? ?pat) (= 1 (length ?pat)))
+                          (first ?pat)
+                          ?pat)]
+          ;; Note: `*` is the default pattern and redundant.
+          (when-not (and (str? pattern) (= "*" pattern))
+            (set extra-opts.pattern pattern)))
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
           (error* "cannot set both <command>/ex and <callback>/cb."))
