@@ -1,7 +1,7 @@
 (import-macros {: augroup! : augroup+ : au! : autocmd!} :nvim-laurel.macros)
 
 (local default-augroup :default-test-augroup)
-(local default-event [:BufRead :BufNewFile])
+(local default-event :BufRead)
 (local default-callback #:default-callback)
 (local default-command :default-command)
 
