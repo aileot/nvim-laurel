@@ -522,6 +522,8 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
+  (when (and extra-opts.expr (not= false extra-opts.replace_keycodes))
+    (set extra-opts.replace_keycodes (if extra-opts.literal false true)))
   (when (and extra-opts.callback (not extra-opts.expr)
              (or (nil? ?api-opts)
                  (and (not ?api-opts.expr)
