@@ -139,10 +139,10 @@
       (++ i))
     kv-table))
 
-(lambda merge-api-opts [?api-opts ?extra-opts]
+(lambda merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
-  @param ?api-opts table
   @param ?extra-opts table Not a sequence.
+  @param ?api-opts table
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
@@ -532,8 +532,8 @@
   (if (or (sym? modes) (list? modes))
       `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
       (let [?bufnr extra-opts.buffer
-            api-opts (merge-api-opts ?api-opts
-                                     (keymap/->compatible-opts! extra-opts))
+            api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
+                                     ?api-opts)
             set-keymap (lambda [mode]
                          (if ?bufnr
                              `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
@@ -1036,8 +1036,8 @@
                                               [?extra-opts a2 ?a3 ?a4]
                                               [?extra-opts a1 ?a3 ?a4])
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-        api-opts (merge-api-opts ?api-opts
-                                 (command/->compatible-opts! extra-opts))]
+        api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
+                                 ?api-opts)]
     (if ?bufnr
         `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command ,api-opts)
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
@@ -1125,8 +1125,8 @@
                  (or (extract-?vim-fn-name callback) ;
                      callback))
             (set extra-opts.command callback))
-        (let [api-opts (merge-api-opts ?api-opts
-                                       (autocmd/->compatible-opts! extra-opts))]
+        (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
+                                       ?api-opts)]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (lambda define-augroup! [name opts ...]
