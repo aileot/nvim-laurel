@@ -146,7 +146,7 @@
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
-          `(,(wrapper :merge-api-opts) ,?api-opts ,?extra-opts))
+          `(vim.tbl_extend :force ,?extra-opts ,?api-opts))
       (nil? ?api-opts)
       (or ?extra-opts {})
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
