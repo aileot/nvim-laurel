@@ -462,6 +462,7 @@
                                           :<command>
                                           :cb
                                           :<callback>
+                                          :noremap
                                           :nowait
                                           :silent
                                           :script
@@ -470,7 +471,7 @@
                                           :replace_keycodes
                                           :literal]))
             [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
-                                                 [{} a1 a2]
+                                                 [{} a1 a2 ?a3]
                                                  (sequence? a1)
                                                  [?extra-opts a2 ?a3 ?a4]
                                                  [?extra-opts a1 ?a3 ?a4])
