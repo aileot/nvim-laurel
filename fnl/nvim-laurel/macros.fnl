@@ -462,6 +462,7 @@
                                           :<command>
                                           :cb
                                           :<callback>
+                                          :noremap
                                           :nowait
                                           :silent
                                           :script
