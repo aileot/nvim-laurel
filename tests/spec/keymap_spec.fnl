@@ -88,17 +88,6 @@
                (assert.is.same 1 noremap))
              (let [{: noremap} (get-mapargs mode :lhs)]
                (assert.is.same 1 noremap))))
-        (it "maps symbol prefixed by `ex-` to rhs"
-          #(let [mode :n
-                 rhs :rhs]
-             (map! mode [:<command>] :lhs rhs)
-             (assert.is.same rhs (get-rhs mode :lhs))))
-        (it "maps symbol without prefix `ex-` to callback instead"
-          #(let [mode :n
-                 rhs #:rhs]
-             (map! mode :lhs rhs)
-             ;; Note: rhs is nil when callback is set in the dictionary.
-             (assert.is.same rhs (get-callback mode :lhs))))
         (it "maps multiple mode mappings with a string at once"
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)
