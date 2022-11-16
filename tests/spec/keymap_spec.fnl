@@ -71,6 +71,23 @@
              (each [_ m (ipairs modes)]
                (let [{: noremap} (get-mapargs m :lhs)]
                  (assert.is.same 0 noremap)))))
+        (it "is also available to non-recursive mappings"
+          #(let [mode :n]
+             (map! :o [:noremap] :lhs :rhs)
+             (map! mode [:noremap] :lhs :rhs)
+             (let [{: noremap} (get-mapargs :o :lhs)]
+               (assert.is.same 1 noremap))
+             (let [{: noremap} (get-mapargs mode :lhs)]
+               (assert.is.same 1 noremap))))
+        (it "gives priority to `api-opts`"
+          #(let [mode :n
+                 api-opts {:noremap true}]
+             (map! :o :lhs :rhs api-opts)
+             (map! mode :lhs :rhs api-opts)
+             (let [{: noremap} (get-mapargs :o :lhs)]
+               (assert.is.same 1 noremap))
+             (let [{: noremap} (get-mapargs mode :lhs)]
+               (assert.is.same 1 noremap))))
         (it "maps symbol prefixed by `ex-` to rhs"
           #(let [mode :n
                  rhs :rhs]
