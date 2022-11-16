@@ -92,7 +92,17 @@
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)
              (each [_ mode (ipairs modes)]
-               (assert.is.same :rhs (get-rhs mode :lhs)))))))
+               (assert.is.same :rhs (get-rhs mode :lhs)))))
+        (it "enables `replace_keycodes` with `expr` in `extra-opts`"
+          #(let [modes [:n]]
+             (map! modes [:expr] :lhs :rhs)
+             (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+               (assert.is.same 1 replace_keycodes))))
+        (it "disables `replace_keycodes` with `literal` in `extra-opts`"
+          #(let [modes [:n]]
+             (map! modes [:expr :literal] :lhs :rhs)
+             (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+               (assert.is_nil replace_keycodes))))))
     (describe :nnoremap!
       (fn []
         (it "can include extra-opts in either first or second arg"
