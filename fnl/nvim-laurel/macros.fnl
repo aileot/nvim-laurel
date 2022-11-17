@@ -1,7 +1,3 @@
-(local {: keymap/->compatible-opts!
-        : command/->compatible-opts!
-        : autocmd/->compatible-opts!} (require :nvim-laurel.utils))
-
 ;; General Macros ///1
 
 (macro ++ [num]
@@ -437,6 +433,17 @@
     `(vim.fn.setenv ,new-name ,val)))
 
 ;; Keymap ///1
+
+(lambda keymap/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.buffer nil)
+  (set opts.<buffer> nil)
+  (set opts.<command> nil)
+  (set opts.ex nil)
+  (set opts.<callback> nil)
+  (set opts.cb nil)
+  (set opts.literal nil)
+  opts)
 
 (lambda keymap/parse-varargs [a1 a2 ?a3 ?a4]
   "Parse varargs.
@@ -1006,6 +1013,12 @@
 
 ;; Command ///1
 
+(lambda command/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.buffer nil)
+  (set opts.<buffer> nil)
+  opts)
+
 (lambda command! [a1 a2 ?a3 ?a4]
   "Define a user command.
   ```fennel
@@ -1055,6 +1068,15 @@
                                :command
                                :once
                                :nested])
+
+(lambda autocmd/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.<buffer> nil)
+  (set opts.<command> nil)
+  (set opts.ex nil)
+  (set opts.<callback> nil)
+  (set opts.cb nil)
+  opts)
 
 (lambda define-autocmd! [?a1 a2 ?a3 ?x ?y ?z]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
