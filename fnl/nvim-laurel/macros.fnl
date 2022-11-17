@@ -536,7 +536,7 @@
                  (and (not ?api-opts.expr)
                       (not (hidden-in-compile-time? ?api-opts)))))
     (set extra-opts.noremap nil))
-  (if (or (sym? modes) (list? modes))
+  (if (hidden-in-compile-time? modes)
       `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
       (let [?bufnr extra-opts.buffer
             api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
