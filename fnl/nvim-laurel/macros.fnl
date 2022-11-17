@@ -536,21 +536,25 @@
                  (and (not ?api-opts.expr)
                       (not (hidden-in-compile-time? ?api-opts)))))
     (set extra-opts.noremap nil))
-  (if (hidden-in-compile-time? modes)
-      `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
-      (let [?bufnr extra-opts.buffer
-            api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
-                                     ?api-opts)
-            set-keymap (lambda [mode]
-                         (if ?bufnr
-                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                           ,rhs ,api-opts)
-                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                       ,api-opts)))]
-        (if (str? modes)
-            (set-keymap modes)
-            (icollect [_ m (ipairs modes)]
-              (set-keymap m))))))
+  (let [?bufnr extra-opts.buffer
+        api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
+                                 ?api-opts)
+        set-keymap (lambda [mode]
+                     (if ?bufnr
+                         `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs ,rhs
+                                                       ,api-opts)
+                         `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))]
+    (if (str? modes)
+        (set-keymap modes)
+        (hidden-in-compile-time? modes)
+        ;; Note: With `vim.keymap.set` instead, it would be hard to deal
+        ;; with `remap` key.
+        `(if (= (type ,modes) :string)
+             ,(set-keymap modes)
+             (vim.tbl_map (fn [m#]
+                            ,(set-keymap `m#)) ,modes))
+        (icollect [_ m (ipairs modes)]
+          (set-keymap m)))))
 
 (lambda keymap/invisible-key? [lhs]
   "Check if `lhs` is invisible key like `<Plug>`, `<CR>`, `<C-f>`, `<F5>`, etc.
