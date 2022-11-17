@@ -95,7 +95,7 @@ cscope.in.out
 cscope.po.out
 
 
-
+lua/
 /luarocks
 /lua_modules
 /.luarocks
