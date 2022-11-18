@@ -1,11 +1,5 @@
 SHELL := /usr/bin/bash
 .ONESHELL:
-# .SHELLFLAGS := -eu -o pipefail
-
-# ifeq ($(origin .RECIPEPREFIX), undefined)
-# 	$(error Please use GNU Make 4.0 or later which supports .RECIPEPREFIX)
-# endif
-# .RECIPEPREFIX = >
 .DELETE_ON_ERROR:
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --warn-undefined-variables
