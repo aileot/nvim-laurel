@@ -231,25 +231,25 @@ An alias of [`autocmd!`](#autocmd).
 
 ### Option
 
-| Set (`!`)                 | Append (`+`)              | Remove (`-`)              | Prepend (`^`)             |
+| Set (`!`)                 | Append (`+`)              | Prepend (`^`)             | Remove (`-`)              |
 | :------------------------ | :------------------------ | :------------------------ | :------------------------ |
-| [`set!`][set]             | [`set+`][set]             | [`set-`][set]             | [`set^`][set]             |
-| [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal-`][setglobal] | [`setglobal^`][setglobal] |
-| [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal-`][setlocal]   | [`setlocal^`][setlocal]   |
-| [`go!`][go]               | [`go+`][go]               | [`go-`][go]               | [`go^`][go]               |
+| [`set!`][set]             | [`set+`][set]             | [`set^`][set]             | [`set-`][set]             |
+| [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal^`][setglobal] | [`setglobal-`][setglobal] |
+| [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal^`][setlocal]   | [`setlocal-`][setlocal]   |
+| [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
 | [`bo!`][bo]               | NYI                       | NYI                       | NYI                       |
 | [`wo!`][wo]               | NYI                       | NYI                       | NYI                       |
 
-#### `set!`/`set+`/`set-`/`set^`
+#### `set!`/`set+`/`set^`/`set-`
 
-Set, append, remove, or prepend, value to the option. Almost equivalent to
+Set, append, prepend, or remove, value to the option. Almost equivalent to
 `:set` in Vim script.
 
 ```fennel
 (set! name-?flag ?val)
 (set+ name val)
-(set- name val)
 (set^ name val)
+(set- name val)
 ```
 
 - `name-?flag`: (string) Option name. As long as the option name is bare-string,
@@ -338,35 +338,35 @@ usage:
   (set+ opt [:1 :B]))
 ```
 
-#### `setglobal!`/`setglobal+`/`setglobal-`/`setglobal^`
+#### `setglobal!`/`setglobal+`/`setglobal^`/`setglobal-`
 
-Set, append, remove, or prepend, global value to the option. Almost equivalent
+Set, append, prepend, or remove, global value to the option. Almost equivalent
 to `:setglobal` in Vim script.
 
 ```fennel
 (setglobal! name-?flag ?val)
 (setglobal+ name val)
-(setglobal- name val)
 (setglobal^ name val)
+(setglobal- name val)
 ```
 
 See [`set!`][set] for the details.
 
-#### `setlocal!`/`setlocal+`/`setlocal-`/`setlocal^`
+#### `setlocal!`/`setlocal+`/`setlocal^`/`setlocal-`
 
-Set, append, remove, or prepend, local value to the option. Almost equivalent to
+Set, append, prepend, or remove, local value to the option. Almost equivalent to
 `:setlocal` in Vim script.
 
 ```fennel
 (setlocal! name-?flag ?val)
 (setlocal+ name val)
-(setlocal- name val)
 (setlocal^ name val)
+(setlocal- name val)
 ```
 
 See [`set!`][set] for the details.
 
-#### `go!`/`go+`/`go-`/`go^`
+#### `go!`/`go+`/`go^`/`go-`
 
 Aliases of [`setglobal!`][setglobal], [`setglobal+`][setglobal], and so on.
 
@@ -1136,9 +1136,9 @@ another anonymous function is meaningless in many cases.
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
 
-[set]: #setsetset-set
-[setglobal]: #setglobalsetglobalsetglobal-setglobal
-[setlocal]: #setlocalsetlocalsetlocal-setlocal
-[go]: #gogogo-go
+[set]: #setsetsetset-
+[setglobal]: #setglobalsetglobalsetglobalsetglobal-
+[setlocal]: #setlocalsetlocalsetlocalsetlocal-
+[go]: #gogogogo-
 [wo]: #wo
 [bo]: #bo
