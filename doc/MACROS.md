@@ -363,9 +363,9 @@ Set, append, remove, or prepend, local value to the option. Almost equivalent to
 
 See [`set!`](#set) for the details.
 
-#### `go!`
+#### `go!`/`go+`/`go-`/`go^`
 
-An alias of [`setglobal!`](#setglobal).
+An alias of [`setglobal!`](#setglobal), `setglobal+`, and so on.
 
 ```fennel
 (go! name value)
