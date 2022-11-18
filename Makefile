@@ -51,9 +51,7 @@ clean: ## Clean lua test files compiled from fnl
 
 .PHONY: test
 test: clean $(LUA_TESTS) ## Run test
-	@RTP_DEP="$(REPO_ROOT)" \
-		VUSTED_ARGS="--headless --clean -u $(TEST_ROOT)/init.lua" \
-		$(VUSTED) \
+	@$(VUSTED) \
 		--shuffle \
 		--output=utfTerminal \
 		./tests
