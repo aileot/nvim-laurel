@@ -81,29 +81,33 @@
                (assert.is.same 1 noremap))))
         (it "gives priority to `api-opts`"
           #(let [mode :n
+                 modes [:i :c :t]
                  api-opts {:noremap true}]
              (map! :o :lhs :rhs api-opts)
              (map! mode :lhs :rhs api-opts)
+             (map! modes :lhs :rhs api-opts)
              (let [{: noremap} (get-mapargs :o :lhs)]
                (assert.is.same 1 noremap))
              (let [{: noremap} (get-mapargs mode :lhs)]
-               (assert.is.same 1 noremap))))
-        (it "maps symbol prefixed by `ex-` to rhs"
-          #(let [mode :n
-                 rhs :rhs]
-             (map! mode [:<command>] :lhs rhs)
-             (assert.is.same rhs (get-rhs mode :lhs))))
-        (it "maps symbol without prefix `ex-` to callback instead"
-          #(let [mode :n
-                 rhs #:rhs]
-             (map! mode :lhs rhs)
-             ;; Note: rhs is nil when callback is set in the dictionary.
-             (assert.is.same rhs (get-callback mode :lhs))))
+               (assert.is.same 1 noremap))
+             (each [_ m (ipairs modes)]
+               (let [{: noremap} (get-mapargs m :lhs)]
+                 (assert.is.same 1 noremap)))))
         (it "maps multiple mode mappings with a string at once"
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)
              (each [_ mode (ipairs modes)]
-               (assert.is.same :rhs (get-rhs mode :lhs)))))))
+               (assert.is.same :rhs (get-rhs mode :lhs)))))
+        (it "enables `replace_keycodes` with `expr` in `extra-opts`"
+          #(let [modes [:n]]
+             (map! modes [:expr] :lhs :rhs)
+             (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+               (assert.is.same 1 replace_keycodes))))
+        (it "disables `replace_keycodes` with `literal` in `extra-opts`"
+          #(let [modes [:n]]
+             (map! modes [:expr :literal] :lhs :rhs)
+             (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+               (assert.is_nil replace_keycodes))))))
     (describe :nnoremap!
       (fn []
         (it "can include extra-opts in either first or second arg"
@@ -168,61 +172,61 @@
           (fn []
             (nnoremap! :lhs [:expr :literal] :rhs)
             (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-              (assert.is_nil replace_keycodes)))))))
-  (describe :unmap!
-    (fn []
-      (it "`unmap`s key"
-        (fn []
-          (nnoremap! :lhs :rhs)
-          (assert.is.same :rhs (get-rhs :n :lhs))
-          (unmap! :n :lhs)
-          (assert.is_nil (get-rhs :n :lhs))))
-      (it "can unmap buffer local key"
-        (fn []
-          (let [bufnr (vim.api.nvim_get_current_buf)]
-            (nnoremap! [:<buffer>] :lhs :rhs)
-            (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))
-            (unmap! 0 :n :lhs)
-            (assert.is_nil (buf-get-rhs 0 :n :lhs))
-            (nnoremap! [:buffer bufnr] :lhs :rhs)
-            (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
-            (unmap! bufnr :n :lhs)
-            (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))))
-  (describe :map-motion!
-    (fn []
-      (it "`unmap`s `smap` internally without errors"
-        (fn []
-          (assert.has_no.errors #(map-motion! :lhs :rhs))
-          (let [bufnr (vim.api.nvim_get_current_buf)]
-            (assert.has_no.errors #(map-motion! [:<buffer>] :lhs :rhs))
-            (refresh-buffer)
-            (assert.has_no.errors #(map-motion! [:buffer bufnr] :lhs :rhs)))))
-      (it "`sunmap`s when lhs is visible key in compile time."
-        #(let [lhs :sym]
-           (smap! :lhs :old)
-           (smap! lhs :old)
-           (smap! :<Esc> :old)
-           (smap! :<C-f> :old)
-           (smap! :<k9> :old)
-           (smap! :<S-f> :old)
-           (assert.has_no.errors #(map-motion! :lhs :new))
-           (assert.has_no.errors #(map-motion! lhs :new))
-           (assert.has_no.errors #(map-motion! :<Esc> :new))
-           (assert.has_no.errors #(map-motion! :<C-f> :new))
-           (assert.has_no.errors #(map-motion! :<k9> :new))
-           (assert.has_no.errors #(map-motion! :<S-f> :new))
-           (assert.is_nil (get-rhs :s :lhs))
-           (assert.is.same :old (get-rhs :s lhs))
-           (assert.is.same :new (get-rhs :s :<Esc>))
-           (assert.is.same :new (get-rhs :s :<C-F>))
-           (assert.is.same :new (get-rhs :s :<k9>))
-           (assert.is_nil (get-rhs :s :<S-f>)))))
-    (describe :<Cmd>/<C-u>
+              (assert.is_nil replace_keycodes))))))
+    (describe :unmap!
       (fn []
-        (it "is set to rhs as a string"
+        (it "`unmap`s key"
           (fn []
-            (assert.has_no.errors #(nnoremap! :lhs (<Cmd> "Do something")))
-            (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
-            (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs
-                                              (<C-u> "Do something")))
-            (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))))))
+            (nnoremap! :lhs :rhs)
+            (assert.is.same :rhs (get-rhs :n :lhs))
+            (unmap! :n :lhs)
+            (assert.is_nil (get-rhs :n :lhs))))
+        (it "can unmap buffer local key"
+          (fn []
+            (let [bufnr (vim.api.nvim_get_current_buf)]
+              (nnoremap! [:<buffer>] :lhs :rhs)
+              (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))
+              (unmap! 0 :n :lhs)
+              (assert.is_nil (buf-get-rhs 0 :n :lhs))
+              (nnoremap! [:buffer bufnr] :lhs :rhs)
+              (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
+              (unmap! bufnr :n :lhs)
+              (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))))
+    (describe :map-motion!
+      (fn []
+        (it "`unmap`s `smap` internally without errors"
+          (fn []
+            (assert.has_no.errors #(map-motion! :lhs :rhs))
+            (let [bufnr (vim.api.nvim_get_current_buf)]
+              (assert.has_no.errors #(map-motion! [:<buffer>] :lhs :rhs))
+              (refresh-buffer)
+              (assert.has_no.errors #(map-motion! [:buffer bufnr] :lhs :rhs)))))
+        (it "`sunmap`s when lhs is visible key in compile time."
+          #(let [lhs :sym]
+             (smap! :lhs :old)
+             (smap! lhs :old)
+             (smap! :<Esc> :old)
+             (smap! :<C-f> :old)
+             (smap! :<k9> :old)
+             (smap! :<S-f> :old)
+             (assert.has_no.errors #(map-motion! :lhs :new))
+             (assert.has_no.errors #(map-motion! lhs :new))
+             (assert.has_no.errors #(map-motion! :<Esc> :new))
+             (assert.has_no.errors #(map-motion! :<C-f> :new))
+             (assert.has_no.errors #(map-motion! :<k9> :new))
+             (assert.has_no.errors #(map-motion! :<S-f> :new))
+             (assert.is_nil (get-rhs :s :lhs))
+             (assert.is.same :old (get-rhs :s lhs))
+             (assert.is.same :new (get-rhs :s :<Esc>))
+             (assert.is.same :new (get-rhs :s :<C-F>))
+             (assert.is.same :new (get-rhs :s :<k9>))
+             (assert.is_nil (get-rhs :s :<S-f>)))))
+      (describe :<Cmd>/<C-u>
+        (fn []
+          (it "is set to rhs as a string"
+            (fn []
+              (assert.has_no.errors #(nnoremap! :lhs (<Cmd> "Do something")))
+              (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
+              (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs
+                                                (<C-u> "Do something")))
+              (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs)))))))))

@@ -1,7 +1,3 @@
-(local {: keymap/->compatible-opts!
-        : command/->compatible-opts!
-        : autocmd/->compatible-opts!} (require :nvim-laurel.utils))
-
 ;; General Macros ///1
 
 (macro ++ [num]
@@ -110,9 +106,6 @@
 
 ;; Specific Utils ///1
 
-(lambda wrapper [key ...]
-  `(. (require :nvim-laurel.wrapper) ,key ,...))
-
 (lambda merge-default-kv-table! [default another]
   "Fill key-value table with default values.
   @param default kv-table
@@ -139,14 +132,14 @@
       (++ i))
     kv-table))
 
-(lambda merge-api-opts [?api-opts ?extra-opts]
+(lambda merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
-  @param ?api-opts table
   @param ?extra-opts table Not a sequence.
+  @param ?api-opts table
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
-          `(,(wrapper :merge-api-opts) ,?api-opts ,?extra-opts))
+          `(vim.tbl_extend :force ,?extra-opts ,?api-opts))
       (nil? ?api-opts)
       (or ?extra-opts {})
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
@@ -438,6 +431,17 @@
 
 ;; Keymap ///1
 
+(lambda keymap/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.buffer nil)
+  (set opts.<buffer> nil)
+  (set opts.<command> nil)
+  (set opts.ex nil)
+  (set opts.<callback> nil)
+  (set opts.cb nil)
+  (set opts.literal nil)
+  opts)
+
 (lambda keymap/parse-varargs [a1 a2 ?a3 ?a4]
   "Parse varargs.
   ```fennel
@@ -522,26 +526,32 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
+  (when (and extra-opts.expr (not= false extra-opts.replace_keycodes))
+    (set extra-opts.replace_keycodes (if extra-opts.literal false true)))
   (when (and extra-opts.callback (not extra-opts.expr)
              (or (nil? ?api-opts)
                  (and (not ?api-opts.expr)
                       (not (hidden-in-compile-time? ?api-opts)))))
     (set extra-opts.noremap nil))
-  (if (or (sym? modes) (list? modes))
-      `(,(wrapper :keymap/set-maps!) ,modes ,extra-opts ,lhs ,rhs ,?api-opts)
-      (let [?bufnr extra-opts.buffer
-            api-opts (merge-api-opts ?api-opts
-                                     (keymap/->compatible-opts! extra-opts))
-            set-keymap (lambda [mode]
-                         (if ?bufnr
-                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                           ,rhs ,api-opts)
-                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                       ,api-opts)))]
-        (if (str? modes)
-            (set-keymap modes)
-            (icollect [_ m (ipairs modes)]
-              (set-keymap m))))))
+  (let [?bufnr extra-opts.buffer
+        api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
+                                 ?api-opts)
+        set-keymap (lambda [mode]
+                     (if ?bufnr
+                         `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs ,rhs
+                                                       ,api-opts)
+                         `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))]
+    (if (str? modes)
+        (set-keymap modes)
+        (hidden-in-compile-time? modes)
+        ;; Note: With `vim.keymap.set` instead, it would be hard to deal
+        ;; with `remap` key.
+        `(if (= (type ,modes) :string)
+             ,(set-keymap modes)
+             (vim.tbl_map (fn [m#]
+                            ,(set-keymap `m#)) ,modes))
+        (icollect [_ m (ipairs modes)]
+          (set-keymap m)))))
 
 (lambda keymap/invisible-key? [lhs]
   "Check if `lhs` is invisible key like `<Plug>`, `<CR>`, `<C-f>`, `<F5>`, etc.
@@ -1004,6 +1014,12 @@
 
 ;; Command ///1
 
+(lambda command/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.buffer nil)
+  (set opts.<buffer> nil)
+  opts)
+
 (lambda command! [a1 a2 ?a3 ?a4]
   "Define a user command.
   ```fennel
@@ -1034,8 +1050,8 @@
                                               [?extra-opts a2 ?a3 ?a4]
                                               [?extra-opts a1 ?a3 ?a4])
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-        api-opts (merge-api-opts ?api-opts
-                                 (command/->compatible-opts! extra-opts))]
+        api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
+                                 ?api-opts)]
     (if ?bufnr
         `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command ,api-opts)
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
@@ -1053,6 +1069,15 @@
                                :command
                                :once
                                :nested])
+
+(lambda autocmd/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.<buffer> nil)
+  (set opts.<command> nil)
+  (set opts.ex nil)
+  (set opts.<callback> nil)
+  (set opts.cb nil)
+  opts)
 
 (lambda define-autocmd! [?a1 a2 ?a3 ?x ?y ?z]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
@@ -1123,8 +1148,8 @@
                  (or (extract-?vim-fn-name callback) ;
                      callback))
             (set extra-opts.command callback))
-        (let [api-opts (merge-api-opts ?api-opts
-                                       (autocmd/->compatible-opts! extra-opts))]
+        (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
+                                       ?api-opts)]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (lambda define-augroup! [name opts ...]
