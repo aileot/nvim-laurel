@@ -81,13 +81,18 @@
                (assert.is.same 1 noremap))))
         (it "gives priority to `api-opts`"
           #(let [mode :n
+                 modes [:i :c :t]
                  api-opts {:noremap true}]
              (map! :o :lhs :rhs api-opts)
              (map! mode :lhs :rhs api-opts)
+             (map! modes :lhs :rhs api-opts)
              (let [{: noremap} (get-mapargs :o :lhs)]
                (assert.is.same 1 noremap))
              (let [{: noremap} (get-mapargs mode :lhs)]
-               (assert.is.same 1 noremap))))
+               (assert.is.same 1 noremap))
+             (each [_ m (ipairs modes)]
+               (let [{: noremap} (get-mapargs m :lhs)]
+                 (assert.is.same 1 noremap)))))
         (it "maps multiple mode mappings with a string at once"
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)
