@@ -267,24 +267,6 @@
   ```"
   (option/set :general name-?flag ?val))
 
-(lambda setlocal! [name-?flag ?val]
-  "Set local value to the option.
-  Almost equivalent to `:setlocal` in Vim script.
-  ```fennel
-  (setlocal! name-?flag ?val)
-  ```
-  See `set!` for the details."
-  (option/set :local name-?flag ?val))
-
-(lambda setglobal! [name-?flag ?val]
-  "Set global value to the option.
-  Almost equivalent to `:setglobal` in Vim script.
-  ```fennel
-  (setglobal! name-?flag ?val)
-  ```
-  See `set!` for the details."
-  (option/set :global name-?flag ?val))
-
 (lambda set+ [name val]
   "Append a value to string-style options.
   Almost equivalent to `:set {option}+={value}` in Vim script.
@@ -309,6 +291,15 @@
   ```"
   (option/modify :general name val "-"))
 
+(lambda setlocal! [name-?flag ?val]
+  "Set local value to the option.
+  Almost equivalent to `:setlocal` in Vim script.
+  ```fennel
+  (setlocal! name-?flag ?val)
+  ```
+  See `set!` for the details."
+  (option/set :local name-?flag ?val))
+
 (lambda setlocal+ [name val]
   "Append a value to string-style local options.
   Almost equivalent to `:setlocal {option}+={value}` in Vim script.
@@ -332,6 +323,15 @@
   (setlocal- name val)
   ```"
   (option/modify :local name val "-"))
+
+(lambda setglobal! [name-?flag ?val]
+  "Set global value to the option.
+  Almost equivalent to `:setglobal` in Vim script.
+  ```fennel
+  (setglobal! name-?flag ?val)
+  ```
+  See `set!` for the details."
+  (option/set :global name-?flag ?val))
 
 (lambda setglobal+ [name val]
   "Append a value to string-style global options.
@@ -1274,14 +1274,14 @@
 ;; Export ///1
 
 {: set!
- : setlocal!
- : setglobal!
  : set+
  : set^
  : set-
+ : setlocal!
  : setlocal+
  : setlocal^
  : setlocal-
+ : setglobal!
  : setglobal+
  : setglobal^
  : setglobal-
