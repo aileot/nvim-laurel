@@ -231,14 +231,14 @@ An alias of [`autocmd!`](#autocmd).
 
 ### Option
 
-| Set (`!`)                  | Append (`+`)               | Remove (`-`)               | Prepend (`^`)              |
-| :------------------------- | :------------------------- | :------------------------- | :------------------------- |
-| [`set!`](#set)             | [`set+`](#set)             | [`set-`](#set)             | [`set^`](#set)             |
-| [`setglobal!`](#setglobal) | [`setglobal+`](#setglobal) | [`setglobal-`](#setglobal) | [`setglobal^`](#setglobal) |
-| [`setlocal!`](#setlocal)   | [`setlocal+`](#setlocal)   | [`setlocal-`](#setlocal)   | [`setlocal^`](#setlocal)   |
-| [`go!`](#go)               | [`go+`](#go)               | [`go-`](#go)               | [`go^`](#go)               |
-| [`bo!`](#bo)               | NYI                        | NYI                        | NYI                        |
-| [`wo!`](#wo)               | NYI                        | NYI                        | NYI                        |
+| Set (`!`)                 | Append (`+`)              | Remove (`-`)              | Prepend (`^`)             |
+| :------------------------ | :------------------------ | :------------------------ | :------------------------ |
+| [`set!`][set]             | [`set+`][set]             | [`set-`][set]             | [`set^`][set]             |
+| [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal-`][setglobal] | [`setglobal^`][setglobal] |
+| [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal-`][setlocal]   | [`setlocal^`][setlocal]   |
+| [`go!`][go]               | [`go+`][go]               | [`go-`][go]               | [`go^`][go]               |
+| [`bo!`][bo]               | NYI                       | NYI                       | NYI                       |
+| [`wo!`][wo]               | NYI                       | NYI                       | NYI                       |
 
 #### `set!`/`set+`/`set-`/`set^`
 
@@ -350,7 +350,7 @@ to `:setglobal` in Vim script.
 (setglobal^ name val)
 ```
 
-See [`set!`](#set) for the details.
+See [`set!`][set] for the details.
 
 #### `setlocal!`/`setlocal+`/`setlocal-`/`setlocal^`
 
@@ -364,11 +364,11 @@ Set, append, remove, or prepend, local value to the option. Almost equivalent to
 (setlocal^ name val)
 ```
 
-See [`set!`](#set) for the details.
+See [`set!`][set] for the details.
 
 #### `go!`/`go+`/`go-`/`go^`
 
-An alias of [`setglobal!`](#setglobal), `setglobal+`, and so on.
+Aliases of [`setglobal!`][setglobal], [`setglobal+`][setglobal], and so on.
 
 ```fennel
 (go! name value)
@@ -1135,3 +1135,10 @@ another anonymous function is meaningless in many cases.
 (autocmd! group events #(vim.schedule (fn []
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
+
+[set]: #setsetset-set
+[setglobal]: #setglobalsetglobalsetglobal-setglobal
+[setlocal]: #setlocalsetlocalsetlocal-setlocal
+[go]: #gogogo-go
+[wo]: #wo
+[bo]: #bo
