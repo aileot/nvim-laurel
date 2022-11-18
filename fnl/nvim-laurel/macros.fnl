@@ -1284,6 +1284,10 @@
  : setglobal+
  : setglobal^
  : setglobal-
+ :go! setglobal!
+ :go+ setglobal+
+ :go^ setglobal^
+ :go- setglobal-
  : g!
  : b!
  : w!
