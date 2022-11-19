@@ -90,7 +90,7 @@ repo = "aileot/nvim-laurel"
 ## Usage
 
 ```fennel
-(import-macros {: setglobal! : augroup! : au! ...} :nvim-laurel.macros)
+(import-macros {: set! : map! : augroup! : au! ...} :nvim-laurel.macros)
 ```
 
 See [doc/MACROS.md](./doc/MACROS.md) for each macro usage in details.
