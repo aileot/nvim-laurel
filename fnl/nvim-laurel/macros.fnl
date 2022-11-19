@@ -168,6 +168,18 @@
                   (.. k ":" v))]
     (table.concat key-val ",")))
 
+(lambda option/->?vim-value [?val]
+  "Return in vim value for such API as `nvim_set_option`.
+  @param val any
+  @return boolean|number|string|nil|'vim.NIL'"
+  (match (type ?val)
+    :nil `vim.NIL
+    :boolean ?val
+    :string ?val
+    :number ?val
+    _ (if (sequence? ?val) (table.concat ?val ",")
+          (table? ?val) (option/concat-kv-table ?val))))
+
 (lambda option/modify [scope name ?val ?flag]
   (let [name (if (str? name) (name:lower) name)
         interface (match scope
@@ -190,18 +202,10 @@
                      (.. str v)))
                  ?val)]
     (if (nil? ?flag)
-        (let [opts {:scope (if (= scope :general) nil scope)}]
-          (if (sym? ?val)
-              ;; Note: `set` is unavailable in compiler environment
-              `(tset ,interface ,name ,?val)
-              (sequence? ?val)
-              `(vim.api.nvim_set_option_value ,name ,(table.concat ?val ",")
-                                              ,opts)
-              (table? ?val)
-              `(vim.api.nvim_set_option_value ,name
-                                              ,(option/concat-kv-table ?val)
-                                              ,opts)
-              `(vim.api.nvim_set_option_value ,name ,?val ,opts)))
+        (let [opts {:scope (if (= scope :general) nil scope)}
+              ?vim-val (option/->?vim-value ?val)]
+          (if ?vim-val `(vim.api.nvim_set_option_value ,name ,?vim-val ,opts)
+              `(tset ,interface ,name ,?val)))
         (match ?flag
           "+"
           `(: ,opt-obj :append ,?val)
