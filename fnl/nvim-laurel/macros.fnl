@@ -180,14 +180,14 @@
     _ (if (sequence? ?val) (table.concat ?val ",")
           (table? ?val) (option/concat-kv-table ?val))))
 
-(lambda option/modify [scope name ?val ?flag]
+(lambda option/modify [api-opts name ?val ?flag]
   (let [name (if (str? name) (name:lower) name)
-        interface (match scope
-                    :local `vim.opt_local
-                    :global `vim.opt_global
-                    :general `vim.opt
+        interface (match api-opts
+                    {:scope :local} `vim.opt_local
+                    {:scope :global} `vim.opt_global
+                    {} `vim.opt
                     _ (error (.. "Expected `local`, `global`, or `general`, got: "
-                                 (view scope))))
+                                 (view api-opts))))
         opt-obj `(. ,interface ,name)
         ?val (if (and (contains? [:formatoptions :shortmess] name)
                       ;; Convert sequence of table values into a sequence of
@@ -202,9 +202,9 @@
                      (.. str v)))
                  ?val)]
     (if (nil? ?flag)
-        (let [opts {:scope (if (= scope :general) nil scope)}
-              ?vim-val (option/->?vim-value ?val)]
-          (if ?vim-val `(vim.api.nvim_set_option_value ,name ,?vim-val ,opts)
+        (let [?vim-val (option/->?vim-value ?val)]
+          (if ?vim-val
+              `(vim.api.nvim_set_option_value ,name ,?vim-val ,api-opts)
               `(tset ,interface ,name ,?val)))
         (match ?flag
           "+"
@@ -269,7 +269,7 @@
   (let [opt :formatOptions]
     (set+ opt [:1 :B]))
   ```"
-  (option/set :general name-?flag ?val))
+  (option/set {} name-?flag ?val))
 
 (lambda set+ [name val]
   "Append a value to string-style options.
@@ -277,7 +277,7 @@
   ```fennel
   (set+ name val)
   ```"
-  (option/modify :general name val "+"))
+  (option/modify {} name val "+"))
 
 (lambda set^ [name val]
   "Prepend a value to string-style options.
@@ -285,7 +285,7 @@
   ```fennel
   (set^ name val)
   ```"
-  (option/modify :general name val "^"))
+  (option/modify {} name val "^"))
 
 (lambda set- [name val]
   "Remove a value from string-style options.
@@ -293,7 +293,7 @@
   ```fennel
   (set- name val)
   ```"
-  (option/modify :general name val "-"))
+  (option/modify {} name val "-"))
 
 (lambda setlocal! [name-?flag ?val]
   "Set local value to the option.
@@ -302,7 +302,7 @@
   (setlocal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set :local name-?flag ?val))
+  (option/set {:scope :local} name-?flag ?val))
 
 (lambda setlocal+ [name val]
   "Append a value to string-style local options.
@@ -310,7 +310,7 @@
   ```fennel
   (setlocal+ name val)
   ```"
-  (option/modify :local name val "+"))
+  (option/modify {:scope :local} name val "+"))
 
 (lambda setlocal^ [name val]
   "Prepend a value to string-style local options.
@@ -318,7 +318,7 @@
   ```fennel
   (setlocal^ name val)
   ```"
-  (option/modify :local name val "^"))
+  (option/modify {:scope :local} name val "^"))
 
 (lambda setlocal- [name val]
   "Remove a value from string-style local options.
@@ -326,7 +326,7 @@
   ```fennel
   (setlocal- name val)
   ```"
-  (option/modify :local name val "-"))
+  (option/modify {:scope :local} name val "-"))
 
 (lambda setglobal! [name-?flag ?val]
   "Set global value to the option.
@@ -335,7 +335,7 @@
   (setglobal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set :global name-?flag ?val))
+  (option/set {:scope :global} name-?flag ?val))
 
 (lambda setglobal+ [name val]
   "Append a value to string-style global options.
@@ -345,7 +345,7 @@
   ```
   - name: (string) Option name.
   - val: (string) Additional option value."
-  (option/modify :global name val "+"))
+  (option/modify {:scope :global} name val "+"))
 
 (lambda setglobal^ [name val]
   "Prepend a value from string-style global options.
@@ -353,7 +353,7 @@
   ```fennel
   (setglobal^ name val)
   ```"
-  (option/modify :global name val "^"))
+  (option/modify {:scope :global} name val "^"))
 
 (lambda setglobal- [name val]
   "Remove a value from string-style global options.
@@ -361,7 +361,7 @@
   ```fennel
   (setglobal- name val)
   ```"
-  (option/modify :global name val "-"))
+  (option/modify {:scope :global} name val "-"))
 
 ;; Variable ///1
 
