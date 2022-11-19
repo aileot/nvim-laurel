@@ -252,8 +252,8 @@ Set value to the option. Almost equivalent to `:set` in Vim script.
 (set! name-?flag ?val)
 ```
 
-- `name-?flag`: (string) Option name. As long as the option name is literal
-  string, i.e., neither symbol nor list, this macro has two advantages:
+- `name-?flag`: (string) Option name. As long as the option name is bare-string,
+  i.e., neither symbol nor list, this macro has two advantages:
 
   1. A flag can be appended to the option name. Append `+`, `^`, or `-`, to
      append, prepend, or remove, values respectively.
