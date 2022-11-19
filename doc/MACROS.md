@@ -1044,9 +1044,15 @@ Set a highlight group.
 (highlight! ?ns-id name val)
 ```
 
+- `?ns-id`: (number) Namespace id for this highlight `nvim_create_namespace()`.
+- `name`: (string) Highlight group name, e.g., "ErrorMsg".
+- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl`. As long as the
+  keys are bare-strings, `cterm` attribute map can contain `fg`/`bg` instead of
+  `ctermfg`/`ctermbg` key.
+
 ```fennel
 (highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic true}})
-;; or
+;; or (as long as `val` keys are bare-strings)
 (highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :cterm {:fg 103 :bold true :italic true}})
 ```
 
