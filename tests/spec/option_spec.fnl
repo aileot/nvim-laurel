@@ -153,7 +153,22 @@
             (let [vals (get-o-lo-go :listchars)]
               (reset-context)
               (set! :listchars- [:eol :tab])
-              (assert.is_same vals (get-o-lo-go :listchars)))))))
+              (assert.is_same vals (get-o-lo-go :listchars))))))
+      (describe "with no value"
+        (fn []
+          (it "updates option value to `true`"
+            (fn []
+              (vim.cmd "set nowrap")
+              (assert.is_false (get-o :wrap))
+              (set! :wrap)
+              (assert.is_true (get-o :wrap))))
+          (it "updates value to `true` even when option name is hidden in compile time"
+            (fn []
+              (vim.cmd "set nowrap")
+              (assert.is_false (get-o :wrap))
+              (let [name :wrap]
+                (set! name)
+                (assert.is_true (get-o name))))))))
     (describe :setlocal!
       (fn []
         (it "can update option value by boolean"
@@ -256,7 +271,22 @@
             (let [vals (get-o-lo-go :listchars)]
               (reset-context)
               (setlocal! :listchars- [:eol :tab])
-              (assert.is_same vals (get-o-lo-go :listchars)))))))
+              (assert.is_same vals (get-o-lo-go :listchars))))))
+      (describe "with no value"
+        (fn []
+          (it "updates option value to `true`"
+            (fn []
+              (vim.cmd "setlocal nowrap")
+              (assert.is_false (get-lo :wrap))
+              (setlocal! :wrap)
+              (assert.is_true (get-lo :wrap))))
+          (it "updates value to `true` even when option name is hidden in compile time"
+            (fn []
+              (vim.cmd "setlocal nowrap")
+              (assert.is_false (get-lo :wrap))
+              (let [name :wrap]
+                (setlocal! name)
+                (assert.is_true (get-lo name))))))))
     (describe :setglobal!
       (fn []
         (it "can update option value by boolean"
@@ -360,7 +390,22 @@
             (let [vals (get-o-lo-go :listchars)]
               (reset-context)
               (setglobal! :listchars- [:eol :tab])
-              (assert.is_same vals (get-o-lo-go :listchars)))))))
+              (assert.is_same vals (get-o-lo-go :listchars))))))
+      (describe "with no value"
+        (fn []
+          (it "updates option value to `true`"
+            (fn []
+              (vim.cmd "setglobal nowrap")
+              (assert.is_false (get-go :wrap))
+              (setglobal! :wrap)
+              (assert.is_true (get-go :wrap))))
+          (it "updates value to `true` even when option name is hidden in compile time"
+            (fn []
+              (vim.cmd "setglobal nowrap")
+              (assert.is_false (get-go :wrap))
+              (let [name :wrap]
+                (setglobal! name)
+                (assert.is_true (get-go name))))))))
     (describe :set+
       (fn []
         (it "appends option value of sequence"
