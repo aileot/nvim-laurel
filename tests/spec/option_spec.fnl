@@ -45,6 +45,13 @@
     (before_each reset-context)
     (describe :set!
       (fn []
+        (it "is case-insensitive at option name"
+          (fn []
+            (vim.cmd "set foldlevel=2")
+            (let [vals (get-o-lo-go :foldlevel)]
+              (reset-context)
+              (set! :foldLevel 2)
+              (assert.is_same vals (get-o-lo-go :foldlevel)))))
         (it "can update option value by boolean"
           (fn []
             (vim.cmd "set nowrap")
