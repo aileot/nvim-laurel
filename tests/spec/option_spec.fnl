@@ -109,7 +109,29 @@
               (let [vals (get-o-lo-go :foldlevel)]
                 (reset-context)
                 (set! :foldlevel (return-val))
-                (assert.is_same vals (get-o-lo-go :foldlevel))))))))
+                (assert.is_same vals (get-o-lo-go :foldlevel))
+                (assert.is_same vals (get-o-lo-go :foldlevel))))))
+        (it "can append option value of sequence"
+          (fn []
+            (vim.cmd "set path+=/foo,/bar,/baz")
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (set! :path+ [:/foo :/bar :/baz])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can prepend option value of sequence"
+          (fn []
+            (vim.cmd "set path^=/foo,/bar,/baz")
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (set! :path^ [:/foo :/bar :/baz])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can remove option value of sequence"
+          (fn []
+            (vim.cmd "set path-=/tmp,/var")
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (set! :path- [:/tmp :/var])
+              (assert.is_same vals (get-o-lo-go :path)))))))
     (describe :setlocal!
       (fn []
         (it "can update option value by boolean"
@@ -169,7 +191,28 @@
               (let [vals (get-o-lo-go :foldlevel)]
                 (reset-context)
                 (setlocal! :foldlevel (return-val))
-                (assert.is_same vals (get-o-lo-go :foldlevel))))))))
+                (assert.is_same vals (get-o-lo-go :foldlevel))))))
+        (it "can append option value of sequence"
+          (fn []
+            (: vim.opt_local.path :append [:/foo :/bar :/baz])
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (setlocal! :path+ [:/foo :/bar :/baz])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can prepend option value of sequence"
+          (fn []
+            (: vim.opt_local.path :prepend [:/foo :/bar :/baz])
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (setlocal! :path^ [:/foo :/bar :/baz])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can remove option value of sequence"
+          (fn []
+            (: vim.opt_local.path :remove [:/tmp :/var])
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (setlocal! :path- [:/tmp :/var])
+              (assert.is_same vals (get-o-lo-go :path)))))))
     (describe :setglobal!
       (fn []
         (it "can update option value by boolean"
@@ -229,4 +272,25 @@
               (let [vals (get-o-lo-go :foldlevel)]
                 (reset-context)
                 (setglobal! :foldlevel (return-val))
-                (assert.is_same vals (get-o-lo-go :foldlevel))))))))))
+                (assert.is_same vals (get-o-lo-go :foldlevel))))))
+        (it "can append option value of sequence"
+          (fn []
+            (: vim.opt_global.path :append [:/foo :/bar :/baz])
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (setglobal! :path+ [:/foo :/bar :/baz])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can prepend option value of sequence"
+          (fn []
+            (: vim.opt_global.path :prepend [:/foo :/bar :/baz])
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (setglobal! :path^ [:/foo :/bar :/baz])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can remove option value of sequence"
+          (fn []
+            (: vim.opt_global.path :remove [:/tmp :/var])
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (setglobal! :path- [:/tmp :/var])
+              (assert.is_same vals (get-o-lo-go :path)))))))))
