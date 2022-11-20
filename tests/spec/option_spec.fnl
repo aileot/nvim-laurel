@@ -25,9 +25,9 @@
         ;; string
         :signcolumn :yes
         ;; sequence
-        :path "/tmp,/var"
+        :path "/tmp,/var,/usr"
         ;; kv-table
-        :listchars "eol:x,tab:xy"})
+        :listchars "eol:x,tab:xy,space:x"})
 
 (fn reset-context []
   "Reset test context."
@@ -75,17 +75,17 @@
               (assert.is_same vals (get-o-lo-go :signcolumn)))))
         (it "can update option value by sequence"
           (fn []
-            (vim.cmd "set path=/foo,/bar")
+            (vim.cmd "set path=/foo,/bar,/baz")
             (let [vals (get-o-lo-go :path)]
               (reset-context)
-              (set! :path [:/foo :/bar])
+              (set! :path [:/foo :/bar :/baz])
               (assert.is_same vals (get-o-lo-go :path)))))
         (it "can update option value by kv-table"
           (fn []
-            (vim.cmd "set listchars=eol:a,tab:abc")
+            (vim.cmd "set listchars=eol:a,tab:abc,space:a")
             (let [vals (get-o-lo-go :listchars)]
               (reset-context)
-              (set! :listchars {:eol :a :tab :abc})
+              (set! :listchars {:eol :a :tab :abc :space :a})
               (assert.is_same vals (get-o-lo-go :listchars)))))
         (it "can update some option value by nil"
           (fn []
@@ -135,17 +135,17 @@
               (assert.is_same vals (get-o-lo-go :signcolumn)))))
         (it "can update option value by sequence"
           (fn []
-            (vim.cmd "setlocal path=/foo,/bar")
+            (vim.cmd "setlocal path=/foo,/bar,/baz")
             (let [vals (get-o-lo-go :path)]
               (reset-context)
-              (setlocal! :path [:/foo :/bar])
+              (setlocal! :path [:/foo :/bar :/baz])
               (assert.is_same vals (get-o-lo-go :path)))))
         (it "can update option value by kv-table"
           (fn []
-            (vim.cmd "setlocal listchars=eol:a,tab:abc")
+            (vim.cmd "setlocal listchars=eol:a,tab:abc,space:a")
             (let [vals (get-o-lo-go :listchars)]
               (reset-context)
-              (setlocal! :listchars {:eol :a :tab :abc})
+              (setlocal! :listchars {:eol :a :tab :abc :space :a})
               (assert.is_same vals (get-o-lo-go :listchars)))))
         (it "can update some option value by nil"
           (fn []
@@ -195,17 +195,17 @@
               (assert.is_same vals (get-o-lo-go :signcolumn)))))
         (it "can update option value by sequence"
           (fn []
-            (vim.cmd "setglobal path=/foo,/bar")
+            (vim.cmd "setglobal path=/foo,/bar,/baz")
             (let [vals (get-o-lo-go :path)]
               (reset-context)
-              (setglobal! :path [:/foo :/bar])
+              (setglobal! :path [:/foo :/bar :/baz])
               (assert.is_same vals (get-o-lo-go :path)))))
         (it "can update option value by kv-table"
           (fn []
-            (vim.cmd "setglobal listchars=eol:a,tab:abc")
+            (vim.cmd "setglobal listchars=eol:a,tab:abc,space:a")
             (let [vals (get-o-lo-go :listchars)]
               (reset-context)
-              (setglobal! :listchars {:eol :a :tab :abc})
+              (setglobal! :listchars {:eol :a :tab :abc :space :a})
               (assert.is_same vals (get-o-lo-go :listchars)))))
         (it "can update some option value by nil"
           (fn []
