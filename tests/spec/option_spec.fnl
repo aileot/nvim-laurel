@@ -1,4 +1,5 @@
-(import-macros {: set! : setglobal! : setlocal!} :nvim-laurel.macros)
+(import-macros {: set! : set+ : set^ : set- : setglobal! : setlocal!}
+               :nvim-laurel.macros)
 
 (macro get-o [name]
   `(-> (. vim.opt ,name) (: :get)))
@@ -293,4 +294,58 @@
             (let [vals (get-o-lo-go :path)]
               (reset-context)
               (setglobal! :path- [:/tmp :/var])
-              (assert.is_same vals (get-o-lo-go :path)))))))))
+              (assert.is_same vals (get-o-lo-go :path)))))))
+    (describe :set+
+      (fn []
+        (it "appends option value of sequence"
+          #(let [name :path
+                 assigned-val [:/foo :/bar :/baz]]
+             (-> (. vim.opt name) (: :append assigned-val))
+             (let [expected-vals (get-o-lo-go name)]
+               (reset-context)
+               (set+ name assigned-val)
+               (assert.is_same expected-vals (get-o-lo-go name)))))
+        (it "appends option value of kv-table"
+          #(let [name :listchars
+                 assigned-val {:lead :a :trail :b :extends :c}]
+             (-> (. vim.opt name) (: :append assigned-val))
+             (let [expected-vals (get-o-lo-go name)]
+               (reset-context)
+               (set+ name assigned-val)
+               (assert.is_same expected-vals (get-o-lo-go name)))))))
+    (describe :set^
+      (fn []
+        (it "prepends option value of sequence"
+          #(let [name :path
+                 assigned-val [:/foo :/bar :/baz]]
+             (-> (. vim.opt name) (: :prepend assigned-val))
+             (let [expected-vals (get-o-lo-go name)]
+               (reset-context)
+               (set^ name assigned-val)
+               (assert.is_same expected-vals (get-o-lo-go name)))))
+        (it "prepends option value of kv-table"
+          #(let [name :listchars
+                 assigned-val {:lead :a :trail :b :extends :c}]
+             (-> (. vim.opt name) (: :prepend assigned-val))
+             (let [expected-vals (get-o-lo-go name)]
+               (reset-context)
+               (set^ name assigned-val)
+               (assert.is_same expected-vals (get-o-lo-go name)))))))
+    (describe :set-
+      (fn []
+        (it "removes option value of sequence"
+          #(let [name :path
+                 assigned-val [:/tmp :/var]]
+             (-> (. vim.opt name) (: :remove assigned-val))
+             (let [expected-vals (get-o-lo-go name)]
+               (reset-context)
+               (set- name assigned-val)
+               (assert.is_same expected-vals (get-o-lo-go name)))))
+        (it "removes option value of kv-table"
+          #(let [name :listchars
+                 assigned-val {:lead :a :trail :b :extends :c}]
+             (-> (. vim.opt name) (: :remove assigned-val))
+             (let [expected-vals (get-o-lo-go name)]
+               (reset-context)
+               (set- name assigned-val)
+               (assert.is_same expected-vals (get-o-lo-go name)))))))))
