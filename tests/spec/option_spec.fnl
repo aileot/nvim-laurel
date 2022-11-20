@@ -79,4 +79,41 @@
             (let [vals (get-o-lo-go :listchars)]
               (reset-context)
               (set! :listchars {:eol :a :tab :abc})
+              (assert.is_same vals (get-o-lo-go :listchars)))))))
+    (describe :setglobal!
+      (fn []
+        (it "can update option value by boolean."
+          (fn []
+            (vim.cmd "setglobal nowrap")
+            (let [vals (get-o-lo-go :wrap)]
+              (reset-context)
+              (setglobal! :wrap false)
+              (assert.is_same vals (get-o-lo-go :wrap)))))
+        (it "can update option value by number."
+          (fn []
+            (vim.cmd "setglobal foldlevel=2")
+            (let [vals (get-o-lo-go :foldlevel)]
+              (reset-context)
+              (setglobal! :foldlevel 2)
+              (assert.is_same vals (get-o-lo-go :foldlevel)))))
+        (it "can update option value by string."
+          (fn []
+            (vim.cmd "setglobal signcolumn=no")
+            (let [vals (get-o-lo-go :signcolumn)]
+              (reset-context)
+              (setglobal! :signcolumn :no)
+              (assert.is_same vals (get-o-lo-go :signcolumn)))))
+        (it "can update option value by sequence."
+          (fn []
+            (vim.cmd "setglobal path=/foo,/bar")
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (setglobal! :path [:/foo :/bar])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can update option value by kv-table."
+          (fn []
+            (vim.cmd "setglobal listchars=eol:a,tab:abc")
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (setglobal! :listchars {:eol :a :tab :abc})
               (assert.is_same vals (get-o-lo-go :listchars)))))))))
