@@ -45,5 +45,38 @@
     (before_each reset-context)
     (describe :set!
       (fn []
-        (it "updates option values in any type"
-          (fn []))))))
+        (it "can update option value by boolean."
+          (fn []
+            (vim.cmd "set nowrap")
+            (let [vals (get-o-lo-go :wrap)]
+              (reset-context)
+              (set! :wrap false)
+              (assert.is_same vals (get-o-lo-go :wrap)))))
+        (it "can update option value by number."
+          (fn []
+            (vim.cmd "set foldlevel=2")
+            (let [vals (get-o-lo-go :foldlevel)]
+              (reset-context)
+              (set! :foldlevel 2)
+              (assert.is_same vals (get-o-lo-go :foldlevel)))))
+        (it "can update option value by string."
+          (fn []
+            (vim.cmd "set signcolumn=no")
+            (let [vals (get-o-lo-go :signcolumn)]
+              (reset-context)
+              (set! :signcolumn :no)
+              (assert.is_same vals (get-o-lo-go :signcolumn)))))
+        (it "can update option value by sequence."
+          (fn []
+            (vim.cmd "set path=/foo,/bar")
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (set! :path [:/foo :/bar])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can update option value by kv-table."
+          (fn []
+            (vim.cmd "set listchars=eol:a,tab:abc")
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (set! :listchars {:eol :a :tab :abc})
+              (assert.is_same vals (get-o-lo-go :listchars)))))))))
