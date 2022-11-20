@@ -132,7 +132,28 @@
             (let [vals (get-o-lo-go :path)]
               (reset-context)
               (set! :path- [:/tmp :/var])
-              (assert.is_same vals (get-o-lo-go :path)))))))
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can append option value of kv-table"
+          (fn []
+            (: vim.opt.listchars :append {:lead :a :trail :b :extends :c})
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (set! :listchars+ {:lead :a :trail :b :extends :c})
+              (assert.is_same vals (get-o-lo-go :listchars)))))
+        (it "can prepend option value of kv-table"
+          (fn []
+            (: vim.opt.listchars :prepend {:lead :a :trail :b :extends :c})
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (set! :listchars^ {:lead :a :trail :b :extends :c})
+              (assert.is_same vals (get-o-lo-go :listchars)))))
+        (it "can remove option value of kv-table"
+          (fn []
+            (: vim.opt.listchars :remove [:eol :tab])
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (set! :listchars- [:eol :tab])
+              (assert.is_same vals (get-o-lo-go :listchars)))))))
     (describe :setlocal!
       (fn []
         (it "can update option value by boolean"
@@ -213,7 +234,29 @@
             (let [vals (get-o-lo-go :path)]
               (reset-context)
               (setlocal! :path- [:/tmp :/var])
-              (assert.is_same vals (get-o-lo-go :path)))))))
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can append option value of kv-table"
+          (fn []
+            (: vim.opt_local.listchars :append {:lead :a :trail :b :extends :c})
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (setlocal! :listchars+ {:lead :a :trail :b :extends :c})
+              (assert.is_same vals (get-o-lo-go :listchars)))))
+        (it "can prepend option value of kv-table"
+          (fn []
+            (: vim.opt_local.listchars :prepend
+               {:lead :a :trail :b :extends :c})
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (setlocal! :listchars^ {:lead :a :trail :b :extends :c})
+              (assert.is_same vals (get-o-lo-go :listchars)))))
+        (it "can remove option value of kv-table"
+          (fn []
+            (: vim.opt_local.listchars :remove [:eol :tab])
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (setlocal! :listchars- [:eol :tab])
+              (assert.is_same vals (get-o-lo-go :listchars)))))))
     (describe :setglobal!
       (fn []
         (it "can update option value by boolean"
@@ -294,7 +337,30 @@
             (let [vals (get-o-lo-go :path)]
               (reset-context)
               (setglobal! :path- [:/tmp :/var])
-              (assert.is_same vals (get-o-lo-go :path)))))))
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can append option value of kv-table"
+          (fn []
+            (: vim.opt_global.listchars :append
+               {:lead :a :trail :b :extends :c})
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (setglobal! :listchars+ {:lead :a :trail :b :extends :c})
+              (assert.is_same vals (get-o-lo-go :listchars)))))
+        (it "can prepend option value of kv-table"
+          (fn []
+            (: vim.opt_global.listchars :prepend
+               {:lead :a :trail :b :extends :c})
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (setglobal! :listchars^ {:lead :a :trail :b :extends :c})
+              (assert.is_same vals (get-o-lo-go :listchars)))))
+        (it "can remove option value of kv-table"
+          (fn []
+            (: vim.opt_global.listchars :remove [:eol :tab])
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (setglobal! :listchars- [:eol :tab])
+              (assert.is_same vals (get-o-lo-go :listchars)))))))
     (describe :set+
       (fn []
         (it "appends option value of sequence"
