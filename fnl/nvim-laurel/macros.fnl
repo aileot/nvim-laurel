@@ -232,8 +232,8 @@
   (let [[name ?flag] (if (str? name-?flag)
                          (option/extract-flag name-?flag)
                          [name-?flag nil])
-        ?val (if (nil? ?val) true ?val)]
-    (option/modify scope name ?val ?flag)))
+        val (if (nil? ?val) true ?val)]
+    (option/modify scope name val ?flag)))
 
 ;; Export ///2
 
