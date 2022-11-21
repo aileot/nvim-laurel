@@ -183,11 +183,12 @@
 (lambda option/modify [api-opts name ?val ?flag]
   (let [name (if (str? name) (name:lower) name)
         interface (match api-opts
+                    {:scope nil :buf nil :win nil} `vim.opt
                     {:scope :local} `vim.opt_local
                     {:scope :global} `vim.opt_global
-                    {} `vim.opt
-                    _ (error (.. "Expected `local`, `global`, or `general`, got: "
-                                 (view api-opts))))
+                    {:buf _id} `vim.bo
+                    {:win _id} `vim.wo
+                    _ (error (.. "invalid opts: " (view api-opts))))
         opt-obj `(. ,interface ,name)
         ?val (if (and (contains? [:formatoptions :shortmess] name)
                       ;; Convert sequence of table values into a sequence of
@@ -362,6 +363,30 @@
   (setglobal- name val)
   ```"
   (option/modify {:scope :global} name val "-"))
+
+(lambda bo! [name|?id val|name ?val]
+  "Set a buffer option value.
+  ```fennel
+  (bo! ?id name value)
+  ```
+  @param ?id integer Buffer handle, or 0 for current buffer.
+  @param name string Option name. Case-insensitive as long as in bare-string.
+  @param value any Option value."
+  (let [[id name val] (if ?val [name|?id val|name ?val] [0 name|?id val|name])
+        ?vim-val (option/->?vim-value val)]
+    (option/modify {:buf id} name (or ?vim-val val))))
+
+(lambda wo! [name|?id val|name ?val]
+  "Set a window option value.
+  ```fennel
+  (wo! ?id name value)
+  ```
+  @param ?id integer Window handle, or 0 for current window.
+  @param name string Option name. Case-insensitive as long as in bare-string.
+  @param value any Option value."
+  (let [[id name val] (if ?val [name|?id val|name ?val] [0 name|?id val|name])
+        ?vim-val (option/->?vim-value val)]
+    (option/modify {:win id} name (or ?vim-val val))))
 
 ;; Variable ///1
 
@@ -1288,6 +1313,8 @@
  :go+ setglobal+
  :go^ setglobal^
  :go- setglobal-
+ : bo!
+ : wo!
  : g!
  : b!
  : w!
