@@ -201,26 +201,26 @@
                                      v)
                      (.. str v)))
                  ?val)]
-    (if (nil? ?flag)
-        (match (option/->?vim-value ?val)
-          vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
-          _ `(tset ,interface ,name ,?val))
-        (match ?flag
-          "+"
-          `(: ,opt-obj :append ,?val)
-          "^"
-          `(: ,opt-obj :prepend ,?val)
-          "-"
-          `(: ,opt-obj :remove ,?val)
-          "!"
-          `(tset ,opt-obj (not (: ,opt-obj :get)))
-          "<" ; Sync local option to global one.
-          `(vim.api.nvim_set_option_value ,name ;
-                                          (vim.api.nvim_get_option ,name)
-                                          {:scope :local})
-          ;; "&" `(vim.cmd.set (.. ,name "&"))
-          _
-          (error (.. "Invalid vim option modifier: " (view ?flag)))))))
+    (match ?flag
+      nil
+      (match (option/->?vim-value ?val)
+        vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
+        _ `(tset ,interface ,name ,?val))
+      "+"
+      `(: ,opt-obj :append ,?val)
+      "^"
+      `(: ,opt-obj :prepend ,?val)
+      "-"
+      `(: ,opt-obj :remove ,?val)
+      "!"
+      `(tset ,opt-obj (not (: ,opt-obj :get)))
+      "<" ; Sync local option to global one.
+      `(vim.api.nvim_set_option_value ,name ;
+                                      (vim.api.nvim_get_option ,name)
+                                      {:scope :local})
+      ;; "&" `(vim.cmd.set (.. ,name "&"))
+      _
+      (error (.. "Invalid vim option modifier: " (view ?flag))))))
 
 (lambda option/extract-flag [name-?flag]
   (let [?flag (: name-?flag :match "[^a-zA-Z]")
