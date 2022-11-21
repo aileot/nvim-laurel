@@ -214,13 +214,11 @@
                       ;; Convert sequence of table values into a sequence of
                       ;; letters; let us set them in sequential table.
                       (sequence? ?val))
-                 (accumulate [str "" _ v (ipairs ?val)]
-                   (do
-                     (assert-compile (not (sym? v))
-                                     (.. name " cannot include " (type v)
-                                         " value")
-                                     v)
-                     (.. str v)))
+                 (accumulate [str "" _ v (ipairs ?val) &until (not (str? str))]
+                   ;; TODO: test `formatoptions`
+                   (if (str? v)
+                       (.. str v)
+                       `(.. ,(unpack ?val))))
                  ?val)]
     (match ?flag
       nil
