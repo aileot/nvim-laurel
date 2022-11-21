@@ -203,10 +203,9 @@
                      (.. str v)))
                  ?val)]
     (if (nil? ?flag)
-        (let [?vim-val (option/->?vim-value ?val)]
-          (if ?vim-val
-              `(vim.api.nvim_set_option_value ,name ,?vim-val ,api-opts)
-              `(tset ,interface ,name ,?val)))
+        (match (option/->?vim-value ?val)
+          vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
+          _ `(tset ,interface ,name ,?val))
         (match ?flag
           "+"
           `(: ,opt-obj :append ,?val)
