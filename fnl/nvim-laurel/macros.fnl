@@ -516,6 +516,12 @@
   @param ?bufnr integer Buffer handle, or 0 for current buffer
   @param mode string
   @param lhs string"
+  ;; TODO: Identify the cause to reach `_` just with three args.
+  ;; (match (pick-values 4 ...)
+  ;;   (mode lhs) `(vim.api.nvim_del_keymap ,mode ,lhs)
+  ;;   (bufnr mode lhs) `(vim.api.nvim_buf_del_keymap ,bufnr ,mode ,lhs)
+  ;;   _ (error* (msg-template/expected-actual "2 or 3 args" (select "#" ...))
+  ;;             (view [...])))
   ;; Note: nvim_del_keymap itself cannot delete mappings in multi mode at once.
   (let [[?bufnr mode lhs] (if (select 3 ...) [...] [nil ...])]
     (if ?bufnr
