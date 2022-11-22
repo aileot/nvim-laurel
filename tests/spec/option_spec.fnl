@@ -1,5 +1,11 @@
-(import-macros {: set! : set+ : set^ : set- : setglobal! : setlocal!}
-               :nvim-laurel.macros)
+(import-macros {: set!
+                : set+
+                : set^
+                : set-
+                : setglobal!
+                : setlocal!
+                : bo!
+                : wo!} :nvim-laurel.macros)
 
 (macro get-o [name]
   `(-> (. vim.opt ,name) (: :get)))
@@ -19,15 +25,27 @@
 (local default-opt-map
        ;; Note: The default option values are supposed to be different from
        ;; Neovim default value.
-       {;; boolean
-        :wrap true
-        ;; number
-        :foldlevel 1
-        ;; string
-        :signcolumn :yes
-        ;; sequence
+       {;; buffer-local options
+        ;; boolean (bo)
+        :expandtab true
+        ;; number (bo)
+        :tabstop 1
+        ;; string (bo) x
+        :omnifunc :xyx
+        ;; sequence (bo)
         :path "/tmp,/var,/usr"
-        ;; kv-table
+        ;; kv-table (bo)
+        :matchpairs "x:X,y:Y,z:Z"
+        ;; window-local options
+        ;; boolean (wo)
+        :wrap true
+        ;; number (wo)
+        :foldlevel 1
+        ;; string (wo)
+        :signcolumn :yes
+        ;; sequence (wo)
+        :colorcolumn "+1,+2,+3"
+        ;; kv-table (wo)
         :listchars "eol:x,tab:xy,space:x"})
 
 (fn reset-context []
@@ -406,6 +424,126 @@
               (let [name :wrap]
                 (setglobal! name)
                 (assert.is_true (get-go name))))))))
+    (describe :bo!
+      (fn []
+        (it "can update option value with boolean"
+          (fn []
+            (tset vim.bo :expandtab false)
+            (let [vals (get-o-lo-go :expandtab)]
+              (reset-context)
+              (bo! :expandtab false)
+              (assert.is_same vals (get-o-lo-go :expandtab)))))
+        (it "can update option value with number"
+          (fn []
+            (tset vim.bo :tabstop 2)
+            (let [vals (get-o-lo-go :tabstop)]
+              (reset-context)
+              (bo! :tabstop 2)
+              (assert.is_same vals (get-o-lo-go :tabstop)))))
+        (it "can update option value with string"
+          (fn []
+            (tset vim.bo :omnifunc :abc)
+            (let [vals (get-o-lo-go :omnifunc)]
+              (reset-context)
+              (bo! :omnifunc :abc)
+              (assert.is_same vals (get-o-lo-go :omnifunc)))))
+        (it "can update option value with sequence"
+          (fn []
+            (tset vim.bo :path "/foo,/bar,/baz")
+            (let [vals (get-o-lo-go :path)]
+              (reset-context)
+              (bo! :path [:/foo :/bar :/baz])
+              (assert.is_same vals (get-o-lo-go :path)))))
+        (it "can update option value with kv-table"
+          (fn []
+            (tset vim.bo :matchpairs "a:A,b:B,c:C")
+            (let [vals (get-o-lo-go :matchpairs)]
+              (reset-context)
+              (bo! :matchPairs {:a :A :b :B :c :C})
+              (assert.is_same vals (get-o-lo-go :matchpairs)))))
+        (it "can update some option value with nil"
+          (fn []
+            (set vim.bo.tabstop nil)
+            (let [vals (get-o-lo-go :tabstop)]
+              (reset-context)
+              (bo! :tabstop nil)
+              (assert.is_same vals (get-o-lo-go :tabstop)))))
+        (it "can update some option value with symbol"
+          (fn []
+            (let [new-val 2]
+              (set vim.bo.tabstop new-val)
+              (let [vals (get-o-lo-go :tabstop)]
+                (reset-context)
+                (bo! :tabstop new-val)
+                (assert.is_same vals (get-o-lo-go :tabstop))))))
+        (it "can update some option value with list"
+          (fn []
+            (let [return-val #2]
+              (set vim.bo.tabstop (return-val))
+              (let [vals (get-o-lo-go :tabstop)]
+                (reset-context)
+                (bo! :tabstop (return-val))
+                (assert.is_same vals (get-o-lo-go :tabstop))))))))
+    (describe :wo!
+      (fn []
+        (it "can update option value with boolean"
+          (fn []
+            (tset vim.wo :wrap false)
+            (let [vals (get-o-lo-go :wrap)]
+              (reset-context)
+              (wo! :wrap false)
+              (assert.is_same vals (get-o-lo-go :wrap)))))
+        (it "can update option value with number"
+          (fn []
+            (tset vim.wo :foldlevel 2)
+            (let [vals (get-o-lo-go :foldlevel)]
+              (reset-context)
+              (wo! :foldlevel 2)
+              (assert.is_same vals (get-o-lo-go :foldlevel)))))
+        (it "can update option value with string"
+          (fn []
+            (tset vim.wo :signcolumn :no)
+            (let [vals (get-o-lo-go :signcolumn)]
+              (reset-context)
+              (wo! :signcolumn :no)
+              (assert.is_same vals (get-o-lo-go :signcolumn)))))
+        (it "can update option value with sequence"
+          (fn []
+            (tset vim.wo :colorcolumn "80,81,82")
+            (let [vals (get-o-lo-go :colorcolumn)]
+              (reset-context)
+              (wo! :colorcolumn [:80 :81 :82])
+              (assert.is_same vals (get-o-lo-go :colorcolumn)))))
+        (it "can update option value with kv-table"
+          (fn []
+            (tset vim.wo :listchars "eol:a,tab:abc,space:a")
+            (let [vals (get-o-lo-go :listchars)]
+              (reset-context)
+              (wo! :listchars {:eol :a :tab :abc :space :a})
+              (assert.is_same vals (get-o-lo-go :listchars)))))
+        (it "can update some option value with nil"
+          (fn []
+            (set vim.wo.foldlevel nil)
+            (let [vals (get-o-lo-go :foldlevel)]
+              (reset-context)
+              (wo! :foldlevel nil)
+              (assert.is_same vals (get-o-lo-go :foldlevel)))))
+        (it "can update some option value with symbol"
+          (fn []
+            (let [new-val 2]
+              (set vim.wo.foldlevel new-val)
+              (let [vals (get-o-lo-go :foldlevel)]
+                (reset-context)
+                (wo! :foldlevel new-val)
+                (assert.is_same vals (get-o-lo-go :foldlevel))))))
+        (it "can update some option value with list"
+          (fn []
+            (let [return-val #2]
+              (set vim.wo.foldlevel (return-val))
+              (let [vals (get-o-lo-go :foldlevel)]
+                (reset-context)
+                (wo! :foldlevel (return-val))
+                (assert.is_same vals (get-o-lo-go :foldlevel))))))))
     (describe :set+
       (fn []
         (it "appends option value of sequence"
