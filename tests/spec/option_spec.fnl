@@ -211,7 +211,7 @@
             (set vim.opt_local.foldlevel nil)
             (let [vals (get-o-lo-go :foldlevel)]
               (reset-context)
-              (set! :foldlevel nil)
+              (setlocal! :foldlevel nil)
               (assert.is_same vals (get-o-lo-go :foldlevel)))))
         (it "can update some option value with symbol"
           (fn []
@@ -329,7 +329,7 @@
             (set vim.opt_global.foldlevel nil)
             (let [vals (get-o-lo-go :foldlevel)]
               (reset-context)
-              (set! :foldlevel nil)
+              (setglobal! :foldlevel nil)
               (assert.is_same vals (get-o-lo-go :foldlevel)))))
         (it "can update some option value with symbol"
           (fn []
