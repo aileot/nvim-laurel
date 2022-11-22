@@ -106,6 +106,10 @@
 
 ;; Specific Utils ///1
 
+(lambda error* [msg]
+  "Throw error with prefix."
+  (error (.. "[nvim-laurel] " msg)))
+
 (lambda merge-default-kv-table! [default another]
   "Fill key-value table with default values.
   @param default kv-table
@@ -186,8 +190,8 @@
                     {:scope :local} `vim.opt_local
                     {:scope :global} `vim.opt_global
                     {} `vim.opt
-                    _ (error (.. "Expected `local`, `global`, or `general`, got: "
-                                 (view api-opts))))
+                    _ (error* (.. "Expected `local`, `global`, or `general`, got: "
+                                  (view api-opts))))
         opt-obj `(. ,interface ,name)
         ?val (if (and (contains? [:formatoptions :shortmess] name)
                       ;; Convert sequence of table values into a sequence of
@@ -220,7 +224,7 @@
                                       {:scope :local})
       ;; "&" `(vim.cmd.set (.. ,name "&"))
       _
-      (error (.. "Invalid vim option modifier: " (view ?flag))))))
+      (error* (.. "Invalid vim option modifier: " (view ?flag))))))
 
 (lambda option/extract-flag [name-?flag]
   (let [?flag (: name-?flag :match "[^a-zA-Z]")
@@ -485,7 +489,7 @@
             rhs (do
                   (when (and (or extra-opts.<command> extra-opts.ex)
                              (or extra-opts.<callback> extra-opts.cb))
-                    (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
+                    (error* "cannot set both <command>/ex and <callback>/cb."))
                   (if (or extra-opts.<command> extra-opts.ex) raw-rhs
                       (or extra-opts.<callback> extra-opts.cb ;
                           (sym? raw-rhs) ;
@@ -1116,8 +1120,8 @@
                                (contains? autocmd/extra-opt-keys (first a))
                                [nil a b ?c] ;
                                [a nil b ?c])
-              _ (error (string.format "unexpected args:\n%s\n%s\n%s\n%s"
-                                      (view ?a3) (view ?x) (view ?y) (view ?z))))
+              _ (error* (string.format "unexpected args:\n%s\n%s\n%s\n%s" (view ?a3)
+                                (view ?x) (view ?y) (view ?z))))
             extra-opts (if (nil? ?extra-opts) {}
                            (seq->kv-table ?extra-opts
                                           [:once
@@ -1136,7 +1140,7 @@
             (set extra-opts.pattern ?pattern)))
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
-          (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
+          (error* "cannot set both <command>/ex and <callback>/cb."))
         (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
