@@ -1261,10 +1261,12 @@
             (set val.ctermbg (?. val :cterm :bg))
             (when val.cterm
               (set val.cterm.bg nil)))
-          (assert-compile (cterm-color? val.ctermfg)
+          (assert-compile (or (cterm-color? val.ctermfg)
+                              (hidden-in-compile-time? val.ctermfg))
                           (.. "ctermfg expects 256 color, got "
                               (view val.ctermfg)) val)
-          (assert-compile (cterm-color? val.ctermbg)
+          (assert-compile (or (cterm-color? val.ctermbg)
+                              (hidden-in-compile-time? val.ctermbg))
                           (.. "ctermbg expects 256 color, got "
                               (view val.ctermbg)) val)))
     `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))
