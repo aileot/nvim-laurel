@@ -49,6 +49,9 @@ test: clean $(LUA_TESTS) ## Run test
 		--shuffle \
 		--output=utfTerminal \
 		./tests
+	@echo
 	@echo "==============================================================================="
+	@echo
 	@echo "git status"
-	git status
+	@echo
+	@git status
