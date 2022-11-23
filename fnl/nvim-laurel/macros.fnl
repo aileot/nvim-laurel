@@ -190,8 +190,7 @@
                     {:scope :local} `vim.opt_local
                     {:scope :global} `vim.opt_global
                     {} `vim.opt
-                    _ (error* (.. "Expected `local`, `global`, or `general`, got: "
-                                  (view api-opts))))
+                    _ (error* (.. "unexpected api-opts:\n" (view api-opts))))
         opt-obj `(. ,interface ,name)
         ?val (if (and (contains? [:formatoptions :shortmess] name)
                       ;; Convert sequence of table values into a sequence of
