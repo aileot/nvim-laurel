@@ -1255,9 +1255,13 @@
                               k) val))
         (do
           (when (nil? val.ctermfg)
-            (set val.ctermfg (?. val :cterm :fg)))
+            (set val.ctermfg (?. val :cterm :fg))
+            (when val.cterm
+              (set val.cterm.fg nil)))
           (when (nil? val.ctermbg)
-            (set val.ctermbg (?. val :cterm :bg)))
+            (set val.ctermbg (?. val :cterm :bg))
+            (when val.cterm
+              (set val.cterm.bg nil)))
           (assert-compile (cterm-color? val.ctermfg)
                           (.. "ctermfg expects 256 color, got "
                               (view val.ctermfg)) val)
