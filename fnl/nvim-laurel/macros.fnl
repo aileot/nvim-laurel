@@ -113,6 +113,21 @@
   "Throw error with prefix."
   (error (.. "[nvim-laurel] " msg)))
 
+(lambda msg-template/expected-actual [expected actual ...]
+  "Assert `expr` but with error message in template.
+  ```fennel
+  (msg-template/expected-actual [expected actual] ?dump)
+  ```
+  @param expected string text to be inserted in \"expected %s\"
+  @param actual string
+  @param dump string"
+  (let [msg (printf "expected %s, got %s" expected actual)]
+    (match (select "#" ...)
+      0 msg
+      1 (.. msg "\ndump:\n" (select 1 ...))
+      _ (error* (msg-template/expected-actual "2 or 3 args"
+                                              (+ 2 (select "#" ...)))))))
+
 (lambda merge-default-kv-table! [default another]
   "Fill key-value table with default values.
   @param default kv-table
@@ -168,8 +183,8 @@
   For example,
   `{:eob \" \" :fold \"-\"})` should be compiled to `\"eob: ,fold:-\"`"
   (assert-compile (table? kv-table)
-                  (.. "Expected table, got " (type kv-table) "\ndump:\n"
-                      (view kv-table)) ;
+                  (msg-template/expected-actual :table (type kv-table)
+                                                (view kv-table))
                   kv-table)
   (let [key-val (icollect [k v (pairs kv-table)]
                   (.. k ":" v))]
