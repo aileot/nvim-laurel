@@ -1206,7 +1206,11 @@
                                    (contains? [:au! :autocmd!]
                                               (first-symbol args)))
                               (slice args 2)
-                              args)]
+                              (sequence? args)
+                              args
+                              (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
+                                                                    (type args)
+                                                                    (view args))))]
               (define-autocmd! `id# (unpack au-args)))))))
 
 ;; Export ///2
