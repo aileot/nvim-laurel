@@ -1263,8 +1263,8 @@
                               (view val.ctermfg)) val)
           (assert-compile (cterm-color? val.ctermbg)
                           (.. "ctermbg expects 256 color, got "
-                              (view val.ctermbg)) val)
-          `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))))
+                              (view val.ctermbg)) val)))
+    `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))
 
 ;; Export ///1
 
