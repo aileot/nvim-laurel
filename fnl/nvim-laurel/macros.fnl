@@ -16,6 +16,9 @@
   `(if (not ,cond)
        ,...))
 
+(macro printf [str ...]
+  `(string.format ,str ,...))
+
 ;; General Utils ///1
 ;; Predicates ///2
 
@@ -1125,7 +1128,7 @@
                                (contains? autocmd/extra-opt-keys (first a))
                                [nil a b ?c] ;
                                [a nil b ?c])
-              _ (error* (string.format "unexpected args:\n%s\n%s\n%s\n%s" (view ?a3)
+              _ (error* (printf "unexpected args:\n%s\n%s\n%s\n%s" (view ?a3)
                                 (view ?x) (view ?y) (view ?z))))
             extra-opts (if (nil? ?extra-opts) {}
                            (seq->kv-table ?extra-opts
