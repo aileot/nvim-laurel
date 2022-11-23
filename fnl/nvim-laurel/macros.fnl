@@ -1250,9 +1250,8 @@
                               [nil ns-id|name name|val])]
     (if (?. val :link)
         (each [k _ (pairs val)]
-          (assert-compile (= k :link) ;
-                          (.. "With `link` key, no other options are invalid: "
-                              k) val))
+          (assert-compile (= k :link)
+                          (.. "`link` key excludes any other options: " k) val))
         (do
           (when (nil? val.ctermfg)
             (set val.ctermfg (?. val :cterm :fg))
