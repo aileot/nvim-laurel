@@ -91,7 +91,7 @@ repo = "aileot/nvim-laurel"
 (import-macros {: set! : map! : augroup! : au! ...} :nvim-laurel.macros)
 ```
 
-See [doc/MACROS.md](./doc/MACROS.md) for each macro usage in details.
+See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 [Discussions][Discussions] would inspire you, too.
 
 ## Alternatives
