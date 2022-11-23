@@ -205,6 +205,7 @@
 (lambda option/modify [api-opts name ?val ?flag]
   (let [name (if (str? name) (name:lower) name)
         interface (match api-opts
+                    {:scope nil :buf nil :win nil} `vim.opt
                     {:scope :local} `vim.opt_local
                     {:scope :global} `vim.opt_global
                     {} `vim.opt
