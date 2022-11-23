@@ -52,6 +52,8 @@ test: clean $(LUA_TESTS) ## Run test
 	@echo
 	@echo "==============================================================================="
 	@echo
-	@echo "git status"
+	@echo "git status --short"
+	@git status --short
 	@echo
-	@git status
+	@echo "git branch --show-current"
+	@git branch --show-current
