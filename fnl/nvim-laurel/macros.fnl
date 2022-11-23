@@ -1250,21 +1250,26 @@
                               [nil ns-id|name name|val])]
     (if (?. val :link)
         (each [k _ (pairs val)]
-          (assert-compile (= k :link) ;
-                          (.. "With `link` key, no other options are invalid: "
-                              k) val))
+          (assert-compile (= k :link)
+                          (.. "`link` key excludes any other options: " k) val))
         (do
           (when (nil? val.ctermfg)
-            (set val.ctermfg (?. val :cterm :fg)))
+            (set val.ctermfg (?. val :cterm :fg))
+            (when val.cterm
+              (set val.cterm.fg nil)))
           (when (nil? val.ctermbg)
-            (set val.ctermbg (?. val :cterm :bg)))
-          (assert-compile (cterm-color? val.ctermfg)
+            (set val.ctermbg (?. val :cterm :bg))
+            (when val.cterm
+              (set val.cterm.bg nil)))
+          (assert-compile (or (cterm-color? val.ctermfg)
+                              (hidden-in-compile-time? val.ctermfg))
                           (.. "ctermfg expects 256 color, got "
                               (view val.ctermfg)) val)
-          (assert-compile (cterm-color? val.ctermbg)
+          (assert-compile (or (cterm-color? val.ctermbg)
+                              (hidden-in-compile-time? val.ctermbg))
                           (.. "ctermbg expects 256 color, got "
-                              (view val.ctermbg)) val)
-          `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))))
+                              (view val.ctermbg)) val)))
+    `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))
 
 ;; Export ///1
 
