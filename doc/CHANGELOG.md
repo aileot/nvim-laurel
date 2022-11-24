@@ -1,5 +1,11 @@
 # Laurel Changelog
 
+## 0.0.4
+
+- perf(autocmd): extract pattern if only one in sequence
+
+- refactor: pursue better expressions
+
 ## 0.0.3
 
 - fix(hi!): correct indent

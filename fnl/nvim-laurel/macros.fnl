@@ -16,6 +16,9 @@
   `(if (not ,cond)
        ,...))
 
+(macro printf [str ...]
+  `(string.format ,str ,...))
+
 ;; General Utils ///1
 ;; Predicates ///2
 
@@ -106,6 +109,25 @@
 
 ;; Specific Utils ///1
 
+(lambda error* [msg]
+  "Throw error with prefix."
+  (error (.. "[nvim-laurel] " msg)))
+
+(lambda msg-template/expected-actual [expected actual ...]
+  "Assert `expr` but with error message in template.
+  ```fennel
+  (msg-template/expected-actual [expected actual] ?dump)
+  ```
+  @param expected string text to be inserted in \"expected %s\"
+  @param actual string
+  @param dump string"
+  (let [msg (printf "expected %s, got %s" expected actual)]
+    (match (select "#" ...)
+      0 msg
+      1 (.. msg "\ndump:\n" (select 1 ...))
+      _ (error* (msg-template/expected-actual "2 or 3 args"
+                                              (+ 2 (select "#" ...)))))))
+
 (lambda merge-default-kv-table! [default another]
   "Fill key-value table with default values.
   @param default kv-table
@@ -161,21 +183,32 @@
   For example,
   `{:eob \" \" :fold \"-\"})` should be compiled to `\"eob: ,fold:-\"`"
   (assert-compile (table? kv-table)
-                  (.. "Expected table, got " (type kv-table) "\ndump:\n"
-                      (view kv-table)) ;
+                  (msg-template/expected-actual :table (type kv-table)
+                                                (view kv-table))
                   kv-table)
   (let [key-val (icollect [k v (pairs kv-table)]
                   (.. k ":" v))]
     (table.concat key-val ",")))
 
-(lambda option/modify [scope name ?val ?flag]
+(lambda option/->?vim-value [?val]
+  "Return in vim value for such API as `nvim_set_option`.
+  @param val any
+  @return boolean|number|string|nil|'vim.NIL'"
+  (match (type ?val)
+    :nil `vim.NIL
+    :boolean ?val
+    :string ?val
+    :number ?val
+    _ (if (sequence? ?val) (table.concat ?val ",")
+          (table? ?val) (option/concat-kv-table ?val))))
+
+(lambda option/modify [api-opts name ?val ?flag]
   (let [name (if (str? name) (name:lower) name)
-        interface (match scope
-                    :local `vim.opt_local
-                    :global `vim.opt_global
-                    :general `vim.opt
-                    _ (error (.. "Expected `local`, `global`, or `general`, got: "
-                                 (view scope))))
+        interface (match api-opts
+                    {:scope :local} `vim.opt_local
+                    {:scope :global} `vim.opt_global
+                    {} `vim.opt
+                    _ (error* (.. "unexpected api-opts:\n" (view api-opts))))
         opt-obj `(. ,interface ,name)
         ?val (if (and (contains? [:formatoptions :shortmess] name)
                       ;; Convert sequence of table values into a sequence of
@@ -189,35 +222,26 @@
                                      v)
                      (.. str v)))
                  ?val)]
-    (if (nil? ?flag)
-        (let [opts {:scope (if (= scope :general) nil scope)}]
-          (if (sym? ?val)
-              ;; Note: `set` is unavailable in compiler environment
-              `(tset ,interface ,name ,?val)
-              (sequence? ?val)
-              `(vim.api.nvim_set_option_value ,name ,(table.concat ?val ",")
-                                              ,opts)
-              (table? ?val)
-              `(vim.api.nvim_set_option_value ,name
-                                              ,(option/concat-kv-table ?val)
-                                              ,opts)
-              `(vim.api.nvim_set_option_value ,name ,?val ,opts)))
-        (match ?flag
-          "+"
-          `(: ,opt-obj :append ,?val)
-          "^"
-          `(: ,opt-obj :prepend ,?val)
-          "-"
-          `(: ,opt-obj :remove ,?val)
-          "!"
-          `(tset ,opt-obj (not (: ,opt-obj :get)))
-          "<" ; Sync local option to global one.
-          `(vim.api.nvim_set_option_value ,name ;
-                                          (vim.api.nvim_get_option ,name)
-                                          {:scope :local})
-          ;; "&" `(vim.cmd.set (.. ,name "&"))
-          _
-          (error (.. "Invalid vim option modifier: " (view ?flag)))))))
+    (match ?flag
+      nil
+      (match (option/->?vim-value ?val)
+        vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
+        _ `(tset ,interface ,name ,?val))
+      "+"
+      `(: ,opt-obj :append ,?val)
+      "^"
+      `(: ,opt-obj :prepend ,?val)
+      "-"
+      `(: ,opt-obj :remove ,?val)
+      "!"
+      `(tset ,opt-obj (not (: ,opt-obj :get)))
+      "<" ; Sync local option to global one.
+      `(vim.api.nvim_set_option_value ,name ;
+                                      (vim.api.nvim_get_option ,name)
+                                      {:scope :local})
+      ;; "&" `(vim.cmd.set (.. ,name "&"))
+      _
+      (error* (.. "Invalid vim option modifier: " (view ?flag))))))
 
 (lambda option/extract-flag [name-?flag]
   (let [?flag (: name-?flag :match "[^a-zA-Z]")
@@ -265,7 +289,31 @@
   (let [opt :formatOptions]
     (set+ opt [:1 :B]))
   ```"
-  (option/set :general name-?flag ?val))
+  (option/set {} name-?flag ?val))
+
+(lambda set+ [name val]
+  "Append a value to string-style options.
+  Almost equivalent to `:set {option}+={value}` in Vim script.
+  ```fennel
+  (set+ name val)
+  ```"
+  (option/modify {} name val "+"))
+
+(lambda set^ [name val]
+  "Prepend a value to string-style options.
+  Almost equivalent to `:set {option}^={value}` in Vim script.
+  ```fennel
+  (set^ name val)
+  ```"
+  (option/modify {} name val "^"))
+
+(lambda set- [name val]
+  "Remove a value from string-style options.
+  Almost equivalent to `:set {option}-={value}` in Vim script.
+  ```fennel
+  (set- name val)
+  ```"
+  (option/modify {} name val "-"))
 
 (lambda setlocal! [name-?flag ?val]
   "Set local value to the option.
@@ -274,7 +322,31 @@
   (setlocal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set :local name-?flag ?val))
+  (option/set {:scope :local} name-?flag ?val))
+
+(lambda setlocal+ [name val]
+  "Append a value to string-style local options.
+  Almost equivalent to `:setlocal {option}+={value}` in Vim script.
+  ```fennel
+  (setlocal+ name val)
+  ```"
+  (option/modify {:scope :local} name val "+"))
+
+(lambda setlocal^ [name val]
+  "Prepend a value to string-style local options.
+  Almost equivalent to `:setlocal {option}^={value}` in Vim script.
+  ```fennel
+  (setlocal^ name val)
+  ```"
+  (option/modify {:scope :local} name val "^"))
+
+(lambda setlocal- [name val]
+  "Remove a value from string-style local options.
+  Almost equivalent to `:setlocal {option}-={value}` in Vim script.
+  ```fennel
+  (setlocal- name val)
+  ```"
+  (option/modify {:scope :local} name val "-"))
 
 (lambda setglobal! [name-?flag ?val]
   "Set global value to the option.
@@ -283,55 +355,7 @@
   (setglobal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set :global name-?flag ?val))
-
-(lambda set+ [name val]
-  "Append a value to string-style options.
-  Almost equivalent to `:set {option}+={value}` in Vim script.
-  ```fennel
-  (set+ name val)
-  ```"
-  (option/modify :general name val "+"))
-
-(lambda set^ [name val]
-  "Prepend a value to string-style options.
-  Almost equivalent to `:set {option}^={value}` in Vim script.
-  ```fennel
-  (set^ name val)
-  ```"
-  (option/modify :general name val "^"))
-
-(lambda set- [name val]
-  "Remove a value from string-style options.
-  Almost equivalent to `:set {option}-={value}` in Vim script.
-  ```fennel
-  (set- name val)
-  ```"
-  (option/modify :general name val "-"))
-
-(lambda setlocal+ [name val]
-  "Append a value to string-style local options.
-  Almost equivalent to `:setlocal {option}+={value}` in Vim script.
-  ```fennel
-  (setlocal+ name val)
-  ```"
-  (option/modify :local name val "+"))
-
-(lambda setlocal^ [name val]
-  "Prepend a value to string-style local options.
-  Almost equivalent to `:setlocal {option}^={value}` in Vim script.
-  ```fennel
-  (setlocal^ name val)
-  ```"
-  (option/modify :local name val "^"))
-
-(lambda setlocal- [name val]
-  "Remove a value from string-style local options.
-  Almost equivalent to `:setlocal {option}-={value}` in Vim script.
-  ```fennel
-  (setlocal- name val)
-  ```"
-  (option/modify :local name val "-"))
+  (option/set {:scope :global} name-?flag ?val))
 
 (lambda setglobal+ [name val]
   "Append a value to string-style global options.
@@ -341,7 +365,7 @@
   ```
   - name: (string) Option name.
   - val: (string) Additional option value."
-  (option/modify :global name val "+"))
+  (option/modify {:scope :global} name val "+"))
 
 (lambda setglobal^ [name val]
   "Prepend a value from string-style global options.
@@ -349,7 +373,7 @@
   ```fennel
   (setglobal^ name val)
   ```"
-  (option/modify :global name val "^"))
+  (option/modify {:scope :global} name val "^"))
 
 (lambda setglobal- [name val]
   "Remove a value from string-style global options.
@@ -357,7 +381,7 @@
   ```fennel
   (setglobal- name val)
   ```"
-  (option/modify :global name val "-"))
+  (option/modify {:scope :global} name val "-"))
 
 ;; Variable ///1
 
@@ -482,7 +506,7 @@
             rhs (do
                   (when (and (or extra-opts.<command> extra-opts.ex)
                              (or extra-opts.<callback> extra-opts.cb))
-                    (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
+                    (error* "cannot set both <command>/ex and <callback>/cb."))
                   (if (or extra-opts.<command> extra-opts.ex) raw-rhs
                       (or extra-opts.<callback> extra-opts.cb ;
                           (sym? raw-rhs) ;
@@ -510,6 +534,12 @@
   @param ?bufnr integer Buffer handle, or 0 for current buffer
   @param mode string
   @param lhs string"
+  ;; TODO: Identify the cause to reach `_` just with three args.
+  ;; (match (pick-values 4 ...)
+  ;;   (mode lhs) `(vim.api.nvim_del_keymap ,mode ,lhs)
+  ;;   (bufnr mode lhs) `(vim.api.nvim_buf_del_keymap ,bufnr ,mode ,lhs)
+  ;;   _ (error* (msg-template/expected-actual "2 or 3 args" (select "#" ...))
+  ;;             (view [...])))
   ;; Note: nvim_del_keymap itself cannot delete mappings in multi mode at once.
   (let [[?bufnr mode lhs] (if (select 3 ...) [...] [nil ...])]
     (if ?bufnr
@@ -1113,8 +1143,8 @@
                                (contains? autocmd/extra-opt-keys (first a))
                                [nil a b ?c] ;
                                [a nil b ?c])
-              _ (error (string.format "unexpected args:\n%s\n%s\n%s\n%s"
-                                      (view ?a3) (view ?x) (view ?y) (view ?z))))
+              _ (error* (printf "unexpected args:\n%s\n%s\n%s\n%s" (view ?a3)
+                                (view ?x) (view ?y) (view ?z))))
             extra-opts (if (nil? ?extra-opts) {}
                            (seq->kv-table ?extra-opts
                                           [:once
@@ -1124,16 +1154,19 @@
                                            :<command>
                                            :cb
                                            :<callback>]))
-            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
+            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
+            ?pat (or extra-opts.pattern ?pattern)]
         (set extra-opts.group ?id)
         (set extra-opts.buffer ?bufnr)
-        (when (and ?pattern (nil? extra-opts.pattern))
-          (when-not (and (str? ?pattern) (= "*" ?pattern))
-            ;; Note: `*` is the default pattern and redundant.
-            (set extra-opts.pattern ?pattern)))
+        (let [pattern (if (and (sequence? ?pat) (= 1 (length ?pat)))
+                          (first ?pat)
+                          ?pat)]
+          ;; Note: `*` is the default pattern and redundant.
+          (when-not (and (str? pattern) (= "*" pattern))
+            (set extra-opts.pattern pattern)))
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
-          (error "[nvim-laurel] cannot set both <command>/ex and <callback>/cb."))
+          (error* "cannot set both <command>/ex and <callback>/cb."))
         (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
@@ -1173,7 +1206,11 @@
                                    (contains? [:au! :autocmd!]
                                               (first-symbol args)))
                               (slice args 2)
-                              args)]
+                              (sequence? args)
+                              args
+                              (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
+                                                                    (type args)
+                                                                    (view args))))]
               (define-autocmd! `id# (unpack au-args)))))))
 
 ;; Export ///2
@@ -1274,14 +1311,14 @@
 ;; Export ///1
 
 {: set!
- : setlocal!
- : setglobal!
  : set+
  : set^
  : set-
+ : setlocal!
  : setlocal+
  : setlocal^
  : setlocal-
+ : setglobal!
  : setglobal+
  : setglobal^
  : setglobal-
