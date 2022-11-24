@@ -46,3 +46,16 @@ jobs:
           VUSTED: ${LUAROCKS_HOME}/bin/vusted
           VUSTED_NVIM: ${{ steps.vim.outputs.executable }}
         timeout-minutes: 5
+  release:
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
