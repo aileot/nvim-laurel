@@ -4,6 +4,7 @@
 - [Terminology](#Terminology)
 - [Macros](#Macros)
 - [Anti-Patterns](#Anti-Patterns)
+- [Deprecated](#Deprecated)
 
 ## CAUTION
 
@@ -1135,6 +1136,11 @@ another anonymous function is meaningless in many cases.
 (autocmd! group events #(vim.schedule (fn []
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
+
+## Deprecated
+
+- `map-operator!`/`noremap-operator!`: Use
+  [`map-range!`](#map-range)/[`noremap-range!`](#noremap-range) instead.
 
 [set]: #setsetsetset-
 [setglobal]: #setglobalsetglobalsetglobalsetglobal-
