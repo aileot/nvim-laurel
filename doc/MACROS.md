@@ -231,25 +231,25 @@ An alias of [`autocmd!`](#autocmd).
 
 ### Option
 
-- [`set!`](#set)
-- [`set+`](#set-1)
-- [`set-`](#set-)
-- [`set^`](#set-2)
-- [`setglobal!`](#setglobal)
-- [`setglobal+`](#setglobal-1)
-- [`setglobal-`](#setglobal-)
-- [`setglobal^`](#setglobal-2)
-- [`setlocal!`](#setlocal)
-- [`setlocal+`](#setlocal-1)
-- [`setlocal-`](#setlocal-)
-- [`setlocal^`](#setlocal-2)
+| Set (`!`)                 | Append (`+`)              | Prepend (`^`)             | Remove (`-`)              |
+| :------------------------ | :------------------------ | :------------------------ | :------------------------ |
+| [`set!`][set]             | [`set+`][set]             | [`set^`][set]             | [`set-`][set]             |
+| [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal^`][setglobal] | [`setglobal-`][setglobal] |
+| [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal^`][setlocal]   | [`setlocal-`][setlocal]   |
+| [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
+| [`bo!`][bo]               | NYI                       | NYI                       | NYI                       |
+| [`wo!`][wo]               | NYI                       | NYI                       | NYI                       |
 
-#### `set!`
+#### `set!`/`set+`/`set^`/`set-`
 
-Set value to the option. Almost equivalent to `:set` in Vim script.
+Set, append, prepend, or remove, value to the option. Almost equivalent to
+`:set` in Vim script.
 
 ```fennel
 (set! name-?flag ?val)
+(set+ name val)
+(set^ name val)
+(set- name val)
 ```
 
 - `name-?flag`: (string) Option name. As long as the option name is bare-string,
@@ -338,108 +338,104 @@ usage:
   (set+ opt [:1 :B]))
 ```
 
-#### `set+`
+#### `setglobal!`/`setglobal+`/`setglobal^`/`setglobal-`
 
-Append a value to string-style options. Almost equivalent to
-`:set {option}+={value}` in Vim script.
-
-```fennel
-(set+ name val)
-```
-
-#### `set-`
-
-Remove a value from string-style options. Almost equivalent to
-`:set {option}-={value}` in Vim script.
-
-```fennel
-(set- name val)
-```
-
-#### `set^`
-
-Prepend a value to string-style options. Almost equivalent to
-`:set {option}^={value}` in Vim script.
-
-```fennel
-(set^ name val)
-```
-
-#### `setglobal!`
-
-Set global value to the option. Almost equivalent to `:setglobal` in Vim script.
+Set, append, prepend, or remove, global value to the option. Almost equivalent
+to `:setglobal` in Vim script.
 
 ```fennel
 (setglobal! name-?flag ?val)
-```
-
-See [`set!`](#set) for the details.
-
-#### `setglobal+`
-
-Append a value to string-style global options. Almost equivalent to
-`:setglobal {option}+={value}` in Vim script.
-
-```fennel
 (setglobal+ name val)
-```
-
-- name: (string) Option name.
-- val: (string) Additional option value.
-
-#### `setglobal-`
-
-Remove a value from string-style global options. Almost equivalent to
-`:setglobal {option}-={value}` in Vim script.
-
-```fennel
+(setglobal^ name val)
 (setglobal- name val)
 ```
 
-#### `setglobal^`
+See [`set!`][set] for the details.
 
-Prepend a value from string-style global options. Almost equivalent to
-`:setglobal {option}^={value}` in Vim script.
+#### `setlocal!`/`setlocal+`/`setlocal^`/`setlocal-`
 
-```fennel
-(setglobal^ name val)
-```
-
-#### `setlocal!`
-
-Set local value to the option. Almost equivalent to `:setlocal` in Vim script.
+Set, append, prepend, or remove, local value to the option. Almost equivalent to
+`:setlocal` in Vim script.
 
 ```fennel
 (setlocal! name-?flag ?val)
-```
-
-See [`set!`](#set) for the details.
-
-#### `setlocal+`
-
-Append a value to string-style local options. Almost equivalent to
-`:setlocal {option}+={value}` in Vim script.
-
-```fennel
 (setlocal+ name val)
-```
-
-#### `setlocal-`
-
-Remove a value from string-style local options. Almost equivalent to
-`:setlocal {option}-={value}` in Vim script.
-
-```fennel
+(setlocal^ name val)
 (setlocal- name val)
 ```
 
-#### `setlocal^`
+See [`set!`][set] for the details.
 
-Prepend a value to string-style local options. Almost equivalent to
-`:setlocal {option}^={value}` in Vim script.
+#### `go!`/`go+`/`go^`/`go-`
+
+Aliases of [`setglobal!`][setglobal], [`setglobal+`][setglobal], and so on.
 
 ```fennel
-(setlocal^ name val)
+(go! name value)
+```
+
+#### `bo!`
+
+Set a buffer option value. `:h nvim_buf_set_option`.
+
+```fennel
+(bo! ?id name value)
+```
+
+- `?id`: (integer) Buffer handle, or 0 for current buffer.
+- `name`: (string) Option name. Case-insensitive as long as in bare-string.
+- `value`: (any) Option value.
+
+```fennel
+(bo! :fileType :fennel)
+(bo! 10 :bufType :nofile)
+```
+
+is equivalent to
+
+```lua
+vim.api.nvim_buf_set_option(0, "filetype", "fennel")
+vim.api.nvim_buf_set_option(10, "buftype", "nofile")
+-- Or with `vim.bo`
+vim.bo.filetype = "fennel"
+vim.bo[10].buftype = "nofile"
+```
+
+```vim
+call setbufvar(0, '&filetype', 'fennel')
+call setbufvar(10, '&buftype', 'nofile')
+```
+
+#### `wo!`
+
+Set a window option value. `:h nvim_win_set_option`.
+
+```fennel
+(wo! ?id name value)
+```
+
+- `?id`: (integer) Window handle, or 0 for current window.
+- `name`: (string) Option name. Case-insensitive as long as in bare-string.
+- `value`: (any) Option value.
+
+```fennel
+(wo! :number false)
+(wo! 10 :signColumn :no)
+```
+
+is equivalent to
+
+```lua
+vim.api.nvim_win_set_option(0, "number", false)
+vim.api.nvim_win_set_option(10, "signcolumn", "no")
+-- Or with `vim.wo`
+vim.wo.number = false
+vim.wo[10].signcolumn = "no"
+```
+
+```vim
+call setwinvar(0, '&number', v:false)
+call setwinvar(10, '&signcolumn', 'no')
 ```
 
 ### Variable
@@ -1139,3 +1135,10 @@ another anonymous function is meaningless in many cases.
 (autocmd! group events #(vim.schedule (fn []
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
+
+[set]: #setsetsetset-
+[setglobal]: #setglobalsetglobalsetglobalsetglobal-
+[setlocal]: #setlocalsetlocalsetlocalsetlocal-
+[go]: #gogogogo-
+[wo]: #wo
+[bo]: #bo
