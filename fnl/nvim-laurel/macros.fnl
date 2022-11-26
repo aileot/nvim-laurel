@@ -751,6 +751,12 @@
   @param ?api-opts kv-table"
   (map! [:n :x] ...))
 
+(lambda map-operator! [...]
+  "(Deprecated) Alias of `map-range!."
+  `(do
+     ,(deprecate :map-operator! :map-range! :undetermined)
+     ,(map-range! ...)))
+
 (lambda map-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
   ```fennel
@@ -948,6 +954,12 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (noremap! [:n :x] ...))
+
+(lambda noremap-operator! [...]
+  "(Deprecated) Alias of `noremap-range!`."
+  `(do
+     ,(deprecate :noremap-operator! :noremap-range! :undetermined)
+     ,(noremap-range! ...)))
 
 (lambda noremap-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
