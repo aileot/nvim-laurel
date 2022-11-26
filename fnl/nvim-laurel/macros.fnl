@@ -738,11 +738,11 @@
              (keymap/del-maps! ?bufnr :s lhs)])
         (map! [:n :o :x] extra-opts lhs rhs ?api-opts))))
 
-(lambda map-operator! [...]
+(lambda map-range! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode recursively.
   ```fennel
-  (map-operator! ?extra-opts lhs rhs ?api-opts)
-  (map-operator! lhs ?extra-opts rhs ?api-opts)
+  (map-range! ?extra-opts lhs rhs ?api-opts)
+  (map-range! lhs ?extra-opts rhs ?api-opts)
   ```
   @param modes string|string[]
   @param ?extra-opts bare-sequence
@@ -936,11 +936,11 @@
              (keymap/del-maps! ?bufnr :s lhs)])
         (noremap! [:n :o :x] extra-opts lhs rhs ?api-opts))))
 
-(lambda noremap-operator! [...]
+(lambda noremap-range! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
   ```fennel
-  (noremap-operator! ?extra-opts lhs rhs ?api-opts)
-  (noremap-operator! lhs ?extra-opts rhs ?api-opts)
+  (noremap-range! ?extra-opts lhs rhs ?api-opts)
+  (noremap-range! lhs ?extra-opts rhs ?api-opts)
   ```
   @param modes string|string[]
   @param ?extra-opts bare-sequence
@@ -1380,6 +1380,7 @@
  : map-all!
  : map-input!
  : map-motion!
+ : map-range!
  : map-operator!
  : map-textobj!
  : nmap!
@@ -1394,6 +1395,7 @@
  : noremap-all!
  : noremap-input!
  : noremap-motion!
+ : noremap-range!
  : noremap-operator!
  : noremap-textobj!
  : nnoremap!
