@@ -109,6 +109,12 @@
 
 ;; Specific Utils ///1
 
+(lambda deprecate [deprecated alternative version]
+  "Notify deprecation."
+  ;; Note: It's safer to wrap it in `vim.schedule`.
+  `(vim.schedule #(vim.deprecate ,deprecated ,alternative ,version :nvim-laurel
+                                 false)))
+
 (lambda error* [msg]
   "Throw error with prefix."
   (error (.. "[nvim-laurel] " msg)))
