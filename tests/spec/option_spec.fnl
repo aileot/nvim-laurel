@@ -483,7 +483,59 @@
               (let [vals (get-o-lo-go :tabstop)]
                 (reset-context)
                 (bo! :tabstop (return-val))
-                (assert.is_same vals (get-o-lo-go :tabstop))))))))
+                (assert.is_same vals (get-o-lo-go :tabstop))))))
+        (describe "with bufnr"
+          (it "can update option value with boolean"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)]
+                (reset-context)
+                (bo! buf :expandtab false)
+                (assert.is_false (. vim.bo buf :expandtab)))))
+          (it "can update option value with number"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)]
+                (reset-context)
+                (bo! buf :tabstop 2)
+                (assert.is_same 2 (. vim.bo buf :tabstop)))))
+          (it "can update option value with string"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)]
+                (reset-context)
+                (bo! buf :omnifunc :abc)
+                (assert.is_same :abc (. vim.bo buf :omnifunc)))))
+          (it "can update option value with sequence"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)]
+                (reset-context)
+                (bo! buf :path [:/foo :/bar :/baz])
+                (assert.is_same "/foo,/bar,/baz" (. vim.bo buf :path)))))
+          (it "can update option value with kv-table"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)]
+                (reset-context)
+                (bo! buf :matchPairs {:a :A :b :B :c :C})
+                (assert.is_same "a:A,b:B,c:C" (. vim.bo buf :matchpairs)))))
+          (it "can update some option value with nil"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)]
+                (reset-context)
+                (bo! buf :tabstop nil)
+                (assert.is_same vim.go.tabstop (. vim.bo buf :tabstop)))))
+          (it "can update some option value with symbol"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)
+                    new-val 2]
+                (reset-context)
+                (bo! buf :tabstop new-val)
+                (assert.is_same new-val (. vim.bo buf :tabstop)))))
+          (it "can update some option value with list"
+            (fn []
+              (let [buf (vim.api.nvim_get_current_buf)
+                    new-val 2
+                    return-val #new-val]
+                (reset-context)
+                (bo! buf :tabstop (return-val))
+                (assert.is_same new-val (. vim.bo buf :tabstop))))))))
     (describe :wo!
       (fn []
         (it "can update option value with boolean"
@@ -543,7 +595,60 @@
               (let [vals (get-o-lo-go :foldlevel)]
                 (reset-context)
                 (wo! :foldlevel (return-val))
-                (assert.is_same vals (get-o-lo-go :foldlevel))))))))
+                (assert.is_same vals (get-o-lo-go :foldlevel))))))
+        (describe "with win-id"
+          (it "can update option value with woolean"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)]
+                (vim.cmd.new)
+                (wo! win :wrap false)
+                (assert.is_false (. vim.wo win :wrap)))))
+          (it "can update option value with number"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)]
+                (vim.cmd.new)
+                (wo! win :foldlevel 2)
+                (assert.is_same 2 (. vim.wo win :foldlevel)))))
+          (it "can update option value with string"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)]
+                (vim.cmd.new)
+                (wo! win :signcolumn :no)
+                (assert.is_same :no (. vim.wo win :signcolumn)))))
+          (it "can update option value with sequence"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)]
+                (vim.cmd.new)
+                (wo! win :colorcolumn [:80 :81 :82])
+                (assert.is_same "80,81,82" (. vim.wo win :colorcolumn)))))
+          (it "can update option value with kv-table"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)]
+                (vim.cmd.new)
+                (wo! win :listchars {:eol :a :tab :abc :space :a})
+                (assert.is_same "eol:a,tab:abc,space:a"
+                                (. vim.wo win :listchars)))))
+          (it "can update some option value with nil"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)]
+                (vim.cmd.new)
+                (wo! win :foldlevel nil)
+                (assert.is_same vim.go.foldlevel (. vim.wo win :foldlevel)))))
+          (it "can update some option value with symbol"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)
+                    new-val 2]
+                (vim.cmd.new)
+                (wo! win :foldlevel new-val)
+                (assert.is_same new-val (. vim.wo win :foldlevel)))))
+          (it "can update some option value with list"
+            (fn []
+              (let [win (vim.api.nvim_get_current_win)
+                    new-val 2
+                    return-val #new-val]
+                (vim.cmd.new)
+                (wo! win :foldlevel (return-val))
+                (assert.is_same new-val (. vim.wo win :foldlevel))))))))
     (describe :set+
       (fn []
         (it "appends option value of sequence"
