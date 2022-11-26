@@ -1,0 +1,40 @@
+{
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "angular",
+        "releaseRules": [
+          {
+            "type": "refactor",
+            "release": "patch"
+          },
+          {
+            "type": "style",
+            "release": "patch"
+          },
+          {
+            "type": "docs",
+            "scope": "readme",
+            "release": "patch"
+          },
+          {
+            "type": "docs",
+            "scope": "macros",
+            "release": "patch"
+          }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "successComment": false
+      }
+    ]
+  ]
+}
