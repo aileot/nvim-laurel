@@ -4,7 +4,6 @@ on:
   pull_request:
 jobs:
   test:
-    name: tests
     runs-on: ubuntu-20.04
     strategy:
       matrix:
