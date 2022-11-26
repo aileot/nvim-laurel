@@ -78,7 +78,6 @@ repo = "aileot/nvim-laurel"
 ```
 
 See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
-[Discussions][Discussions] would inspire you, too.
 
 ## Alternatives
 
@@ -91,4 +90,3 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 
 [Fennel]: https://github.com/bakpakin/Fennel
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
-[Discussions]: https://github.com/aileot/nvim-laurel/discussions/
