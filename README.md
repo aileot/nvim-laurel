@@ -3,23 +3,10 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![test](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg)](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml)
 
-nvim-laurel provides syntax sugar macros for Neovim.
+> A set of macros to write readable Neovim config, highly inspired by good old
+> Vim script
 
 ![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/200104542-629da3b9-41de-435c-b665-b609199a5fd4.png)
-
-## Motivation
-
-Neovim configuration powered by Fennel has the following advantages at least:
-
-- **Speed**: Fennel is as fast as Lua since Fennel codes are compiled to Lua, or
-  faster with effective macros.
-- **Syntax:** Fennel lets us compose in a more comfortable style with our great
-  legacies written in Vim script, i.e., we prefer `(vim.fn.foo#bar)` to
-  `vim.fn["foo#bar"]()`, right?
-- **Maintainability:** Fennel keeps our codes compact; everything is an
-  expression and returns value, and it is worth mentioning that we don't have to
-  write `function() return true end` but `#true`. That will enhance the
-  maintainability of our config files.
 
 ## Design
 
@@ -92,7 +79,6 @@ repo = "aileot/nvim-laurel"
 ```
 
 See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
-[Discussions][Discussions] would inspire you, too.
 
 ## Alternatives
 
@@ -105,4 +91,3 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 
 [Fennel]: https://github.com/bakpakin/Fennel
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
-[Discussions]: https://github.com/aileot/nvim-laurel/discussions/
