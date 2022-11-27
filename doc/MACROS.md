@@ -569,39 +569,33 @@ let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 
 ### Keymap
 
-- [`map!`](#map)
-- [`noremap!`](#noremap)
-- [`unmap!`](#unmap)
 - [`<Cmd>`](#Cmd)
 - [`<C-u>`](#C-u)
-- [`map-all!`](#map-all)
-- [`map-input!`](#map-input)
-- [`map-motion!`](#map-motion)
-- [`map-range!`](#map-range)
-- [`map-textobj!`](#map-textobj)
-- [`nmap!`](#nmap)
-- [`vmap!`](#vmap)
-- [`xmap!`](#xmap)
-- [`smap!`](#smap)
-- [`omap!`](#omap)
-- [`imap!`](#imap)
-- [`lmap!`](#lmap)
-- [`cmap!`](#cmap)
-- [`tmap!`](#tmap)
-- [`noremap-all!`](#noremap-all)
-- [`noremap-input!`](#noremap-input)
-- [`noremap-motion!`](#noremap-motion)
-- [`noremap-range!`](#noremap-range)
-- [`noremap-textobj!`](#noremap-textobj)
-- [`nnoremap!`](#nnoremap)
-- [`vnoremap!`](#vnoremap)
-- [`xnoremap!`](#xnoremap)
-- [`snoremap!`](#snoremap)
-- [`onoremap!`](#onoremap)
-- [`inoremap!`](#inoremap)
-- [`lnoremap!`](#lnoremap)
-- [`cnoremap!`](#cnoremap)
-- [`tnoremap!`](#tnoremap)
+
+|         | `vim.keymap.set`-like  | `vim.keymap.del`-like      |
+| ------- | ---------------------- | -------------------------- |
+| remap   | [`map!`](#map)         | [`unmap!`](#unmap)         |
+| noremap | [`noremap!`](#noremap) | (recursion doesn't matter) |
+
+|         | `n` Normal               | Visual/Select `v`        | Visual `x`               | Select `s`               |
+| ------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
+| remap   | [`nmap!`](#nmap)         | [`vmap!`](#vmap)         | [`xmap!`](#xmap)         | [`smap!`](#smap)         |
+| noremap | [`nnoremap!`](#nnoremap) | [`vnoremap!`](#vnoremap) | [`xnoremap!`](#xnoremap) | [`snoremap!`](#snoremap) |
+
+|         | Operator-pending `o`     | Insert `i`               | Lang-Arg `l`             | Command-line             | Terminal                 |
+| ------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
+| remap   | [`omap!`](#omap)         | [`imap!`](#imap)         | [`lmap!`](#lmap)         | [`cmap!`](#cmap)         | [`tmap!`](#tmap)         |
+| noremap | [`onoremap!`](#onoremap) | [`inoremap!`](#inoremap) | [`lnoremap!`](#lnoremap) | [`cnoremap!`](#cnoremap) | [`tnoremap!`](#tnoremap) |
+
+|         | All                            | Input `!`/`ic`                     |
+| ------- | ------------------------------ | ---------------------------------- |
+| remap   | [`map-all!`](#map-all)         | [`map-input!`](#map-input)         |
+| noremap | [`noremap-all!`](#noremap-all) | [`noremap-input!`](#noremap-input) |
+
+|         | Motion `nvo`/`nxo`                   | Range `nx`                         | Textobj `xo`                           |
+| ------- | ------------------------------------ | ---------------------------------- | -------------------------------------- |
+| remap   | [`map-motion!`](#map-motion)         | [`map-range!`](#map-range)         | [`map-textobj!`](#map-textobj)         |
+| noremap | [`noremap-motion!`](#noremap-motion) | [`noremap-range!`](#noremap-range) | [`noremap-textobj!`](#noremap-textobj) |
 
 #### `map!`
 
