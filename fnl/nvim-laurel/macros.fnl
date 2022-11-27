@@ -109,6 +109,12 @@
 
 ;; Specific Utils ///1
 
+(lambda deprecate [deprecated alternative version]
+  "Notify deprecation."
+  ;; Note: It's safer to wrap it in `vim.schedule`.
+  `(vim.schedule #(vim.deprecate ,deprecated ,alternative ,version :nvim-laurel
+                                 false)))
+
 (lambda error* [msg]
   "Throw error with prefix."
   (error (.. "[nvim-laurel] " msg)))
@@ -732,11 +738,11 @@
              (keymap/del-maps! ?bufnr :s lhs)])
         (map! [:n :o :x] extra-opts lhs rhs ?api-opts))))
 
-(lambda map-operator! [...]
+(lambda map-range! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode recursively.
   ```fennel
-  (map-operator! ?extra-opts lhs rhs ?api-opts)
-  (map-operator! lhs ?extra-opts rhs ?api-opts)
+  (map-range! ?extra-opts lhs rhs ?api-opts)
+  (map-range! lhs ?extra-opts rhs ?api-opts)
   ```
   @param modes string|string[]
   @param ?extra-opts bare-sequence
@@ -744,6 +750,12 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (map! [:n :x] ...))
+
+(lambda map-operator! [...]
+  "(Deprecated) Alias of `map-range!."
+  `(do
+     ,(deprecate :map-operator! :map-range! :undetermined)
+     ,(map-range! ...)))
 
 (lambda map-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
@@ -930,11 +942,11 @@
              (keymap/del-maps! ?bufnr :s lhs)])
         (noremap! [:n :o :x] extra-opts lhs rhs ?api-opts))))
 
-(lambda noremap-operator! [...]
+(lambda noremap-range! [...]
   "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
   ```fennel
-  (noremap-operator! ?extra-opts lhs rhs ?api-opts)
-  (noremap-operator! lhs ?extra-opts rhs ?api-opts)
+  (noremap-range! ?extra-opts lhs rhs ?api-opts)
+  (noremap-range! lhs ?extra-opts rhs ?api-opts)
   ```
   @param modes string|string[]
   @param ?extra-opts bare-sequence
@@ -942,6 +954,12 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (noremap! [:n :x] ...))
+
+(lambda noremap-operator! [...]
+  "(Deprecated) Alias of `noremap-range!`."
+  `(do
+     ,(deprecate :noremap-operator! :noremap-range! :undetermined)
+     ,(noremap-range! ...)))
 
 (lambda noremap-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
@@ -1374,6 +1392,7 @@
  : map-all!
  : map-input!
  : map-motion!
+ : map-range!
  : map-operator!
  : map-textobj!
  : nmap!
@@ -1388,6 +1407,7 @@
  : noremap-all!
  : noremap-input!
  : noremap-motion!
+ : noremap-range!
  : noremap-operator!
  : noremap-textobj!
  : nnoremap!

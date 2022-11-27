@@ -4,6 +4,7 @@
 - [Terminology](#Terminology)
 - [Macros](#Macros)
 - [Anti-Patterns](#Anti-Patterns)
+- [Deprecated](#Deprecated)
 
 ## CAUTION
 
@@ -576,7 +577,7 @@ let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 - [`map-all!`](#map-all)
 - [`map-input!`](#map-input)
 - [`map-motion!`](#map-motion)
-- [`map-operator!`](#map-operator)
+- [`map-range!`](#map-range)
 - [`map-textobj!`](#map-textobj)
 - [`nmap!`](#nmap)
 - [`vmap!`](#vmap)
@@ -590,7 +591,7 @@ let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 - [`noremap-all!`](#noremap-all)
 - [`noremap-input!`](#noremap-input)
 - [`noremap-motion!`](#noremap-motion)
-- [`noremap-operator!`](#noremap-operator)
+- [`noremap-range!`](#noremap-range)
 - [`noremap-textobj!`](#noremap-textobj)
 - [`nnoremap!`](#nnoremap)
 - [`vnoremap!`](#vnoremap)
@@ -725,13 +726,13 @@ mode.
 Note: This macro could delete mapping to `lhs` in Select mode for the
 performance. To avoid this, use `(map! [:n :o :x] ...)` instead.
 
-#### `map-operator!`
+#### `map-range!`
 
 Map `lhs` to `rhs` in Normal/Visual mode recursively.
 
 ```fennel
-(map-operator! ?extra-opts lhs rhs ?api-opts)
-(map-operator! lhs ?extra-opts rhs ?api-opts)
+(map-range! ?extra-opts lhs rhs ?api-opts)
+(map-range! lhs ?extra-opts rhs ?api-opts)
 ```
 
 #### `map-textobj!`
@@ -852,13 +853,13 @@ Same as [`map-motion!`](#map-motion), but non-recursively.
 (noremap-motion! lhs ?extra-opts rhs ?api-opts)
 ```
 
-#### `noremap-operator!`
+#### `noremap-range!`
 
-Same as [`map-operator!`](#map-operator), but non-recursively.
+Same as [`map-range!`](#map-range), but non-recursively.
 
 ```fennel
-(noremap-operator! ?extra-opts lhs rhs ?api-opts)
-(noremap-operator! lhs ?extra-opts rhs ?api-opts)
+(noremap-range! ?extra-opts lhs rhs ?api-opts)
+(noremap-range! lhs ?extra-opts rhs ?api-opts)
 ```
 
 #### `noremap-textobj!`
@@ -1135,6 +1136,11 @@ another anonymous function is meaningless in many cases.
 (autocmd! group events #(vim.schedule (fn []
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
+
+## Deprecated
+
+- `map-operator!`/`noremap-operator!`: Use
+  [`map-range!`](#map-range)/[`noremap-range!`](#noremap-range) instead.
 
 [set]: #setsetsetset-
 [setglobal]: #setglobalsetglobalsetglobalsetglobal-
