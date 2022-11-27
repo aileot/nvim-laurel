@@ -3,6 +3,7 @@
                 : nnoremap!
                 : unmap!
                 : smap!
+                : map-range!
                 : map-motion!
                 : <C-u>
                 : <Cmd>} :nvim-laurel.macros)
@@ -192,6 +193,15 @@
               (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
               (unmap! bufnr :n :lhs)
               (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))))
+    (describe :map-range!
+      (fn []
+        (it "maps lhs in Normal mode and Visual mode"
+          (fn []
+            (map-range! :lhs :rhs)
+            (assert.is_same :rhs (get-rhs :n :lhs))
+            (assert.is_same :rhs (get-rhs :x :lhs))
+            (assert.is_same :rhs (get-rhs :v :lhs))
+            (assert.is_nil (get-rhs :s :lhs))))))
     (describe :map-motion!
       (fn []
         (it "`unmap`s `smap` internally without errors"
