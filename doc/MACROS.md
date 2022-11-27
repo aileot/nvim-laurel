@@ -238,8 +238,8 @@ An alias of [`autocmd!`](#autocmd).
 | [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal^`][setglobal] | [`setglobal-`][setglobal] |
 | [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal^`][setlocal]   | [`setlocal-`][setlocal]   |
 | [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
-| [`bo!`][bo]               | NYI                       | NYI                       | NYI                       |
-| [`wo!`][wo]               | NYI                       | NYI                       | NYI                       |
+| [`bo!`][bo]               | --                        | --                        | --                        |
+| [`wo!`][wo]               | --                        | --                        | --                        |
 
 #### `set!`/`set+`/`set^`/`set-`
 
