@@ -55,7 +55,7 @@ For example,
 
 ### api-opts
 
-It is kv-table `{}` option for the api functions, `vim.api.nvim_foo`. Unless
+It is kv-table `{}` option for the api functions, `vim.api.nvim_foo()`. Unless
 otherwise noted, this option has the following features:
 
 - It only accepts the same key/value described in `api.txt`.
@@ -128,9 +128,9 @@ Create or get an augroup, or override an existing augroup.
 
   Note: Set `vim.fn.foobar`, or set `:foobar` to `callback` with `<command>` key
   in `extra-opts`, to call Vim script function `foobar` without table arg from
-  `nvim_create_autocmd`; instead, set `#(vim.fn.foobar $)` to call `foobar` with
-  the table arg.
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd`.
+  `nvim_create_autocmd()`; instead, set `#(vim.fn.foobar $)` to call `foobar`
+  with the table arg.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
 (augroup! :sample-augroup
@@ -215,14 +215,14 @@ c.f. [`augroup!`](#augroup), [`autocmd!`](#autocmd)
 Create an autocmd.
 
 ```fennel
-(autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd`.
+(autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd()`.
 (autocmd! name-or-id events ?pattern ?extra-opts callback ?api-opts)
 ```
 
 - `name-or-id`: (string|integer|nil) The autocmd group name or id to match
-  against. It is necessary unlike `vim.api.nvim_create_autocmd` unless this
-  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil` to
-  define `autocmd`s affiliated with no augroup.
+  against. It is necessary unlike `nvim_create_autocmd()` unless this `autocmd!`
+  macro is within either `augroup!` or `augroup+`. Set it to `nil` to define
+  `autocmd`s affiliated with no augroup.
 
 See [`augroup!`](#augroup) for the rest.
 
@@ -505,7 +505,7 @@ Aliases of [`setglobal!`][setglobal], [`setglobal+`][setglobal], and so on.
 
 #### `bo!`
 
-Set a buffer option value. `:h nvim_buf_set_option`.
+Set a buffer option value. `:h nvim_buf_set_option()`.
 
 ```fennel
 (bo! ?id name value)
@@ -537,7 +537,7 @@ call setbufvar(10, '&buftype', 'nofile')
 
 #### `wo!`
 
-Set a window option value. `:h nvim_win_set_option`.
+Set a window option value. `:h nvim_win_set_option()`.
 
 ```fennel
 (wo! ?id name value)
@@ -609,6 +609,8 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+  - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
+    option from `nvim_set_keymap()`.
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
     `expr` is set in `extra-opts`.
   - `<buffer>`: Map `lhs` in current buffer by itself.
@@ -624,7 +626,7 @@ Map `lhs` to `rhs` in `modes` recursively.
   as Lua function; otherwise, as Normal mode command execution.
 
   Note: Insert `<command>` key in `extra-opts` to set string via symbol.
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap`.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 #### `noremap!`
 
@@ -970,7 +972,7 @@ Create a user command.
   letter.
 - `command`: (string|function) Replacement command.
 - [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same as
-  `opts` for `nvim_create_user_command`.
+  `opts` for `nvim_create_user_command()`.
 
 ```fennel
 (command! :SayHello
@@ -1037,7 +1039,7 @@ Set a highlight group.
 
 - `?ns-id`: (number) Namespace id for this highlight `nvim_create_namespace()`.
 - `name`: (string) Highlight group name, e.g., "ErrorMsg".
-- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl`. As long as the
+- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as the
   keys are bare-strings, `cterm` attribute map can contain `fg`/`bg` instead of
   `ctermfg`/`ctermbg` key.
 
@@ -1081,7 +1083,7 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 
 - Fennel `list` returns the last value.
 - `pcall` returns `true` when the call succeeds without errors.
-- `nvim_create_autocmd` deletes itself when its callback function returns
+- `nvim_create_autocmd()` deletes itself when its callback function returns
   `true`.
 
 ##### Anti-Pattern
@@ -1113,8 +1115,8 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 #### Nested anonymous function in callback
 
 `$` in the outermost hash function represents the single table argument from
-`nvim_create_autocmd`; on the other hand, `$` in any hash functions included in
-another anonymous function is meaningless in many cases.
+`nvim_create_autocmd()`; on the other hand, `$` in any hash functions included
+in another anonymous function is meaningless in many cases.
 
 ##### Anti-Pattern
 

@@ -59,7 +59,13 @@
           #(let [modes [:n :t :o]]
              (noremap! modes :lhs :rhs)
              (each [_ mode (ipairs modes)]
-               (assert.is.same :rhs (get-rhs mode :lhs)))))))
+               (assert.is.same :rhs (get-rhs mode :lhs)))))
+        (it "maps recursively with `remap` key in `extra-opts`"
+          #(let [modes [:n :o :x]]
+             (noremap! modes [:remap] :lhs :rhs)
+             (each [_ m (ipairs modes)]
+               (let [{: noremap} (get-mapargs m :lhs)]
+                 (assert.is.same 0 noremap)))))))
     (describe :map!
       (fn []
         (it "maps lhs to rhs with `noremap` set to `false` represented by `1`"
