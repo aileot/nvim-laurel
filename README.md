@@ -3,8 +3,8 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![test](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg)](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml)
 
-> A set of macros to write readable Neovim config, highly inspired by good old
-> Vim script
+> A set of macros to write readable Neovim config, highly inspired by the Lua
+> modules built in Neovim and by good old Vim script
 
 ![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/200104542-629da3b9-41de-435c-b665-b609199a5fd4.png)
 
@@ -80,6 +80,68 @@ repo = "aileot/nvim-laurel"
 
 See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 
+### Macro List
+
+- [Autocmd](./doc/MACROS.md#Autocmd)
+  - [`augroup!`](./doc/MACROS.md#augroup)
+  - [`augroup+`](./doc/MACROS.md#augroup-1)
+  - [`autocmd!`](./doc/MACROS.md#autocmd)
+  - [`au!`](./doc/MACROS.md#au)
+
+- [Variable](./doc/MACROS.md#Variable)
+  - [`g!`](./doc/MACROS.md#g)
+  - [`b!`](./doc/MACROS.md#b)
+  - [`w!`](./doc/MACROS.md#w)
+  - [`t!`](./doc/MACROS.md#t)
+  - [`v!`](./doc/MACROS.md#v)
+  - [`env!`](./doc/MACROS.md#env)
+
+- [Option](./doc/MACROS.md#Option)
+
+| Set (`!`)                 | Append (`+`)              | Prepend (`^`)             | Remove (`-`)              |
+| :------------------------ | :------------------------ | :------------------------ | :------------------------ |
+| [`set!`][set]             | [`set+`][set]             | [`set^`][set]             | [`set-`][set]             |
+| [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal^`][setglobal] | [`setglobal-`][setglobal] |
+| [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal^`][setlocal]   | [`setlocal-`][setlocal]   |
+| [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
+| [`bo!`][bo]               | --                        | --                        | --                        |
+| [`wo!`][wo]               | --                        | --                        | --                        |
+
+- [Keymap](./doc/MACROS.md#Keymap)
+  - [`<Cmd>`](./doc/MACROS.md#Cmd)
+  - [`<C-u>`](./doc/MACROS.md#C-u)
+
+|         | `vim.keymap.set`-like                 | `vim.keymap.del`-like             |
+| ------- | ------------------------------------- | --------------------------------- |
+| remap   | [`map!`](./doc/MACROS.md#map)         | [`unmap!`](./doc/MACROS.md#unmap) |
+| noremap | [`noremap!`](./doc/MACROS.md#noremap) | (recursion doesn't matter)        |
+
+|         | `n` Normal                              | Visual/Select `v`                       | Visual `x`                              | Select `s`                              |
+| ------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- |
+| remap   | [`nmap!`](./doc/MACROS.md#nmap)         | [`vmap!`](./doc/MACROS.md#vmap)         | [`xmap!`](./doc/MACROS.md#xmap)         | [`smap!`](./doc/MACROS.md#smap)         |
+| noremap | [`nnoremap!`](./doc/MACROS.md#nnoremap) | [`vnoremap!`](./doc/MACROS.md#vnoremap) | [`xnoremap!`](./doc/MACROS.md#xnoremap) | [`snoremap!`](./doc/MACROS.md#snoremap) |
+
+|         | Operator-pending `o`                    | Insert `i`                              | Lang-Arg `l`                            | Command-line                            | Terminal                                |
+| ------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- |
+| remap   | [`omap!`](./doc/MACROS.md#omap)         | [`imap!`](./doc/MACROS.md#imap)         | [`lmap!`](./doc/MACROS.md#lmap)         | [`cmap!`](./doc/MACROS.md#cmap)         | [`tmap!`](./doc/MACROS.md#tmap)         |
+| noremap | [`onoremap!`](./doc/MACROS.md#onoremap) | [`inoremap!`](./doc/MACROS.md#inoremap) | [`lnoremap!`](./doc/MACROS.md#lnoremap) | [`cnoremap!`](./doc/MACROS.md#cnoremap) | [`tnoremap!`](./doc/MACROS.md#tnoremap) |
+
+|         | All                                           | Input `!`/`ic`                                    |
+| ------- | --------------------------------------------- | ------------------------------------------------- |
+| remap   | [`map-all!`](./doc/MACROS.md#map-all)         | [`map-input!`](./doc/MACROS.md#map-input)         |
+| noremap | [`noremap-all!`](./doc/MACROS.md#noremap-all) | [`noremap-input!`](./doc/MACROS.md#noremap-input) |
+
+|         | Motion `nvo`/`nxo`                                  | Range `nx`                                        | Textobj `xo`                                          |
+| ------- | --------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| remap   | [`map-motion!`](./doc/MACROS.md#map-motion)         | [`map-range!`](./doc/MACROS.md#map-range)         | [`map-textobj!`](./doc/MACROS.md#map-textobj)         |
+| noremap | [`noremap-motion!`](./doc/MACROS.md#noremap-motion) | [`noremap-range!`](./doc/MACROS.md#noremap-range) | [`noremap-textobj!`](./doc/MACROS.md#noremap-textobj) |
+
+- [Others](./doc/MACROS.md#Others)
+  - [`command!`](./doc/MACROS.md#command)
+  - [`feedkeys!`](./doc/MACROS.md#feedkeys)
+  - [`highlight!`](./doc/MACROS.md#highlight)
+  - [`hi!`](./doc/MACROS.md#hi)
+
 ## Alternatives
 
 - [aniseed](https://github.com/Olical/aniseed)
@@ -91,3 +153,9 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 
 [Fennel]: https://github.com/bakpakin/Fennel
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
+[set]: ./doc/MACROS.md#setsetsetset-
+[setglobal]: ./doc/MACROS.md#setglobalsetglobalsetglobalsetglobal-
+[setlocal]: ./doc/MACROS.md#setlocalsetlocalsetlocalsetlocal-
+[go]: ./doc/MACROS.md#gogogogo-
+[wo]: ./doc/MACROS.md#wo
+[bo]: ./doc/MACROS.md#bo
