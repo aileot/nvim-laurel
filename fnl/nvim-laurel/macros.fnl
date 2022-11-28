@@ -211,18 +211,12 @@
 (lambda option/modify [api-opts name ?val ?flag]
   (let [name (if (str? name) (name:lower) name)
         interface (match api-opts
-                    {:scope nil :buf nil :win nil}
-                    `vim.opt
-                    {:scope :local}
-                    `vim.opt_local
-                    {:scope :global}
-                    `vim.opt_global
-                    {: buf :win nil}
-                    (if (= 0 buf) `vim.bo `(. vim.bo ,buf))
-                    {: win :buf nil}
-                    (if (= 0 win) `vim.wo `(. vim.wo ,win))
-                    _
-                    (error* (.. "invalid api-opts: " (view api-opts))))
+                    {:scope nil :buf nil :win nil} `vim.opt
+                    {:scope :local} `vim.opt_local
+                    {:scope :global} `vim.opt_global
+                    {: buf :win nil} (if (= 0 buf) `vim.bo `(. vim.bo ,buf))
+                    {: win :buf nil} (if (= 0 win) `vim.wo `(. vim.wo ,win))
+                    _ (error* (.. "invalid api-opts: " (view api-opts))))
         opt-obj `(. ,interface ,name)
         ?val (if (and (contains? [:formatoptions :shortmess] name)
                       ;; Convert sequence of table values into a sequence of
