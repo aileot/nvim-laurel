@@ -609,6 +609,8 @@ Map `lhs` to `rhs` in `modes` recursively.
 - `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
   "x", …) or "!" for `:map!`, or empty string for `:map`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+  - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
+    option from `nvim_set_keymap()`.
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
     `expr` is set in `extra-opts`.
   - `<buffer>`: Map `lhs` in current buffer by itself.
