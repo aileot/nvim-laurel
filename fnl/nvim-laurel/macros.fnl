@@ -607,7 +607,10 @@
                                                        ,api-opts)
                          `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))]
     (if (str? modes)
-        (set-keymap modes)
+        (if (<= (length modes) 1)
+            (set-keymap modes)
+            (icollect [m (modes:gmatch ".")]
+              (set-keymap m)))
         (hidden-in-compile-time? modes)
         ;; Note: With `vim.keymap.set` instead, it would be hard to deal
         ;; with `remap` key.
