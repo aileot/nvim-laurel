@@ -68,24 +68,24 @@
                  (assert.is.same 0 noremap)))))))
     (describe :map!
       (fn []
-        (it "maps lhs to rhs with `noremap` set to `false` represented by `1`"
+        (it "maps non-recursively by default"
           #(let [mode :n
                  modes [:n :o :t]]
              (map! mode :lhs :rhs)
              (map! modes :lhs :rhs)
              (let [{: noremap} (get-mapargs mode :lhs)]
-               (assert.is.same 0 noremap))
+               (assert.is.same 1 noremap))
              (each [_ m (ipairs modes)]
                (let [{: noremap} (get-mapargs m :lhs)]
-                 (assert.is.same 0 noremap)))))
-        (it "is also available to non-recursive mappings"
+                 (assert.is.same 1 noremap)))))
+        (it "is also available to recursive mappings"
           #(let [mode :n]
-             (map! :o [:noremap] :lhs :rhs)
-             (map! mode [:noremap] :lhs :rhs)
+             (map! :o [:remap] :lhs :rhs)
+             (map! mode [:remap] :lhs :rhs)
              (let [{: noremap} (get-mapargs :o :lhs)]
-               (assert.is.same 1 noremap))
+               (assert.is.same 0 noremap))
              (let [{: noremap} (get-mapargs mode :lhs)]
-               (assert.is.same 1 noremap))))
+               (assert.is.same 0 noremap))))
         (it "gives priority to `api-opts`"
           #(let [mode :n
                  modes [:i :c :t]

@@ -636,7 +636,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (let [default-opts {}
+  (let [default-opts {:noremap true}
         (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
     (merge-default-kv-table! default-opts extra-opts)
     (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
