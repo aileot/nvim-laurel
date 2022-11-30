@@ -100,10 +100,15 @@
              (each [_ m (ipairs modes)]
                (let [{: noremap} (get-mapargs m :lhs)]
                  (assert.is.same 1 noremap)))))
-        (it "maps multiple mode mappings with a string at once"
+        (it "maps multiple mode mappings with a sequence at once"
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)
              (each [_ mode (ipairs modes)]
+               (assert.is.same :rhs (get-rhs mode :lhs)))))
+        (it "maps multiple mode mappings with a bare-string at once"
+          #(do
+             (noremap! :nct :lhs :rhs)
+             (each [mode (-> :nct (: :gmatch "."))]
                (assert.is.same :rhs (get-rhs mode :lhs)))))
         (it "enables `replace_keycodes` with `expr` in `extra-opts`"
           #(let [modes [:n]]
