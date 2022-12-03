@@ -21,10 +21,7 @@ script_
 
 ## Design
 
-- **Fast:** Each macro is expanded to a few nvim API functions in principle. A
-  typical exception: the optimal results with fewer overheads, but messy, would
-  step aside at runtime in favor of small wrappers with a few overheads, but
-  concise.
+- **Fast:** Each macro is expanded to a few nvim API functions in principle.
 - **Intuitive:** Most of the macros imitates the corresponding Vim script
   command or function in syntax: by and large, you can write as if functions
   replaced Ex commands, preceded by left parens `(`. In addition, each macro is
