@@ -46,7 +46,12 @@
         ;; sequence (wo)
         :colorcolumn "+1,+2,+3"
         ;; kv-table (wo)
-        :listchars "eol:x,tab:xy,space:x"})
+        ;; kv-table
+        :listchars "eol:x,tab:xy,space:x"
+        ;; shortmess
+        :shortmess :fiw
+        ;; formatoptions
+        :formatoptions :12b})
 
 (fn reset-context []
   "Reset test context."
@@ -304,7 +309,25 @@
               (assert.is_false (get-lo :wrap))
               (let [name :wrap]
                 (setlocal! name)
-                (assert.is_true (get-lo name))))))))
+                (assert.is_true (get-lo name)))))))
+      (describe "for &l:formatoptions"
+        (fn []
+          (it "can append flags in sequence"
+            ;; Note: In truth, the formatoptions flag order doesn't matter.
+            (fn []
+              (setlocal! :formatOptions+ [:a :r :B])
+              (assert.is_same {:1 true :2 true :b true :a true :r true :B true}
+                              (get-lo :formatoptions))))
+          (it "can prepend flags in sequence"
+            ;; Note: In truth, the formatoptions flag order doesn't matter.
+            (fn []
+              (setlocal! :formatOptions^ [:a :r :B])
+              (assert.is_same {:1 true :2 true :b true :a true :r true :B true}
+                              (get-lo :formatoptions))))
+          (it "can remove flags in sequence"
+            (fn []
+              (setlocal! :formatOptions- [:b :2])
+              (assert.is_same {:1 true} (get-lo :formatoptions)))))))
     (describe :setglobal!
       (fn []
         (it "can update option value with boolean"
@@ -409,6 +432,24 @@
               (reset-context)
               (setglobal! :listchars- [:eol :tab])
               (assert.is_same vals (get-o-lo-go :listchars))))))
+      (describe "for &l:shortmess"
+        (fn []
+          (it "can append flags in sequence"
+            ;; Note: In truth, the shortmess flag order doesn't matter.
+            (fn []
+              (setglobal! :shortMess+ [:m :n :r])
+              (assert.is_same {:f true :i true :w true :m true :n true :r true}
+                              (get-lo :shortmess))))
+          (it "can prepend flags in sequence"
+            ;; Note: In truth, the shortmess flag order doesn't matter.
+            (fn []
+              (setglobal! :shortMess^ [:m :n :r])
+              (assert.is_same {:f true :i true :w true :m true :n true :r true}
+                              (get-lo :shortmess))))
+          (it "can remove flags in sequence"
+            (fn []
+              (setglobal! :shortMess- [:i :f])
+              (assert.is_same {:w true} (get-lo :shortmess))))))
       (describe "with no value"
         (fn []
           (it "updates option value to `true`"
