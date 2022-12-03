@@ -1,3 +1,5 @@
+<div align="center">
+
 # nvim-laurel 🌿
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -7,6 +9,8 @@
 > modules built in Neovim and by good old Vim script
 
 ![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
+
+</div>
 
 ## Design
 
