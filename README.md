@@ -11,7 +11,7 @@ script_
 
 ![image/nvim-laurel-demo]
 
-[badge/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg?style=flat-square
+[badge/test]: https://img.shields.io/github/workflow/status/aileot/nvim-laurel/Test?label=Tests&logo=github&style=flat-square
 [badge/license]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
 [workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
 [path/to/license]: ./LICENSE
