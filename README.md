@@ -12,7 +12,7 @@ script_
 ![image/nvim-laurel-demo]
 
 [badge/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg
-[badge/license]: https://img.shields.io/badge/license-MIT-blue.svg
+[badge/license]: https://img.shields.io/badge/License-MIT-blue.svg
 [workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
 [path/to/license]: ./LICENSE
 [image/nvim-laurel-demo]: https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png
