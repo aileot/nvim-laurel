@@ -2,12 +2,12 @@
 
 # nvim-laurel 🌿
 
-[![badge/license]][path/to/license]
-[![badge/test]][workflow/test]
-
 _A set of macros to write Neovim config_\
 _highly inspired by the builtin Nvim Lua standard library and by good old Vim
 script_
+
+[![badge/license]][path/to/license]
+[![badge/test]][workflow/test]
 
 ![image/nvim-laurel-demo]
 
