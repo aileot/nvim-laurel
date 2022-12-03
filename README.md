@@ -22,14 +22,14 @@ script_
 ## Design
 
 - **Fast:** Each macro is expanded to a few nvim API functions in principle.
+- **Clean:** nvim-laurel provides no macros unrelated to Neovim stuff: such
+  general macros or functions as `nil?`, `if-not`, `++`, ..., won't be exposed.
 - **Intuitive:** Most of the macros imitates the corresponding Vim script
   command or function in syntax: by and large, you can write as if functions
   replaced Ex commands, preceded by left parens `(`. In addition, each macro is
   also a replacement for the corresponding nvim API function, where meaningless
   arguments for end-users are omittable, e.g., `(augroup! :name)` replaces
   `(vim.api.nvim_create_augroup :name {})`.
-- **Clean:** nvim-laurel provides no macros unrelated to Neovim stuff: such
-  general macros or functions as `nil?`, `if-not`, `++`, ..., won't be exposed.
 
 ## Requirements
 
