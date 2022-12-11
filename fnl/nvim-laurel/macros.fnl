@@ -945,10 +945,7 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (deprecate :map-all! "`map!` or your own wrapper" :undetermined ;
-             (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-               [(map! "" extra-opts lhs rhs ?api-opts)
-                (map! "!" extra-opts lhs rhs ?api-opts)
-                (unpack (map! [:l :t] extra-opts lhs rhs ?api-opts))])))
+             (map! ["" "!" :l :t] ...)))
 
 (lambda map-input! [...]
   "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode recursively.
@@ -1177,10 +1174,7 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (deprecate :noremap-all! "`map!` or your own wrapper" :undetermined ;
-             (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-               [(noremap! "" extra-opts lhs rhs ?api-opts)]
-               (noremap! "!" extra-opts lhs rhs ?api-opts)
-               (unpack (noremap! [:l :t] extra-opts lhs rhs ?api-opts)))))
+             (noremap! ["" "!" :l :t] ...)))
 
 (lambda noremap-input! [...]
   "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
