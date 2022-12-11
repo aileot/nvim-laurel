@@ -2,7 +2,7 @@
 
 # nvim-laurel 🌿
 
-_A set of macros to write Neovim config_\
+_A set of macros for Neovim config_\
 _highly inspired by the builtin Nvim Lua standard library and by good old Vim
 script_
 
