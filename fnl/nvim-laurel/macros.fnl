@@ -89,6 +89,11 @@
 
 ;; Additional predicates ///2
 
+(fn quoted? [x]
+  "Check if `x` is a list which begins with `quote`."
+  (and (list? x) ;
+       (= `quote (first x))))
+
 (fn anonymous-function? [x]
   "(Compile time) Check if type of `x` is anonymous function.
   @param x any
