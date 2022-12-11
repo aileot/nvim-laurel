@@ -569,12 +569,10 @@ call setwinvar(10, '&signcolumn', 'no')
 
 ### Keymap
 
+- [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
+- [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
 - [`<Cmd>`](#Cmd)
 - [`<C-u>`](#C-u)
-
-| `vim.keymap.set`-like | `vim.keymap.del`-like |
-| --------------------- | --------------------- |
-| [`map!`](#map)        | [`unmap!`](#unmap)    |
 
 #### `map!`
 

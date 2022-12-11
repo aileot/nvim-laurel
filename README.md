@@ -108,12 +108,10 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 | [`wo!`][wo]               | --                        | --                        | --                        |
 
 - [Keymap](./doc/MACROS.md#Keymap)
+  - [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
   - [`<Cmd>`](./doc/MACROS.md#Cmd)
   - [`<C-u>`](./doc/MACROS.md#C-u)
-
-| `vim.keymap.set`-like         | `vim.keymap.del`-like             |
-| ----------------------------- | --------------------------------- |
-| [`map!`](./doc/MACROS.md#map) | [`unmap!`](./doc/MACROS.md#unmap) |
 
 - [Others](./doc/MACROS.md#Others)
   - [`command!`](./doc/MACROS.md#command)
