@@ -6,7 +6,7 @@
 > A set of macros to write readable Neovim config, highly inspired by the Lua
 > modules built in Neovim and by good old Vim script
 
-![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/200104542-629da3b9-41de-435c-b665-b609199a5fd4.png)
+![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
 
 ## Design
 
