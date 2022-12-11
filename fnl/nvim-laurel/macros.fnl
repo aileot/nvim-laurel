@@ -1247,8 +1247,7 @@
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
          ,(icollect [_ args (ipairs [...])]
             (let [au-args (if (and (list? args)
-                                   (contains? [`au! `autocmd!]
-                                              (first args)))
+                                   (contains? [`au! `autocmd!] (first args)))
                               (slice args 2)
                               (sequence? args)
                               args
