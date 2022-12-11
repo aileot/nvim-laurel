@@ -536,7 +536,7 @@
                     (error* "cannot set both <command>/ex and <callback>/cb."))
                   (if (or extra-opts.<command> extra-opts.ex) raw-rhs
                       (or extra-opts.<callback> extra-opts.cb ;
-                          (sym? raw-rhs) ;
+                          (quoted? raw-rhs) ;
                           (anonymous-function? raw-rhs)) ;
                       (do
                         (set extra-opts.callback raw-rhs)
