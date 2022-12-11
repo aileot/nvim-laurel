@@ -48,24 +48,6 @@
                      (each [_ mode (ipairs all-modes)]
                        (pcall vim.api.nvim_del_keymap mode :lhs)
                        (assert.is_nil (get-rhs mode :lhs))))))
-    (describe :noremap!
-      (fn []
-        (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
-          #(let [mode :n]
-             (noremap! mode :lhs :rhs)
-             (let [{: noremap} (get-mapargs mode :lhs)]
-               (assert.is.same 1 noremap))))
-        (it "maps multiple mode mappings with sequence at once"
-          #(let [modes [:n :t :o]]
-             (noremap! modes :lhs :rhs)
-             (each [_ mode (ipairs modes)]
-               (assert.is.same :rhs (get-rhs mode :lhs)))))
-        (it "maps recursively with `remap` key in `extra-opts`"
-          #(let [modes [:n :o :x]]
-             (noremap! modes [:remap] :lhs :rhs)
-             (each [_ m (ipairs modes)]
-               (let [{: noremap} (get-mapargs m :lhs)]
-                 (assert.is.same 0 noremap)))))))
     (describe :map!
       (fn []
         (it "maps non-recursively by default"
@@ -120,6 +102,52 @@
              (map! modes [:expr :literal] :lhs :rhs)
              (let [{: replace_keycodes} (get-mapargs :n :lhs)]
                (assert.is_nil replace_keycodes))))))
+    (describe :unmap!
+      (fn []
+        (it "`unmap`s key"
+          (fn []
+            (nnoremap! :lhs :rhs)
+            (assert.is.same :rhs (get-rhs :n :lhs))
+            (unmap! :n :lhs)
+            (assert.is_nil (get-rhs :n :lhs))))
+        (it "can unmap buffer local key"
+          (fn []
+            (let [bufnr (vim.api.nvim_get_current_buf)]
+              (nnoremap! [:<buffer>] :lhs :rhs)
+              (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))
+              (unmap! 0 :n :lhs)
+              (assert.is_nil (buf-get-rhs 0 :n :lhs))
+              (nnoremap! [:buffer bufnr] :lhs :rhs)
+              (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
+              (unmap! bufnr :n :lhs)
+              (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))))
+    (describe :<Cmd>/<C-u>
+      (fn []
+        (it "is set to rhs as a string"
+          (fn []
+            (assert.has_no.errors #(nnoremap! :lhs (<Cmd> "Do something")))
+            (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
+            (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs
+                                              (<C-u> "Do something")))
+            (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))))
+    (describe :noremap!
+      (fn []
+        (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
+          #(let [mode :n]
+             (noremap! mode :lhs :rhs)
+             (let [{: noremap} (get-mapargs mode :lhs)]
+               (assert.is.same 1 noremap))))
+        (it "maps multiple mode mappings with sequence at once"
+          #(let [modes [:n :t :o]]
+             (noremap! modes :lhs :rhs)
+             (each [_ mode (ipairs modes)]
+               (assert.is.same :rhs (get-rhs mode :lhs)))))
+        (it "maps recursively with `remap` key in `extra-opts`"
+          #(let [modes [:n :o :x]]
+             (noremap! modes [:remap] :lhs :rhs)
+             (each [_ m (ipairs modes)]
+               (let [{: noremap} (get-mapargs m :lhs)]
+                 (assert.is.same 0 noremap)))))))
     (describe :nnoremap!
       (fn []
         (it "can include extra-opts in either first or second arg"
@@ -185,25 +213,6 @@
             (nnoremap! :lhs [:expr :literal] :rhs)
             (let [{: replace_keycodes} (get-mapargs :n :lhs)]
               (assert.is_nil replace_keycodes))))))
-    (describe :unmap!
-      (fn []
-        (it "`unmap`s key"
-          (fn []
-            (nnoremap! :lhs :rhs)
-            (assert.is.same :rhs (get-rhs :n :lhs))
-            (unmap! :n :lhs)
-            (assert.is_nil (get-rhs :n :lhs))))
-        (it "can unmap buffer local key"
-          (fn []
-            (let [bufnr (vim.api.nvim_get_current_buf)]
-              (nnoremap! [:<buffer>] :lhs :rhs)
-              (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))
-              (unmap! 0 :n :lhs)
-              (assert.is_nil (buf-get-rhs 0 :n :lhs))
-              (nnoremap! [:buffer bufnr] :lhs :rhs)
-              (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
-              (unmap! bufnr :n :lhs)
-              (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))))
     (describe :map-range!
       (fn []
         (it "maps lhs in Normal mode and Visual mode"
@@ -241,13 +250,4 @@
              (assert.is.same :new (get-rhs :s :<Esc>))
              (assert.is.same :new (get-rhs :s :<C-F>))
              (assert.is.same :new (get-rhs :s :<k9>))
-             (assert.is_nil (get-rhs :s :<S-f>)))))
-      (describe :<Cmd>/<C-u>
-        (fn []
-          (it "is set to rhs as a string"
-            (fn []
-              (assert.has_no.errors #(nnoremap! :lhs (<Cmd> "Do something")))
-              (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
-              (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs
-                                                (<C-u> "Do something")))
-              (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs)))))))))
+             (assert.is_nil (get-rhs :s :<S-f>))))))))
