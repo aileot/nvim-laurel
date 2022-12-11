@@ -1208,7 +1208,7 @@
         (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
-                (sym? callback) ;
+                (quoted? callback) ;
                 (anonymous-function? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
             ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
