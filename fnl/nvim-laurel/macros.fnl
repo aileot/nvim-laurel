@@ -87,17 +87,6 @@
     (fcollect [i first last]
       (. xs i))))
 
-(lambda first-symbol [x]
-  "Return the first symbol in list `x`
-  @param x list
-  @return string"
-  ;; TODO: Check if `x` is list.
-  ;; (assert-compile (or (list? x) (table? x))
-  ;;                 (.. "expected list or table, got " (type x)) x)
-  (let [first-item (first x)]
-    (if (str? first-item) first-item ;
-        (first-symbol first-item))))
-
 ;; Additional predicates ///2
 
 (fn anonymous-function? [x]
