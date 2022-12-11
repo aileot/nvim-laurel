@@ -105,7 +105,7 @@
   @param x any
   @return boolean"
   (and (list? x) ;
-       (contains? [:fn :hashfn :lambda :partial] (first-symbol x))))
+       (contains? [`fn `hashfn `lambda `partial] (first x))))
 
 ;; Specific Utils ///1
 
@@ -1247,8 +1247,8 @@
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
          ,(icollect [_ args (ipairs [...])]
             (let [au-args (if (and (list? args)
-                                   (contains? [:au! :autocmd!]
-                                              (first-symbol args)))
+                                   (contains? [`au! `autocmd!]
+                                              (first args)))
                               (slice args 2)
                               (sequence? args)
                               args
