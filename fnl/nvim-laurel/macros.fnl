@@ -98,11 +98,20 @@
 
 ;; Specific Utils ///1
 
-(lambda deprecate [deprecated alternative version]
-  "Notify deprecation."
-  ;; Note: It's safer to wrap it in `vim.schedule`.
-  `(vim.schedule #(vim.deprecate ,deprecated ,alternative ,version :nvim-laurel
-                                 false)))
+(lambda deprecate [deprecated alternative version compatible]
+  "Notify deprecation.
+  The message format:
+  \"{deprecated} is deprecated, use {alternative} instead. See :h deprecated
+  This function will be removed in nvim-laurel version {version}\"
+  @param deprecated string Deprecated target
+  @param alternative string Suggestion to reproduce previous UX
+  @param version string Version to drop the compatibility
+  @param compatible any Some calculation to keep the compatibility"
+  `(do
+     ,compatible
+     ;; Note: It's safer to wrap it in `vim.schedule`.
+     (vim.schedule #(vim.deprecate ,deprecated ,alternative ,version
+                                   :nvim-laurel false))))
 
 (lambda error* [msg]
   "Throw error with prefix."
@@ -991,9 +1000,8 @@
 
 (lambda map-operator! [...]
   "(Deprecated) Alias of `map-range!."
-  `(do
-     ,(deprecate :map-operator! :map-range! :undetermined)
-     ,(map-range! ...)))
+  (deprecate :map-operator! :map-range! :undetermined ;
+             (map-range! ...)))
 
 (lambda map-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
@@ -1211,9 +1219,8 @@
 
 (lambda noremap-operator! [...]
   "(Deprecated) Alias of `noremap-range!`."
-  `(do
-     ,(deprecate :noremap-operator! :noremap-range! :undetermined)
-     ,(noremap-range! ...)))
+  (deprecate :noremap-operator! :noremap-range! :undetermined
+             (noremap-range! ...)))
 
 (lambda noremap-textobj! [...]
   "Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
