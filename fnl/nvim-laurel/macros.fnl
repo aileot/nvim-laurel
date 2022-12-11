@@ -641,22 +641,6 @@
     (merge-default-kv-table! default-opts extra-opts)
     (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
 
-(lambda noremap! [modes ...]
-  "Map `lhs` to `rhs` in `modes` non-recursively.
-  ```fennel
-  (noremap! modes ?extra-opts lhs rhs ?api-opts)
-  (noremap! modes lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (let [default-opts {:noremap true}
-        (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-    (merge-default-kv-table! default-opts extra-opts)
-    (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
-
 (lambda <C-u> [x]
   "Return \":<C-u>`x`<CR>\"
   @param x string
@@ -672,414 +656,6 @@
   (if (str? x)
       (.. :<Cmd> x :<CR>)
       `(.. :<Cmd> ,x :<CR>)))
-
-;; Wrapper ///3
-
-(lambda map-all! [...]
-  "Map `lhs` to `rhs` in all modes recursively.
-  ```fennel
-  (map-all! ?extra-opts lhs rhs ?api-opts)
-  (map-all! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-    [(map! "" extra-opts lhs rhs ?api-opts)
-     (map! "!" extra-opts lhs rhs ?api-opts)
-     (unpack (map! [:l :t] extra-opts lhs rhs ?api-opts))]))
-
-(lambda map-input! [...]
-  "Map `lhs` to `rhs` in Insert/Command-line mode recursively.
-  ```fennel
-  (map-input! ?extra-opts lhs rhs ?api-opts)
-  (map-input! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! "!" ...))
-
-(lambda map-motion! [...]
-  "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
-  recursively.
-  ```fennel
-  (map-motion! ?extra-opts lhs rhs ?api-opts)
-  (map-motion! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table
-    Note: This macro could `unmap` `lhs` in Select mode for the performance.
-  To avoid this, use `(map! [:n :o :x] ...)` instead."
-  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
-        ?bufnr extra-opts.buffer]
-    (if (str? lhs)
-        (if (keymap/invisible-key? lhs)
-            (map! "" extra-opts lhs rhs ?api-opts)
-            [(map! "" extra-opts lhs rhs ?api-opts)
-             (keymap/del-maps! ?bufnr :s lhs)])
-        (map! [:n :o :x] extra-opts lhs rhs ?api-opts))))
-
-(lambda map-range! [...]
-  "Map `lhs` to `rhs` in Normal/Visual mode recursively.
-  ```fennel
-  (map-range! ?extra-opts lhs rhs ?api-opts)
-  (map-range! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! [:n :x] ...))
-
-(lambda map-operator! [...]
-  "(Deprecated) Alias of `map-range!."
-  `(do
-     ,(deprecate :map-operator! :map-range! :undetermined)
-     ,(map-range! ...)))
-
-(lambda map-textobj! [...]
-  "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
-  ```fennel
-  (map-textobj! ?extra-opts lhs rhs ?api-opts)
-  (map-textobj! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! [:o :x] ...))
-
-(lambda nmap! [...]
-  "Map `lhs` to `rhs` in Normal mode recursively.
-  ```fennel
-  (nmap! ?extra-opts lhs rhs ?api-opts)
-  (nmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :n ...))
-
-(lambda vmap! [...]
-  "Map `lhs` to `rhs` in Visual/Select mode recursively.
-  ```fennel
-  (vmap! ?extra-opts lhs rhs ?api-opts)
-  (vmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :v ...))
-
-(lambda xmap! [...]
-  "Map `lhs` to `rhs` in Visual mode recursively.
-  ```fennel
-  (xmap! ?extra-opts lhs rhs ?api-opts)
-  (xmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :x ...))
-
-(lambda smap! [...]
-  "Map `lhs` to `rhs` in Select mode recursively.
-  ```fennel
-  (smap! ?extra-opts lhs rhs ?api-opts)
-  (smap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :s ...))
-
-(lambda omap! [...]
-  "Map `lhs` to `rhs` in Operator-pending mode recursively.
-  ```fennel
-  (omap! ?extra-opts lhs rhs ?api-opts)
-  (omap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :o ...))
-
-(lambda imap! [...]
-  "Map `lhs` to `rhs` in Insert mode recursively.
-  ```fennel
-  (imap! ?extra-opts lhs rhs ?api-opts)
-  (imap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :i ...))
-
-(lambda lmap! [...]
-  "Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
-  `:h language-mapping` for the details.
-  ```fennel
-  (lmap! ?extra-opts lhs rhs ?api-opts)
-  (lmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :l ...))
-
-(lambda cmap! [...]
-  "Map `lhs` to `rhs` in Command-line mode recursively.
-  ```fennel
-  (cmap! ?extra-opts lhs rhs ?api-opts)
-  (cmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :c ...))
-
-(lambda tmap! [...]
-  "Map `lhs` to `rhs` in Terminal mode recursively.
-  ```fennel
-  (tmap! ?extra-opts lhs rhs ?api-opts)
-  (tmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (map! :t ...))
-
-(lambda noremap-all! [...]
-  "Map `lhs` to `rhs` in all modes non-recursively.
-  ```fennel
-  (noremap-all! ?extra-opts lhs rhs ?api-opts)
-  (noremap-all! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-    [(noremap! "" extra-opts lhs rhs ?api-opts)
-     (noremap! "!" extra-opts lhs rhs ?api-opts)
-     (unpack (noremap! [:l :t] extra-opts lhs rhs ?api-opts))]))
-
-(lambda noremap-input! [...]
-  "Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
-  ```fennel
-  (noremap-input! ?extra-opts lhs rhs ?api-opts)
-  (noremap-input! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! "!" ...))
-
-(lambda noremap-motion! [...]
-  "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
-  non-recursively.
-  ```fennel
-  (noremap-motion! ?extra-opts lhs rhs ?api-opts)
-  (noremap-motion! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table
-  Note: This macro could `unmap` `lhs` in Select mode for the performance.
-  To avoid this, use `(noremap! [:n :o :x] ...)` instead."
-  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
-        ;; Note: With unknown reason, keymap/del-maps! fails to get
-        ;; `extra-opts.buffer` only to find it `nil` unless it's set to `?bufnr`.
-        ?bufnr extra-opts.buffer]
-    (if (str? lhs)
-        (if (keymap/invisible-key? lhs)
-            (noremap! "" extra-opts lhs rhs ?api-opts)
-            [(noremap! "" extra-opts lhs rhs ?api-opts)
-             (keymap/del-maps! ?bufnr :s lhs)])
-        (noremap! [:n :o :x] extra-opts lhs rhs ?api-opts))))
-
-(lambda noremap-range! [...]
-  "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
-  ```fennel
-  (noremap-range! ?extra-opts lhs rhs ?api-opts)
-  (noremap-range! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! [:n :x] ...))
-
-(lambda noremap-operator! [...]
-  "(Deprecated) Alias of `noremap-range!`."
-  `(do
-     ,(deprecate :noremap-operator! :noremap-range! :undetermined)
-     ,(noremap-range! ...)))
-
-(lambda noremap-textobj! [...]
-  "Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
-  ```fennel
-  (noremap-textobj! ?extra-opts lhs rhs ?api-opts)
-  (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! [:o :x] ...))
-
-(lambda nnoremap! [...]
-  "Map `lhs` to `rhs` in Normal mode non-recursively.
-  ```fennel
-  (nnoremap! ?extra-opts lhs rhs ?api-opts)
-  (nnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :n ...))
-
-(lambda vnoremap! [...]
-  "Map `lhs` to `rhs` in Visual/Select mode non-recursively.
-  ```fennel
-  (vnoremap! ?extra-opts lhs rhs ?api-opts)
-  (vnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :v ...))
-
-(lambda xnoremap! [...]
-  "Map `lhs` to `rhs` in Visual mode non-recursively.
-  ```fennel
-  (xnoremap! ?extra-opts lhs rhs ?api-opts)
-  (xnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :x ...))
-
-(lambda snoremap! [...]
-  "Map `lhs` to `rhs` in Select mode non-recursively.
-  ```fennel
-  (snoremap! ?extra-opts lhs rhs ?api-opts)
-  (snoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :s ...))
-
-(lambda onoremap! [...]
-  "Map `lhs` to `rhs` in Operator-pending mode non-recursively.
-  ```fennel
-  (onoremap! ?extra-opts lhs rhs ?api-opts)
-  (onoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :o ...))
-
-(lambda inoremap! [...]
-  "Map `lhs` to `rhs` in Insert mode non-recursively.
-  ```fennel
-  (inoremap! ?extra-opts lhs rhs ?api-opts)
-  (inoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :i ...))
-
-(lambda lnoremap! [...]
-  "Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
-  `:h language-mapping` for the details.
-  ```fennel
-  (lnoremap! ?extra-opts lhs rhs ?api-opts)
-  (lnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :l ...))
-
-(lambda cnoremap! [...]
-  "Map `lhs` to `rhs` in Command-line mode non-recursively.
-  ```fennel
-  (cnoremap! ?extra-opts lhs rhs ?api-opts)
-  (cnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :c ...))
-
-(lambda tnoremap! [...]
-  "Map `lhs` to `rhs` in Terminal mode non-recursively.
-  ```fennel
-  (tnoremap! ?extra-opts lhs rhs ?api-opts)
-  (tnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! :t ...))
 
 ;; Command ///1
 
@@ -1346,6 +922,430 @@
                               (view val.ctermbg)) val)))
     `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))
 
+;; Deprecated ///1
+
+(lambda map-all! [...]
+  "Map `lhs` to `rhs` in all modes recursively.
+  ```fennel
+  (map-all! ?extra-opts lhs rhs ?api-opts)
+  (map-all! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
+    [(map! "" extra-opts lhs rhs ?api-opts)
+     (map! "!" extra-opts lhs rhs ?api-opts)
+     (unpack (map! [:l :t] extra-opts lhs rhs ?api-opts))]))
+
+(lambda map-input! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode recursively.
+  ```fennel
+  (map-input! ?extra-opts lhs rhs ?api-opts)
+  (map-input! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! "!" ...))
+
+(lambda map-motion! [...]
+  "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
+  recursively.
+  ```fennel
+  (map-motion! ?extra-opts lhs rhs ?api-opts)
+  (map-motion! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table
+    Note: This macro could `unmap` `lhs` in Select mode for the performance.
+  To avoid this, use `(map! [:n :o :x] ...)` instead."
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
+        ?bufnr extra-opts.buffer]
+    (if (str? lhs)
+        (if (keymap/invisible-key? lhs)
+            (map! "" extra-opts lhs rhs ?api-opts)
+            [(map! "" extra-opts lhs rhs ?api-opts)
+             (keymap/del-maps! ?bufnr :s lhs)])
+        (map! [:n :o :x] extra-opts lhs rhs ?api-opts))))
+
+(lambda map-range! [...]
+  "Map `lhs` to `rhs` in Normal/Visual mode recursively.
+  ```fennel
+  (map-range! ?extra-opts lhs rhs ?api-opts)
+  (map-range! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! [:n :x] ...))
+
+(lambda map-operator! [...]
+  "(Deprecated) Alias of `map-range!."
+  `(do
+     ,(deprecate :map-operator! :map-range! :undetermined)
+     ,(map-range! ...)))
+
+(lambda map-textobj! [...]
+  "Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
+  ```fennel
+  (map-textobj! ?extra-opts lhs rhs ?api-opts)
+  (map-textobj! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! [:o :x] ...))
+
+(lambda nmap! [...]
+  "Map `lhs` to `rhs` in Normal mode recursively.
+  ```fennel
+  (nmap! ?extra-opts lhs rhs ?api-opts)
+  (nmap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :n ...))
+
+(lambda vmap! [...]
+  "Map `lhs` to `rhs` in Visual/Select mode recursively.
+  ```fennel
+  (vmap! ?extra-opts lhs rhs ?api-opts)
+  (vmap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :v ...))
+
+(lambda xmap! [...]
+  "Map `lhs` to `rhs` in Visual mode recursively.
+  ```fennel
+  (xmap! ?extra-opts lhs rhs ?api-opts)
+  (xmap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :x ...))
+
+(lambda smap! [...]
+  "Map `lhs` to `rhs` in Select mode recursively.
+  ```fennel
+  (smap! ?extra-opts lhs rhs ?api-opts)
+  (smap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :s ...))
+
+(lambda omap! [...]
+  "Map `lhs` to `rhs` in Operator-pending mode recursively.
+  ```fennel
+  (omap! ?extra-opts lhs rhs ?api-opts)
+  (omap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :o ...))
+
+(lambda imap! [...]
+  "Map `lhs` to `rhs` in Insert mode recursively.
+  ```fennel
+  (imap! ?extra-opts lhs rhs ?api-opts)
+  (imap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :i ...))
+
+(lambda lmap! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
+  `:h language-mapping` for the details.
+  ```fennel
+  (lmap! ?extra-opts lhs rhs ?api-opts)
+  (lmap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :l ...))
+
+(lambda cmap! [...]
+  "Map `lhs` to `rhs` in Command-line mode recursively.
+  ```fennel
+  (cmap! ?extra-opts lhs rhs ?api-opts)
+  (cmap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :c ...))
+
+(lambda tmap! [...]
+  "Map `lhs` to `rhs` in Terminal mode recursively.
+  ```fennel
+  (tmap! ?extra-opts lhs rhs ?api-opts)
+  (tmap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (map! :t ...))
+
+(lambda noremap! [modes ...]
+  "Map `lhs` to `rhs` in `modes` non-recursively.
+  ```fennel
+  (noremap! modes ?extra-opts lhs rhs ?api-opts)
+  (noremap! modes lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (let [default-opts {:noremap true}
+        (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
+    (merge-default-kv-table! default-opts extra-opts)
+    (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
+
+(lambda noremap-all! [...]
+  "Map `lhs` to `rhs` in all modes non-recursively.
+  ```fennel
+  (noremap-all! ?extra-opts lhs rhs ?api-opts)
+  (noremap-all! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
+    [(noremap! "" extra-opts lhs rhs ?api-opts)
+     (noremap! "!" extra-opts lhs rhs ?api-opts)
+     (unpack (noremap! [:l :t] extra-opts lhs rhs ?api-opts))]))
+
+(lambda noremap-input! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
+  ```fennel
+  (noremap-input! ?extra-opts lhs rhs ?api-opts)
+  (noremap-input! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! "!" ...))
+
+(lambda noremap-motion! [...]
+  "Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
+  non-recursively.
+  ```fennel
+  (noremap-motion! ?extra-opts lhs rhs ?api-opts)
+  (noremap-motion! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table
+  Note: This macro could `unmap` `lhs` in Select mode for the performance.
+  To avoid this, use `(noremap! [:n :o :x] ...)` instead."
+  (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
+        ;; Note: With unknown reason, keymap/del-maps! fails to get
+        ;; `extra-opts.buffer` only to find it `nil` unless it's set to `?bufnr`.
+        ?bufnr extra-opts.buffer]
+    (if (str? lhs)
+        (if (keymap/invisible-key? lhs)
+            (noremap! "" extra-opts lhs rhs ?api-opts)
+            [(noremap! "" extra-opts lhs rhs ?api-opts)
+             (keymap/del-maps! ?bufnr :s lhs)])
+        (noremap! [:n :o :x] extra-opts lhs rhs ?api-opts))))
+
+(lambda noremap-range! [...]
+  "Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
+  ```fennel
+  (noremap-range! ?extra-opts lhs rhs ?api-opts)
+  (noremap-range! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! [:n :x] ...))
+
+(lambda noremap-operator! [...]
+  "(Deprecated) Alias of `noremap-range!`."
+  `(do
+     ,(deprecate :noremap-operator! :noremap-range! :undetermined)
+     ,(noremap-range! ...)))
+
+(lambda noremap-textobj! [...]
+  "Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
+  ```fennel
+  (noremap-textobj! ?extra-opts lhs rhs ?api-opts)
+  (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! [:o :x] ...))
+
+(lambda nnoremap! [...]
+  "Map `lhs` to `rhs` in Normal mode non-recursively.
+  ```fennel
+  (nnoremap! ?extra-opts lhs rhs ?api-opts)
+  (nnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :n ...))
+
+(lambda vnoremap! [...]
+  "Map `lhs` to `rhs` in Visual/Select mode non-recursively.
+  ```fennel
+  (vnoremap! ?extra-opts lhs rhs ?api-opts)
+  (vnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :v ...))
+
+(lambda xnoremap! [...]
+  "Map `lhs` to `rhs` in Visual mode non-recursively.
+  ```fennel
+  (xnoremap! ?extra-opts lhs rhs ?api-opts)
+  (xnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :x ...))
+
+(lambda snoremap! [...]
+  "Map `lhs` to `rhs` in Select mode non-recursively.
+  ```fennel
+  (snoremap! ?extra-opts lhs rhs ?api-opts)
+  (snoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :s ...))
+
+(lambda onoremap! [...]
+  "Map `lhs` to `rhs` in Operator-pending mode non-recursively.
+  ```fennel
+  (onoremap! ?extra-opts lhs rhs ?api-opts)
+  (onoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :o ...))
+
+(lambda inoremap! [...]
+  "Map `lhs` to `rhs` in Insert mode non-recursively.
+  ```fennel
+  (inoremap! ?extra-opts lhs rhs ?api-opts)
+  (inoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :i ...))
+
+(lambda lnoremap! [...]
+  "Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
+  `:h language-mapping` for the details.
+  ```fennel
+  (lnoremap! ?extra-opts lhs rhs ?api-opts)
+  (lnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :l ...))
+
+(lambda cnoremap! [...]
+  "Map `lhs` to `rhs` in Command-line mode non-recursively.
+  ```fennel
+  (cnoremap! ?extra-opts lhs rhs ?api-opts)
+  (cnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :c ...))
+
+(lambda tnoremap! [...]
+  "Map `lhs` to `rhs` in Terminal mode non-recursively.
+  ```fennel
+  (tnoremap! ?extra-opts lhs rhs ?api-opts)
+  (tnoremap! lhs ?extra-opts rhs ?api-opts)
+  ```
+  @param modes string|string[]
+  @param ?extra-opts bare-sequence
+  @param lhs string
+  @param rhs string|function
+  @param ?api-opts kv-table"
+  (noremap! :t ...))
+
 ;; Export ///1
 
 {: set!
@@ -1372,11 +1372,19 @@
  : t!
  : v!
  : env!
- : noremap!
  : map!
  :unmap! keymap/del-maps!
  : <C-u>
  : <Cmd>
+ : command!
+ : augroup!
+ : augroup+
+ :au! define-autocmd!
+ :autocmd! define-autocmd!
+ : str->keycodes
+ : feedkeys!
+ : highlight!
+ :hi! highlight!
  : map-all!
  : map-input!
  : map-motion!
@@ -1392,6 +1400,7 @@
  : lmap!
  : cmap!
  : tmap!
+ : noremap!
  : noremap-all!
  : noremap-input!
  : noremap-motion!
@@ -1406,15 +1415,6 @@
  : inoremap!
  : lnoremap!
  : cnoremap!
- : tnoremap!
- : command!
- : augroup!
- : augroup+
- :au! define-autocmd!
- :autocmd! define-autocmd!
- : str->keycodes
- : feedkeys!
- : highlight!
- :hi! highlight!}
+ : tnoremap!}
 
 ;; vim:fdm=marker:foldmarker=///,""""
