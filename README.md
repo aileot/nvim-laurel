@@ -115,18 +115,6 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 | ----------------------------- | --------------------------------- |
 | [`map!`](./doc/MACROS.md#map) | [`unmap!`](./doc/MACROS.md#unmap) |
 
-| `n` Normal                      | Visual/Select `v`               | Visual `x`                      | Select `s`                      |
-| ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- |
-| [`nmap!`](./doc/MACROS.md#nmap) | [`vmap!`](./doc/MACROS.md#vmap) | [`xmap!`](./doc/MACROS.md#xmap) | [`smap!`](./doc/MACROS.md#smap) |
-
-| Operator-pending `o`            | Insert `i`                      | Lang-Arg `l`                    | Command-line                    | Terminal                        |
-| ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- | ------------------------------- |
-| [`omap!`](./doc/MACROS.md#omap) | [`imap!`](./doc/MACROS.md#imap) | [`lmap!`](./doc/MACROS.md#lmap) | [`cmap!`](./doc/MACROS.md#cmap) | [`tmap!`](./doc/MACROS.md#tmap) |
-
-| All                                   | Input `!`/`ic`                            | Motion `nvo`/`nxo`                          | Range `nx`                                | Textobj `xo`                                  |
-| ------------------------------------- | ----------------------------------------- | ------------------------------------------- | ----------------------------------------- | --------------------------------------------- |
-| [`map-all!`](./doc/MACROS.md#map-all) | [`map-input!`](./doc/MACROS.md#map-input) | [`map-motion!`](./doc/MACROS.md#map-motion) | [`map-range!`](./doc/MACROS.md#map-range) | [`map-textobj!`](./doc/MACROS.md#map-textobj) |
-
 - [Others](./doc/MACROS.md#Others)
   - [`command!`](./doc/MACROS.md#command)
   - [`feedkeys!`](./doc/MACROS.md#feedkeys)
