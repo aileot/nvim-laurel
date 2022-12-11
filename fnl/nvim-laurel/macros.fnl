@@ -637,8 +637,8 @@
 (lambda map! [modes ...]
   "Map `lhs` to `rhs` in `modes` recursively.
   ```fennel
-  (noremap! modes ?extra-opts lhs rhs ?api-opts)
-  (noremap! modes lhs ?extra-opts rhs ?api-opts)
+  (map! modes ?extra-opts lhs rhs ?api-opts)
+  (map! modes lhs ?extra-opts rhs ?api-opts)
   ```
   @param modes string|string[]
   @param ?extra-opts bare-sequence
