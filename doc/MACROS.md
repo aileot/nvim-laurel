@@ -81,9 +81,9 @@ following features:
 ## Macros
 
 - [Autocmd](#Autocmd)
+- [Keymap](#Keymap)
 - [Variable](#Variable)
 - [Option](#Option)
-- [Keymap](#Keymap)
 - [Others](#Others)
 
 ### Autocmd
@@ -229,6 +229,98 @@ See [`augroup!`](#augroup) for the rest.
 #### `au!`
 
 An alias of [`autocmd!`](#autocmd).
+
+### Keymap
+
+- [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
+- [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
+- [`<Cmd>`](#Cmd)
+- [`<C-u>`](#C-u)
+
+#### `map!`
+
+Map `lhs` to `rhs` in `modes`, non-recursively by default.
+
+```fennel
+(map! modes ?extra-opts lhs rhs ?api-opts)
+(map! modes lhs ?extra-opts rhs ?api-opts)
+```
+
+- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
+  "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
+  bare-string, multi modes can be set in a string like `:nox` instead of
+  `[:n :o :x]`.
+- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+  - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
+    option from `nvim_set_keymap()`.
+  - `literal`: Disable `replace_keycodes`, which is automatically enabled when
+    `expr` is set in `extra-opts`.
+  - `<buffer>`: Map `lhs` in current buffer by itself.
+  - `buffer`: Map `lhs` to a buffer of the next value.
+  - `<command>`: It indicates that `rhs` must be Normal mode command execution
+    by itself.
+  - `ex`: An alias of `<command>` key.
+  - `<callback>`: It indicates that `rhs` must be callback function by itself.
+  - `cb`: An alias of `<callback>` key.
+- `lhs`: (string) Left-hand-side of the mapping.
+- `rhs`: (string|function) Right-hand-side of the mapping. Symbol, and anonymous
+  function constructed by `fn`, `hashfn`, `lambda`, and `partial`, is regarded
+  as Lua function; otherwise, as Normal mode command execution.
+
+  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
+
+#### `unmap!`
+
+Delete keymap.
+
+```fennel
+(unmap! ?bufnr mode lhs)
+```
+
+- `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
+- `mode`: (string) Mode to unmap.
+- `lhs`: (string) Left-hand-side key to unmap.
+
+```fennel
+(unmap! :n :foo)
+(unmap! 0 :o :bar)
+(unmap! 10 :x :baz)
+```
+
+is equivalent to
+
+```vim
+nunmap foo
+ounmap <buffer> bar
+" No simple command to delete keymap in specific buffer.
+```
+
+```lua
+vim.api.nvim_del_keymap("n", "foo")
+vim.api.nvim_buf_del_keymap(0, "o", "bar")
+vim.api.nvim_buf_del_keymap(10, "x", "baz")
+```
+
+#### `<Cmd>`
+
+Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
+
+```fennel
+(<Cmd> text)
+```
+
+- `text`: (string)
+
+#### `<C-u>`
+
+Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
+
+```fennel
+(<C-u> text)
+```
+
+- `text`: (string)
 
 ### Variable
 
@@ -566,98 +658,6 @@ vim.wo[10].signcolumn = "no"
 call setwinvar(0, '&number', v:false)
 call setwinvar(10, '&signcolumn', 'no')
 ```
-
-### Keymap
-
-- [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
-- [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
-- [`<Cmd>`](#Cmd)
-- [`<C-u>`](#C-u)
-
-#### `map!`
-
-Map `lhs` to `rhs` in `modes`, non-recursively by default.
-
-```fennel
-(map! modes ?extra-opts lhs rhs ?api-opts)
-(map! modes lhs ?extra-opts rhs ?api-opts)
-```
-
-- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
-  "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
-  bare-string, multi modes can be set in a string like `:nox` instead of
-  `[:n :o :x]`.
-- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
-    option from `nvim_set_keymap()`.
-  - `literal`: Disable `replace_keycodes`, which is automatically enabled when
-    `expr` is set in `extra-opts`.
-  - `<buffer>`: Map `lhs` in current buffer by itself.
-  - `buffer`: Map `lhs` to a buffer of the next value.
-  - `<command>`: It indicates that `rhs` must be Normal mode command execution
-    by itself.
-  - `ex`: An alias of `<command>` key.
-  - `<callback>`: It indicates that `rhs` must be callback function by itself.
-  - `cb`: An alias of `<callback>` key.
-- `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Symbol, and anonymous
-  function constructed by `fn`, `hashfn`, `lambda`, and `partial`, is regarded
-  as Lua function; otherwise, as Normal mode command execution.
-
-  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
-
-#### `unmap!`
-
-Delete keymap.
-
-```fennel
-(unmap! ?bufnr mode lhs)
-```
-
-- `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
-- `mode`: (string) Mode to unmap.
-- `lhs`: (string) Left-hand-side key to unmap.
-
-```fennel
-(unmap! :n :foo)
-(unmap! 0 :o :bar)
-(unmap! 10 :x :baz)
-```
-
-is equivalent to
-
-```vim
-nunmap foo
-ounmap <buffer> bar
-" No simple command to delete keymap in specific buffer.
-```
-
-```lua
-vim.api.nvim_del_keymap("n", "foo")
-vim.api.nvim_buf_del_keymap(0, "o", "bar")
-vim.api.nvim_buf_del_keymap(10, "x", "baz")
-```
-
-#### `<Cmd>`
-
-Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
-
-```fennel
-(<Cmd> text)
-```
-
-- `text`: (string)
-
-#### `<C-u>`
-
-Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
-
-```fennel
-(<C-u> text)
-```
-
-- `text`: (string)
 
 ### Others
 
