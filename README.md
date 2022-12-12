@@ -88,6 +88,12 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
   - [`autocmd!`](./doc/MACROS.md#autocmd)
   - [`au!`](./doc/MACROS.md#au)
 
+- [Keymap](./doc/MACROS.md#Keymap)
+  - [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
+  - [`<Cmd>`](./doc/MACROS.md#Cmd)
+  - [`<C-u>`](./doc/MACROS.md#C-u)
+
 - [Variable](./doc/MACROS.md#Variable)
   - [`g!`](./doc/MACROS.md#g)
   - [`b!`](./doc/MACROS.md#b)
@@ -106,12 +112,6 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 | [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
 | [`bo!`][bo]               | --                        | --                        | --                        |
 | [`wo!`][wo]               | --                        | --                        | --                        |
-
-- [Keymap](./doc/MACROS.md#Keymap)
-  - [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
-  - [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
-  - [`<Cmd>`](./doc/MACROS.md#Cmd)
-  - [`<C-u>`](./doc/MACROS.md#C-u)
 
 - [Others](./doc/MACROS.md#Others)
   - [`command!`](./doc/MACROS.md#command)
