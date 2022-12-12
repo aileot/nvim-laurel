@@ -17,3 +17,4 @@ jobs:
           release-type: simple
           package-name: nvim-laurel
           bump-minor-pre-major: true
+          bump-patch-for-minor-pre-major: true
