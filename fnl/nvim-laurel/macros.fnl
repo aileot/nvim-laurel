@@ -1412,7 +1412,6 @@
  : augroup+
  :au! define-autocmd!
  :autocmd! define-autocmd!
- : str->keycodes
  : feedkeys!
  : highlight!
  :hi! highlight!}
