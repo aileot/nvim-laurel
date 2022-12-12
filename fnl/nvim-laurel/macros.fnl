@@ -87,17 +87,6 @@
     (fcollect [i first last]
       (. xs i))))
 
-(lambda first-symbol [x]
-  "Return the first symbol in list `x`
-  @param x list
-  @return string"
-  ;; TODO: Check if `x` is list.
-  ;; (assert-compile (or (list? x) (table? x))
-  ;;                 (.. "expected list or table, got " (type x)) x)
-  (let [first-item (first x)]
-    (if (str? first-item) first-item ;
-        (first-symbol first-item))))
-
 ;; Additional predicates ///2
 
 (fn anonymous-function? [x]
@@ -105,7 +94,7 @@
   @param x any
   @return boolean"
   (and (list? x) ;
-       (contains? [:fn :hashfn :lambda :partial] (first-symbol x))))
+       (contains? [`fn `hashfn `lambda `partial] (first x))))
 
 ;; Specific Utils ///1
 
@@ -1253,8 +1242,7 @@
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
          ,(icollect [_ args (ipairs [...])]
             (let [au-args (if (and (list? args)
-                                   (contains? [:au! :autocmd!]
-                                              (first-symbol args)))
+                                   (contains? [`au! `autocmd!] (first args)))
                               (slice args 2)
                               (sequence? args)
                               args
