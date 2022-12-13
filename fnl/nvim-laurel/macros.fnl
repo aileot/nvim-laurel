@@ -76,6 +76,12 @@
   @return undefined"
   (. xs 1))
 
+(lambda second [xs]
+  "Return the second value in `xs`
+  @param xs sequence
+  @return undefined"
+  (. xs 2))
+
 (lambda slice [xs ?start ?end]
   "Return sequence from `?start` to `?end`.
   @param xs sequence
