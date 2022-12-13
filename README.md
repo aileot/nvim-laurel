@@ -6,7 +6,7 @@
 > A set of macros to write readable Neovim config, highly inspired by the Lua
 > modules built in Neovim and by good old Vim script
 
-![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/200104542-629da3b9-41de-435c-b665-b609199a5fd4.png)
+![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
 
 ## Design
 
@@ -88,6 +88,12 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
   - [`autocmd!`](./doc/MACROS.md#autocmd)
   - [`au!`](./doc/MACROS.md#au)
 
+- [Keymap](./doc/MACROS.md#Keymap)
+  - [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
+  - [`<Cmd>`](./doc/MACROS.md#Cmd)
+  - [`<C-u>`](./doc/MACROS.md#C-u)
+
 - [Variable](./doc/MACROS.md#Variable)
   - [`g!`](./doc/MACROS.md#g)
   - [`b!`](./doc/MACROS.md#b)
@@ -106,35 +112,6 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 | [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
 | [`bo!`][bo]               | --                        | --                        | --                        |
 | [`wo!`][wo]               | --                        | --                        | --                        |
-
-- [Keymap](./doc/MACROS.md#Keymap)
-  - [`<Cmd>`](./doc/MACROS.md#Cmd)
-  - [`<C-u>`](./doc/MACROS.md#C-u)
-
-|         | `vim.keymap.set`-like                 | `vim.keymap.del`-like             |
-| ------- | ------------------------------------- | --------------------------------- |
-| remap   | [`map!`](./doc/MACROS.md#map)         | [`unmap!`](./doc/MACROS.md#unmap) |
-| noremap | [`noremap!`](./doc/MACROS.md#noremap) | (recursion doesn't matter)        |
-
-|         | `n` Normal                              | Visual/Select `v`                       | Visual `x`                              | Select `s`                              |
-| ------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- |
-| remap   | [`nmap!`](./doc/MACROS.md#nmap)         | [`vmap!`](./doc/MACROS.md#vmap)         | [`xmap!`](./doc/MACROS.md#xmap)         | [`smap!`](./doc/MACROS.md#smap)         |
-| noremap | [`nnoremap!`](./doc/MACROS.md#nnoremap) | [`vnoremap!`](./doc/MACROS.md#vnoremap) | [`xnoremap!`](./doc/MACROS.md#xnoremap) | [`snoremap!`](./doc/MACROS.md#snoremap) |
-
-|         | Operator-pending `o`                    | Insert `i`                              | Lang-Arg `l`                            | Command-line                            | Terminal                                |
-| ------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- | --------------------------------------- |
-| remap   | [`omap!`](./doc/MACROS.md#omap)         | [`imap!`](./doc/MACROS.md#imap)         | [`lmap!`](./doc/MACROS.md#lmap)         | [`cmap!`](./doc/MACROS.md#cmap)         | [`tmap!`](./doc/MACROS.md#tmap)         |
-| noremap | [`onoremap!`](./doc/MACROS.md#onoremap) | [`inoremap!`](./doc/MACROS.md#inoremap) | [`lnoremap!`](./doc/MACROS.md#lnoremap) | [`cnoremap!`](./doc/MACROS.md#cnoremap) | [`tnoremap!`](./doc/MACROS.md#tnoremap) |
-
-|         | All                                           | Input `!`/`ic`                                    |
-| ------- | --------------------------------------------- | ------------------------------------------------- |
-| remap   | [`map-all!`](./doc/MACROS.md#map-all)         | [`map-input!`](./doc/MACROS.md#map-input)         |
-| noremap | [`noremap-all!`](./doc/MACROS.md#noremap-all) | [`noremap-input!`](./doc/MACROS.md#noremap-input) |
-
-|         | Motion `nvo`/`nxo`                                  | Range `nx`                                        | Textobj `xo`                                          |
-| ------- | --------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------- |
-| remap   | [`map-motion!`](./doc/MACROS.md#map-motion)         | [`map-range!`](./doc/MACROS.md#map-range)         | [`map-textobj!`](./doc/MACROS.md#map-textobj)         |
-| noremap | [`noremap-motion!`](./doc/MACROS.md#noremap-motion) | [`noremap-range!`](./doc/MACROS.md#noremap-range) | [`noremap-textobj!`](./doc/MACROS.md#noremap-textobj) |
 
 - [Others](./doc/MACROS.md#Others)
   - [`command!`](./doc/MACROS.md#command)

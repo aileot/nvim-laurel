@@ -81,9 +81,9 @@ following features:
 ## Macros
 
 - [Autocmd](#Autocmd)
+- [Keymap](#Keymap)
 - [Variable](#Variable)
 - [Option](#Option)
-- [Keymap](#Keymap)
 - [Others](#Others)
 
 ### Autocmd
@@ -229,6 +229,98 @@ See [`augroup!`](#augroup) for the rest.
 #### `au!`
 
 An alias of [`autocmd!`](#autocmd).
+
+### Keymap
+
+- [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
+- [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
+- [`<Cmd>`](#Cmd)
+- [`<C-u>`](#C-u)
+
+#### `map!`
+
+Map `lhs` to `rhs` in `modes`, non-recursively by default.
+
+```fennel
+(map! modes ?extra-opts lhs rhs ?api-opts)
+(map! modes lhs ?extra-opts rhs ?api-opts)
+```
+
+- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
+  "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
+  bare-string, multi modes can be set in a string like `:nox` instead of
+  `[:n :o :x]`.
+- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+  - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
+    option from `nvim_set_keymap()`.
+  - `literal`: Disable `replace_keycodes`, which is automatically enabled when
+    `expr` is set in `extra-opts`.
+  - `<buffer>`: Map `lhs` in current buffer by itself.
+  - `buffer`: Map `lhs` to a buffer of the next value.
+  - `<command>`: It indicates that `rhs` must be Normal mode command execution
+    by itself.
+  - `ex`: An alias of `<command>` key.
+  - `<callback>`: It indicates that `rhs` must be callback function by itself.
+  - `cb`: An alias of `<callback>` key.
+- `lhs`: (string) Left-hand-side of the mapping.
+- `rhs`: (string|function) Right-hand-side of the mapping. Symbol, and anonymous
+  function constructed by `fn`, `hashfn`, `lambda`, and `partial`, is regarded
+  as Lua function; otherwise, as Normal mode command execution.
+
+  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
+- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
+
+#### `unmap!`
+
+Delete keymap.
+
+```fennel
+(unmap! ?bufnr mode lhs)
+```
+
+- `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
+- `mode`: (string) Mode to unmap.
+- `lhs`: (string) Left-hand-side key to unmap.
+
+```fennel
+(unmap! :n :foo)
+(unmap! 0 :o :bar)
+(unmap! 10 :x :baz)
+```
+
+is equivalent to
+
+```vim
+nunmap foo
+ounmap <buffer> bar
+" No simple command to delete keymap in specific buffer.
+```
+
+```lua
+vim.api.nvim_del_keymap("n", "foo")
+vim.api.nvim_buf_del_keymap(0, "o", "bar")
+vim.api.nvim_buf_del_keymap(10, "x", "baz")
+```
+
+#### `<Cmd>`
+
+Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
+
+```fennel
+(<Cmd> text)
+```
+
+- `text`: (string)
+
+#### `<C-u>`
+
+Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
+
+```fennel
+(<C-u> text)
+```
+
+- `text`: (string)
 
 ### Variable
 
@@ -567,389 +659,6 @@ call setwinvar(0, '&number', v:false)
 call setwinvar(10, '&signcolumn', 'no')
 ```
 
-### Keymap
-
-- [`<Cmd>`](#Cmd)
-- [`<C-u>`](#C-u)
-
-|         | `vim.keymap.set`-like  | `vim.keymap.del`-like      |
-| ------- | ---------------------- | -------------------------- |
-| remap   | [`map!`](#map)         | [`unmap!`](#unmap)         |
-| noremap | [`noremap!`](#noremap) | (recursion doesn't matter) |
-
-|         | `n` Normal               | Visual/Select `v`        | Visual `x`               | Select `s`               |
-| ------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
-| remap   | [`nmap!`](#nmap)         | [`vmap!`](#vmap)         | [`xmap!`](#xmap)         | [`smap!`](#smap)         |
-| noremap | [`nnoremap!`](#nnoremap) | [`vnoremap!`](#vnoremap) | [`xnoremap!`](#xnoremap) | [`snoremap!`](#snoremap) |
-
-|         | Operator-pending `o`     | Insert `i`               | Lang-Arg `l`             | Command-line             | Terminal                 |
-| ------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
-| remap   | [`omap!`](#omap)         | [`imap!`](#imap)         | [`lmap!`](#lmap)         | [`cmap!`](#cmap)         | [`tmap!`](#tmap)         |
-| noremap | [`onoremap!`](#onoremap) | [`inoremap!`](#inoremap) | [`lnoremap!`](#lnoremap) | [`cnoremap!`](#cnoremap) | [`tnoremap!`](#tnoremap) |
-
-|         | All                            | Input `!`/`ic`                     |
-| ------- | ------------------------------ | ---------------------------------- |
-| remap   | [`map-all!`](#map-all)         | [`map-input!`](#map-input)         |
-| noremap | [`noremap-all!`](#noremap-all) | [`noremap-input!`](#noremap-input) |
-
-|         | Motion `nvo`/`nxo`                   | Range `nx`                         | Textobj `xo`                           |
-| ------- | ------------------------------------ | ---------------------------------- | -------------------------------------- |
-| remap   | [`map-motion!`](#map-motion)         | [`map-range!`](#map-range)         | [`map-textobj!`](#map-textobj)         |
-| noremap | [`noremap-motion!`](#noremap-motion) | [`noremap-range!`](#noremap-range) | [`noremap-textobj!`](#noremap-textobj) |
-
-#### `map!`
-
-Map `lhs` to `rhs` in `modes` recursively.
-
-```fennel
-(map! modes ?extra-opts lhs rhs ?api-opts)
-(map! modes lhs ?extra-opts rhs ?api-opts)
-```
-
-- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
-  "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
-  bare-string, multi modes can be set in a string like `:nox` instead of
-  `[:n :o :x]`.
-- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
-  - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
-    option from `nvim_set_keymap()`.
-  - `literal`: Disable `replace_keycodes`, which is automatically enabled when
-    `expr` is set in `extra-opts`.
-  - `<buffer>`: Map `lhs` in current buffer by itself.
-  - `buffer`: Map `lhs` to a buffer of the next value.
-  - `<command>`: It indicates that `rhs` must be Normal mode command execution
-    by itself.
-  - `ex`: An alias of `<command>` key.
-  - `<callback>`: It indicates that `rhs` must be callback function by itself.
-  - `cb`: An alias of `<callback>` key.
-- `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Symbol, and anonymous
-  function constructed by `fn`, `hashfn`, `lambda`, and `partial`, is regarded
-  as Lua function; otherwise, as Normal mode command execution.
-
-  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
-
-#### `noremap!`
-
-Map `lhs` to `rhs` in `modes` non-recursively.
-
-```fennel
-(noremap! modes ?extra-opts lhs rhs ?api-opts)
-(noremap! modes lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `unmap!`
-
-Delete keymap.
-
-```fennel
-(unmap! ?bufnr mode lhs)
-```
-
-- `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
-- `mode`: (string) Mode to unmap.
-- `lhs`: (string) Left-hand-side key to unmap.
-
-```fennel
-(unmap! :n :foo)
-(unmap! 0 :o :bar)
-(unmap! 10 :x :baz)
-```
-
-is equivalent to
-
-```vim
-nunmap foo
-ounmap <buffer> bar
-" No simple command to delete keymap in specific buffer.
-```
-
-```lua
-vim.api.nvim_del_keymap("n", "foo")
-vim.api.nvim_buf_del_keymap(0, "o", "bar")
-vim.api.nvim_buf_del_keymap(10, "x", "baz")
-```
-
-#### `<Cmd>`
-
-Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
-
-```fennel
-(<Cmd> text)
-```
-
-- `text`: (string)
-
-#### `<C-u>`
-
-Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
-
-```fennel
-(<C-u> text)
-```
-
-- `text`: (string)
-
-#### `map-all!`
-
-Map `lhs` to `rhs` in all modes recursively.
-
-```fennel
-(map-all! ?extra-opts rhs ?api-opts)
-(map-all! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `map-input!`
-
-Map `lhs` to `rhs` in Insert/Command-line mode recursively.
-
-```fennel
-(map-input! ?extra-opts lhs rhs ?api-opts)
-(map-input! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `map-motion!`
-
-Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode recursively. As long
-as `lhs` is bare-string and doesn't include any invisible keys like `<Plug>`,
-`<Esc>`, `<Left>`, `<C-f>`, and so on, it also map `lhs` to `rhs` in Select
-mode.
-
-```fennel
-(map-motion! ?extra-opts lhs rhs ?api-opts)
-(map-motion! lhs ?extra-opts rhs ?api-opts)
-```
-
-Note: This macro could delete mapping to `lhs` in Select mode for the
-performance. To avoid this, use `(map! [:n :o :x] ...)` instead.
-
-#### `map-range!`
-
-Map `lhs` to `rhs` in Normal/Visual mode recursively.
-
-```fennel
-(map-range! ?extra-opts lhs rhs ?api-opts)
-(map-range! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `map-textobj!`
-
-Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
-
-```fennel
-(map-textobj! ?extra-opts lhs rhs ?api-opts)
-(map-textobj! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `nmap!`
-
-Map `lhs` to `rhs` in Normal mode recursively.
-
-```fennel
-(nmap! ?extra-opts lhs rhs ?api-opts)
-(nmap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `vmap!`
-
-Map `lhs` to `rhs` in Visual/Select mode recursively.
-
-```fennel
-(vmap! ?extra-opts lhs rhs ?api-opts)
-(vmap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `xmap!`
-
-Map `lhs` to `rhs` in Visual mode recursively.
-
-```fennel
-(xmap! ?extra-opts lhs rhs ?api-opts)
-(xmap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `smap!`
-
-Map `lhs` to `rhs` in Select mode recursively.
-
-```fennel
-(smap! ?extra-opts lhs rhs ?api-opts)
-(smap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `omap!`
-
-Map `lhs` to `rhs` in Operator-pending mode recursively.
-
-```fennel
-(omap! ?extra-opts lhs rhs ?api-opts)
-(omap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `imap!`
-
-Map `lhs` to `rhs` in Insert mode recursively.
-
-```fennel
-(imap! ?extra-opts lhs rhs ?api-opts)
-(imap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `lmap!`
-
-Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
-`:h language-mapping` for the details.
-
-```fennel
-(lmap! ?extra-opts lhs rhs ?api-opts)
-(lmap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `cmap!`
-
-Map `lhs` to `rhs` in Command-line mode recursively.
-
-```fennel
-(cmap! ?extra-opts lhs rhs ?api-opts)
-(cmap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `tmap!`
-
-Map `lhs` to `rhs` in Terminal mode recursively.
-
-```fennel
-(tmap! ?extra-opts lhs rhs ?api-opts)
-(tmap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `noremap-all!`
-
-Same as [`map-all!`](#map-all), but non-recursively.
-
-```fennel
-(noremap-all! ?extra-opts lhs rhs ?api-opts)
-(noremap-all! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `noremap-input!`
-
-Same as [`map-input!`](#map-input), but non-recursively.
-
-```fennel
-(noremap-input! ?extra-opts lhs rhs ?api-opts)
-(noremap-input! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `noremap-motion!`
-
-Same as [`map-motion!`](#map-motion), but non-recursively.
-
-```fennel
-(noremap-motion! ?extra-opts lhs rhs ?api-opts)
-(noremap-motion! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `noremap-range!`
-
-Same as [`map-range!`](#map-range), but non-recursively.
-
-```fennel
-(noremap-range! ?extra-opts lhs rhs ?api-opts)
-(noremap-range! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `noremap-textobj!`
-
-Same as [`map-textobj!`](#map-textobj), but non-recursively.
-
-```fennel
-(noremap-textobj! ?extra-opts lhs rhs ?api-opts)
-(noremap-textobj! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `nnoremap!`
-
-Same as [`nmap!`](#nmap!), but non-recursively.
-
-```fennel
-(nnoremap! ?extra-opts lhs rhs ?api-opts)
-(nnoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `vnoremap!`
-
-Same as [`vmap!`](#vmap!), but non-recursively.
-
-```fennel
-(vnoremap! ?extra-opts lhs rhs ?api-opts)
-(vnoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `xnoremap!`
-
-Same as [`xmap!`](#xmap), but non-recursively.
-
-```fennel
-(xnoremap! ?extra-opts lhs rhs ?api-opts)
-(xnoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `snoremap!`
-
-Same as [`smap!`](#smap), but non-recursively.
-
-```fennel
-(snoremap! ?extra-opts lhs rhs ?api-opts)
-(snoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `onoremap!`
-
-Same as [`omap!`](#omap), but non-recursively.
-
-```fennel
-(onoremap! ?extra-opts lhs rhs ?api-opts)
-(onoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `inoremap!`
-
-Same as [`imap!`](#imap), but non-recursively.
-
-```fennel
-(inoremap! ?extra-opts lhs rhs ?api-opts)
-(inoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `lnoremap!`
-
-Same as [`lmap!`](#lmap), but non-recursively.
-
-```fennel
-(lnoremap! ?extra-opts lhs rhs ?api-opts)
-(lnoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `cnoremap!`
-
-Same as [`cmap!`](#cmap), but non-recursively.
-
-```fennel
-(cnoremap! ?extra-opts lhs rhs ?api-opts)
-(cnoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
-#### `tnoremap!`
-
-Same as [`tmap!`](#tmap), but non-recursively.
-
-```fennel
-(tnoremap! ?extra-opts lhs rhs ?api-opts)
-(tnoremap! lhs ?extra-opts rhs ?api-opts)
-```
-
 ### Others
 
 - [`command!`](#command)
@@ -1137,8 +846,52 @@ in another anonymous function is meaningless in many cases.
 
 ## Deprecated
 
-- `map-operator!`/`noremap-operator!`: Use
-  [`map-range!`](#map-range)/[`noremap-range!`](#noremap-range) instead.
+- `nmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `vmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `xmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `smap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `omap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `imap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `lmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `cmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `tmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
+  instead.
+- `map-all!`: Use [`map!`](#map) with `remap` option for corresponding modes
+  instead.
+- `map-input!`: Use [`map!`](#map) with `remap` option for corresponding modes
+  instead.
+- `map-motion!`: Use [`map!`](#map) with `remap` option for corresponding modes
+  instead.
+- `map-range!`: Use [`map!`](#map) with `remap` option for corresponding modes
+  instead.
+- `map-operator!`: Use [`map!`](#map) with `remap` option for corresponding
+  modes instead.
+- `map-textobj!`: Use [`map!`](#map) with `remap` option for corresponding modes
+  instead.
+- `noremap!`: Use [`map!`](#map) instead.
+- `nnoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `vnoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `xnoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `snoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `onoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `inoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `lnoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `cnoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `tnoremap!`: Use [`map!`](#map) for corresponding mode instead.
+- `noremap-all!`: Use [`map!`](#map) for corresponding modes instead.
+- `noremap-input!`: Use [`map!`](#map) for corresponding modes instead.
+- `noremap-motion!`: Use [`map!`](#map) for corresponding modes instead.
+- `noremap-range!`: Use [`map!`](#map) for corresponding modes instead.
+- `noremap-operator!`: Use [`map!`](#map) for corresponding modes instead.
+- `noremap-textobj!`: Use [`map!`](#map) for corresponding modes instead.
 
 [set]: #setsetsetset-
 [setglobal]: #setglobalsetglobalsetglobalsetglobal-
