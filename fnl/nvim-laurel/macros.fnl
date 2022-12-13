@@ -160,10 +160,9 @@
   "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`.
   @param x any
   @return string|nil"
-  (when (multi-sym? x)
-    (let [(fn-name pos) (-> (->str x) (: :gsub "^vim%.fn%." ""))]
-      (when (< 0 pos)
-        fn-name))))
+  (let [name (->str x)
+        pat-vim-fn "^vim%.fn%.(%S+)$"]
+    (name:match pat-vim-fn)))
 
 (lambda deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
