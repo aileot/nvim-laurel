@@ -169,6 +169,30 @@
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
+(lambda ->fn [x]
+  "If quoted, return function for runtime; otherwise, just return `x` itself as
+  it's supposed to be function.
+  ```fennel
+  (->fn `foobar) ; -> foobar
+  (->fn `foo.bar) ; -> foo.bar
+  (->fn `(foo :bar)) ; -> #(foo :bar)
+  (->fn `(foobar)) ; -> #(foobar)
+  (->fn foobar) ; -> foobar
+  (->fn foo.bar) ; -> foo.bar
+  (->fn (foo :bar)) ; -> (foo :bar)
+  (->fn (foobar)) ; -> (foobar)
+  ```
+  @param x any but nil
+  @return symbol|`list Return function ideally"
+  (if (anonymous-function? x)
+      x
+      (quoted? x)
+      (let [unquoted (second x)]
+        (if (sym? unquoted)
+            unquoted
+            `#,unquoted))
+      x))
+
 (lambda extract-?vim-fn-name [x]
   "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`.
   @param x any
