@@ -310,7 +310,8 @@
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;
-                (anonymous-function? callback))
+                (anonymous-function? callback) ;
+                (quoted? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
             ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
             ;; to "callback" key because functions written in Vim script are
@@ -318,7 +319,7 @@
             ;; its first arg.
             (set extra-opts.callback
                  (or (extract-?vim-fn-name callback) ;
-                     callback))
+                     (->fn callback)))
             (set extra-opts.command callback))
         (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
                                        ?api-opts)]
