@@ -443,7 +443,8 @@
                   (if (or extra-opts.<command> extra-opts.ex) raw-rhs
                       (or extra-opts.<callback> extra-opts.cb ;
                           (sym? raw-rhs) ;
-                          (anonymous-function? raw-rhs)) ;
+                          (anonymous-function? raw-rhs) ;
+                          (quoted? raw-rhs))
                       (do
                         ;; Hack: `->compatible-opts` must remove
                         ;; `cb`/`<callback>` key instead, but it doesn't at
@@ -451,7 +452,7 @@
                         ;; but no idea how to reproduce it in minimal codes.
                         (set extra-opts.cb nil)
                         (set extra-opts.<callback> nil)
-                        (set extra-opts.callback raw-rhs)
+                        (set extra-opts.callback (->fn raw-rhs))
                         "") ;
                       ;; Otherwise, Normal mode commands.
                       raw-rhs))
