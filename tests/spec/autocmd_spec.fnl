@@ -22,6 +22,11 @@
 
 (describe :autocmd
   (fn []
+    (setup (fn []
+             (vim.cmd "function g:Test() abort
+                       endfunction")))
+    (teardown (fn []
+                (vim.cmd "delfunction g:Test")))
     (before_each (fn []
                    (augroup! default-augroup)
                    (let [aus (get-autocmds)]
@@ -160,10 +165,6 @@
               (assert.is.same "<vim function: foobar>" autocmd2.callback))))
         (it "sets vim.fn.Test to callback in string"
           (fn []
-            (vim.cmd "
-                                      function! g:Test() abort
-                                      endfunction
-                                      ")
             (assert.has_no.errors #(autocmd! default-augroup default-event
                                              vim.fn.Test))
             (let [[autocmd] (get-autocmds)]
