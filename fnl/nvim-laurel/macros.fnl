@@ -317,9 +317,12 @@
             ;; to "callback" key because functions written in Vim script are
             ;; rarely supposed to expect the table from `nvim_create_autocmd` for
             ;; its first arg.
-            (set extra-opts.callback
-                 (or (extract-?vim-fn-name callback) ;
-                     (->fn callback)))
+            (let [cb (->fn callback)]
+              (set extra-opts.callback
+                   ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
+                   ;; "foobar" set to "callback" key.
+                   (or (extract-?vim-fn-name cb) ;
+                       cb)))
             (set extra-opts.command callback))
         (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
                                        ?api-opts)]
