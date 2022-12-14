@@ -1,5 +1,11 @@
 (import-macros {: augroup! : augroup+ : au! : autocmd!} :nvim-laurel.macros)
 
+(macro macro-callback []
+  `#:macro-callback)
+
+(macro macro-command []
+  :macro-command)
+
 (local default-augroup :default-test-augroup)
 (local default-event :BufRead)
 (local default-callback #:default-callback)
@@ -36,6 +42,22 @@
           #(let [id (augroup! default-augroup)]
              (assert.is.same id (augroup+ default-augroup))))))
     (describe :au!/autocmd!
+      (it "must be wrapped in hashfn, fn, ..., to set callback in macro"
+        (fn []
+          (autocmd! default-augroup default-event [:pat] #(macro-callback))
+          (let [au (get-first-autocmd {:pattern :pat})]
+            (assert.is_not_nil au.callback))))
+      (it "set command in macro with no args"
+        (fn []
+          (autocmd! default-augroup default-event [:pat] (macro-command))
+          (let [au (get-first-autocmd {:pattern :pat})]
+            (assert.is_same :macro-command au.command))))
+      (it "set command in macro with some args"
+        (fn []
+          (autocmd! default-augroup default-event [:pat]
+                    (macro-command :foo :bar))
+          (let [au (get-first-autocmd {:pattern :pat})]
+            (assert.is_same :macro-command au.command))))
       (fn []
         (describe "detects 2 args:"
           (fn []
