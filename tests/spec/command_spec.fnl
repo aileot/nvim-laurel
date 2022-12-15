@@ -6,6 +6,9 @@
 (macro macro-command []
   :macro-command)
 
+(local default-callback #:default-callback)
+(local default {:multi {:sym #:default.multi.sym}})
+
 (lambda get-command [name]
   (-> (vim.api.nvim_get_commands {:builtin false})
       (. name)))
@@ -44,6 +47,30 @@
           (command! :Foo [:buffer bufnr] :Bar)
           (assert.is_not_nil (get-buf-command bufnr :Foo))
           (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr :Foo)))))
+    (it "can set callback function with quoted symbol"
+      (fn []
+        (command! :Foo `default-callback)
+        ;; Note: command.definition should be empty string if callback is
+        ;; function without `desc` key.
+        (assert.is_same "" (get-command-definition :Foo))))
+    (it "can set callback function with quoted multi-symbol"
+      (fn []
+        (let [desc :multi.sym]
+          (command! :Foo `default.multi.sym {: desc})
+          (assert.is_same desc (get-command-definition :Foo)))))
+    (it "can set callback function with quoted list"
+      (fn []
+        (let [desc :list]
+          (command! :Foo `(default-callback :foo :bar) {: desc})
+          (assert.is_same desc (get-command-definition :Foo)))))
+    (it "which sets callback `vim.fn.Test will not be overridden by `desc` key"
+      ;; Note: The reason is probably vim.fn.Test is not a Lua function but
+      ;; a Vim one.
+      (fn []
+        (let [desc :Test]
+          (command! :Foo `vim.fn.Test)
+          (assert.is_same "" (get-command-definition :Foo))
+          (assert.is_not_same desc (get-command-definition :Foo)))))
     (it "must be wrapped in hashfn, fn, ..., to set callback in macro"
       (fn []
         (command! :Foo #(macro-callback))
