@@ -907,11 +907,12 @@
                                       :<buffer>
                                       :register
                                       :keepscript]))
-        [extra-opts name command ?api-opts] (if-not ?extra-opts
-                                              [{} a1 a2 ?a3]
-                                              (sequence? a1)
-                                              [?extra-opts a2 ?a3 ?a4]
-                                              [?extra-opts a1 ?a3 ?a4])
+        [extra-opts name raw-command ?api-opts] (if-not ?extra-opts
+                                                  [{} a1 a2 ?a3]
+                                                  (sequence? a1)
+                                                  [?extra-opts a2 ?a3 ?a4]
+                                                  [?extra-opts a1 ?a3 ?a4])
+        command (->fn raw-command)
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
                                  ?api-opts)]
