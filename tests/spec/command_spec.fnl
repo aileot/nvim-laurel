@@ -1,8 +1,17 @@
 (import-macros {: command!} :nvim-laurel.macros)
 
+(macro macro-callback []
+  `#:macro-callback)
+
+(macro macro-command []
+  :macro-command)
+
 (lambda get-command [name]
   (-> (vim.api.nvim_get_commands {:builtin false})
       (. name)))
+
+(lambda get-command-definition [name]
+  (. (get-command name) :definition))
 
 (lambda get-buf-command [bufnr name]
   (-> (vim.api.nvim_buf_get_commands bufnr {:builtin false})
