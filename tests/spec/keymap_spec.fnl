@@ -8,6 +8,12 @@
                 : <C-u>
                 : <Cmd>} :nvim-laurel.macros)
 
+(macro macro-callback []
+  `#:macro-callback)
+
+(macro macro-command []
+  :macro-command)
+
 (local default-rhs :default-rhs)
 (local default-callback #:default-callback)
 (local new-callback #(fn []
@@ -82,6 +88,18 @@
              (each [_ m (ipairs modes)]
                (let [{: noremap} (get-mapargs m :lhs)]
                  (assert.is.same 1 noremap)))))
+        (it "must be wrapped in hashfn, fn, ..., to set callback in macro"
+          (fn []
+            (map! :n :lhs #(macro-callback))
+            (assert.is_not_nil (get-callback :n :lhs))))
+        (it "set command in macro with no args"
+          (fn []
+            (map! :n :lhs (macro-command))
+            (assert.is_same :macro-command (get-rhs :n :lhs))))
+        (it "set command in macro with some args"
+          (fn []
+            (map! :n :lhs (macro-command :foo :bar))
+            (assert.is_same :macro-command (get-rhs :n :lhs))))
         (it "maps multiple mode mappings with a sequence at once"
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)
