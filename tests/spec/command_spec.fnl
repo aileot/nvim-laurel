@@ -41,6 +41,19 @@
           (command! :Foo [:buffer bufnr] :Bar)
           (assert.is_not_nil (get-buf-command bufnr :Foo))
           (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr :Foo)))))
+    (it "must be wrapped in hashfn, fn, ..., to set callback in macro"
+      (fn []
+        (command! :Foo #(macro-callback))
+        ;; TODO: Check if callback is set.
+        (assert.is_not_nil (get-command :Foo))))
+    (it "set command in macro with no args"
+      (fn []
+        (command! :Foo (macro-command))
+        (assert.is_same :macro-command (get-command-definition :Foo))))
+    (it "set command in macro with some args"
+      (fn []
+        (command! :Foo (macro-command :foo :bar))
+        (assert.is_same :macro-command (get-command-definition :Foo))))
     (describe :extra-opts
       (fn []
         (it "can be either first arg or second arg"
