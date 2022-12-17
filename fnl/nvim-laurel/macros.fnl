@@ -98,21 +98,6 @@
 
 ;; Specific Utils ///1
 
-(lambda deprecate [deprecated alternative version compatible]
-  "Notify deprecation.
-  The message format:
-  \"{deprecated} is deprecated, use {alternative} instead. See :h deprecated
-  This function will be removed in nvim-laurel version {version}\"
-  @param deprecated string Deprecated target
-  @param alternative string Suggestion to reproduce previous UX
-  @param version string Version to drop the compatibility
-  @param compatible any Some calculation to keep the compatibility"
-  `(do
-     ,compatible
-     ;; Note: It's safer to wrap it in `vim.schedule`.
-     (vim.schedule #(vim.deprecate ,deprecated ,alternative ,version
-                                   :nvim-laurel false))))
-
 (lambda error* [msg]
   "Throw error with prefix."
   (error (.. "[nvim-laurel] " msg)))
@@ -179,6 +164,26 @@
     (let [(fn-name pos) (-> (->str x) (: :gsub "^vim%.fn%." ""))]
       (when (< 0 pos)
         fn-name))))
+
+(lambda deprecate [deprecated alternative version compatible]
+  "Return a wrapper function to notify deprecation at runtime on loaded, which
+  returns `compatible`.
+  The message format:
+  \"{deprecated} is deprecated, use {alternative} instead. See :h deprecated
+  This function will be removed in nvim-laurel version {version}\"
+  @param deprecated string Deprecated target
+  @param alternative string Suggestion to reproduce previous UX
+  @param version string Version to drop the compatibility
+  @param compatible any Some calculation to keep the compatibility
+  @return fun():any"
+  ;; Note: It's safer to wrap it in `vim.schedule`.
+  (let [deprecation `(vim.schedule #(vim.deprecate ,(.. "[nvim-laurel] "
+                                                        deprecated)
+                                                   ,alternative ,version
+                                                   :nvim-laurel false))]
+    `((fn []
+        ,deprecation
+        ,compatible))))
 
 ;; Autocmd ///1
 
