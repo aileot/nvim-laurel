@@ -58,11 +58,11 @@
         (let [desc :multi.sym]
           (command! :Foo `default.multi.sym {: desc})
           (assert.is_same desc (get-command-definition :Foo)))))
-    (it "can set callback function with quoted list"
+    (it "can set quoted list result to callback"
       (fn []
         (let [desc :list]
           (command! :Foo `(default-callback :foo :bar) {: desc})
-          (assert.is_same desc (get-command-definition :Foo)))))
+          (assert.is_same (default-callback) (get-command-definition :Foo)))))
     (it "which sets callback `vim.fn.Test will not be overridden by `desc` key"
       ;; Note: The reason is probably vim.fn.Test is not a Lua function but
       ;; a Vim one.
