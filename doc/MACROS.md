@@ -120,17 +120,16 @@ Create or get an augroup, or override an existing augroup.
   - `<callback>`: It indicates that `callback` must be callback function by
     itself.
   - `cb`: An alias of `<callback>` key.
-- `callback`: (string|function) Set either callback function or vim Ex command.
-  Symbol, quoted symbol/list, or anonymous function constructed by `fn`,
-  `hashfn`, `lambda`, and `partial`, is regarded as Lua function; otherwise, as
-  Ex command.
+- `callback`: (string|function) Set either callback function or Ex command. To
+  tell `callback` is Lua function, either prepend a quote `` ` `` as an
+  identifer (the quoted symbol, or list, is supposed to result in Lua function
+  at runtime), or set it in anonymous function constructed by `fn`, `hashfn`,
+  `lambda`, and `partial`; otherwise, Ex command.
 
-  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
-
-  Note: Set `vim.fn.foobar`, or set `:foobar` to `callback` with `<command>` key
-  in `extra-opts`, to call Vim script function `foobar` without table arg from
-  `nvim_create_autocmd()`; instead, set `#(vim.fn.foobar $)` to call `foobar`
-  with the table arg.
+  Note: To call Vim script function `foobar` without table arg from
+  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar `` if
+  you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
+  `foobar` with the table arg.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
@@ -264,12 +263,16 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - `<callback>`: It indicates that `rhs` must be callback function by itself.
   - `cb`: An alias of `<callback>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Symbol, quoted
-  symbol/list, or anonymous function constructed by `fn`, `hashfn`, `lambda`,
-  and `partial`, is regarded as Lua function; otherwise, as Normal mode command
-  execution.
+- `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
+  function or Ex command. To tell `callback` is Lua function, either prepend a
+  quote `` ` `` as an identifer (the quoted symbol, or list, is supposed to
+  result in Lua function at runtime), or set it in anonymous function
+  constructed by `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex command.
 
-  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
+  Note: To call Vim script function `foobar` without table arg from
+  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar `` if
+  you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
+  `foobar` with the table arg.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
