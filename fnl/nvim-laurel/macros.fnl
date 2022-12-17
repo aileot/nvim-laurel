@@ -306,7 +306,11 @@
                    ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
                    ;; "foobar" set to "callback" key.
                    (or (extract-?vim-fn-name cb) ;
-                       cb)))
+                       (if (sym? callback)
+                           (deprecate "callback function in symbol for `augroup!`, `autocmd!`, ..."
+                                      "quote \"`\" like `foobar" :v0.6.0
+                                      callback)
+                           cb))))
             (set extra-opts.command callback))
         (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
                                        ?api-opts)]
@@ -442,8 +446,8 @@
                         (set extra-opts.callback
                              (if (sym? raw-rhs)
                                  (deprecate "callback function in symbol for `map!`"
-                                            "quote \"`\" like `foobar"
-                                            :v0.6.0 raw-rhs)
+                                            "quote \"`\" like `foobar" :v0.6.0
+                                            raw-rhs)
                                  (->unquoted raw-rhs)))
                         "") ;
                       ;; Otherwise, Normal mode commands.
