@@ -888,6 +888,14 @@ in another anonymous function is meaningless in many cases.
 
 ## Deprecated
 
+### v0.5.1
+
+- Symbol will no longer be an identifer as callback function for the macros,
+  [`map!`](#map!), [`autocmd!`](#autocmd), and so on; set `` `foobar `` to set a
+  symbol `foobar` as callback function instead.
+
+### v0.5.0
+
 - `nmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
   instead.
 - `vmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
