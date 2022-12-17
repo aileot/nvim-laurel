@@ -439,7 +439,12 @@
                         ;; but no idea how to reproduce it in minimal codes.
                         (set extra-opts.cb nil)
                         (set extra-opts.<callback> nil)
-                        (set extra-opts.callback (->unquoted raw-rhs))
+                        (set extra-opts.callback
+                             (if (sym? raw-rhs)
+                                 (deprecate "callback function in symbol for `map!`"
+                                            "quote \"`\" like `foobar"
+                                            :v0.6.0 raw-rhs)
+                                 (->unquoted raw-rhs)))
                         "") ;
                       ;; Otherwise, Normal mode commands.
                       raw-rhs))
