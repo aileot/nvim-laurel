@@ -169,28 +169,12 @@
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
-(lambda ->fn [x]
-  "If quoted, return function for runtime; otherwise, just return `x` itself as
-  it's supposed to be function.
-  ```fennel
-  (->fn `foobar) ; -> foobar
-  (->fn `foo.bar) ; -> foo.bar
-  (->fn `(foo :bar)) ; -> #(foo :bar)
-  (->fn `(foobar)) ; -> #(foobar)
-  (->fn foobar) ; -> foobar
-  (->fn foo.bar) ; -> foo.bar
-  (->fn (foo :bar)) ; -> (foo :bar)
-  (->fn (foobar)) ; -> (foobar)
-  ```
+(fn ->unquoted [x]
+  "If quoted, return unquoted `x`; otherwise, just return `x` itself.
   @param x any but nil
-  @return symbol|`list Return function ideally"
-  (if (anonymous-function? x)
-      x
-      (quoted? x)
-      (let [unquoted (second x)]
-        (if (sym? unquoted)
-            unquoted
-            `#,unquoted))
+  @return any"
+  (if (quoted? x)
+      (second x)
       x))
 
 (lambda extract-?vim-fn-name [x]
@@ -317,7 +301,7 @@
             ;; to "callback" key because functions written in Vim script are
             ;; rarely supposed to expect the table from `nvim_create_autocmd` for
             ;; its first arg.
-            (let [cb (->fn callback)]
+            (let [cb (->unquoted callback)]
               (set extra-opts.callback
                    ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
                    ;; "foobar" set to "callback" key.
@@ -455,7 +439,7 @@
                         ;; but no idea how to reproduce it in minimal codes.
                         (set extra-opts.cb nil)
                         (set extra-opts.<callback> nil)
-                        (set extra-opts.callback (->fn raw-rhs))
+                        (set extra-opts.callback (->unquoted raw-rhs))
                         "") ;
                       ;; Otherwise, Normal mode commands.
                       raw-rhs))
@@ -912,7 +896,7 @@
                                                   (sequence? a1)
                                                   [?extra-opts a2 ?a3 ?a4]
                                                   [?extra-opts a1 ?a3 ?a4])
-        command (->fn raw-command)
+        command (->unquoted raw-command)
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
                                  ?api-opts)]
