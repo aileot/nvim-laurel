@@ -176,13 +176,17 @@
   @param version string Version to drop the compatibility
   @param compatible any Some calculation to keep the compatibility
   @return fun():any"
-  ;; Note: It's safer to wrap it in `vim.schedule`.
-  (let [deprecation `(vim.schedule #(vim.deprecate ,(.. "[nvim-laurel] "
-                                                        deprecated)
-                                                   ,alternative ,version
-                                                   :nvim-laurel false))]
+  (let [deprecation `(vim.deprecate (.. "[nvim-laurel] " ,deprecated)
+                                    ,alternative ,version :nvim-laurel false)]
     `((fn []
-        ,deprecation
+        (let [{:source source# :linedefined row#} (debug.getinfo 1 :S)
+              file-path# (source#:gsub "^@" "")
+              location# (.. file-path# " @ " row#)
+              msg# (.. "[nvim-laurel] deprecated usage found at " location#)]
+          ;; Note: It's safer to wrap it in `vim.schedule`.
+          (vim.schedule (fn []
+                          (vim.notify msg# vim.log.levels.WARN)
+                          ,deprecation)))
         ,compatible))))
 
 ;; Autocmd ///1
