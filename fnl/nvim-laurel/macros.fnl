@@ -98,21 +98,6 @@
 
 ;; Specific Utils ///1
 
-(lambda deprecate [deprecated alternative version compatible]
-  "Notify deprecation.
-  The message format:
-  \"{deprecated} is deprecated, use {alternative} instead. See :h deprecated
-  This function will be removed in nvim-laurel version {version}\"
-  @param deprecated string Deprecated target
-  @param alternative string Suggestion to reproduce previous UX
-  @param version string Version to drop the compatibility
-  @param compatible any Some calculation to keep the compatibility"
-  `(do
-     ,compatible
-     ;; Note: It's safer to wrap it in `vim.schedule`.
-     (vim.schedule #(vim.deprecate ,deprecated ,alternative ,version
-                                   :nvim-laurel false))))
-
 (lambda error* [msg]
   "Throw error with prefix."
   (error (.. "[nvim-laurel] " msg)))
@@ -179,6 +164,30 @@
     (let [(fn-name pos) (-> (->str x) (: :gsub "^vim%.fn%." ""))]
       (when (< 0 pos)
         fn-name))))
+
+(lambda deprecate [deprecated alternative version compatible]
+  "Return a wrapper function, which returns `compatible`, about to notify
+  deprecation when the file including it is `require`d at runtime.
+  The message format of `vim.schedule`:
+  \"{deprecated} is deprecated, use {alternative} instead. See :h deprecated
+  This function will be removed in nvim-laurel version {version}\"
+  @param deprecated string Deprecated target
+  @param alternative string Suggestion to reproduce previous UX
+  @param version string Version to drop the compatibility
+  @param compatible any Anything to keep the compatibility
+  @return list"
+  (let [deprecation `(vim.deprecate (.. "[nvim-laurel] " ,deprecated)
+                                    ,alternative ,version :nvim-laurel false)]
+    `((fn []
+        (let [{:source source# :linedefined row#} (debug.getinfo 1 :S)
+              file-path# (source#:gsub "^@" "")
+              location# (.. file-path# " @ " row#)
+              msg# (.. "[nvim-laurel] deprecated usage found at " location#)]
+          ;; Note: It's safer to wrap it in `vim.schedule`.
+          (vim.schedule (fn []
+                          (vim.notify msg# vim.log.levels.WARN)
+                          ,deprecation)))
+        ,compatible))))
 
 ;; Autocmd ///1
 
