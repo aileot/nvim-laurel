@@ -166,16 +166,16 @@
         fn-name))))
 
 (lambda deprecate [deprecated alternative version compatible]
-  "Return a wrapper function to notify deprecation at runtime on loaded, which
-  returns `compatible`.
-  The message format:
+  "Return a wrapper function, which returns `compatible`, about to notify
+  deprecation when the file including it is `require`d at runtime.
+  The message format of `vim.schedule`:
   \"{deprecated} is deprecated, use {alternative} instead. See :h deprecated
   This function will be removed in nvim-laurel version {version}\"
   @param deprecated string Deprecated target
   @param alternative string Suggestion to reproduce previous UX
   @param version string Version to drop the compatibility
-  @param compatible any Some calculation to keep the compatibility
-  @return fun():any"
+  @param compatible any Anything to keep the compatibility
+  @return list"
   (let [deprecation `(vim.deprecate (.. "[nvim-laurel] " ,deprecated)
                                     ,alternative ,version :nvim-laurel false)]
     `((fn []
