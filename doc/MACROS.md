@@ -126,10 +126,9 @@ Create or get an augroup, or override an existing augroup.
   at runtime), or set it in anonymous function constructed by `fn`, `hashfn`,
   `lambda`, and `partial`; otherwise, Ex command.
 
-  Note: To call Vim script function `foobar` without table arg from
-  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar `` if
-  you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
-  `foobar` with the table arg.
+  Note: Set `` `vim.fn.foobar `` to call Vim script function `foobar` without
+  table argument from `nvim_create_autocmd()`; on the other hand, set
+  `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
