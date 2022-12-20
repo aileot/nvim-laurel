@@ -120,27 +120,26 @@ Create or get an augroup, or override an existing augroup.
   - `<callback>`: It indicates that `callback` must be callback function by
     itself.
   - `cb`: An alias of `<callback>` key.
-- `callback`: (string|function) Set either callback function or vim Ex command.
-  Symbol, and anonymous function constructed by `fn`, `hashfn`, `lambda`, and
-  `partial`, is regarded as Lua function; otherwise, as Ex command.
+- `callback`: (string|function) Set either callback function or Ex command. To
+  tell `callback` is Lua function, either prepend a quote `` ` `` as an
+  identifer (the quoted symbol, or list, is supposed to result in Lua function
+  at runtime), or set it in anonymous function constructed by `fn`, `hashfn`,
+  `lambda`, and `partial`; otherwise, Ex command.
 
-  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
-
-  Note: Set `vim.fn.foobar`, or set `:foobar` to `callback` with `<command>` key
-  in `extra-opts`, to call Vim script function `foobar` without table arg from
-  `nvim_create_autocmd()`; instead, set `#(vim.fn.foobar $)` to call `foobar`
-  with the table arg.
+  Note: Set `` `vim.fn.foobar `` to call Vim script function `foobar` without
+  table argument from `nvim_create_autocmd()`; on the other hand, set
+  `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
 (augroup! :sample-augroup
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! [:InsertEnter :InsertLeave]
-      [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
+      [:<buffer> :desc "call foo#bar() without any args"] `vim.fn.foo#bar)
   (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
       #(vim.fn.baz#qux $.match)))
   (autocmd! :LspAttach
-      #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
+      #(au! $.group :CursorHold [:buffer $.buf] `vim.lsp.buf.document_highlight))
 ```
 
 is equivalent to
@@ -263,12 +262,55 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - `<callback>`: It indicates that `rhs` must be callback function by itself.
   - `cb`: An alias of `<callback>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Symbol, and anonymous
-  function constructed by `fn`, `hashfn`, `lambda`, and `partial`, is regarded
-  as Lua function; otherwise, as Normal mode command execution.
+- `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
+  function or Ex command. To tell `callback` is Lua function, either prepend a
+  quote `` ` `` as an identifer (the quoted symbol, or list, is supposed to
+  result in Lua function at runtime), or set it in anonymous function
+  constructed by `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex command.
 
-  Note: Insert `<command>` key in `extra-opts` to set string via symbol.
+  Note: To call Vim script function `foobar` without table arg from
+  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar `` if
+  you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
+  `foobar` with the table arg.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
+
+```fennel
+(map! :i :jk :<Esc>)
+(map! :n :lhs [:desc "call foo#bar()"] `vim.fn.foo#bar)
+(map! [:n :x] [:remap :expr :literal] :d "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'")
+(map! [:n :x] [:remap :expr] :u #(if vim.bo.readonly
+                                     "<Plug>(readonly-u)"
+                                     "<Plug>(noreadonly-u)"))
+```
+
+is equivalent to
+
+```vim
+inoremap jk <Esc>
+nnoremap lhs <Cmd>call foo#bar()<CR>
+nmap <expr> d &readonly ? "\<Plug>(readonly-d)" : "\<Plug>(noreadonly-d)"
+xmap <expr> u &readonly ? "\<Plug>(readonly-u)" : "\<Plug>(noreadonly-u)"
+```
+
+```lua
+vim.keymap.set("i", "jk", "<Esc>")
+vim.keymap.set("n", "lhs", function()
+  vim.fn["foo#bar"]()
+end)
+-- or, if you don't care about lazy loading,
+vim.keymap.set("n", "lhs", vim.fn["foo#bar"])
+vim.keymap.set({ "n", "x" }, "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
+  remap = true,
+  expr = true,
+  replace_keycodes = false,
+})
+vim.keymap.set({ "n", "x" }, "u", function()
+  return vim.bo.readonly and "<Plug>(readonly-u)" or "<Plug>(noreadonly-u)"
+end, {
+  remap = true,
+  expr = true,
+})
+```
 
 #### `unmap!`
 
@@ -845,6 +887,14 @@ in another anonymous function is meaningless in many cases.
 ```
 
 ## Deprecated
+
+### v0.5.1
+
+- Symbol will no longer be an identifer as callback function for the macros,
+  [`map!`](#map!), [`autocmd!`](#autocmd), and so on; set `` `foobar `` to set a
+  symbol `foobar` as callback function instead.
+
+### v0.5.0
 
 - `nmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
   instead.

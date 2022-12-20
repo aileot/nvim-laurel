@@ -8,8 +8,15 @@
                 : <C-u>
                 : <Cmd>} :nvim-laurel.macros)
 
+(macro macro-callback []
+  `#:macro-callback)
+
+(macro macro-command []
+  :macro-command)
+
 (local default-rhs :default-rhs)
 (local default-callback #:default-callback)
+(local default {:multi {:sym #:default.multi.sym}})
 (local new-callback #(fn []
                        $))
 
@@ -43,6 +50,11 @@
 
 (insulate :macros.keymap
   (fn []
+    (setup (fn []
+             (vim.cmd "function g:Test() abort
+                       endfunction")))
+    (teardown (fn []
+                (vim.cmd "delfunction g:Test")))
     (before_each (fn []
                    (let [all-modes ["" "!" :l :t]]
                      (each [_ mode (ipairs all-modes)]
@@ -50,6 +62,22 @@
                        (assert.is_nil (get-rhs mode :lhs))))))
     (describe :map!
       (fn []
+        (it "sets callback function with quoted symbol"
+          #(do
+             (map! :n :lhs `default-callback)
+             (assert.is_same default-callback (get-callback :n :lhs))))
+        (it "sets callback function with quoted multi-symbol"
+          #(let [desc :multi.sym]
+             (map! :n :lhs `default.multi.sym {: desc})
+             (assert.is_same default.multi.sym (get-callback :n :lhs))))
+        (it "sets callback function with quoted list"
+          #(let [desc :list]
+             (map! :n :lhs `(default-callback :foo :bar) {: desc})
+             (assert.is_same desc (. (get-mapargs :n :lhs) :desc))))
+        (it "set callback function in string for `vim.fn.Test"
+          (fn []
+            (map! :n :lhs `vim.fn.Test)
+            (assert.is_same vim.fn.Test (get-callback :n :lhs))))
         (it "maps non-recursively by default"
           #(let [mode :n
                  modes [:n :o :t]]
@@ -82,6 +110,18 @@
              (each [_ m (ipairs modes)]
                (let [{: noremap} (get-mapargs m :lhs)]
                  (assert.is.same 1 noremap)))))
+        (it "sets callback via macro with quote"
+          (fn []
+            (map! :n :lhs `(macro-callback))
+            (assert.is_not_nil (get-callback :n :lhs))))
+        (it "set command in macro with no args"
+          (fn []
+            (map! :n :lhs (macro-command))
+            (assert.is_same :macro-command (get-rhs :n :lhs))))
+        (it "set command in macro with some args"
+          (fn []
+            (map! :n :lhs (macro-command :foo :bar))
+            (assert.is_same :macro-command (get-rhs :n :lhs))))
         (it "maps multiple mode mappings with a sequence at once"
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)

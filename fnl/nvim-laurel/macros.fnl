@@ -76,6 +76,12 @@
   @return undefined"
   (. xs 1))
 
+(lambda second [xs]
+  "Return the second value in `xs`
+  @param xs sequence
+  @return undefined"
+  (. xs 2))
+
 (lambda slice [xs ?start ?end]
   "Return sequence from `?start` to `?end`.
   @param xs sequence
@@ -88,6 +94,13 @@
       (. xs i))))
 
 ;; Additional predicates ///2
+
+(fn quoted? [x]
+  "Check if `x` is a list which begins with `quote`.
+  @param x any
+  @return boolean"
+  (and (list? x) ;
+       (= `quote (first x))))
 
 (fn anonymous-function? [x]
   "(Compile time) Check if type of `x` is anonymous function.
@@ -156,14 +169,21 @@
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
+(fn ->unquoted [x]
+  "If quoted, return unquoted `x`; otherwise, just return `x` itself.
+  @param x any but nil
+  @return any"
+  (if (quoted? x)
+      (second x)
+      x))
+
 (lambda extract-?vim-fn-name [x]
   "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`.
   @param x any
   @return string|nil"
-  (when (multi-sym? x)
-    (let [(fn-name pos) (-> (->str x) (: :gsub "^vim%.fn%." ""))]
-      (when (< 0 pos)
-        fn-name))))
+  (let [name (->str x)
+        pat-vim-fn "^vim%.fn%.(%S+)$"]
+    (name:match pat-vim-fn)))
 
 (lambda deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
@@ -274,15 +294,23 @@
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;
-                (anonymous-function? callback))
+                (anonymous-function? callback) ;
+                (quoted? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
             ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
             ;; to "callback" key because functions written in Vim script are
             ;; rarely supposed to expect the table from `nvim_create_autocmd` for
             ;; its first arg.
-            (set extra-opts.callback
-                 (or (extract-?vim-fn-name callback) ;
-                     callback))
+            (let [cb (->unquoted callback)]
+              (set extra-opts.callback
+                   ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
+                   ;; "foobar" set to "callback" key.
+                   (or (extract-?vim-fn-name cb) ;
+                       (if (sym? callback)
+                           (deprecate "callback function in symbol for `augroup!`, `autocmd!`, ..."
+                                      "quote \"`\" like `foobar" :v0.6.0
+                                      callback)
+                           cb))))
             (set extra-opts.command callback))
         (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
                                        ?api-opts)]
@@ -406,7 +434,8 @@
                   (if (or extra-opts.<command> extra-opts.ex) raw-rhs
                       (or extra-opts.<callback> extra-opts.cb ;
                           (sym? raw-rhs) ;
-                          (anonymous-function? raw-rhs)) ;
+                          (anonymous-function? raw-rhs) ;
+                          (quoted? raw-rhs))
                       (do
                         ;; Hack: `->compatible-opts` must remove
                         ;; `cb`/`<callback>` key instead, but it doesn't at
@@ -414,7 +443,12 @@
                         ;; but no idea how to reproduce it in minimal codes.
                         (set extra-opts.cb nil)
                         (set extra-opts.<callback> nil)
-                        (set extra-opts.callback raw-rhs)
+                        (set extra-opts.callback
+                             (if (sym? raw-rhs)
+                                 (deprecate "callback function in symbol for `map!`"
+                                            "quote \"`\" like `foobar" :v0.6.0
+                                            raw-rhs)
+                                 (->unquoted raw-rhs)))
                         "") ;
                       ;; Otherwise, Normal mode commands.
                       raw-rhs))
@@ -866,11 +900,12 @@
                                       :<buffer>
                                       :register
                                       :keepscript]))
-        [extra-opts name command ?api-opts] (if-not ?extra-opts
-                                              [{} a1 a2 ?a3]
-                                              (sequence? a1)
-                                              [?extra-opts a2 ?a3 ?a4]
-                                              [?extra-opts a1 ?a3 ?a4])
+        [extra-opts name raw-command ?api-opts] (if-not ?extra-opts
+                                                  [{} a1 a2 ?a3]
+                                                  (sequence? a1)
+                                                  [?extra-opts a2 ?a3 ?a4]
+                                                  [?extra-opts a1 ?a3 ?a4])
+        command (->unquoted raw-command)
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
                                  ?api-opts)]

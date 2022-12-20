@@ -1,9 +1,16 @@
 (import-macros {: augroup! : augroup+ : au! : autocmd!} :nvim-laurel.macros)
 
+(macro macro-callback []
+  `#:macro-callback)
+
+(macro macro-command []
+  :macro-command)
+
 (local default-augroup :default-test-augroup)
 (local default-event :BufRead)
 (local default-callback #:default-callback)
 (local default-command :default-command)
+(local default {:multi {:sym #:default.multi.sym}})
 
 (lambda get-autocmds [?opts]
   (let [opts (collect [k v (pairs (or ?opts {})) ;
@@ -16,6 +23,11 @@
 
 (describe :autocmd
   (fn []
+    (setup (fn []
+             (vim.cmd "function g:Test() abort
+                       endfunction")))
+    (teardown (fn []
+                (vim.cmd "delfunction g:Test")))
     (before_each (fn []
                    (augroup! default-augroup)
                    (let [aus (get-autocmds)]
@@ -36,7 +48,57 @@
           #(let [id (augroup! default-augroup)]
              (assert.is.same id (augroup+ default-augroup))))))
     (describe :au!/autocmd!
+      (it "sets callback via macro with quote"
+        (fn []
+          (autocmd! default-augroup default-event [:pat] `(macro-callback))
+          (let [au (get-first-autocmd {:pattern :pat})]
+            (assert.is_not_nil au.callback))))
+      (it "set command in macro with no args"
+        (fn []
+          (autocmd! default-augroup default-event [:pat] (macro-command))
+          (let [au (get-first-autocmd {:pattern :pat})]
+            (assert.is_same :macro-command au.command))))
+      (it "set command in macro with some args"
+        (fn []
+          (autocmd! default-augroup default-event [:pat]
+                    (macro-command :foo :bar))
+          (let [au (get-first-autocmd {:pattern :pat})]
+            (assert.is_same :macro-command au.command))))
       (fn []
+        (it "sets callback function with quoted symbol"
+          #(do
+             (autocmd! default-augroup default-event [:pat] `default-callback)
+             (assert.is_same default-callback
+                             (. (get-first-autocmd {:pattern :pat}) :callback))))
+        (it "sets callback function with quoted multi-symbol"
+          #(let [desc :multi.sym]
+             (autocmd! default-augroup default-event [:pat] `default.multi.sym
+                       {: desc})
+             ;; FIXME: In vusted, callback is unexpectedly set to a string
+             ;; "<vim function: default.multi.sym>"; it must be the same as
+             ;; `default.multi.sym`.
+             (assert.is_same desc (. (get-first-autocmd {:pattern :pat}) :desc))))
+        (it "sets callback function with quoted list"
+          #(let [desc :list]
+             (autocmd! default-augroup default-event [:pat]
+                       `(default-callback :foo :bar) {: desc})
+             (let [au (get-first-autocmd {:pattern :pat})]
+               (assert.is_same desc au.desc))))
+        (it "set `vim.fn.Test in string \"Test\""
+          (fn []
+            (autocmd! default-augroup default-event [:pat] `vim.fn.Test)
+            (let [au (get-first-autocmd {:pattern :pat})]
+              (assert.is_same "<vim function: Test>" au.callback))))
+        (it "set `(vim.fn.Test) to callback as #(vim.fn.Test)"
+          (fn []
+            (autocmd! default-augroup default-event [:pat] `(vim.fn.Test))
+            (let [au (get-first-autocmd {:pattern :pat})]
+              (assert.is_not_same "<vim function: Test>" au.callback))))
+        (it "set #(vim.fn.Test) to callback without modification"
+          (fn []
+            (autocmd! default-augroup default-event [:pat] #(vim.fn.Test))
+            (let [au (get-first-autocmd {:pattern :pat})]
+              (assert.is_not_same "<vim function: Test>" au.callback))))
         (describe "detects 2 args:"
           (fn []
             (it "sequence pattern and string callback"
@@ -138,10 +200,6 @@
               (assert.is.same "<vim function: foobar>" autocmd2.callback))))
         (it "sets vim.fn.Test to callback in string"
           (fn []
-            (vim.cmd "
-                                      function! g:Test() abort
-                                      endfunction
-                                      ")
             (assert.has_no.errors #(autocmd! default-augroup default-event
                                              vim.fn.Test))
             (let [[autocmd] (get-autocmds)]
