@@ -48,9 +48,9 @@
           #(let [id (augroup! default-augroup)]
              (assert.is.same id (augroup+ default-augroup))))))
     (describe :au!/autocmd!
-      (it "must be wrapped in hashfn, fn, ..., to set callback in macro"
+      (it "sets callback via macro with quote"
         (fn []
-          (autocmd! default-augroup default-event [:pat] #(macro-callback))
+          (autocmd! default-augroup default-event [:pat] `(macro-callback))
           (let [au (get-first-autocmd {:pattern :pat})]
             (assert.is_not_nil au.callback))))
       (it "set command in macro with no args"

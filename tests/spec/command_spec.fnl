@@ -71,9 +71,9 @@
           (command! :Foo `vim.fn.Test)
           (assert.is_same "" (get-command-definition :Foo))
           (assert.is_not_same desc (get-command-definition :Foo)))))
-    (it "must be wrapped in hashfn, fn, ..., to set callback in macro"
+    (it "sets callback via macro with quote"
       (fn []
-        (command! :Foo #(macro-callback))
+        (command! :Foo `(macro-callback))
         ;; TODO: Check if callback is set.
         (assert.is_not_nil (get-command :Foo))))
     (it "set command in macro with no args"

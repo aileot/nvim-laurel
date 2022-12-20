@@ -110,9 +110,9 @@
              (each [_ m (ipairs modes)]
                (let [{: noremap} (get-mapargs m :lhs)]
                  (assert.is.same 1 noremap)))))
-        (it "must be wrapped in hashfn, fn, ..., to set callback in macro"
+        (it "sets callback via macro with quote"
           (fn []
-            (map! :n :lhs #(macro-callback))
+            (map! :n :lhs `(macro-callback))
             (assert.is_not_nil (get-callback :n :lhs))))
         (it "set command in macro with no args"
           (fn []
