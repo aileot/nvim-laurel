@@ -2,14 +2,20 @@
 
 # nvim-laurel 🌿
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![test](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg)](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml)
+[![badge/license]][path/to/license]
+[![badge/test]][workflow/test]
 
 _A set of macros to write Neovim config_\
 _highly inspired by the builtin Nvim Lua standard library and by good old Vim
 script_
 
-![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
+![image/nvim-laurel-demo]
+
+[badge/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg
+[badge/license]: https://img.shields.io/badge/license-MIT-blue.svg
+[workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
+[path/to/license]: ./LICENSE
+[image/nvim-laurel-demo]: https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png
 
 </div>
 
