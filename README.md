@@ -13,7 +13,7 @@ script_
 ![image/nvim-laurel-demo]
 
 [badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-fff2d6?logo=Lua&style=flat-square
-[badge/test]: https://img.shields.io/github/workflow/status/aileot/nvim-laurel/Test?label=Tests&logo=github&style=flat-square
+[badge/test]: https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square
 [badge/license]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
 [workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
 [path/to/license]: ./LICENSE
