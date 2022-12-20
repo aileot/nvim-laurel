@@ -146,11 +146,12 @@
   @param ?trues string[] The sequence of keys set to `true`.
   @return kv-table"
   (let [kv-table {}
-        max (length xs)]
+        max (length xs)
+        trues (or ?trues [])]
     (var i 1)
     (while (<= i max)
       (let [x (. xs i)]
-        (if (contains? ?trues x)
+        (if (contains? trues x)
             (tset kv-table x true)
             (tset kv-table x (. xs (++ i)))))
       (++ i))
