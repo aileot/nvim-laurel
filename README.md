@@ -2,17 +2,17 @@
 
 # nvim-laurel 🌿
 
+[![badge/license]][path/to/license]
+[![badge/test]][workflow/test]  
 _A set of macros for Neovim config_\
 _highly inspired by the builtin Nvim Lua standard library and by good old Vim
 script_
 
-[![badge/fennel]][url/to/fennel]
-[![badge/license]][path/to/license]
-[![badge/test]][workflow/test]
-
 ![image/nvim-laurel-demo]
 
-[badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-fff2d6?logo=Lua&style=flat-square
+[![badge/fennel]][url/to/fennel]
+
+[badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-030281?logo=Lua&style=for-the-badge
 [badge/test]: https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square
 [badge/license]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
 [workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
