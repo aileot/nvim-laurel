@@ -6,15 +6,18 @@ _A set of macros to write Neovim config_\
 _highly inspired by the builtin Nvim Lua standard library and by good old Vim
 script_
 
+[![badge/fennel]][url/to/fennel]
 [![badge/license]][path/to/license]
 [![badge/test]][workflow/test]
 
 ![image/nvim-laurel-demo]
 
+[badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-fff2d6?logo=Lua&style=flat-square
 [badge/test]: https://img.shields.io/github/workflow/status/aileot/nvim-laurel/Test?label=Tests&logo=github&style=flat-square
 [badge/license]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
 [workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
 [path/to/license]: ./LICENSE
+[url/to/fennel]: https://fennel-lang.org/
 [image/nvim-laurel-demo]: https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png
 
 </div>
