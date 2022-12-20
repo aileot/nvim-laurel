@@ -157,6 +157,25 @@
       (++ i))
     kv-table))
 
+(lambda seq->trues [xs ?nexts]
+  "Convert `xs` into a kv-table as follows:
+  - The values for `x` listed in `?nexts` are set to the next value in `xs`.
+  - The values for the rest of `x`s are set to `true`.
+  @param xs sequence
+  @param ?nexts string[]
+  @return kv-table"
+  (let [kv-table {}
+        max (length xs)
+        nexts (or ?nexts [])]
+    (var i 1)
+    (while (<= i max)
+      (let [x (. xs i)]
+        (if (contains? nexts x)
+            (tset kv-table x (. xs (++ i)))
+            (tset kv-table x true)))
+      (++ i))
+    kv-table))
+
 (lambda merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
   @param ?extra-opts table Not a sequence.
