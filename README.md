@@ -230,7 +230,7 @@ script_
 3. Add `/path/to/nvim-laurel` to `'runtimepath'` in your Neovim config file.
 
    ```lua
-   vim.go.rtp:append("/path/to/nvim-laurel")
+   vim.opt.rtp:append("/path/to/nvim-laurel")
    ```
 
 ## Usage
