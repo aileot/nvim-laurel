@@ -146,13 +146,33 @@
   @param ?trues string[] The sequence of keys set to `true`.
   @return kv-table"
   (let [kv-table {}
-        max (length xs)]
+        max (length xs)
+        trues (or ?trues [])]
     (var i 1)
     (while (<= i max)
       (let [x (. xs i)]
-        (if (contains? ?trues x)
+        (if (contains? trues x)
             (tset kv-table x true)
             (tset kv-table x (. xs (++ i)))))
+      (++ i))
+    kv-table))
+
+(lambda seq->trues [xs ?nexts]
+  "Convert `xs` into a kv-table as follows:
+  - The values for `x` listed in `?nexts` are set to the next value in `xs`.
+  - The values for the rest of `x`s are set to `true`.
+  @param xs sequence
+  @param ?nexts string[]
+  @return kv-table"
+  (let [kv-table {}
+        max (length xs)
+        nexts (or ?nexts [])]
+    (var i 1)
+    (while (<= i max)
+      (let [x (. xs i)]
+        (if (contains? nexts x)
+            (tset kv-table x (. xs (++ i)))
+            (tset kv-table x true)))
       (++ i))
     kv-table))
 
@@ -407,21 +427,7 @@
       (let [?seq-extra-opts (if (sequence? a1) a1
                                 (sequence? a2) a2)
             ?extra-opts (when ?seq-extra-opts
-                          (seq->kv-table ?seq-extra-opts
-                                         [:<buffer>
-                                          :ex
-                                          :<command>
-                                          :cb
-                                          :<callback>
-                                          :remap
-                                          :noremap
-                                          :nowait
-                                          :silent
-                                          :script
-                                          :unique
-                                          :expr
-                                          :replace_keycodes
-                                          :literal]))
+                          (seq->trues ?seq-extra-opts [:desc :buffer :callback]))
             [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
                                                  [{} a1 a2 ?a3]
                                                  (sequence? a1)
