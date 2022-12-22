@@ -313,7 +313,6 @@
         (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
-                (sym? callback) ;
                 (anonymous-function? callback) ;
                 (quoted? callback))
             ;; Note: Ignore the possibility to set Vimscript function to callback
@@ -439,7 +438,6 @@
                     (error* "cannot set both <command>/ex and <callback>/cb."))
                   (if (or extra-opts.<command> extra-opts.ex) raw-rhs
                       (or extra-opts.<callback> extra-opts.cb ;
-                          (sym? raw-rhs) ;
                           (anonymous-function? raw-rhs) ;
                           (quoted? raw-rhs))
                       (do
