@@ -92,11 +92,6 @@
           (autocmd! default-augroup default-event [:pat] `vim.fn.Test)
           (let [au (get-first-autocmd {:pattern :pat})]
             (assert.is_same "<vim function: Test>" au.callback))))
-      (it "set `(vim.fn.Test) to callback as #(vim.fn.Test)"
-        (fn []
-          (autocmd! default-augroup default-event [:pat] `(vim.fn.Test))
-          (let [au (get-first-autocmd {:pattern :pat})]
-            (assert.is_not_same "<vim function: Test>" au.callback))))
       (it "set #(vim.fn.Test) to callback without modification"
         (fn []
           (autocmd! default-augroup default-event [:pat] #(vim.fn.Test))
