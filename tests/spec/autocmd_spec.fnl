@@ -41,7 +41,7 @@
         (it "can create augroup with sequence and `au!` macro mixed"
           (fn []
             (assert.has_no.errors #(augroup! default-augroup
-                                     [default-event default-callback]
+                                     [default-event `default-callback]
                                      (au! :FileType [:foo :bar] #:foobar)))))))
     (describe :augroup+
       (fn []
