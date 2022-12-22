@@ -46,8 +46,9 @@
     (describe :augroup+
       (fn []
         (it "gets an existing augroup id"
-          #(let [id (augroup! default-augroup)]
-             (assert.is.same id (augroup+ default-augroup))))))
+          (fn []
+            (let [id (augroup! default-augroup)]
+              (assert.is.same id (augroup+ default-augroup)))))))
     (describe :au!/autocmd!
       (fn []
         (it "sets callback via macro with quote"
