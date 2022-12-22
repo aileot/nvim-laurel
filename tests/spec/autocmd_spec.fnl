@@ -102,17 +102,17 @@
         (it "can add an autocmd to an existing augroup"
           (fn []
             (autocmd! default-augroup default-event [:pat1 :pat2]
-                      default-callback)
+                      `default-callback)
             (let [[autocmd] (get-autocmds)]
               (assert.is.same default-callback autocmd.callback))))
         (it "can add autocmd with no patterns for macro"
           (fn []
             (assert.has_no.errors #(autocmd! default-augroup default-event
-                                             default-callback))))
+                                             `default-callback))))
         (it "can add autocmds to an existing augroup within `augroup+`"
           (fn []
             (augroup+ default-augroup
-                      (au! default-event [:pat1 :pat2] default-callback))
+                      (au! default-event [:pat1 :pat2] `default-callback))
             (let [[autocmd] (get-autocmds)]
               (assert.is.same default-callback autocmd.callback))))
         (it "can set Ex command in autocmds with `<command>` key"
@@ -136,7 +136,7 @@
         (it "can set callback function in autocmds with `<callback>` key"
           (fn []
             (augroup! default-augroup
-              (au! default-event [:pat1] [:<callback>] default-callback)
+              (au! default-event [:pat1] [:<callback>] `default-callback)
               (au! default-event [:pat2] [:<callback>] (.. :foo :bar)))
             (let [[autocmd1] (get-autocmds {:pattern :pat1})
                   [autocmd2] (get-autocmds {:pattern :pat2})]
@@ -145,7 +145,7 @@
         (it "can set callback function in autocmds with `cb` key"
           (fn []
             (augroup! default-augroup
-              (au! default-event [:pat1] [:cb] default-callback)
+              (au! default-event [:pat1] [:cb] `default-callback)
               (au! default-event [:pat2] [:cb] (.. :foo :bar)))
             (let [[autocmd1] (get-autocmds {:pattern :pat1})
                   [autocmd2] (get-autocmds {:pattern :pat2})]
@@ -161,11 +161,11 @@
           (fn []
             (let [bufnr (vim.api.nvim_get_current_buf)
                   au1 (au! default-augroup default-event [:buffer bufnr]
-                           default-callback)]
+                           `default-callback)]
               (vim.cmd.new)
               (vim.cmd.only)
               (let [au2 (au! default-augroup default-event [:<buffer>]
-                             default-callback)
+                             `default-callback)
                     [autocmd1] (get-autocmds {:buffer bufnr})
                     [autocmd2] ;
                     (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
@@ -174,17 +174,17 @@
         (it "can define autocmd without any augroup"
           (fn []
             (assert.has_no.errors #(let [id (au! nil default-event
-                                                 default-callback)]
+                                                 `default-callback)]
                                      (vim.api.nvim_del_autocmd id)))))
         (it "gives lowest priority to `pattern` as (< raw seq tbl)"
           (fn []
             (let [seq-pat :seq-pat
                   tbl-pat :tbl-pat]
               (au! default-augroup default-event [:raw-seq-pat]
-                   default-callback)
+                   `default-callback)
               (au! default-augroup default-event [:pattern seq-pat]
-                   default-callback)
-              (au! default-augroup default-event default-callback
+                   `default-callback)
+              (au! default-augroup default-event `default-callback
                    {:pattern tbl-pat})
               (let [au (get-first-autocmd {:pattern [:raw-seq-pat]})]
                 (assert.is.same :raw-seq-pat au.pattern))
