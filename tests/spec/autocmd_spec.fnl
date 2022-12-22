@@ -69,10 +69,9 @@
               (assert.is_same :macro-command au.command))))
         (it "sets callback function with quoted symbol"
           (fn []
-            (do
-              (autocmd! default-augroup default-event [:pat] `default-callback)
-              (assert.is_same default-callback
-                              (. (get-first-autocmd {:pattern :pat}) :callback)))))
+            (autocmd! default-augroup default-event [:pat] `default-callback)
+            (assert.is_same default-callback
+                            (. (get-first-autocmd {:pattern :pat}) :callback))))
         (it "sets callback function with quoted multi-symbol"
           (fn []
             (let [desc :multi.sym]
