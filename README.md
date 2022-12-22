@@ -1,27 +1,39 @@
+<div align="center">
+
 # nvim-laurel 🌿
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![test](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml/badge.svg)](https://github.com/aileot/nvim-laurel/actions/workflows/test.yml)
+[![badge/license]][path/to/license]
+[![badge/test]][workflow/test]  
+_A set of macros for Neovim config_\
+_highly inspired by the builtin Nvim Lua standard library and by good old Vim
+script_
 
-> A set of macros to write readable Neovim config, highly inspired by the Lua
-> modules built in Neovim and by good old Vim script
+![image/nvim-laurel-demo]
 
-![nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
+[![badge/fennel]][url/to/fennel]
+
+[badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-030281?logo=Lua&style=for-the-badge
+[badge/test]: https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square
+[badge/license]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
+[workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
+[path/to/license]: ./LICENSE
+[url/to/fennel]: https://fennel-lang.org/
+[image/nvim-laurel-demo]: https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png
+
+</div>
 
 ## Design
 
-- **Fast:** Each macro is expanded to a few nvim API functions in principle. A
-  typical exception: the optimal results with fewer overheads, but messy, would
-  step aside at runtime in favor of small wrappers with a few overheads, but
-  concise.
+- **Fast:** Each macro is expanded to a few nvim API functions in principle.
 - **Intuitive:** Most of the macros imitates the corresponding Vim script
   command or function in syntax: by and large, you can write as if functions
   replaced Ex commands, preceded by left parens `(`. In addition, each macro is
   also a replacement for the corresponding nvim API function, where meaningless
   arguments for end-users are omittable, e.g., `(augroup! :name)` replaces
   `(vim.api.nvim_create_augroup :name {})`.
-- **Clean:** nvim-laurel provides no macros unrelated to Neovim stuff: such
-  general macros or functions as `nil?`, `if-not`, `++`, ..., won't be exposed.
+- **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set in
+  sequential table instead of key-value table. In this format, options are
+  likely to be `format`ted into the same line as nvim-laurel macro starts from.
 
 ## Requirements
 
@@ -32,20 +44,169 @@
 
 ### With a compiler plugin (recommended)
 
-Install nvim-laurel by your favorite plugin manager.
+1. Add nvim-laurel to `'runtimepath'`, before registering it with your plugin
+   manager, to use nvim-laurel macros as early as possible.
 
-[packer.nvim](https://github.com/wbthomason/packer.nvim)
+   <details>
+   <summary>
+   With lazy.nvim
+   </summary>
 
-```lua
-use "aileot/nvim-laurel"
-```
+   ```lua
+   local function prerequisite(name, url)
+     -- To manage the version of repo, the path should be where your plugin manager will download it.
+     local name = url:gsub("^.*/", "")
+     local path = vim.fn.stdpath("data") .. "/lazy/" .. name
+     if not vim.loop.fs_stat(path) then
+       vim.fn.system({
+         "git",
+         "clone",
+         "--filter=blob:none",
+         "--depth=1",
+         url,
+         path,
+       })
+     end
+     vim.opt.runtimepath:prepend(path)
+   end
 
-[dein.vim](https://github.com/Shougo/dein.vim) in toml:
+   -- Install your favorite plugin manager.
+   prerequisite("https://github.com/folke/lazy.nvim")
 
-```toml
-[[plugin]]
-repo = "aileot/nvim-laurel"
-```
+   -- Install nvim-laurel
+   prerequisite("https://github.com/aileot/nvim-laurel")
+
+   -- Install a runtime compiler
+   prerequisite("https://github.com/rktjmp/hotpot.nvim")
+
+   require("hotpot").setup({
+     compiler = {
+       macros = {
+         env = "_COMPILER",
+         allowedGlobals = false,
+       },
+     },
+   })
+
+   -- Then, you can write config in Fennel with nvim-laurel.
+   require("your.core")
+   ```
+   </details>
+   <details>
+   <summary>
+   With packer.nvim
+   </summary>
+
+   ```lua
+   local function prerequisite(name, url)
+     -- To manage the version of repo, the path should be where your plugin manager will download it.
+     local name = url:gsub("^.*/", "")
+     local dir = vim.fn.stdpath("data") .. "/site/pack/packer/start/" .. name
+     if not vim.loop.fs_stat(path) then
+       vim.fn.system({
+         "git",
+         "clone",
+         "--filter=blob:none",
+         "--depth=1",
+         url,
+         path,
+       })
+     end
+   end
+
+   -- Install your favorite plugin manager.
+   prerequisite("https://github.com/wbthomason/packer.nvim")
+
+   -- Install nvim-laurel
+   prerequisite("https://github.com/aileot/nvim-laurel")
+
+   -- Install a runtime compiler
+   prerequisite("https://github.com/rktjmp/hotpot.nvim")
+
+   require("hotpot").setup({
+     compiler = {
+       macros = {
+         env = "_COMPILER",
+         allowedGlobals = false,
+       },
+     },
+   })
+
+   -- Then, you can write config in Fennel with nvim-laurel.
+   require("your.core")
+   ```
+   </details>
+   <details>
+   <summary>
+   With dein.vim
+   </summary>
+
+   ```lua
+   local function prerequisite(url)
+     -- To manage the version of repo, the path should be where your plugin manager will download it.
+     local path = "~/.cache/dein/repos/" .. url:gsub("^.*://", "")
+     if not vim.loop.fs_stat(path) then
+       vim.fn.system({
+         "git",
+         "clone",
+         "--filter=blob:none",
+         "--depth=1",
+         url,
+         path,
+       })
+     end
+     vim.opt.runtimepath:prepend(path)
+   end
+
+   -- Install your favorite plugin manager.
+   prerequisite("https://github.com/Shougo/dein.vim")
+
+   -- Install nvim-laurel
+   prerequisite("https://github.com/aileot/nvim-laurel")
+
+   -- Install a runtime compiler
+   prerequisite("https://github.com/rktjmp/hotpot.nvim")
+
+   require("hotpot").setup({
+     compiler = {
+       macros = {
+         env = "_COMPILER",
+         allowedGlobals = false,
+       },
+     },
+   })
+
+   -- Then, you can write config in Fennel with nvim-laurel.
+   require("your.core")
+   ```
+   </details>
+
+2. Manage the version of nvim-laurel by your favorite plugin manager.
+
+   With [lazy.nvim](https://github.com/folke/lazy.nvim)
+
+   ```fennel
+   (local lazy (require :lazy))
+   (lazy.setup [:aileot/nvim-laurel
+                ...]
+               {:defaults {:lazy true}})
+   ```
+
+   With [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+   ```fennel
+   (local packer (require :packer))
+   (packer.startup (fn [use]
+                     (use :aileot/nvim-laurel)
+                     ...))
+   ```
+
+   With [dein.vim](https://github.com/Shougo/dein.vim) in toml
+
+   ```toml
+   [[plugins]]
+   repo = "aileot/nvim-laurel"
+   ```
 
 ### To compile outside Neovim
 
@@ -66,10 +227,10 @@ repo = "aileot/nvim-laurel"
        --compile $< > $@
    ```
 
-3. Add `/path/to/nvim-laurel` to `&runtimepath` in your Neovim config file.
+3. Add `/path/to/nvim-laurel` to `'runtimepath'` in your Neovim config file.
 
    ```lua
-   vim.go.rtp:append("/path/to/nvim-laurel")
+   vim.opt.rtp:append("/path/to/nvim-laurel")
    ```
 
 ## Usage
@@ -118,6 +279,10 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
   - [`feedkeys!`](./doc/MACROS.md#feedkeys)
   - [`highlight!`](./doc/MACROS.md#highlight)
   - [`hi!`](./doc/MACROS.md#hi)
+
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md).
 
 ## Alternatives
 
