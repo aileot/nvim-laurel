@@ -35,8 +35,9 @@
     (describe :augroup!
       (fn []
         (it "returns augroup id without autocmds insides"
-          #(let [id (augroup! default-augroup)]
-             (assert.has_no.errors #(vim.api.nvim_del_augroup_by_id id))))
+          (fn []
+            (let [id (augroup! default-augroup)]
+              (assert.has_no.errors #(vim.api.nvim_del_augroup_by_id id)))))
         (it "can create augroup with sequence and `au!` macro mixed"
           (fn []
             (assert.has_no.errors #(augroup! default-augroup
@@ -65,24 +66,27 @@
           (let [au (get-first-autocmd {:pattern :pat})]
             (assert.is_same :macro-command au.command))))
       (it "sets callback function with quoted symbol"
-        #(do
-           (autocmd! default-augroup default-event [:pat] `default-callback)
-           (assert.is_same default-callback
-                           (. (get-first-autocmd {:pattern :pat}) :callback))))
+        (fn []
+          (do
+            (autocmd! default-augroup default-event [:pat] `default-callback)
+            (assert.is_same default-callback
+                            (. (get-first-autocmd {:pattern :pat}) :callback)))))
       (it "sets callback function with quoted multi-symbol"
-        #(let [desc :multi.sym]
-           (autocmd! default-augroup default-event [:pat] `default.multi.sym
-                     {: desc})
-           ;; FIXME: In vusted, callback is unexpectedly set to a string
-           ;; "<vim function: default.multi.sym>"; it must be the same as
-           ;; `default.multi.sym`.
-           (assert.is_same desc (. (get-first-autocmd {:pattern :pat}) :desc))))
+        (fn []
+          (let [desc :multi.sym]
+            (autocmd! default-augroup default-event [:pat] `default.multi.sym
+                      {: desc})
+            ;; FIXME: In vusted, callback is unexpectedly set to a string
+            ;; "<vim function: default.multi.sym>"; it must be the same as
+            ;; `default.multi.sym`.
+            (assert.is_same desc (. (get-first-autocmd {:pattern :pat}) :desc)))))
       (it "sets callback function with quoted list"
-        #(let [desc :list]
-           (autocmd! default-augroup default-event [:pat]
-                     `(default-callback :foo :bar) {: desc})
-           (let [au (get-first-autocmd {:pattern :pat})]
-             (assert.is_same desc au.desc))))
+        (fn []
+          (let [desc :list]
+            (autocmd! default-augroup default-event [:pat]
+                      `(default-callback :foo :bar) {: desc})
+            (let [au (get-first-autocmd {:pattern :pat})]
+              (assert.is_same desc au.desc)))))
       (it "set `vim.fn.Test in string \"Test\""
         (fn []
           (autocmd! default-augroup default-event [:pat] `vim.fn.Test)
