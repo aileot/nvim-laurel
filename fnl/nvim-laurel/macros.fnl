@@ -443,12 +443,6 @@
                           (anonymous-function? raw-rhs) ;
                           (quoted? raw-rhs))
                       (do
-                        ;; Hack: `->compatible-opts` must remove
-                        ;; `cb`/`<callback>` key instead, but it doesn't at
-                        ;; present. It should be reported to Fennel repository,
-                        ;; but no idea how to reproduce it in minimal codes.
-                        (set extra-opts.cb nil)
-                        (set extra-opts.<callback> nil)
                         (set extra-opts.callback
                              (if (sym? raw-rhs)
                                  (deprecate "callback function in symbol for `map!`"
