@@ -11,7 +11,7 @@
   `(-> (. vim.opt ,name) (: :get)))
 
 (macro get-go [name]
-  `(-> (. vim.opt_global ,name) (: :get)))
+  `(. vim.go ,name))
 
 (macro get-lo [name]
   `(-> (. vim.opt_local ,name) (: :get)))
