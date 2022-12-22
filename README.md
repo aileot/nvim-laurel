@@ -280,6 +280,10 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
   - [`highlight!`](./doc/MACROS.md#highlight)
   - [`hi!`](./doc/MACROS.md#hi)
 
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md).
+
 ## Alternatives
 
 - [aniseed](https://github.com/Olical/aniseed)
