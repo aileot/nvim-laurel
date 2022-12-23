@@ -502,12 +502,13 @@
                      (if ?bufnr
                          `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs ,rhs
                                                        ,api-opts)
-                         `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))]
+                         `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))
+        modes (if (and (str? modes) (< 1 (length modes)))
+                  (icollect [m (modes:gmatch ".")]
+                    m)
+                  modes)]
     (if (str? modes)
-        (if (<= (length modes) 1)
-            (set-keymap modes)
-            (icollect [m (modes:gmatch ".")]
-              (set-keymap m)))
+        (set-keymap modes)
         (hidden-in-compile-time? modes)
         ;; Note: With `vim.keymap.set` instead, it would be hard to deal
         ;; with `remap` key.
