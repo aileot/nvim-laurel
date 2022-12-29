@@ -136,6 +136,21 @@
              (map! modes [:expr :literal] :lhs :rhs)
              (let [{: replace_keycodes} (get-mapargs :n :lhs)]
                (assert.is_nil replace_keycodes))))
+        (it "set command when rhs in symbol matches `^<.+>`"
+          (fn []
+            (let [<command> :foo]
+              (map! :n :lhs <command>)
+              (assert.is_same <command> (get-rhs :n :lhs)))))
+        (it "set command when rhs in list matches `^<.+>`"
+          (fn []
+            (let [<new>command #(.. $1 $2)]
+              (map! :n :lhs (<new>command :foo :bar))
+              (assert.is_same :foobar (get-rhs :n :lhs)))))
+        (it "set command when rhs in multi symbol matches `^<.+>`"
+          (fn []
+            (let [<new> {:multi {:sym #:foobar}}]
+              (map! :n :lhs (<new>.multi.sym :foo :bar))
+              (assert.is_same :foobar (get-rhs :n :lhs)))))
         (it "set command in macro with no args"
           (fn []
             (map! :n :lhs (<macro-command>))
