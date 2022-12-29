@@ -11,10 +11,11 @@
 (macro macro-callback []
   `#:macro-callback)
 
-(macro macro-command []
+(macro <macro-command> []
   :macro-command)
 
-(local default-command :default-command)
+(local <default-command> :default-command)
+
 (local default-callback #:default-callback)
 (local default {:multi {:sym {:callback #:default.multi.sym.callback}}})
 
@@ -117,11 +118,11 @@
             (assert.is_not_nil (get-callback :n :lhs))))
         (it "set command in macro with no args"
           (fn []
-            (map! :n :lhs (macro-command))
+            (map! :n :lhs (<macro-command>))
             (assert.is_same :macro-command (get-rhs :n :lhs))))
         (it "set command in macro with some args"
           (fn []
-            (map! :n :lhs (macro-command :foo :bar))
+            (map! :n :lhs (<macro-command> :foo :bar))
             (assert.is_same :macro-command (get-rhs :n :lhs))))
         (it "maps multiple mode mappings with a sequence at once"
           #(let [modes [:n :c :t]]
@@ -216,15 +217,15 @@
                 (assert.is.same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1))))
             (it "can set Ex command in autocmds with `<command>` key"
               (fn []
-                (nnoremap! :lhs1 [:<command>] default-command)
+                (nnoremap! :lhs1 [:<command>] <default-command>)
                 (nnoremap! :lhs2 [:<command>] (.. :foo :bar))
-                (assert.is.same default-command (get-rhs :n :lhs1))
+                (assert.is.same <default-command> (get-rhs :n :lhs1))
                 (assert.is.same :foobar (get-rhs :n :lhs2))))
             (it "can set Ex command in autocmds with `ex` key"
               (fn []
-                (nnoremap! :lhs1 [:ex] default-command)
+                (nnoremap! :lhs1 [:ex] <default-command>)
                 (nnoremap! :lhs2 [:ex] (.. :foo :bar))
-                (assert.is.same default-command (get-rhs :n :lhs1))
+                (assert.is.same <default-command> (get-rhs :n :lhs1))
                 (assert.is.same :foobar (get-rhs :n :lhs2))))
             (it "can set callback function in autocmds with `<callback>` key"
               (fn []
