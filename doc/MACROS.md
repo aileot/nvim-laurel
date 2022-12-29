@@ -263,15 +263,12 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - `cb`: An alias of `<callback>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
-  function or Ex command. To tell `callback` is Lua function, either prepend a
-  quote `` ` `` as an identifer (the quoted symbol, or list, is supposed to
-  result in Lua function at runtime), or set it in anonymous function
-  constructed by `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex command.
-
-  Note: To call Vim script function `foobar` without table arg from
-  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar `` if
-  you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
-  `foobar` with the table arg.
+  function or Ex command:
+  - To tell `callback` in symbol/list results in string, i.e., Vim Normal mode
+    command, the first symbol must match `^<.+>` in Lua pattern.
+  - To tell `callback` in symbol/list results in function, i.e., Lua function,
+    either prepend a quote `` ` `` as an identifer, or set it in anonymous
+    function constructed by `fn`, `hashfn`, `lambda`, and `partial`.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
