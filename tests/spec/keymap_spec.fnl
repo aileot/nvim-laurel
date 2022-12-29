@@ -16,7 +16,8 @@
 
 (local default-command :default-command)
 (local default-callback #:default-callback)
-(local default {:multi {:sym #:default.multi.sym}})
+(local default {:multi {:sym {:callback #:default.multi.sym.callback}}})
+
 (local new-callback #(fn []
                        $))
 
@@ -68,8 +69,8 @@
              (assert.is_same default-callback (get-callback :n :lhs))))
         (it "sets callback function with quoted multi-symbol"
           #(let [desc :multi.sym]
-             (map! :n :lhs `default.multi.sym {: desc})
-             (assert.is_same default.multi.sym (get-callback :n :lhs))))
+             (map! :n :lhs `default.multi.sym.callback {: desc})
+             (assert.is_same default.multi.sym.callback (get-callback :n :lhs))))
         (it "sets callback function with quoted list"
           #(let [desc :list]
              (map! :n :lhs `(default-callback :foo :bar) {: desc})
