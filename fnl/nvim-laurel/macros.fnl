@@ -449,7 +449,7 @@
                                             "quote \"`\" like `foobar" :v0.6.0
                                             raw-rhs)
                                  (->unquoted raw-rhs)))
-                        "") ;
+                        "")
                       ;; Otherwise, Normal mode commands.
                       raw-rhs))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
