@@ -437,7 +437,14 @@
                   (when (and (or extra-opts.<command> extra-opts.ex)
                              (or extra-opts.<callback> extra-opts.cb))
                     (error* "cannot set both <command>/ex and <callback>/cb."))
-                  (if (or extra-opts.<command> extra-opts.ex) raw-rhs
+                  (if (or extra-opts.<command> extra-opts.ex ;
+                          (str? raw-rhs)
+                          (and (or (and (sym? raw-rhs)
+                                        (-> (->str raw-rhs) (: :match "^<.+>")))
+                                   (and (list? raw-rhs)
+                                        (-> (first raw-rhs) (->str)
+                                            (: :match "^<.+>"))))))
+                      raw-rhs
                       (or extra-opts.<callback> extra-opts.cb ;
                           (sym? raw-rhs) ;
                           (anonymous-function? raw-rhs) ;
