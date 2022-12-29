@@ -116,14 +116,6 @@
           (fn []
             (map! :n :lhs `(macro-callback))
             (assert.is_not_nil (get-callback :n :lhs))))
-        (it "set command in macro with no args"
-          (fn []
-            (map! :n :lhs (<macro-command>))
-            (assert.is_same :macro-command (get-rhs :n :lhs))))
-        (it "set command in macro with some args"
-          (fn []
-            (map! :n :lhs (<macro-command> :foo :bar))
-            (assert.is_same :macro-command (get-rhs :n :lhs))))
         (it "maps multiple mode mappings with a sequence at once"
           #(let [modes [:n :c :t]]
              (noremap! modes :lhs :rhs)
@@ -143,7 +135,15 @@
           #(let [modes [:n]]
              (map! modes [:expr :literal] :lhs :rhs)
              (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-               (assert.is_nil replace_keycodes))))))
+               (assert.is_nil replace_keycodes))))
+        (it "set command in macro with no args"
+          (fn []
+            (map! :n :lhs (<macro-command>))
+            (assert.is_same :macro-command (get-rhs :n :lhs))))
+        (it "set command in macro with some args"
+          (fn []
+            (map! :n :lhs (<macro-command> :foo :bar))
+            (assert.is_same :macro-command (get-rhs :n :lhs))))))
     (describe :unmap!
       (fn []
         (it "`unmap`s key"
