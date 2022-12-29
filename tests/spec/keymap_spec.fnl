@@ -14,7 +14,7 @@
 (macro macro-command []
   :macro-command)
 
-(local default-rhs :default-rhs)
+(local default-command :default-command)
 (local default-callback #:default-callback)
 (local default {:multi {:sym #:default.multi.sym}})
 (local new-callback #(fn []
@@ -215,15 +215,15 @@
                 (assert.is.same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1))))
             (it "can set Ex command in autocmds with `<command>` key"
               (fn []
-                (nnoremap! :lhs1 [:<command>] default-rhs)
+                (nnoremap! :lhs1 [:<command>] default-command)
                 (nnoremap! :lhs2 [:<command>] (.. :foo :bar))
-                (assert.is.same default-rhs (get-rhs :n :lhs1))
+                (assert.is.same default-command (get-rhs :n :lhs1))
                 (assert.is.same :foobar (get-rhs :n :lhs2))))
             (it "can set Ex command in autocmds with `ex` key"
               (fn []
-                (nnoremap! :lhs1 [:ex] default-rhs)
+                (nnoremap! :lhs1 [:ex] default-command)
                 (nnoremap! :lhs2 [:ex] (.. :foo :bar))
-                (assert.is.same default-rhs (get-rhs :n :lhs1))
+                (assert.is.same default-command (get-rhs :n :lhs1))
                 (assert.is.same :foobar (get-rhs :n :lhs2))))
             (it "can set callback function in autocmds with `<callback>` key"
               (fn []
