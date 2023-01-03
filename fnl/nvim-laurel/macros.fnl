@@ -452,8 +452,9 @@
                       (do
                         (set extra-opts.callback (->unquoted raw-rhs))
                         "")
-                      ;; Otherwise, Normal mode commands.
-                      raw-rhs))
+                      ;; Otherwise,
+                      (deprecate "list for command" "set `<command>` for now"
+                                 :v0.6.0 raw-rhs)))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
         (values extra-opts lhs rhs ?api-opts))))
