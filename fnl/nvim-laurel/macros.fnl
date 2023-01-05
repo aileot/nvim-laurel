@@ -439,25 +439,31 @@
                                                  (sequence? a1)
                                                  [?extra-opts a2 ?a3 ?a4]
                                                  [?extra-opts a1 ?a3 ?a4])
-            rhs (do
+            rhs (let [cb (->unquoted raw-rhs)]
                   (when (and (or extra-opts.<command> extra-opts.ex)
                              (or extra-opts.<callback> extra-opts.cb))
                     (error* "cannot set both <command>/ex and <callback>/cb."))
-                  (if (or extra-opts.<command> extra-opts.ex) raw-rhs
-                      (or extra-opts.<callback> extra-opts.cb ;
-                          (sym? raw-rhs) ;
-                          (anonymous-function? raw-rhs) ;
-                          (quoted? raw-rhs))
+                  (if (or (anonymous-function? raw-rhs) extra-opts.<callback>
+                          extra-opts.cb)
+                      (do
+                        (set extra-opts.callback cb)
+                        "")
+                      (or (str? raw-rhs) extra-opts.<command> extra-opts.ex)
+                      cb
                       (do
                         (set extra-opts.callback
-                             (if (sym? raw-rhs)
-                                 (deprecate "callback function in symbol for `map!`"
-                                            "quote \"`\" like `foobar" :v0.6.0
-                                            raw-rhs)
-                                 (->unquoted raw-rhs)))
-                        "") ;
-                      ;; Otherwise, Normal mode commands.
-                      raw-rhs))
+                             `(when (= (type ,cb) :function)
+                                ,(if (quoted? raw-rhs)
+                                     (deprecate "quoted symbol/list for callback"
+                                                "symbol/list without \"`\" to set Lua function"
+                                                :v0.6.0 cb)
+                                     raw-rhs)))
+                        `(if (= (type ,cb) :function) ""
+                             ,(if (quoted? raw-rhs)
+                                  cb
+                                  (deprecate "symbol/list for command without quote"
+                                             "symbol/list with \"`\" to interpret as Vim script"
+                                             :v0.6.0 cb))))))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
         (set extra-opts.buffer ?bufnr)
         (values extra-opts lhs rhs ?api-opts))))
