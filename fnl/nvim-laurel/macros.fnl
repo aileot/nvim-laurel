@@ -313,9 +313,10 @@
         (if (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
-                (sym? callback) ;
-                (anonymous-function? callback) ;
-                (quoted? callback))
+                (anonymous-function? callback))
+            (set extra-opts.callback callback)
+            (str? callback)
+            (set extra-opts.command callback)
             ;; Note: Ignore the possibility to set Vimscript function to callback
             ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
             ;; to "callback" key because functions written in Vim script are
@@ -323,15 +324,20 @@
             ;; its first arg.
             (let [cb (->unquoted callback)]
               (set extra-opts.callback
-                   ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
-                   ;; "foobar" set to "callback" key.
                    (or (extract-?vim-fn-name cb) ;
-                       (if (sym? callback)
-                           (deprecate "callback function in symbol for `augroup!`, `autocmd!`, ..."
-                                      "quote \"`\" like `foobar" :v0.6.0
-                                      callback)
-                           cb))))
-            (set extra-opts.command callback))
+                       `(when (= (type ,cb) :function)
+                          ,(if (quoted? callback)
+                               (deprecate "quoted symbol/list for callback"
+                                          "symbol/list without \"`\" to set Lua function"
+                                          :v0.6.0 cb)
+                               cb))))
+              (set extra-opts.command
+                   (when-not (extract-?vim-fn-name cb)
+                     `(when (= (type ,cb) :string)
+                        ,(if (quoted? callback) cb
+                             (deprecate "symbol/list for command without quote"
+                                        "symbol/list with \"`\" to interpret as Vim script"
+                                        :v0.6.0 cb)))))))
         (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
                                        ?api-opts)]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
