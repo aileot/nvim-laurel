@@ -88,12 +88,12 @@ following features:
 
 ### Autocmd
 
-- [`augroup!`](#augroup)
-- [`augroup+`](#augroup-1)
-- [`autocmd!`](#autocmd)
-- [`au!`](#au)
+- [augroup!](#augroup)
+- [augroup+](#augroup-1)
+- [autocmd!](#autocmd)
+- [au!](#au)
 
-#### `augroup!`
+#### augroup!
 
 Create or get an augroup, or override an existing augroup.
 
@@ -192,7 +192,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 c.f. [`augroup+`](#augroup-1), [`autocmd!`](#autocmd)
 
-#### `augroup+`
+#### augroup+
 
 Create or get an augroup. This macro also lets us add `autocmd`s in an existing
 `augroup` without clearing `autocmd`s already defined there.
@@ -209,7 +209,7 @@ Create or get an augroup. This macro also lets us add `autocmd`s in an existing
 
 c.f. [`augroup!`](#augroup), [`autocmd!`](#autocmd)
 
-#### `autocmd!`
+#### autocmd!
 
 Create an autocmd.
 
@@ -225,18 +225,18 @@ Create an autocmd.
 
 See [`augroup!`](#augroup) for the rest.
 
-#### `au!`
+#### au!
 
 An alias of [`autocmd!`](#autocmd).
 
 ### Keymap
 
-- [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
-- [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
-- [`<Cmd>`](#Cmd)
-- [`<C-u>`](#C-u)
+- [map!](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
+- [unmap!](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
+- [<Cmd>](#Cmd)
+- [<C-u>](#C-u)
 
-#### `map!`
+#### map!
 
 Map `lhs` to `rhs` in `modes`, non-recursively by default.
 
@@ -312,7 +312,7 @@ end, {
 })
 ```
 
-#### `unmap!`
+#### unmap!
 
 Delete keymap.
 
@@ -344,7 +344,7 @@ vim.api.nvim_buf_del_keymap(0, "o", "bar")
 vim.api.nvim_buf_del_keymap(10, "x", "baz")
 ```
 
-#### `<Cmd>`
+#### <Cmd>
 
 Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
@@ -354,7 +354,7 @@ Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 - `text`: (string)
 
-#### `<C-u>`
+#### <C-u>
 
 Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
@@ -366,14 +366,14 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 ### Variable
 
-- [`g!`](#g)
-- [`b!`](#b)
-- [`w!`](#w)
-- [`t!`](#t)
-- [`v!`](#v)
-- [`env!`](#env)
+- [g!](#g)
+- [b!](#b)
+- [w!](#w)
+- [t!](#t)
+- [v!](#v)
+- [env!](#env)
 
-#### `g!`
+#### g!
 
 Set global (`g:`) editor variable.
 
@@ -384,7 +384,7 @@ Set global (`g:`) editor variable.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### `b!`
+#### b!
 
 Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with an
 integer to access variables for specific buffer.
@@ -417,7 +417,7 @@ let b:foo = 'bar'
 call setbufvar(8, 'baz', 'qux')
 ```
 
-#### `w!`
+#### w!
 
 Set window-scoped (`w:`) variable for the current window. Can be indexed with an
 integer to access variables for specific window.
@@ -430,7 +430,7 @@ integer to access variables for specific window.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### `t!`
+#### t!
 
 Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed with
 an integer to access variables for specific tabpage.
@@ -443,7 +443,7 @@ an integer to access variables for specific tabpage.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### `v!`
+#### v!
 
 Set `v:` variable if not readonly.
 
@@ -454,7 +454,7 @@ Set `v:` variable if not readonly.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### `env!`
+#### env!
 
 Set environment variable in the editor session.
 
@@ -503,7 +503,7 @@ let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 | [`bo!`][bo]               | --                        | --                        | --                        |
 | [`wo!`][wo]               | --                        | --                        | --                        |
 
-#### `set!`/`set+`/`set^`/`set-`
+#### set! / set+ / set^ / set-
 
 Set, append, prepend, or remove, value to the option. Almost equivalent to
 `:set` in Vim script.
@@ -601,7 +601,7 @@ usage:
   (set+ opt [:1 :B]))
 ```
 
-#### `setglobal!`/`setglobal+`/`setglobal^`/`setglobal-`
+#### setglobal! / setglobal+ / setglobal^ / setglobal-
 
 Set, append, prepend, or remove, global value to the option. Almost equivalent
 to `:setglobal` in Vim script.
@@ -615,7 +615,7 @@ to `:setglobal` in Vim script.
 
 See [`set!`][set] for the details.
 
-#### `setlocal!`/`setlocal+`/`setlocal^`/`setlocal-`
+#### setlocal! / setlocal+ / setlocal^ / setlocal-
 
 Set, append, prepend, or remove, local value to the option. Almost equivalent to
 `:setlocal` in Vim script.
@@ -629,7 +629,7 @@ Set, append, prepend, or remove, local value to the option. Almost equivalent to
 
 See [`set!`][set] for the details.
 
-#### `go!`/`go+`/`go^`/`go-`
+#### go! / go+ / go^ / go-
 
 Aliases of [`setglobal!`][setglobal], [`setglobal+`][setglobal], and so on.
 
@@ -637,7 +637,7 @@ Aliases of [`setglobal!`][setglobal], [`setglobal+`][setglobal], and so on.
 (go! name value)
 ```
 
-#### `bo!`
+#### bo!
 
 Set a buffer option value. `:h nvim_buf_set_option()`.
 
@@ -669,7 +669,7 @@ call setbufvar(0, '&filetype', 'fennel')
 call setbufvar(10, '&buftype', 'nofile')
 ```
 
-#### `wo!`
+#### wo!
 
 Set a window option value. `:h nvim_win_set_option()`.
 
@@ -703,12 +703,12 @@ call setwinvar(10, '&signcolumn', 'no')
 
 ### Others
 
-- [`command!`](#command)
-- [`feedkeys!`](#feedkeys)
-- [`highlight!`](#highlight)
-- [`hi!`](#hi)
+- [command!](#command)
+- [feedkeys!](#feedkeys)
+- [highlight!](#highlight)
+- [hi!](#hi)
 
-#### `command!`
+#### command!
 
 Create a user command.
 
@@ -757,7 +757,7 @@ vim.api.nvim_buf_create_user_command(0, "Salute", function()
                             })
 ```
 
-#### `feedkeys!`
+#### feedkeys!
 
 `:h feedkeys()`
 
@@ -782,7 +782,7 @@ vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<CR>", true, true, true
 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true) "ni", false)
 ```
 
-#### `highlight!`
+#### highlight!
 
 Set a highlight group.
 
@@ -821,15 +821,15 @@ nvim_set_nl(0, "Foo", {
 })
 ```
 
-#### `hi!`
+#### hi!
 
 An alias of [`highlight!`](#highlight).
 
 ## Anti-Patterns
 
-### [`autocmd!`](#autocmd)
+### [autocmd!](#autocmd)
 
-#### `pcall` in the end of callback
+#### pcall in the end of callback
 
 It could be an unexpected behavior that `autocmd` whose callback ends with
 `pcall` is executed only once because of the combination:
