@@ -1005,7 +1005,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :map-all! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :map-all! "`map!` or your own wrapper" :v0.6.0 ;
              (map! ["" "!" :l :t] ...)))
 
 (lambda map-input! [...]
@@ -1019,7 +1019,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :map-motion! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :map-motion! "`map!` or your own wrapper" :v0.6.0 ;
              (map! "!" ...)))
 
 (lambda map-motion! [...]
@@ -1036,7 +1036,7 @@
   @param ?api-opts kv-table
     Note: This macro could `unmap` `lhs` in Select mode for the performance.
   To avoid this, use `(map! [:n :o :x] ...)` instead."
-  (deprecate :map-motion! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :map-motion! "`map!` or your own wrapper" :v0.6.0 ;
              (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
                    ?bufnr extra-opts.buffer]
                (if (str? lhs)
@@ -1057,12 +1057,12 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :map-range! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :map-range! "`map!` or your own wrapper" :v0.6.0 ;
              (map! [:n :x] ...)))
 
 (lambda map-operator! [...]
   "(Deprecated) Alias of `map-range!."
-  (deprecate :map-operator! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :map-operator! "`map!` or your own wrapper" :v0.6.0 ;
              (map-range! ...)))
 
 (lambda map-textobj! [...]
@@ -1076,7 +1076,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :map-textobj! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :map-textobj! "`map!` or your own wrapper" :v0.6.0 ;
              (map! [:o :x] ...)))
 
 (lambda nmap! [...]
@@ -1090,7 +1090,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :nmap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :nmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :n ...)))
 
 (lambda vmap! [...]
@@ -1104,7 +1104,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :vmap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :vmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :v ...)))
 
 (lambda xmap! [...]
@@ -1118,7 +1118,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :xmap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :xmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :x ...)))
 
 (lambda smap! [...]
@@ -1132,7 +1132,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :smap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :smap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :s ...)))
 
 (lambda omap! [...]
@@ -1146,7 +1146,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :omap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :omap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :o ...)))
 
 (lambda imap! [...]
@@ -1160,7 +1160,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :imap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :imap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :i ...)))
 
 (lambda lmap! [...]
@@ -1175,7 +1175,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :lmap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :lmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :l ...)))
 
 (lambda cmap! [...]
@@ -1189,7 +1189,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :cmap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :cmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :c ...)))
 
 (lambda tmap! [...]
@@ -1203,7 +1203,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :tmap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :tmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :t ...)))
 
 (lambda noremap! [modes ...]
@@ -1217,7 +1217,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :noremap! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :noremap! "`map!` or your own wrapper" :v0.6.0 ;
              (let [default-opts {:noremap true}
                    (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
                (merge-default-kv-table! default-opts extra-opts)
@@ -1234,7 +1234,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :noremap-all! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :noremap-all! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap! ["" "!" :l :t] ...)))
 
 (lambda noremap-input! [...]
@@ -1248,7 +1248,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :noremap-input! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :noremap-input! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap! "!" ...)))
 
 (lambda noremap-motion! [...]
@@ -1265,7 +1265,7 @@
   @param ?api-opts kv-table
   Note: This macro could `unmap` `lhs` in Select mode for the performance.
   To avoid this, use `(noremap! [:n :o :x] ...)` instead."
-  (deprecate :noremap-motion! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :noremap-motion! "`map!` or your own wrapper" :v0.6.0 ;
              (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
                    ;; Note: With unknown reason, keymap/del-maps! fails to get
                    ;; `extra-opts.buffer` only to find it `nil` unless it's set to `?bufnr`.
@@ -1288,12 +1288,12 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :noremap-range! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :noremap-range! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap! [:n :x] ...)))
 
 (lambda noremap-operator! [...]
   "(Deprecated) Alias of `noremap-range!`."
-  (deprecate :noremap-operator! "`map!` or your own wrapper" :undetermined ;
+  (deprecate :noremap-operator! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap-range! ...)))
 
 (lambda noremap-textobj! [...]
@@ -1320,7 +1320,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :nnoremap! :map! :undetermined ;
+  (deprecate :nnoremap! :map! :v0.6.0 ;
              (noremap! :n ...)))
 
 (lambda vnoremap! [...]
@@ -1334,7 +1334,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :vnoremap! :map! :undetermined ;
+  (deprecate :vnoremap! :map! :v0.6.0 ;
              (noremap! :v ...)))
 
 (lambda xnoremap! [...]
@@ -1348,7 +1348,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :xnoremap! :map! :undetermined ;
+  (deprecate :xnoremap! :map! :v0.6.0 ;
              (noremap! :x ...)))
 
 (lambda snoremap! [...]
@@ -1362,7 +1362,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :snoremap! :map! :undetermined ;
+  (deprecate :snoremap! :map! :v0.6.0 ;
              (noremap! :s ...)))
 
 (lambda onoremap! [...]
@@ -1376,7 +1376,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :onoremap! :map! :undetermined ;
+  (deprecate :onoremap! :map! :v0.6.0 ;
              (noremap! :o ...)))
 
 (lambda inoremap! [...]
@@ -1390,7 +1390,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :inoremap! :map! :undetermined ;
+  (deprecate :inoremap! :map! :v0.6.0 ;
              (noremap! :i ...)))
 
 (lambda lnoremap! [...]
@@ -1405,7 +1405,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :lnoremap! :map! :undetermined ;
+  (deprecate :lnoremap! :map! :v0.6.0 ;
              (noremap! :l ...)))
 
 (lambda cnoremap! [...]
@@ -1419,7 +1419,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :cnoremap! :map! :undetermined ;
+  (deprecate :cnoremap! :map! :v0.6.0 ;
              (noremap! :c ...)))
 
 (lambda tnoremap! [...]
@@ -1433,7 +1433,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate :tnoremap! :map! :undetermined ;
+  (deprecate :tnoremap! :map! :v0.6.0 ;
              (noremap! :t ...)))
 
 ;; Export ///1
