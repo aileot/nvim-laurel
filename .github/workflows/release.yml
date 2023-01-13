@@ -8,7 +8,7 @@ on:
     branches:
       - main
 jobs:
-  docs:
+  vimdoc:
     runs-on: ubuntu-22.04
     if: ${{ github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -28,8 +28,8 @@ jobs:
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
           commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
-  release:
-    needs: docs
+  release-pr:
+    needs: vimdoc
     runs-on: ubuntu-22.04
     steps:
       - uses: google-github-actions/release-please-action@v3
