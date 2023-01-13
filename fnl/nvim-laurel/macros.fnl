@@ -752,10 +752,10 @@
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
     however, when the value is set in either symbol or list,
     this macro is expanding to `(tset vim.opt name val)` instead.
-  Note: There is no plan to support option prefix either `no` or `inv`; instead,
-  set `false` or `(not vim.go.foo)` respectively.
-  Note: This macro has no support for either symbol or list with any flag
-  at option name; instead, use `set+`, `set^`, or `set-`, respectively for such
+  Note: There is no plan to support option prefix either `no` or `inv`;
+  instead, set `false` or `(not vim.go.foo)` respectively.
+  Note: This macro has no support for either symbol or list with any flag at
+  option name; instead, use `set+`, `set^`, or `set-`, respectively for such
   usage:
   ```fennel
   ;; Invalid usage!
@@ -1066,7 +1066,8 @@
              (map-range! ...)))
 
 (lambda map-textobj! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual/Operator-pending mode recursively.
+  "(Deprecated) Map `lhs` to `rhs` in Visual/Operator-pending mode
+  recursively.
   ```fennel
   (map-textobj! ?extra-opts lhs rhs ?api-opts)
   (map-textobj! lhs ?extra-opts rhs ?api-opts)
@@ -1164,8 +1165,8 @@
              (map! :i ...)))
 
 (lambda lmap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode, etc., recursively.
-  `:h language-mapping` for the details.
+  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode, etc.,
+  recursively. `:h language-mapping` for the details.
   ```fennel
   (lmap! ?extra-opts lhs rhs ?api-opts)
   (lmap! lhs ?extra-opts rhs ?api-opts)
@@ -1238,7 +1239,8 @@
              (noremap! ["" "!" :l :t] ...)))
 
 (lambda noremap-input! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode non-recursively.
+  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode
+  non-recursively.
   ```fennel
   (noremap-input! ?extra-opts lhs rhs ?api-opts)
   (noremap-input! lhs ?extra-opts rhs ?api-opts)
@@ -1297,7 +1299,8 @@
              (noremap-range! ...)))
 
 (lambda noremap-textobj! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual/Operator-pending mode non-recursively.
+  "(Deprecated) Map `lhs` to `rhs` in Visual/Operator-pending mode
+  non-recursively.
   ```fennel
   (noremap-textobj! ?extra-opts lhs rhs ?api-opts)
   (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
@@ -1394,8 +1397,8 @@
              (noremap! :i ...)))
 
 (lambda lnoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode, etc., non-recursively.
-  `:h language-mapping` for the details.
+  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode, etc.,
+  non-recursively. `:h language-mapping` for the details.
   ```fennel
   (lnoremap! ?extra-opts lhs rhs ?api-opts)
   (lnoremap! lhs ?extra-opts rhs ?api-opts)

@@ -1,7 +1,7 @@
 # nvim-laurel
 
-nvim-laurel provides a set of macros for Neovim config, inspired by the builtin
-Nvim Lua standard library and by good old Vim script.
+nvim-laurel provides a set of macros for Neovim config, inspired by the
+builtin Nvim Lua standard library and by good old Vim script.
 
 - [CAUTION](#CAUTION)
 - [Terminology](#Terminology)
@@ -26,8 +26,8 @@ An abbreviation of right-hand-side.
 
 ### #({expr})
 
-Hash function, where `$1` through `$9` and `$...` are available as the argument.
-`$` is an alias for `$1`. See the
+Hash function, where `$1` through `$9` and `$...` are available as the
+argument. `$` is an alias for `$1`. See the
 [reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
 for the detail.
 
@@ -41,16 +41,16 @@ An alias of key/value table `{}`.
 
 ### bare-{type}
 
-It describes the `{type}` value must be neither symbol nor list in compile time.
-For example,
+It describes the `{type}` value must be neither symbol nor list in compile
+time. For example,
 
 - `:foobar` is a `bare-string`.
 - `(.. :foo :bar)` is not a `bare-string`.
 - `[:foo :bar]` is a `bare-sequence` and also a `bare-string[]`.
 - `[baz]` where `baz` is either symbol or list is a `bare-sequence`, but not a
   `bare-string[]`.
-- `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence` nor
-  `bare-string[]`.
+- `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence`
+  nor `bare-string[]`.
 
 ### ?{name}
 
@@ -62,13 +62,13 @@ It is kv-table `{}` option for the api functions, `vim.api.nvim_foo()`. Unless
 otherwise noted, this option has the following features:
 
 - It only accepts the same key/value described in `api.txt`.
-- Its values have the highest priority over those set in the other arguments if
-  conflicted.
+- Its values have the highest priority over those set in the other arguments
+  if conflicted.
 
 ### extra-opts
 
-An alternative form for `api-opts`. Unless otherwise noted, this option has the
-following features:
+An alternative form for `api-opts`. Unless otherwise noted, this option has
+the following features:
 
 - It is bare-sequence `[]`, but is interpreted as if kv-table `{}` in the
   following manner:
@@ -77,8 +77,8 @@ following features:
   - Boolean key/value for `api-opts` is set to `true` by key itself; the other
     keys expects the next items as their values respectively.
   - To set `false` to boolean key/value, set it in `api-opts` instead.
-- It is intended as shorthand; for complicated usage, use `api-opts` instead or
-  use them together.
+- It is intended as shorthand; for complicated usage, use `api-opts` instead
+  or use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
 ## Macros
@@ -114,8 +114,8 @@ Create or get an augroup, or override an existing augroup.
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
-  symbol or list, set it in either `extra-opts` or `api-opts` instead. The first
-  pattern in string cannot be any of the keys used in `?extra-opts`.
+  symbol or list, set it in either `extra-opts` or `api-opts` instead. The
+  first pattern in string cannot be any of the keys used in `?extra-opts`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
   - `<command>`: It indicates that `callback` must be Ex command by itself.
@@ -197,8 +197,8 @@ c.f. [`augroup+`](#augroup-1), [`autocmd!`](#autocmd)
 
 #### augroup+
 
-Create or get an augroup. This macro also lets us add `autocmd`s in an existing
-`augroup` without clearing `autocmd`s already defined there.
+Create or get an augroup. This macro also lets us add `autocmd`s in an
+existing `augroup` without clearing `autocmd`s already defined there.
 
 ```fennel
 (augroup+ name) ; This format returns existing augroup id.
@@ -222,9 +222,9 @@ Create an autocmd.
 ```
 
 - `name-or-id`: (string|integer|nil) The autocmd group name or id to match
-  against. It is necessary unlike `nvim_create_autocmd()` unless this `autocmd!`
-  macro is within either `augroup!` or `augroup+`. Set it to `nil` to define
-  `autocmd`s affiliated with no augroup.
+  against. It is necessary unlike `nvim_create_autocmd()` unless this
+  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil`
+  to define `autocmd`s affiliated with no augroup.
 
 See [`augroup!`](#augroup) for the rest.
 
@@ -248,8 +248,8 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
 (map! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
-- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
-  "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
+- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i",
+  "v", "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
   bare-string, multi modes can be set in a string like `:nox` instead of
   `[:n :o :x]`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
@@ -269,11 +269,12 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   function or Ex command. To tell `callback` is Lua function, either prepend a
   quote `` ` `` as an identifer (the quoted symbol, or list, is supposed to
   result in Lua function at runtime), or set it in anonymous function
-  constructed by `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex command.
+  constructed by `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex
+  command.
 
   Note: To call Vim script function `foobar` without table arg from
-  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar `` if
-  you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
+  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar ``
+  if you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
   `foobar` with the table arg.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
@@ -389,8 +390,8 @@ Set global (`g:`) editor variable.
 
 #### b!
 
-Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with an
-integer to access variables for specific buffer.
+Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
+an integer to access variables for specific buffer.
 
 ```fennel
 (b! ?id name val)
@@ -422,8 +423,8 @@ call setbufvar(8, 'baz', 'qux')
 
 #### w!
 
-Set window-scoped (`w:`) variable for the current window. Can be indexed with an
-integer to access variables for specific window.
+Set window-scoped (`w:`) variable for the current window. Can be indexed with
+an integer to access variables for specific window.
 
 ```fennel
 (w! ?id name val)
@@ -435,8 +436,8 @@ integer to access variables for specific window.
 
 #### t!
 
-Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed with
-an integer to access variables for specific tabpage.
+Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
+with an integer to access variables for specific tabpage.
 
 ```fennel
 (t! ?id name val)
@@ -518,8 +519,8 @@ Set, append, prepend, or remove, value to the option. Almost equivalent to
 (set- name val)
 ```
 
-- `name-?flag`: (string) Option name. As long as the option name is bare-string,
-  i.e., neither symbol nor list, this macro has two advantages:
+- `name-?flag`: (string) Option name. As long as the option name is
+  bare-string, i.e., neither symbol nor list, this macro has two advantages:
 
   1. A flag can be appended to the option name. Append `+`, `^`, or `-`, to
      append, prepend, or remove, values respectively.
@@ -620,8 +621,8 @@ See [`set!`][set] for the details.
 
 #### setlocal! / setlocal+ / setlocal^ / setlocal-
 
-Set, append, prepend, or remove, local value to the option. Almost equivalent to
-`:setlocal` in Vim script.
+Set, append, prepend, or remove, local value to the option. Almost equivalent
+to `:setlocal` in Vim script.
 
 ```fennel
 (setlocal! name-?flag ?val)
@@ -724,11 +725,11 @@ Create a user command.
   Additional attributes:
   - `<buffer>`: Create command in current buffer by itself.
   - `buffer`: Create command in the buffer of the next value.
-- `name`: (string) Name of the new user command. It must begin with an uppercase
-  letter.
+- `name`: (string) Name of the new user command. It must begin with an
+  uppercase letter.
 - `command`: (string|function) Replacement command.
-- [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same as
-  `opts` for `nvim_create_user_command()`.
+- [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same
+  as `opts` for `nvim_create_user_command()`.
 
 ```fennel
 (command! :SayHello
@@ -793,11 +794,12 @@ Set a highlight group.
 (highlight! ?ns-id name val)
 ```
 
-- `?ns-id`: (number) Namespace id for this highlight `nvim_create_namespace()`.
+- `?ns-id`: (number) Namespace id for this highlight
+  `nvim_create_namespace()`.
 - `name`: (string) Highlight group name, e.g., "ErrorMsg".
-- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as the
-  keys are bare-strings, `cterm` attribute map can contain `fg`/`bg` instead of
-  `ctermfg`/`ctermbg` key.
+- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as
+  the keys are bare-strings, `cterm` attribute map can contain `fg`/`bg`
+  instead of `ctermfg`/`ctermbg` key.
 
 ```fennel
 (highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic true}})
@@ -894,8 +896,8 @@ in another anonymous function is meaningless in many cases.
 ### v0.5.1
 
 - Symbol will no longer be an identifer as callback function for the macros,
-  [`map!`](#map!), [`autocmd!`](#autocmd), and so on; set `` `foobar `` to set a
-  symbol `foobar` as callback function instead.
+  [`map!`](#map!), [`autocmd!`](#autocmd), and so on; set `` `foobar `` to set
+  a symbol `foobar` as callback function instead.
 
 ### v0.5.0
 
@@ -921,14 +923,14 @@ in another anonymous function is meaningless in many cases.
   instead.
 - `map-input!`: Use [`map!`](#map) with `remap` option for corresponding modes
   instead.
-- `map-motion!`: Use [`map!`](#map) with `remap` option for corresponding modes
-  instead.
+- `map-motion!`: Use [`map!`](#map) with `remap` option for corresponding
+  modes instead.
 - `map-range!`: Use [`map!`](#map) with `remap` option for corresponding modes
   instead.
 - `map-operator!`: Use [`map!`](#map) with `remap` option for corresponding
   modes instead.
-- `map-textobj!`: Use [`map!`](#map) with `remap` option for corresponding modes
-  instead.
+- `map-textobj!`: Use [`map!`](#map) with `remap` option for corresponding
+  modes instead.
 - `noremap!`: Use [`map!`](#map) instead.
 - `nnoremap!`: Use [`map!`](#map) for corresponding mode instead.
 - `vnoremap!`: Use [`map!`](#map) for corresponding mode instead.

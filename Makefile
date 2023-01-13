@@ -1,6 +1,7 @@
 SHELL := /usr/bin/bash
 .ONESHELL:
 .DELETE_ON_ERROR:
+
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --warn-undefined-variables
 
