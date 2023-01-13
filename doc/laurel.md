@@ -1,4 +1,4 @@
-# nvim-laurel macros
+# nvim-laurel
 
 - [CAUTION](#CAUTION)
 - [Terminology](#Terminology)
