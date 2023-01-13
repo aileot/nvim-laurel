@@ -1,5 +1,8 @@
 # nvim-laurel
 
+nvim-laurel provides a set of macros for Neovim config, inspired by the builtin
+Nvim Lua standard library and by good old Vim script.
+
 - [CAUTION](#CAUTION)
 - [Terminology](#Terminology)
 - [Macros](#Macros)
