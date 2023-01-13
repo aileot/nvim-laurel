@@ -21,13 +21,19 @@ jobs:
           version: "Neovim >= 0.8.0"
           demojify: true
           treesitter: true
-      - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: PR new vimdoc
+        uses: peter-evans/create-pull-request@v4
         with:
-          commit_message: "chore(build): auto-generate vimdoc"
-          commit_user_name: "github-actions[bot]"
-          commit_user_email: "github-actions[bot]@users.noreply.github.com"
-          commit_author: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          branch: create-pull-request--branches--main--vimdoc
+          title: "chore(docs): auto-generate vimdoc"
+          body: |
+            :robot: Update vimdoc
+            ---
+            This PR was generated with [create-pull-request](https://github.com/peter-evans/create-pull-request).
+          commit-message: "chore(docs): auto-generate vimdoc"
+          committer: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          author: "${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          delete-branch: true
   release-pr:
     needs: vimdoc
     runs-on: ubuntu-22.04
