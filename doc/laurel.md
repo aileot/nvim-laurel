@@ -503,8 +503,8 @@ let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 | [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal^`][setglobal] | [`setglobal-`][setglobal] |
 | [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal^`][setlocal]   | [`setlocal-`][setlocal]   |
 | [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
-| [`bo!`][bo]               | --                        | --                        | --                        |
-| [`wo!`][wo]               | --                        | --                        | --                        |
+| [`bo!`][bo]               | undefined                 | undefined                 | undefined                 |
+| [`wo!`][wo]               | undefined                 | undefined                 | undefined                 |
 
 #### set! / set+ / set^ / set-
 
