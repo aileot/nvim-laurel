@@ -216,17 +216,33 @@
   @param version string Version to drop the compatibility
   @param compatible any Anything to keep the compatibility
   @return list"
-  (let [deprecation `(vim.deprecate (.. "[nvim-laurel] " ,deprecated)
-                                    ,alternative ,version :nvim-laurel false)]
+  (let [gcc-error-format "%s:%d: %s"
+        deprecation `(vim.deprecate ,(printf "[nvim-laurel] %s" deprecated)
+                                    ,alternative
+                                    ,(printf "%s. `:cexpr g:laurel_deprecated` would help you update it."
+                                             version)
+                                    :nvim-laurel false)
+        msg (printf "[nvim-laurel] %s is deprecated. Please update it with %s."
+                    deprecated alternative)]
     `((fn []
+        (when (= nil vim.g.__laurel_has_fnl_dir)
+          (tset vim.g :__laurel_has_fnl_dir
+                (= 1 (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
         (let [{:source source# :linedefined row#} (debug.getinfo 1 :S)
-              file-path# (source#:gsub "^@" "")
-              location# (.. file-path# " @ " row#)
-              msg# (.. "[nvim-laurel] deprecated usage found at " location#)]
+              lua-path# (source#:gsub "^@" "")
+              /fnl/-or-/lua/# (if vim.g.__laurel_has_fnl_dir :/fnl/ :/lua/)
+              fnl-path# (.. (vim.fn.stdpath :config)
+                            (-> lua-path#
+                                (: :gsub "%.lua$" :.fnl)
+                                (: :gsub :^.*/nvim/fnl/ :/fnl/)
+                                (: :gsub :^.*/nvim/lua/ /fnl/-or-/lua/#)))
+              qf-what# (string.format ,gcc-error-format fnl-path# row# ,msg)]
           ;; Note: It's safer to wrap it in `vim.schedule`.
-          (vim.schedule (fn []
-                          (vim.notify msg# vim.log.levels.WARN)
-                          ,deprecation)))
+          (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
+          ;; Note: `table.insert` instead cannot handle `vim.g` interface.
+          (tset vim.g :laurel_deprecated
+                (vim.fn.add vim.g.laurel_deprecated qf-what#))
+          (vim.schedule #,deprecation))
         ,compatible))))
 
 ;; Autocmd ///1
