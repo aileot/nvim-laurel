@@ -5,9 +5,9 @@
 [![badge/license]][path/to/license]
 [![badge/test]][workflow/test]
 [![badge/semver]][path/to/semver]  
-_A set of macros for Neovim config_\
-inspired by the builtin Nvim Lua standard library and by good old Vim
-script\_
+_A set of macros for Neovim config_  
+_inspired by the builtin Nvim Lua standard library and by good old Vim
+script_
 
 ![image/nvim-laurel-demo]
 
