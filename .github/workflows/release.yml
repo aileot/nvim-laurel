@@ -25,12 +25,12 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           branch: create-pull-request--branches--main--vimdoc
-          title: "chore(docs): auto-generate vimdoc"
+          title: "docs(vimdoc): auto-generate"
           body: |
             :robot: Update vimdoc
             ---
             This PR was generated with [create-pull-request](https://github.com/peter-evans/create-pull-request).
-          commit-message: "chore(docs): auto-generate vimdoc"
+          commit-message: "docs(vimdoc): auto-generate"
           committer: "github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
           author: "${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           delete-branch: true
