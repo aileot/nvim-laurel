@@ -3,9 +3,10 @@
 # nvim-laurel 🌿
 
 [![badge/license]][path/to/license]
-[![badge/test]][workflow/test]  
-_A set of macros for Neovim config_\
-_highly inspired by the builtin Nvim Lua standard library and by good old Vim
+[![badge/test]][workflow/test]
+[![badge/semver]][path/to/semver]  
+_A set of macros for Neovim config_  
+_inspired by the builtin Nvim Lua standard library and by good old Vim
 script_
 
 ![image/nvim-laurel-demo]
@@ -15,8 +16,10 @@ script_
 [badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-030281?logo=Lua&style=for-the-badge
 [badge/test]: https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square
 [badge/license]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
+[badge/semver]: https://img.shields.io/github/release/aileot/nvim-laurel?display_name=tag&sort=semver&label=Release
 [workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
 [path/to/license]: ./LICENSE
+[path/to/semver]: https://github.com/aileot/nvim-laurel/releases/latest
 [url/to/fennel]: https://fennel-lang.org/
 [image/nvim-laurel-demo]: https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png
 
@@ -92,6 +95,7 @@ script_
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
+
    </details>
    <details>
    <summary>
@@ -136,6 +140,7 @@ script_
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
+
    </details>
    <details>
    <summary>
@@ -180,6 +185,7 @@ script_
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
+
    </details>
 
 2. Manage the version of nvim-laurel by your favorite plugin manager.
@@ -245,18 +251,21 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 ### Macro List
 
 - [Autocmd](./doc/MACROS.md#Autocmd)
+
   - [`augroup!`](./doc/MACROS.md#augroup)
   - [`augroup+`](./doc/MACROS.md#augroup-1)
   - [`autocmd!`](./doc/MACROS.md#autocmd)
   - [`au!`](./doc/MACROS.md#au)
 
 - [Keymap](./doc/MACROS.md#Keymap)
+
   - [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
   - [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
   - [`<Cmd>`](./doc/MACROS.md#Cmd)
   - [`<C-u>`](./doc/MACROS.md#C-u)
 
 - [Variable](./doc/MACROS.md#Variable)
+
   - [`g!`](./doc/MACROS.md#g)
   - [`b!`](./doc/MACROS.md#b)
   - [`w!`](./doc/MACROS.md#w)
