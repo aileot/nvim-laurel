@@ -5,8 +5,8 @@
 [![badge/license]][path/to/license]
 [![badge/test]][workflow/test]  
 _A set of macros for Neovim config_\
-_highly inspired by the builtin Nvim Lua standard library and by good old Vim
-script_
+inspired by the builtin Nvim Lua standard library and by good old Vim
+script\_
 
 ![image/nvim-laurel-demo]
 
@@ -92,6 +92,7 @@ script_
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
+
    </details>
    <details>
    <summary>
@@ -136,6 +137,7 @@ script_
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
+
    </details>
    <details>
    <summary>
@@ -180,6 +182,7 @@ script_
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
+
    </details>
 
 2. Manage the version of nvim-laurel by your favorite plugin manager.
@@ -245,18 +248,21 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 ### Macro List
 
 - [Autocmd](./doc/MACROS.md#Autocmd)
+
   - [`augroup!`](./doc/MACROS.md#augroup)
   - [`augroup+`](./doc/MACROS.md#augroup-1)
   - [`autocmd!`](./doc/MACROS.md#autocmd)
   - [`au!`](./doc/MACROS.md#au)
 
 - [Keymap](./doc/MACROS.md#Keymap)
+
   - [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
   - [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
   - [`<Cmd>`](./doc/MACROS.md#Cmd)
   - [`<C-u>`](./doc/MACROS.md#C-u)
 
 - [Variable](./doc/MACROS.md#Variable)
+
   - [`g!`](./doc/MACROS.md#g)
   - [`b!`](./doc/MACROS.md#b)
   - [`w!`](./doc/MACROS.md#w)
