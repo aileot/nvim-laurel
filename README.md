@@ -3,7 +3,8 @@
 # nvim-laurel 🌿
 
 [![badge/license]][path/to/license]
-[![badge/test]][workflow/test]  
+[![badge/test]][workflow/test]
+[![badge/semver]][path/to/semver]  
 _A set of macros for Neovim config_\
 inspired by the builtin Nvim Lua standard library and by good old Vim
 script\_
@@ -15,8 +16,10 @@ script\_
 [badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-030281?logo=Lua&style=for-the-badge
 [badge/test]: https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square
 [badge/license]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square
+[badge/semver]: https://img.shields.io/github/release/aileot/nvim-laurel?display_name=tag&sort=semver&label=Release
 [workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
 [path/to/license]: ./LICENSE
+[path/to/semver]: https://github.com/aileot/nvim-laurel/releases/latest
 [url/to/fennel]: https://fennel-lang.org/
 [image/nvim-laurel-demo]: https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png
 
