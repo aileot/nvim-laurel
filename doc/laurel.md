@@ -3,11 +3,16 @@
 nvim-laurel provides a set of macros for Neovim config, inspired by the
 builtin Nvim Lua standard library and by good old Vim script.
 
+<!-- panvimdoc-ignore-start -->
+
 - [CAUTION](#CAUTION)
 - [Terminology](#Terminology)
 - [Macros](#Macros)
 - [Anti-Patterns](#Anti-Patterns)
+- [Deprecated Feature Handling](#Deprecated-Feature-Handling)
 - [Changelog](#Changelog)
+
+<!-- panvimdoc-ignore-end -->
 
 ## CAUTION
 
