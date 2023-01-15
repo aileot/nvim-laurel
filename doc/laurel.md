@@ -7,7 +7,7 @@ builtin Nvim Lua standard library and by good old Vim script.
 - [Terminology](#Terminology)
 - [Macros](#Macros)
 - [Anti-Patterns](#Anti-Patterns)
-- [Deprecated](#Deprecated)
+- [Changelog](#Changelog)
 
 ## CAUTION
 
@@ -891,7 +891,7 @@ in another anonymous function is meaningless in many cases.
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
 
-## Deprecated
+## Changelog
 
 ### v0.5.1
 
