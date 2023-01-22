@@ -979,7 +979,7 @@ runtime.
    :!git commit -m 'refactor(laurel): update macros'
    ```
 
-## Changelog
+## List of Deprecated Features
 
 ### v0.5.1
 
