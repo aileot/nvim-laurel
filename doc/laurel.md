@@ -9,8 +9,7 @@ builtin Nvim Lua standard library and by good old Vim script.
 - [Terminology](#Terminology)
 - [Macros](#Macros)
 - [Anti-Patterns](#Anti-Patterns)
-- [Deprecated Feature Handling](#Deprecated-Feature-Handling)
-- [Changelog](#Changelog)
+- [Deprecated Features](#Deprecated-Features)
 
 <!-- panvimdoc-ignore-end -->
 
@@ -896,11 +895,15 @@ in another anonymous function is meaningless in many cases.
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
 
-## Deprecated Feature Handling
+## Deprecated Features
+
+### Semantic Versioning
 
 This project nvim-laurel follows [Semantic Versioning 2.0.0][semver]. It
 should issue at least one version prior to a version where deprecated features
 are removed, i.e., before any breaking changes.
+
+### Deprecated Feature Handling
 
 If you were unfortunately in trouble due to some breaking changes, please read
 [The Last Resort](#the-last-resort). If you get deprecation notices,
@@ -911,7 +914,7 @@ It's strongly recommended to manage your vimrc by version control system like
 where you could not launch nvim with any part of your vimrc until you resolve
 them.
 
-### The Last Resort
+#### The Last Resort
 
 Before introducing how to avoid breaking changes, it is necessary to describe
 how to resolve the dead end, where you have few or none of Lua files because
@@ -930,7 +933,7 @@ launching nvim itself. In this case, you have two choices:
 - Update your vimrcs anyway apart from your vimrc with [-u], e.g., run
   `nvim -u NONE` in your terminal.
 
-### g:laurel_deprecated
+#### g:laurel_deprecated
 
 This variable is designed to help you update your codes safely with
 [Quickfix]. It will collect lines where deprecated features are detected. It
@@ -938,7 +941,7 @@ is only useful when you compile, or recompile, your Fennel codes with
 `--correlate` flag because the detection runs on compiled Lua codes at
 runtime.
 
-#### Steps to update deprecated features before breaking changes
+##### Steps to update deprecated features before breaking changes
 
 0. Make sure you can update your vimrcs on stable enviromnent: launch multiple
    instances of Neovim which have already loaded your stable config, i.e.,
@@ -979,15 +982,15 @@ runtime.
    :!git commit -m 'refactor(laurel): update macros'
    ```
 
-## List of Deprecated Features
+### List of Deprecated Features
 
-### v0.5.1
+#### v0.5.1
 
 - Symbol will no longer be an identifer as callback function for the macros,
   [`map!`](#map!), [`autocmd!`](#autocmd), and so on; set `` `foobar `` to set
   a symbol `foobar` as callback function instead.
 
-### v0.5.0
+#### v0.5.0
 
 - `nmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
   instead.
