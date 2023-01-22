@@ -930,8 +930,8 @@ launching nvim itself. In this case, you have two choices:
   `stdpath('data') .. '/pack/packer/start/nvim-laurel'`. Downgrade it by
   `git checkout <tag>` in your local nvim-laurel repository.
 
-- Update your vimrcs anyway apart from your vimrc with [-u], e.g., run
-  `nvim -u NONE` in your terminal.
+- Update your vimrcs anyway apart from your vimrc with the [-u] flag, e.g.,
+  run `nvim -u NONE` in your terminal.
 
 #### g:laurel_deprecated
 
