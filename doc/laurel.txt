@@ -1,4 +1,4 @@
-*laurel.txt*          For Neovim >= 0.8.0         Last change: 2023 January 13
+*laurel.txt*          For Neovim >= 0.8.0         Last change: 2023 January 22
 
 ==============================================================================
 Table of Contents                                   *laurel-table-of-contents*
@@ -8,21 +8,13 @@ Table of Contents                                   *laurel-table-of-contents*
   - Terminology                                           |laurel-terminology|
   - Macros                                                     |laurel-macros|
   - Anti-Patterns                                       |laurel-anti-patterns|
-  - Deprecated                                             |laurel-deprecated|
+  - Deprecated Features                           |laurel-deprecated-features|
 
 ==============================================================================
 1. nvim-laurel                                            *laurel-nvim-laurel*
 
 nvim-laurel provides a set of macros for Neovim config, inspired by the builtin
 Nvim Lua standard library and by good old Vim script.
-
-
-- |laurel-caution|
-- |laurel-terminology|
-- |laurel-macros|
-- |laurel-anti-patterns|
-- |laurel-deprecated|
-
 
 CAUTION                                                       *laurel-caution*
 
@@ -65,8 +57,8 @@ time. For example,
 - `[:foo :bar]` is a `bare-sequence` and also a `bare-string[]`.
 - `[baz]` where `baz` is either symbol or list is a `bare-sequence`, but not a
     `bare-string[]`.
-- `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence` nor
-    `bare-string[]`.
+- `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence`
+    nor `bare-string[]`.
 
 
 ?{NAME} ~
@@ -80,8 +72,8 @@ otherwise noted, this option has the following features:
 
 
 - It only accepts the same key/value described in `api.txt`.
-- Its values have the highest priority over those set in the other arguments if
-    conflicted.
+- Its values have the highest priority over those set in the other arguments
+    if conflicted.
 
 
 EXTRA-OPTS ~
@@ -97,8 +89,8 @@ following features:
     - Boolean key/value for `api-opts` is set to `true` by key itself; the other
         keys expects the next items as their values respectively.
     - To set `false` to boolean key/value, set it in `api-opts` instead.
-- It is intended as shorthand; for complicated usage, use `api-opts` instead or
-    use them together.
+- It is intended as shorthand; for complicated usage, use `api-opts` instead
+    or use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
 
@@ -261,9 +253,9 @@ autocmd!                               Create an autocmd.
 
 
 - `name-or-id`: (string|integer|nil) The autocmd group name or id to match
-    against. It is necessary unlike `nvim_create_autocmd()` unless this `autocmd!`
-    macro is within either `augroup!` or `augroup+`. Set it to `nil` to define
-    `autocmd`s affiliated with no augroup.
+    against. It is necessary unlike `nvim_create_autocmd()` unless this
+    `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil`
+    to define `autocmd`s affiliated with no augroup.
 
 
 See |laurel-`augroup!`| for the rest.
@@ -868,11 +860,11 @@ command!                               Create a user command.
     Additional attributes:
     - `<buffer>`: Create command in current buffer by itself.
     - `buffer`: Create command in the buffer of the next value.
-- `name`: (string) Name of the new user command. It must begin with an uppercase
-    letter.
+- `name`: (string) Name of the new user command. It must begin with an
+    uppercase letter.
 - `command`: (string|function) Replacement command.
-- |laurel-`?api-opts`|: (kv-table) Optional command attributes. The same as
-    `opts` for `nvim_create_user_command()`.
+- |laurel-`?api-opts`|: (kv-table) Optional command attributes. The same
+    as `opts` for `nvim_create_user_command()`.
 
 
 >fennel
@@ -949,11 +941,12 @@ highlight!                             Set a highlight group.
 
 
 
-- `?ns-id`: (number) Namespace id for this highlight `nvim_create_namespace()`.
+- `?ns-id`: (number) Namespace id for this highlight
+    `nvim_create_namespace()`.
 - `name`: (string) Highlight group name, e.g., "ErrorMsg".
-- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as the
-    keys are bare-strings, `cterm` attribute map can contain `fg`/`bg` instead of
-    `ctermfg`/`ctermbg` key.
+- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as
+    the keys are bare-strings, `cterm` attribute map can contain `fg`/`bg`
+    instead of `ctermfg`/`ctermbg` key.
 
 
 >fennel
@@ -1063,17 +1056,121 @@ PATTERN
 <
 
 
-DEPRECATED                                                 *laurel-deprecated*
+DEPRECATED FEATURES                               *laurel-deprecated-features*
 
-V0.5.1 ~
+SEMANTIC VERSIONING ~
+
+This project nvim-laurel follows Semantic Versioning 2.0.0
+<https://semver.org/spec/v2.0.0.html>. It should issue at least one version
+prior to a version where deprecated features are removed, i.e., before any
+breaking changes.
+
+DEPRECATED FEATURE HANDLING ~
+
+If you were unfortunately in trouble due to some breaking changes, please read
+|laurel-the-last-resort|. If you get deprecation notices,
+|laurel-g:laurel_deprecated| and its guidance would help you.
+
+It’s strongly recommended to manage your vimrc by version control system like
+`git`; otherwise, breaking changes on nvim-laurel could lead you to a dead end
+where you could not launch nvim with any part of your vimrc until you resolve
+them.
+
+                                                      *laurel-The-Last-Resort*
+
+The Last Resort                        Before introducing how to avoid breaking
+                                       changes, it is necessary to describe how
+                                       to resolve the dead end, where you have
+                                       few or none of Lua files because you
+                                       have unexpectedly recompiled all the
+                                       Fennel files that includes some features
+                                       removed from nvim-laurel. Breaking
+                                       Changes could prevent you from launching
+                                       nvim itself. In this case, you have two
+                                       choices:
+
+
+
+- Downgrade nvim-laurel according to Semantic Versioning 2.0.0
+    <https://semver.org/spec/v2.0.0.html>; then, update your vimrc with deprecation
+    notices of nvim-laurel. You should know the path where you download
+    nvim-laurel: if you have lazy.nvim manage the version of nvim-laurel, it should
+    be downloaded to `stdpath('config') .. '/lazy/nvim-laurel'` by default;
+    packer.nvim, to `stdpath('data') .. '/pack/packer/start/nvim-laurel'`.
+    Downgrade it by `git checkout <tag>` in your local nvim-laurel repository.
+- Update your vimrcs anyway apart from your vimrc with the |-u| flag, e.g., run
+    `nvim -u NONE` in your terminal.
+
+
+                                                  *laurel-g:laurel_deprecated*
+
+g:laurel_deprecated                    This variable is designed to help you
+                                       update your codes safely with
+                                       |Quickfix|. It will collect lines where
+                                       deprecated features are detected. It is
+                                       only useful when you compile, or
+                                       recompile, your Fennel codes with
+                                       `--correlate` flag because the detection
+                                       runs on compiled Lua codes at runtime.
+
+
+STEPS TO UPDATE DEPRECATED FEATURES BEFORE BREAKING CHANGES
+
+
+1. Make sure you can update your vimrcs on stable enviromnent: launch multiple
+instances of Neovim which have already loaded your stable config, i.e.,
+detached from the unstable vimrcs about to undergoing changes.
+2. Update deprecated features
+
+This is a list of useful commands:
+
+
+- With |`:cdo`| or |`:cfdo`|,
+    - |`:norm`| or |`:normal`|
+    - |`:g`| or |`:global`|
+    - |`:s`| or |`:substitute`|
+- With recording keys,
+    1. |`:cfirst`|
+    2. |`q`| to record keys into register
+    3. |`:cnext`|
+    4. |`@`| or |`Q`| to repeat keys in register
+
+
+Here is a basic example to rename deprecated macro `old-macro` to new
+compatible macro `new-macro`. Please adjust commands yourself as necessary. You
+don’t have to do it in the smartest way, of cource. Slow and steady wins the
+race.
+
+>vim
+    :cexpr g:laurel_deprecated " Reset Quickfix list.
+    :packadd cfilter " Enable builtin cfilter. `:h :Cfilter` for the details.
+    :Cfilter /old-macro/ " Pick up related detections.
+    :cfdo! %s/(old-macro /(new-macro /gec " Roughly update macro names.
+    :cfdo update
+<
+
+3. Nowadays, your vimrcs are supposed to be under git control…
+
+>vim
+    :cd ~/.config/nvim " Make sure current directory is in your config repository.
+    :!git reset --mixed HEAD
+    :cfdo !git add %
+    :!git commit -m 'refactor(laurel): update macros'
+<
+
+
+
+LIST OF DEPRECATED FEATURES ~
+
+                                                               *laurel-v0.5.1*
 
 
 - Symbol will no longer be an identifer as callback function for the macros,
-    |laurel-`map!`|, |laurel-`autocmd!`|, and so on; set ``foobar` to set a
-    symbol `foobar` as callback function instead.
+    |laurel-`map!`|, |laurel-`autocmd!`|, and so on; set ``foobar` to set
+    a symbol `foobar` as callback function instead.
 
 
-V0.5.0 ~
+                                                               *laurel-v0.5.0*
 
 
 - `nmap!`: Use |laurel-`map!`| with `remap` option for corresponding mode
@@ -1098,14 +1195,14 @@ V0.5.0 ~
     instead.
 - `map-input!`: Use |laurel-`map!`| with `remap` option for corresponding modes
     instead.
-- `map-motion!`: Use |laurel-`map!`| with `remap` option for corresponding modes
-    instead.
+- `map-motion!`: Use |laurel-`map!`| with `remap` option for corresponding
+    modes instead.
 - `map-range!`: Use |laurel-`map!`| with `remap` option for corresponding modes
     instead.
 - `map-operator!`: Use |laurel-`map!`| with `remap` option for corresponding
     modes instead.
-- `map-textobj!`: Use |laurel-`map!`| with `remap` option for corresponding modes
-    instead.
+- `map-textobj!`: Use |laurel-`map!`| with `remap` option for corresponding
+    modes instead.
 - `noremap!`: Use |laurel-`map!`| instead.
 - `nnoremap!`: Use |laurel-`map!`| for corresponding mode instead.
 - `vnoremap!`: Use |laurel-`map!`| for corresponding mode instead.
