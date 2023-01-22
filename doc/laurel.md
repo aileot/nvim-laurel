@@ -3,11 +3,15 @@
 nvim-laurel provides a set of macros for Neovim config, inspired by the
 builtin Nvim Lua standard library and by good old Vim script.
 
+<!-- panvimdoc-ignore-start -->
+
 - [CAUTION](#CAUTION)
 - [Terminology](#Terminology)
 - [Macros](#Macros)
 - [Anti-Patterns](#Anti-Patterns)
-- [Deprecated](#Deprecated)
+- [Deprecated Features](#Deprecated-Features)
+
+<!-- panvimdoc-ignore-end -->
 
 ## CAUTION
 
@@ -891,15 +895,102 @@ in another anonymous function is meaningless in many cases.
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
 
-## Deprecated
+## Deprecated Features
 
-### v0.5.1
+### Semantic Versioning
+
+This project nvim-laurel follows [Semantic Versioning 2.0.0][semver]. It
+should issue at least one version prior to a version where deprecated features
+are removed, i.e., before any breaking changes.
+
+### Deprecated Feature Handling
+
+If you were unfortunately in trouble due to some breaking changes, please read
+[The Last Resort](#the-last-resort). If you get deprecation notices,
+[g:laurel_deprecated](#glaurel_deprecated) and its guidance would help you.
+
+It's strongly recommended to manage your vimrc by version control system like
+`git`; otherwise, breaking changes on nvim-laurel could lead you to a dead end
+where you could not launch nvim with any part of your vimrc until you resolve
+them.
+
+#### The Last Resort
+
+Before introducing how to avoid breaking changes, it is necessary to describe
+how to resolve the dead end, where you have few or none of Lua files because
+you have unexpectedly recompiled all the Fennel files that includes some
+features removed from nvim-laurel. Breaking Changes could prevent you from
+launching nvim itself. In this case, you have two choices:
+
+- Downgrade nvim-laurel according to [Semantic Versioning 2.0.0][semver];
+  then, update your vimrc with deprecation notices of nvim-laurel. You should
+  know the path where you download nvim-laurel: if you have lazy.nvim manage
+  the version of nvim-laurel, it should be downloaded to
+  `stdpath('config') .. '/lazy/nvim-laurel'` by default; packer.nvim, to
+  `stdpath('data') .. '/pack/packer/start/nvim-laurel'`. Downgrade it by
+  `git checkout <tag>` in your local nvim-laurel repository.
+
+- Update your vimrcs anyway apart from your vimrc with the [-u] flag, e.g.,
+  run `nvim -u NONE` in your terminal.
+
+#### g:laurel_deprecated
+
+This variable is designed to help you update your codes safely with
+[Quickfix]. It will collect lines where deprecated features are detected. It
+is only useful when you compile, or recompile, your Fennel codes with
+`--correlate` flag because the detection runs on compiled Lua codes at
+runtime.
+
+##### Steps to update deprecated features before breaking changes
+
+0. Make sure you can update your vimrcs on stable enviromnent: launch multiple
+   instances of Neovim which have already loaded your stable config, i.e.,
+   detached from the unstable vimrcs about to undergoing changes.
+
+1. Update deprecated features
+
+   This is a list of useful commands:
+   - With [`:cdo`] or [`:cfdo`],
+     - [`:norm`][`:normal`] or [`:normal`]
+     - [`:g`][`:global`] or [`:global`]
+     - [`:s`][`:substitute`] or [`:substitute`]
+   - With recording keys,
+     1. [`:cfirst`]
+     2. [`q`] to record keys into register
+     3. [`:cnext`]
+     4. [`@`] or [`Q`] to repeat keys in register
+
+   Here is a basic example to rename deprecated macro `old-macro` to new
+   compatible macro `new-macro`. Please adjust commands yourself as necessary.
+   You don't have to do it in the smartest way, of cource. Slow and steady
+   wins the race.
+
+   ```vim
+   :cexpr g:laurel_deprecated " Reset Quickfix list.
+   :packadd cfilter " Enable builtin cfilter. `:h :Cfilter` for the details.
+   :Cfilter /old-macro/ " Pick up related detections.
+   :cfdo! %s/(old-macro /(new-macro /gec " Roughly update macro names.
+   :cfdo update
+   ```
+
+2. Nowadays, your vimrcs are supposed to be under git control...
+
+   ```vim
+   :cd ~/.config/nvim " Make sure current directory is in your config repository.
+   :!git reset --mixed HEAD
+   :cfdo !git add %
+   :!git commit -m 'refactor(laurel): update macros'
+   ```
+
+### List of Deprecated Features
+
+#### v0.5.1
 
 - Symbol will no longer be an identifer as callback function for the macros,
   [`map!`](#map!), [`autocmd!`](#autocmd), and so on; set `` `foobar `` to set
   a symbol `foobar` as callback function instead.
 
-### v0.5.0
+#### v0.5.0
 
 - `nmap!`: Use [`map!`](#map) with `remap` option for corresponding mode
   instead.
@@ -954,3 +1045,16 @@ in another anonymous function is meaningless in many cases.
 [go]: #gogogogo-
 [wo]: #wo
 [bo]: #bo
+[-u]: https://neovim.io/doc/user/starting.html#-u
+[Quickfix]: https://neovim.io/doc/user/quickfix.html
+[`:cdo`]: https://neovim.io/doc/user/quickfix.html#%3Acdo
+[`:cfdo`]: https://neovim.io/doc/user/quickfix.html#%3Acfdo
+[`:cfirst`]: https://neovim.io/doc/user/quickfix.html#%3Acfirst
+[`:cnext`]: https://neovim.io/doc/user/quickfix.html#%3Acnext
+[`:global`]: https://neovim.io/doc/user/quickfix.html#%3Aglobal
+[`:substitute`]: https://neovim.io/doc/user/quickfix.html#%3Asubstitute
+[`:normal`]: https://neovim.io/doc/user/quickfix.html#%3Anormal
+[`q`]: https://neovim.io/doc/user/repeat.html#q
+[`@`]: https://neovim.io/doc/user/repeat.html#%40
+[`Q`]: https://neovim.io/doc/user/repeat.html#Q
+[semver]: https://semver.org/spec/v2.0.0.html
