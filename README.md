@@ -66,7 +66,7 @@ script_
          "git",
          "clone",
          "--filter=blob:none",
-         "--depth=1",
+         "--single-branch",
          url,
          path,
        })
@@ -112,7 +112,7 @@ script_
          "git",
          "clone",
          "--filter=blob:none",
-         "--depth=1",
+         "--single-branch",
          url,
          path,
        })
@@ -144,13 +144,17 @@ script_
 
    </details>
 
-2. Manage the version of nvim-laurel by your favorite plugin manager.
+2. Manage the version of nvim-laurel by your favorite plugin manager. It's
+   recommended to specify a version range to avoid unexpected breaking
+   changes.
 
    With [lazy.nvim](https://github.com/folke/lazy.nvim)
 
    ```fennel
    (local lazy (require :lazy))
-   (lazy.setup [:aileot/nvim-laurel
+   (lazy.setup [{1 :aileot/nvim-laurel
+                 ;; v0.5.0 <= {version} < v0.6.0
+                 :version "~v0.5.0"}
                 ...]
                {:defaults {:lazy true}})
    ```
@@ -160,6 +164,7 @@ script_
    ```toml
    [[plugins]]
    repo = "aileot/nvim-laurel"
+   rev = "v0.5.*"
    ```
 
 ### To compile outside Neovim
