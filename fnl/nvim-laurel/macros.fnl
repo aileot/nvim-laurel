@@ -366,8 +366,8 @@
   @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
   @param au-args sequence|list Parameters for `define-autocmd!`.
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
-      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
-      augroup."
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the
+      augroup.)"
   (if (= 0 (length au-args))
       `(vim.api.nvim_create_augroup ,name ,opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
