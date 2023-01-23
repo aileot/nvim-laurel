@@ -198,34 +198,34 @@ script_
 (import-macros {: set! : map! : augroup! : au! ...} :nvim-laurel.macros)
 ```
 
-See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
+See [laurel.md](./doc/laurel.md) for each macro usage in details.
 
 ### Macro List
 
-- [Autocmd](./doc/MACROS.md#Autocmd)
+- [Autocmd](./doc/laurel.md#Autocmd)
 
-  - [`augroup!`](./doc/MACROS.md#augroup)
-  - [`augroup+`](./doc/MACROS.md#augroup-1)
-  - [`autocmd!`](./doc/MACROS.md#autocmd)
-  - [`au!`](./doc/MACROS.md#au)
+  - [`augroup!`](./doc/laurel.md#augroup)
+  - [`augroup+`](./doc/laurel.md#augroup-1)
+  - [`autocmd!`](./doc/laurel.md#autocmd)
+  - [`au!`](./doc/laurel.md#au)
 
-- [Keymap](./doc/MACROS.md#Keymap)
+- [Keymap](./doc/laurel.md#Keymap)
 
-  - [`map!`](./doc/MACROS.md#map): A replacement of `vim.keymap.set`
-  - [`unmap!`](./doc/MACROS.md#unmap): A replacement of `vim.keymap.del`
-  - [`<Cmd>`](./doc/MACROS.md#Cmd)
-  - [`<C-u>`](./doc/MACROS.md#C-u)
+  - [`map!`](./doc/laurel.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./doc/laurel.md#unmap): A replacement of `vim.keymap.del`
+  - [`<Cmd>`](./doc/laurel.md#Cmd)
+  - [`<C-u>`](./doc/laurel.md#C-u)
 
-- [Variable](./doc/MACROS.md#Variable)
+- [Variable](./doc/laurel.md#Variable)
 
-  - [`g!`](./doc/MACROS.md#g)
-  - [`b!`](./doc/MACROS.md#b)
-  - [`w!`](./doc/MACROS.md#w)
-  - [`t!`](./doc/MACROS.md#t)
-  - [`v!`](./doc/MACROS.md#v)
-  - [`env!`](./doc/MACROS.md#env)
+  - [`g!`](./doc/laurel.md#g)
+  - [`b!`](./doc/laurel.md#b)
+  - [`w!`](./doc/laurel.md#w)
+  - [`t!`](./doc/laurel.md#t)
+  - [`v!`](./doc/laurel.md#v)
+  - [`env!`](./doc/laurel.md#env)
 
-- [Option](./doc/MACROS.md#Option)
+- [Option](./doc/laurel.md#Option)
 
 | Set (`!`)                 | Append (`+`)              | Prepend (`^`)             | Remove (`-`)              |
 | :------------------------ | :------------------------ | :------------------------ | :------------------------ |
@@ -236,11 +236,11 @@ See [MACROS.md](./doc/MACROS.md) for each macro usage in details.
 | [`bo!`][bo]               | --                        | --                        | --                        |
 | [`wo!`][wo]               | --                        | --                        | --                        |
 
-- [Others](./doc/MACROS.md#Others)
-  - [`command!`](./doc/MACROS.md#command)
-  - [`feedkeys!`](./doc/MACROS.md#feedkeys)
-  - [`highlight!`](./doc/MACROS.md#highlight)
-  - [`hi!`](./doc/MACROS.md#hi)
+- [Others](./doc/laurel.md#Others)
+  - [`command!`](./doc/laurel.md#command)
+  - [`feedkeys!`](./doc/laurel.md#feedkeys)
+  - [`highlight!`](./doc/laurel.md#highlight)
+  - [`hi!`](./doc/laurel.md#hi)
 
 ## Changelog
 
@@ -257,9 +257,9 @@ See [CHANGELOG.md](./CHANGELOG.md).
 
 [Fennel]: https://github.com/bakpakin/Fennel
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
-[set]: ./doc/MACROS.md#setsetsetset-
-[setglobal]: ./doc/MACROS.md#setglobalsetglobalsetglobalsetglobal-
-[setlocal]: ./doc/MACROS.md#setlocalsetlocalsetlocalsetlocal-
-[go]: ./doc/MACROS.md#gogogogo-
-[wo]: ./doc/MACROS.md#wo
-[bo]: ./doc/MACROS.md#bo
+[set]: ./doc/laurel.md#setsetsetset-
+[setglobal]: ./doc/laurel.md#setglobalsetglobalsetglobalsetglobal-
+[setlocal]: ./doc/laurel.md#setlocalsetlocalsetlocalsetlocal-
+[go]: ./doc/laurel.md#gogogogo-
+[wo]: ./doc/laurel.md#wo
+[bo]: ./doc/laurel.md#bo
