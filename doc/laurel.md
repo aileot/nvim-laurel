@@ -104,16 +104,18 @@ the following features:
 Create or get an augroup, or override an existing augroup.
 
 ```fennel
-(augroup! name) ; Only this format returns the augroup id.
-(augroup! name
+(augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
+(augroup! name ?api-opts-for-augroup
   [events ?pattern ?extra-opts callback ?api-opts]
   ...)
-(augroup! name
+(augroup! name ?api-opts-for-augroup
   ;; Wrap args in `autocmd!` or `au!` instead of brackets.
   (autocmd! events ?pattern ?extra-opts callback ?api-opts)
   ...)
 ```
 
+- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`. You cannot
+  use macro/function named `au!` or `autocmd!` here.
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
