@@ -97,51 +97,7 @@ script_
    ```
 
    </details>
-   <details>
-   <summary>
-   With packer.nvim
-   </summary>
 
-   ```lua
-   local function prerequisite(name, url)
-     -- To manage the version of repo, the path should be where your plugin manager will download it.
-     local name = url:gsub("^.*/", "")
-     local dir = vim.fn.stdpath("data") .. "/site/pack/packer/start/" .. name
-     if not vim.loop.fs_stat(path) then
-       vim.fn.system({
-         "git",
-         "clone",
-         "--filter=blob:none",
-         "--depth=1",
-         url,
-         path,
-       })
-     end
-   end
-
-   -- Install your favorite plugin manager.
-   prerequisite("https://github.com/wbthomason/packer.nvim")
-
-   -- Install nvim-laurel
-   prerequisite("https://github.com/aileot/nvim-laurel")
-
-   -- Install a runtime compiler
-   prerequisite("https://github.com/rktjmp/hotpot.nvim")
-
-   require("hotpot").setup({
-     compiler = {
-       macros = {
-         env = "_COMPILER",
-         allowedGlobals = false,
-       },
-     },
-   })
-
-   -- Then, you can write config in Fennel with nvim-laurel.
-   require("your.core")
-   ```
-
-   </details>
    <details>
    <summary>
    With dein.vim
@@ -197,15 +153,6 @@ script_
    (lazy.setup [:aileot/nvim-laurel
                 ...]
                {:defaults {:lazy true}})
-   ```
-
-   With [packer.nvim](https://github.com/wbthomason/packer.nvim)
-
-   ```fennel
-   (local packer (require :packer))
-   (packer.startup (fn [use]
-                     (use :aileot/nvim-laurel)
-                     ...))
    ```
 
    With [dein.vim](https://github.com/Shougo/dein.vim) in toml
