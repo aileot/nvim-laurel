@@ -352,6 +352,9 @@
                                        ?api-opts)]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
+(fn autocmd? [args]
+  (and (list? args) (contains? [`au! `autocmd!] (first args))))
+
 (lambda define-augroup! [name opts ...]
   "Define an augroup.
   ```fennel
@@ -369,8 +372,7 @@
       `(vim.api.nvim_create_augroup ,name ,opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
          ,(icollect [_ args (ipairs [...])]
-            (let [au-args (if (and (list? args)
-                                   (contains? [`au! `autocmd!] (first args)))
+            (let [au-args (if (autocmd? args)
                               (slice args 2)
                               (sequence? args)
                               args
