@@ -406,25 +406,6 @@
                                 [?api-opts|?autocmd [...]])]
     (define-augroup! name api-opts autocmds)))
 
-(lambda augroup+ [name ...]
-  "(Deprecated) Create, or get, an augroup, or add `autocmd`s to an existing
-  augroup.
-  ```fennel
-  (augroup+ name
-    ?[events ?pattern ?extra-opts callback ?api-opts]
-    ?(au! events ?pattern ?extra-opts callback ?api-opts)
-    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
-    ?...)
-  ```
-  @param name string Augroup name.
-  @return undefined Without `...`, the return value of `nvim_create_augroup`;
-      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
-      augroup."
-  (deprecate :augroup+ :augroup! :v0.6.0
-             (augroup! name
-               {:clear false}
-               ...)))
-
 ;; Keymap ///1
 
 (lambda keymap/->compatible-opts! [opts]
@@ -1452,6 +1433,25 @@
   (deprecate :tnoremap! :map! :v0.6.0 ;
              (noremap! :t ...)))
 
+(lambda augroup+ [name ...]
+  "(Deprecated) Create, or get, an augroup, or add `autocmd`s to an existing
+  augroup.
+  ```fennel
+  (augroup+ name
+    ?[events ?pattern ?extra-opts callback ?api-opts]
+    ?(au! events ?pattern ?extra-opts callback ?api-opts)
+    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
+    ?...)
+  ```
+  @param name string Augroup name.
+  @return undefined Without `...`, the return value of `nvim_create_augroup`;
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
+      augroup."
+  (deprecate :augroup+ :augroup! :v0.6.0
+             (augroup! name
+               {:clear false}
+               ...)))
+
 ;; Export ///1
 
 {: map!
@@ -1459,7 +1459,6 @@
  : <Cmd>
  : <C-u>
  : augroup!
- : augroup+
  :autocmd! define-autocmd!
  :au! define-autocmd!
  : set!
@@ -1520,6 +1519,7 @@
  : inoremap!
  : lnoremap!
  : cnoremap!
- : tnoremap!}
+ : tnoremap!
+ : augroup+}
 
 ;; vim:fdm=marker:foldmarker=///,""""
