@@ -355,7 +355,7 @@
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
-(lambda define-augroup! [name opts ...]
+(lambda define-augroup! [name opts au-args]
   "Define an augroup.
   ```fennel
   (define-augroup! name opts [events ?pattern ?extra-opts callback ?api-opts])
@@ -364,14 +364,14 @@
   ```
   @param name string Augroup name.
   @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
-  @param ... undefined Parameters for `define-autocmd!` if any.
+  @param au-args sequence|list Parameters for `define-autocmd!`.
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
-  (if (= 0 (length [...]))
+  (if (= 0 (length au-args))
       `(vim.api.nvim_create_augroup ,name ,opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
-         ,(icollect [_ args (ipairs [...])]
+         ,(icollect [_ args (ipairs au-args)]
             (let [au-args (if (autocmd? args)
                               (slice args 2)
                               (sequence? args)
@@ -397,7 +397,7 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
   ;; "clear" value is true by default.
-  (define-augroup! name {} ...))
+  (define-augroup! name {} [...]))
 
 (lambda augroup+ [name ...]
   "Create, or get, an augroup, or add `autocmd`s to an existing augroup.
@@ -412,7 +412,7 @@
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
-  (define-augroup! name {:clear false} ...))
+  (define-augroup! name {:clear false} [...]))
 
 ;; Keymap ///1
 
