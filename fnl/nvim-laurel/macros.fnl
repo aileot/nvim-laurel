@@ -419,7 +419,9 @@
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
-  (define-augroup! name {:clear false} [...]))
+  (augroup! name
+    {:clear false}
+    ...))
 
 ;; Keymap ///1
 
