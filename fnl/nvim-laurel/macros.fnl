@@ -407,7 +407,8 @@
     (define-augroup! name api-opts autocmds)))
 
 (lambda augroup+ [name ...]
-  "Create, or get, an augroup, or add `autocmd`s to an existing augroup.
+  "(Deprecated) Create, or get, an augroup, or add `autocmd`s to an existing
+  augroup.
   ```fennel
   (augroup+ name
     ?[events ?pattern ?extra-opts callback ?api-opts]
@@ -419,9 +420,10 @@
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
-  (augroup! name
-    {:clear false}
-    ...))
+  (deprecate :augroup+ :augroup! :v0.6.0
+             (augroup! name
+               {:clear false}
+               ...)))
 
 ;; Keymap ///1
 
