@@ -10,10 +10,11 @@ VUSTED ?= vusted
 
 REPO_ROOT:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 TEST_ROOT:=$(REPO_ROOT)/tests
+SPEC_ROOT:=$(TEST_ROOT)/spec
 
 TEST_DEPS:=$(TEST_ROOT)/.test-deps
 
-FNL_TESTS:=$(wildcard tests/spec/*_spec.fnl)
+FNL_TESTS:=$(wildcard $(SPEC_ROOT)/*_spec.fnl)
 LUA_TESTS:=$(FNL_TESTS:%.fnl=%.lua)
 
 FNL_SRC:=$(wildcard fnl/nvim-laurel/*.fnl)
