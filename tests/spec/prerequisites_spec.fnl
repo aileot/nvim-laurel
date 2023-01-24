@@ -1,6 +1,6 @@
+(import-macros {: describe : it} :_busted_macros)
+
 (describe :prerequisites
-          (fn []
-            (it "vim.api is not nil"
-                (fn []
-                  (assert.is_not_nil vim)
-                  (assert.is_not_nil vim.api)))))
+  (it "vim.api is not nil"
+    (assert.is_not_nil vim)
+    (assert.is_not_nil vim.api)))
