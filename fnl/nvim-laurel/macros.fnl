@@ -355,12 +355,12 @@
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
-(lambda define-augroup! [name opts autocmds]
+(lambda define-augroup! [name api-opts autocmds]
   "Define an augroup.
   ```fennel
-  (define-augroup! name opts [events ?pattern ?extra-opts callback ?api-opts])
-  (define-augroup! name opts (au! events ?pattern ?extra-opts callback ?api-opts))
-  (define-augroup! name opts (autocmd! events ?pattern ?extra-opts callback ?api-opts))
+  (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
+  (define-augroup! name api-opts (au! events ?pattern ?extra-opts callback ?api-opts))
+  (define-augroup! name api-opts (autocmd! events ?pattern ?extra-opts callback ?api-opts))
   ```
   @param name string Augroup name.
   @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
@@ -369,8 +369,8 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the
       augroup.)"
   (if (= 0 (length autocmds))
-      `(vim.api.nvim_create_augroup ,name ,opts)
-      `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
+      `(vim.api.nvim_create_augroup ,name ,api-opts)
+      `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
          ,(icollect [_ args (ipairs autocmds)]
             (let [au-args (if (autocmd? args)
                               (slice args 2)
