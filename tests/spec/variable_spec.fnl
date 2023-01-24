@@ -8,11 +8,10 @@
                  (set vim.env.FOO nil)
                  (set vim.env.BAR nil)))
   (it "sets environment variable in the editor session"
-    (do
-      (env! :FOO :foo)
-      (env! :$BAR :bar)
-      (assert.is.same :foo vim.env.FOO)
-      (assert.is.same :bar vim.env.BAR)))
+    (env! :FOO :foo)
+    (env! :$BAR :bar)
+    (assert.is.same :foo vim.env.FOO)
+    (assert.is.same :bar vim.env.BAR))
   (it "sets buffer-local variable"
     (let [buf (vim.api.nvim_get_current_buf)]
       (vim.cmd.new)
