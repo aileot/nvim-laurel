@@ -233,9 +233,11 @@
                 (let [cb :callback
                       opts {:nested true}]
                   (autocmd! default-augroup default-event cb opts))))))))
-    (describe :augroup+
+    (describe "(deprecated)"
       (fn []
-        (it "gets an existing augroup id"
+        (describe :augroup+
           (fn []
-            (let [id (augroup! default-augroup)]
-              (assert.is.same id (augroup+ default-augroup)))))))))
+            (it "gets an existing augroup id"
+              (fn []
+                (let [id (augroup! default-augroup)]
+                  (assert.is.same id (augroup+ default-augroup)))))))))))
