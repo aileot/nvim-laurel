@@ -1,4 +1,4 @@
-*laurel.txt*          For Neovim >= 0.8.0         Last change: 2023 January 22
+*laurel.txt*          For Neovim >= 0.8.0         Last change: 2023 January 24
 
 ==============================================================================
 Table of Contents                                   *laurel-table-of-contents*
@@ -108,7 +108,6 @@ AUTOCMD ~
 
 
 - |laurel-augroup!|
-- |laurel-augroup+|
 - |laurel-autocmd!|
 - |laurel-au!|
 
@@ -120,11 +119,11 @@ augroup!                               Create or get an augroup, or override an
 
 
 >fennel
-    (augroup! name) ; Only this format returns the augroup id.
-    (augroup! name
+    (augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
+    (augroup! name ?api-opts-for-augroup
       [events ?pattern ?extra-opts callback ?api-opts]
       ...)
-    (augroup! name
+    (augroup! name ?api-opts-for-augroup
       ;; Wrap args in `autocmd!` or `au!` instead of brackets.
       (autocmd! events ?pattern ?extra-opts callback ?api-opts)
       ...)
@@ -132,6 +131,8 @@ augroup!                               Create or get an augroup, or override an
 
 
 
+- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`. You cannot use
+    macro/function named `au!` or `autocmd!` here.
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
@@ -217,28 +218,7 @@ is equivalent to
 <
 
 
-c.f. |laurel-`augroup+`|, |laurel-`autocmd!`|
-
-                                                             *laurel-augroup+*
-
-augroup+                               Create or get an augroup. This macro
-                                       also lets us add `autocmd`s in an
-                                       existing `augroup` without clearing
-                                       `autocmd`s already defined there.
-
-
->fennel
-    (augroup+ name) ; This format returns existing augroup id.
-    (augroup+ name
-      [events ?pattern ?extra-opts callback ?api-opts]
-      ...)
-    (augroup+ name
-      (autocmd! events ?pattern ?extra-opts callback ?api-opts)
-      ...)
-<
-
-
-c.f. |laurel-`augroup!`|, |laurel-`autocmd!`|
+c.f. |laurel-`autocmd!`|
 
                                                              *laurel-autocmd!*
 
@@ -254,8 +234,8 @@ autocmd!                               Create an autocmd.
 
 - `name-or-id`: (string|integer|nil) The autocmd group name or id to match
     against. It is necessary unlike `nvim_create_autocmd()` unless this
-    `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil`
-    to define `autocmd`s affiliated with no augroup.
+    `autocmd!` macro is within either `augroup!`. Set it to `nil` to define
+    `autocmd`s affiliated with no augroup.
 
 
 See |laurel-`augroup!`| for the rest.
@@ -1161,6 +1141,12 @@ race.
 
 
 LIST OF DEPRECATED FEATURES ~
+
+                                                               *laurel-v0.5.2*
+
+
+- `augroup+`: Use |laurel-`augroup!`| instead.
+
 
                                                                *laurel-v0.5.1*
 
