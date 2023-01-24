@@ -63,7 +63,7 @@
                        (assert.is_nil (get-rhs mode :lhs))))))
     (describe :map!
       (it "sets callback function with quoted symbol"
-        #(do
+        (fn []
           (map! :n :lhs `default-callback)
           (assert.is_same default-callback (get-callback :n :lhs))))
       (it "sets callback function with quoted multi-symbol"
@@ -128,10 +128,10 @@
            (each [_ mode (ipairs modes)]
              (assert.is.same :rhs (get-rhs mode :lhs)))))
       (it "maps multiple mode mappings with a bare-string at once"
-        #(do
-           (noremap! :nct :lhs :rhs)
-           (each [mode (-> :nct (: :gmatch "."))]
-             (assert.is.same :rhs (get-rhs mode :lhs)))))
+        (fn []
+          (noremap! :nct :lhs :rhs)
+          (each [mode (-> :nct (: :gmatch "."))]
+            (assert.is.same :rhs (get-rhs mode :lhs)))))
       (it "enables `replace_keycodes` with `expr` in `extra-opts`"
         #(let [modes [:n]]
            (map! modes [:expr] :lhs :rhs)
