@@ -38,7 +38,7 @@ help: ## Show this help
 %_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
 	@$(FENNEL) \
 		--correlate \
-		--add-macro-path "$(REPO_MACRO_PATH)" \
+		--add-macro-path "$(REPO_MACRO_PATH);$(SPEC_ROOT)/?.fnl" \
 		--compile $< > $@
 
 .PHONY: clean
