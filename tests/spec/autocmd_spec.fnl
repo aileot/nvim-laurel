@@ -43,12 +43,6 @@
             (assert.has_no.errors #(augroup! default-augroup
                                      [default-event `default-callback]
                                      (au! :FileType [:foo :bar] #:foobar)))))))
-    (describe :augroup+
-      (fn []
-        (it "gets an existing augroup id"
-          (fn []
-            (let [id (augroup! default-augroup)]
-              (assert.is.same id (augroup+ default-augroup)))))))
     (describe :au!/autocmd!
       (fn []
         (it "sets callback via macro with quote"
@@ -238,4 +232,12 @@
               (fn []
                 (let [cb :callback
                       opts {:nested true}]
-                  (autocmd! default-augroup default-event cb opts))))))))))
+                  (autocmd! default-augroup default-event cb opts))))))))
+    (describe "(deprecated)"
+      (fn []
+        (describe :augroup+
+          (fn []
+            (it "gets an existing augroup id"
+              (fn []
+                (let [id (augroup! default-augroup)]
+                  (assert.is.same id (augroup+ default-augroup)))))))))))

@@ -96,7 +96,6 @@ the following features:
 ### Autocmd
 
 - [augroup!](#augroup)
-- [augroup+](#augroup-1)
 - [autocmd!](#autocmd)
 - [au!](#au)
 
@@ -105,16 +104,18 @@ the following features:
 Create or get an augroup, or override an existing augroup.
 
 ```fennel
-(augroup! name) ; Only this format returns the augroup id.
-(augroup! name
+(augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
+(augroup! name ?api-opts-for-augroup
   [events ?pattern ?extra-opts callback ?api-opts]
   ...)
-(augroup! name
+(augroup! name ?api-opts-for-augroup
   ;; Wrap args in `autocmd!` or `au!` instead of brackets.
   (autocmd! events ?pattern ?extra-opts callback ?api-opts)
   ...)
 ```
 
+- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`. You cannot
+  use macro/function named `au!` or `autocmd!` here.
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
@@ -197,24 +198,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 ```
 
-c.f. [`augroup+`](#augroup-1), [`autocmd!`](#autocmd)
-
-#### augroup+
-
-Create or get an augroup. This macro also lets us add `autocmd`s in an
-existing `augroup` without clearing `autocmd`s already defined there.
-
-```fennel
-(augroup+ name) ; This format returns existing augroup id.
-(augroup+ name
-  [events ?pattern ?extra-opts callback ?api-opts]
-  ...)
-(augroup+ name
-  (autocmd! events ?pattern ?extra-opts callback ?api-opts)
-  ...)
-```
-
-c.f. [`augroup!`](#augroup), [`autocmd!`](#autocmd)
+c.f. [`autocmd!`](#autocmd)
 
 #### autocmd!
 
@@ -227,8 +211,8 @@ Create an autocmd.
 
 - `name-or-id`: (string|integer|nil) The autocmd group name or id to match
   against. It is necessary unlike `nvim_create_autocmd()` unless this
-  `autocmd!` macro is within either `augroup!` or `augroup+`. Set it to `nil`
-  to define `autocmd`s affiliated with no augroup.
+  `autocmd!` macro is within either `augroup!`. Set it to `nil` to define
+  `autocmd`s affiliated with no augroup.
 
 See [`augroup!`](#augroup) for the rest.
 
@@ -983,6 +967,10 @@ runtime.
    ```
 
 ### List of Deprecated Features
+
+#### v0.5.2
+
+- `augroup+`: Use [`augroup!`](#augroup) instead.
 
 #### v0.5.1
 

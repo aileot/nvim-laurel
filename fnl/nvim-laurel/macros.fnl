@@ -352,25 +352,27 @@
                                        ?api-opts)]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
-(lambda define-augroup! [name opts ...]
+(fn autocmd? [args]
+  (and (list? args) (contains? [`au! `autocmd!] (first args))))
+
+(lambda define-augroup! [name api-opts autocmds]
   "Define an augroup.
   ```fennel
-  (define-augroup! name opts [events ?pattern ?extra-opts callback ?api-opts])
-  (define-augroup! name opts (au! events ?pattern ?extra-opts callback ?api-opts))
-  (define-augroup! name opts (autocmd! events ?pattern ?extra-opts callback ?api-opts))
+  (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
+  (define-augroup! name api-opts (au! events ?pattern ?extra-opts callback ?api-opts))
+  (define-augroup! name api-opts (autocmd! events ?pattern ?extra-opts callback ?api-opts))
   ```
   @param name string Augroup name.
   @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
-  @param ... undefined Parameters for `define-autocmd!` if any.
+  @param autocmds sequence|list Parameters for `define-autocmd!`.
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
-      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
-      augroup."
-  (if (= 0 (length [...]))
-      `(vim.api.nvim_create_augroup ,name ,opts)
-      `(let [id# (vim.api.nvim_create_augroup ,name ,opts)]
-         ,(icollect [_ args (ipairs [...])]
-            (let [au-args (if (and (list? args)
-                                   (contains? [`au! `autocmd!] (first args)))
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the
+      augroup.)"
+  (if (= 0 (length autocmds))
+      `(vim.api.nvim_create_augroup ,name ,api-opts)
+      `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
+         ,(icollect [_ args (ipairs autocmds)]
+            (let [au-args (if (autocmd? args)
                               (slice args 2)
                               (sequence? args)
                               args
@@ -381,36 +383,28 @@
 
 ;; Export ///2
 
-(lambda augroup! [name ...]
+(lambda augroup! [name ?api-opts|?autocmd ...]
   "Create, or override, an augroup, and add `autocmd` to the augroup.
   ```fennel
-  (augroup! name
+  (augroup! name ?api-opts
     ?[events ?pattern ?extra-opts callback ?api-opts]
     ?(au! events ?pattern ?extra-opts callback ?api-opts)
     ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
     ?...)
   ```
   @param name string Augroup name.
+  @param ?api-opts|?autocmd table|nil Omittable.
+  @param ... sequence|list
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
-  ;; "clear" value is true by default.
-  (define-augroup! name {} ...))
-
-(lambda augroup+ [name ...]
-  "Create, or get, an augroup, or add `autocmd`s to an existing augroup.
-  ```fennel
-  (augroup+ name
-    ?[events ?pattern ?extra-opts callback ?api-opts]
-    ?(au! events ?pattern ?extra-opts callback ?api-opts)
-    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
-    ?...)
-  ```
-  @param name string Augroup name.
-  @return undefined Without `...`, the return value of `nvim_create_augroup`;
-      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
-      augroup."
-  (define-augroup! name {:clear false} ...))
+  ;; Note: "clear" value in api-opts is true by default.
+  (let [[api-opts autocmds] (if (nil? ?api-opts|?autocmd) [{} []]
+                                (or (sequence? ?api-opts|?autocmd)
+                                    (autocmd? ?api-opts|?autocmd)) ;
+                                [{} [?api-opts|?autocmd ...]]
+                                [?api-opts|?autocmd [...]])]
+    (define-augroup! name api-opts autocmds)))
 
 ;; Keymap ///1
 
@@ -1439,6 +1433,25 @@
   (deprecate :tnoremap! :map! :v0.6.0 ;
              (noremap! :t ...)))
 
+(lambda augroup+ [name ...]
+  "(Deprecated) Create, or get, an augroup, or add `autocmd`s to an existing
+  augroup.
+  ```fennel
+  (augroup+ name
+    ?[events ?pattern ?extra-opts callback ?api-opts]
+    ?(au! events ?pattern ?extra-opts callback ?api-opts)
+    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
+    ?...)
+  ```
+  @param name string Augroup name.
+  @return undefined Without `...`, the return value of `nvim_create_augroup`;
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
+      augroup."
+  (deprecate :augroup+ :augroup! :v0.6.0
+             (augroup! name
+               {:clear false}
+               ...)))
+
 ;; Export ///1
 
 {: map!
@@ -1446,7 +1459,6 @@
  : <Cmd>
  : <C-u>
  : augroup!
- : augroup+
  :autocmd! define-autocmd!
  :au! define-autocmd!
  : set!
@@ -1507,6 +1519,7 @@
  : inoremap!
  : lnoremap!
  : cnoremap!
- : tnoremap!}
+ : tnoremap!
+ : augroup+}
 
 ;; vim:fdm=marker:foldmarker=///,""""

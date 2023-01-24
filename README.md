@@ -199,7 +199,6 @@ See [laurel.md](./doc/laurel.md) for each macro usage in details.
 - [Autocmd](./doc/laurel.md#Autocmd)
 
   - [`augroup!`](./doc/laurel.md#augroup)
-  - [`augroup+`](./doc/laurel.md#augroup-1)
   - [`autocmd!`](./doc/laurel.md#autocmd)
   - [`au!`](./doc/laurel.md#au)
 
