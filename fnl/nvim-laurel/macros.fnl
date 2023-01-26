@@ -16,6 +16,9 @@
   `(if (not ,cond)
        ,...))
 
+(macro nand [...]
+  `(not (and ,...)))
+
 (macro printf [str ...]
   `(string.format ,str ,...))
 
@@ -348,6 +351,9 @@
                                       callback)
                            cb))))
             (set extra-opts.command callback))
+        (assert-compile (nand extra-opts.pattern extra-opts.buffer)
+                        "cannot set both pattern and buffer for the same autocmd"
+                        extra-opts)
         (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
                                        ?api-opts)]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
