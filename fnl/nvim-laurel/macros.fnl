@@ -271,7 +271,7 @@
   (set opts.cb nil)
   opts)
 
-(lambda define-autocmd! [?a1 a2 ?a3 ?x ?y ?z]
+(lambda define-autocmd! [...]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
   ```fennel
   (define-autocmd! events api-opts)
@@ -290,14 +290,14 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
-  (if (nil? ?a3)
+  (if (< (select "#" ...) 3)
       ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
       ;; args are provided.
-      (let [[events api-opts] [?a1 a2]]
+      (let [[events api-opts] [...]]
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
-      (let [[?id events] [?a1 a2]
+      (let [[?id events & rest] [...]
             [?pattern ?extra-opts callback ?api-opts] ;
-            (match [?a3 ?x ?y ?z]
+            (match rest
               [cb nil nil nil] [nil nil cb nil]
               (where [a ex-opts c ?d] (sequence? ex-opts)) [a ex-opts c ?d]
               [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
@@ -305,8 +305,7 @@
                                (contains? autocmd/extra-opt-keys (first a))
                                [nil a b ?c] ;
                                [a nil b ?c])
-              _ (error* (printf "unexpected args:\n%s\n%s\n%s\n%s" (view ?a3)
-                                (view ?x) (view ?y) (view ?z))))
+              _ (error* (printf "unexpected args:\n%s" (view [...]))))
             extra-opts (if (nil? ?extra-opts) {}
                            (seq->kv-table ?extra-opts
                                           [:once
