@@ -1414,16 +1414,16 @@
                {:clear false}
                ...)))
 
-(lambda g! [name val]
+(lambda g! [...]
   "(Deprecated) Set global (`g:`) editor variable.
   ```fennel
   (g! name val)
   ```
   @param name string Variable name.
   @param val any Variable value."
-  `(vim.api.nvim_set_var ,name ,val))
+  (let! :g ...))
 
-(lambda b! [id|name name|val ?val]
+(lambda b! [...]
   "(Deprecated) Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
   with an integer to access variables for specific buffer.
   ```fennel
@@ -1432,11 +1432,9 @@
   @param ?id integer Buffer handle, or 0 for current buffer.
   @param name string Variable name.
   @param val any Variable value."
-  (if ?val
-      `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
-      `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
+  (let! :b ...))
 
-(lambda w! [id|name name|val ?val]
+(lambda w! [...]
   "(Deprecated) Set window-scoped (`w:`) variable for the current window. Can be indexed
   with an integer to access variables for specific window.
   ```fennel
@@ -1445,11 +1443,9 @@
   @param ?id integer Window handle, or 0 for current window.
   @param name string Variable name.
   @param val any Variable value."
-  (if ?val
-      `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
-      `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
+  (let! :w ...))
 
-(lambda t! [id|name name|val ?val]
+(lambda t! [...]
   "(Deprecated) Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
   with an integer to access variables for specific tabpage.
   ```fennel
@@ -1458,20 +1454,18 @@
   @param ?id integer Tabpage handle, or 0 for current tabpage.
   @param name string Variable name.
   @param val any Variable value."
-  (if ?val
-      `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
-      `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
+  (let! :t ...))
 
-(lambda v! [name val]
+(lambda v! [...]
   "(Deprecated) Set `v:` variable if not readonly.
   ```fennel
   (v! name val)
   ```
   @param name string Variable name.
   @param val any Variable value."
-  `(vim.api.nvim_set_vvar ,name ,val))
+  (let! :v ...))
 
-(lambda env! [name val]
+(lambda env! [...]
   "(Deprecated) Set environment variable in the editor session.
   ```fennel
   (env! name val)
@@ -1479,8 +1473,7 @@
   @param name string Variable name. A bare-string can starts with `$` (ignored
     internally), which helps `gf` jump to the path.
   @param val any Variable value."
-  (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
-    `(vim.fn.setenv ,new-name ,val)))
+  (let! :env ...))
 
 ;; Export ///1
 
