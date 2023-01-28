@@ -1431,7 +1431,7 @@
   ```
   @param name string Variable name.
   @param val any Variable value."
-  (let! :g ...))
+  (deprecate :g! :let! :v0.6.0 (let! :g ...)))
 
 (lambda b! [...]
   "(Deprecated) Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
@@ -1442,7 +1442,7 @@
   @param ?id integer Buffer handle, or 0 for current buffer.
   @param name string Variable name.
   @param val any Variable value."
-  (let! :b ...))
+  (deprecate :b! :let! :v0.6.0 (let! :b ...)))
 
 (lambda w! [...]
   "(Deprecated) Set window-scoped (`w:`) variable for the current window. Can be indexed
@@ -1453,7 +1453,7 @@
   @param ?id integer Window handle, or 0 for current window.
   @param name string Variable name.
   @param val any Variable value."
-  (let! :w ...))
+  (deprecate :w! :let! :v0.6.0 (let! :w ...)))
 
 (lambda t! [...]
   "(Deprecated) Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
@@ -1464,7 +1464,7 @@
   @param ?id integer Tabpage handle, or 0 for current tabpage.
   @param name string Variable name.
   @param val any Variable value."
-  (let! :t ...))
+  (deprecate :t! :let! :v0.6.0 (let! :t ...)))
 
 (lambda v! [...]
   "(Deprecated) Set `v:` variable if not readonly.
@@ -1473,7 +1473,7 @@
   ```
   @param name string Variable name.
   @param val any Variable value."
-  (let! :v ...))
+  (deprecate :v! :let! :v0.6.0 (let! :v ...)))
 
 (lambda env! [...]
   "(Deprecated) Set environment variable in the editor session.
@@ -1483,7 +1483,7 @@
   @param name string Variable name. A bare-string can starts with `$` (ignored
     internally), which helps `gf` jump to the path.
   @param val any Variable value."
-  (let! :env ...))
+  (deprecate :env! :let! :v0.6.0 (let! :env ...)))
 
 ;; Export ///1
 
