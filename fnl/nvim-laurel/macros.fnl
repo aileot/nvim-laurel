@@ -599,6 +599,13 @@
     `(vim.fn.setenv ,new-name ,val)))
 
 (lambda let! [scope ...]
+  "Set value to Vim variable. It works as if `vim.g`-like interface with
+  `tset`, but it trys to resolve its args into Nvim API function at compile
+  time.
+  @param scope string
+  @param ?id number Omittable handle for the scopes: `b`, `w`, `t`.
+  @param name string Variable name
+  @param val any"
   (match scope
     :g `(vim.api.nvim_set_var ,...)
     :b `(vim.api.nvim_buf_set_var ,(variable/with-id ...))
