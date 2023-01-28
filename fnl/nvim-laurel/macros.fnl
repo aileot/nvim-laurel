@@ -608,74 +608,6 @@
     :env (variable/let-env ...)
     "$" (variable/let-env ...)))
 
-(lambda g! [name val]
-  "Set global (`g:`) editor variable.
-  ```fennel
-  (g! name val)
-  ```
-  @param name string Variable name.
-  @param val any Variable value."
-  `(vim.api.nvim_set_var ,name ,val))
-
-(lambda b! [id|name name|val ?val]
-  "Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
-  with an integer to access variables for specific buffer.
-  ```fennel
-  (b! ?id name val)
-  ```
-  @param ?id integer Buffer handle, or 0 for current buffer.
-  @param name string Variable name.
-  @param val any Variable value."
-  (if ?val
-      `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
-      `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
-
-(lambda w! [id|name name|val ?val]
-  "Set window-scoped (`w:`) variable for the current window. Can be indexed
-  with an integer to access variables for specific window.
-  ```fennel
-  (w! ?id name val)
-  ```
-  @param ?id integer Window handle, or 0 for current window.
-  @param name string Variable name.
-  @param val any Variable value."
-  (if ?val
-      `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
-      `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
-
-(lambda t! [id|name name|val ?val]
-  "Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
-  with an integer to access variables for specific tabpage.
-  ```fennel
-  (t! ?id name val)
-  ```
-  @param ?id integer Tabpage handle, or 0 for current tabpage.
-  @param name string Variable name.
-  @param val any Variable value."
-  (if ?val
-      `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
-      `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
-
-(lambda v! [name val]
-  "Set `v:` variable if not readonly.
-  ```fennel
-  (v! name val)
-  ```
-  @param name string Variable name.
-  @param val any Variable value."
-  `(vim.api.nvim_set_vvar ,name ,val))
-
-(lambda env! [name val]
-  "Set environment variable in the editor session.
-  ```fennel
-  (env! name val)
-  ```
-  @param name string Variable name. A bare-string can starts with `$` (ignored
-    internally), which helps `gf` jump to the path.
-  @param val any Variable value."
-  (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
-    `(vim.fn.setenv ,new-name ,val)))
-
 ;; Option ///1
 
 (lambda option/concat-kv-table [kv-table]
@@ -1481,6 +1413,74 @@
              (augroup! name
                {:clear false}
                ...)))
+
+(lambda g! [name val]
+  "Set global (`g:`) editor variable.
+  ```fennel
+  (g! name val)
+  ```
+  @param name string Variable name.
+  @param val any Variable value."
+  `(vim.api.nvim_set_var ,name ,val))
+
+(lambda b! [id|name name|val ?val]
+  "Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
+  with an integer to access variables for specific buffer.
+  ```fennel
+  (b! ?id name val)
+  ```
+  @param ?id integer Buffer handle, or 0 for current buffer.
+  @param name string Variable name.
+  @param val any Variable value."
+  (if ?val
+      `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
+      `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
+
+(lambda w! [id|name name|val ?val]
+  "Set window-scoped (`w:`) variable for the current window. Can be indexed
+  with an integer to access variables for specific window.
+  ```fennel
+  (w! ?id name val)
+  ```
+  @param ?id integer Window handle, or 0 for current window.
+  @param name string Variable name.
+  @param val any Variable value."
+  (if ?val
+      `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
+      `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
+
+(lambda t! [id|name name|val ?val]
+  "Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
+  with an integer to access variables for specific tabpage.
+  ```fennel
+  (t! ?id name val)
+  ```
+  @param ?id integer Tabpage handle, or 0 for current tabpage.
+  @param name string Variable name.
+  @param val any Variable value."
+  (if ?val
+      `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
+      `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
+
+(lambda v! [name val]
+  "Set `v:` variable if not readonly.
+  ```fennel
+  (v! name val)
+  ```
+  @param name string Variable name.
+  @param val any Variable value."
+  `(vim.api.nvim_set_vvar ,name ,val))
+
+(lambda env! [name val]
+  "Set environment variable in the editor session.
+  ```fennel
+  (env! name val)
+  ```
+  @param name string Variable name. A bare-string can starts with `$` (ignored
+    internally), which helps `gf` jump to the path.
+  @param val any Variable value."
+  (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
+    `(vim.fn.setenv ,new-name ,val)))
 
 ;; Export ///1
 
