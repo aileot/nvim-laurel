@@ -584,6 +584,30 @@
 
 ;; Variable ///1
 
+(lambda variable/with-id [...]
+  (let [[id name val] (match (select "#" ...)
+                        3 [...]
+                        2 [0 ...])]
+    (values id name val)))
+
+(lambda variable/let-env [name val]
+  "A bare-string can starts with `$` (ignored
+  internally), which helps `gf` jump to the path.
+  @param name string
+  @param val any"
+  (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
+    `(vim.fn.setenv ,new-name ,val)))
+
+(lambda let! [scope ...]
+  (match scope
+    :g `(vim.api.nvim_set_var ,...)
+    :b `(vim.api.nvim_buf_set_var ,(variable/with-id ...))
+    :w `(vim.api.nvim_win_set_var ,(variable/with-id ...))
+    :t `(vim.api.nvim_tabpage_set_var ,(variable/with-id ...))
+    :v `(vim.api.nvim_set_vvar ,...)
+    :env (variable/let-env ...)
+    "$" (variable/let-env ...)))
+
 (lambda g! [name val]
   "Set global (`g:`) editor variable.
   ```fennel
@@ -1485,6 +1509,7 @@
  :go- setglobal-
  : bo!
  : wo!
+ : let!
  : g!
  : b!
  : w!
