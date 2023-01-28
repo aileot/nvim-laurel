@@ -1510,12 +1510,6 @@
  : bo!
  : wo!
  : let!
- : g!
- : b!
- : w!
- : t!
- : v!
- : env!
  : command!
  : feedkeys!
  : highlight!
@@ -1551,6 +1545,12 @@
  : lnoremap!
  : cnoremap!
  : tnoremap!
- : augroup+}
+ : augroup+
+ : g!
+ : b!
+ : w!
+ : t!
+ : v!
+ : env!}
 
 ;; vim:fdm=marker:foldmarker=///,""""
