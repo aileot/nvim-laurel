@@ -606,7 +606,10 @@
     :t `(vim.api.nvim_tabpage_set_var ,(variable/with-id ...))
     :v `(vim.api.nvim_set_vvar ,...)
     :env (variable/let-env ...)
-    "$" (variable/let-env ...)))
+    "$" (variable/let-env ...)
+    _ (if (str? scope) (error* "Unexpected scope: " (view scope))
+          ;; Scope can be set at runtime, too.
+          `(tset vim ,scope ,...))))
 
 ;; Option ///1
 
