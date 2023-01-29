@@ -362,11 +362,16 @@
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
           (error* "cannot set both <command>/ex and <callback>/cb."))
+        (var vim-cb? false)
         (if ;; TODO: Deprecate `<command>` option.
             (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
             vim?
             (set extra-opts.command callback)
+            (vim-callback-format? callback)
+            ;; TODO: Remove vim-cb? check on v0.6.0.
+            ;; (set extra-opts.command callback)
+            (set vim-cb? true)
             (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;
                 (anonymous-function? callback) ;
@@ -386,8 +391,22 @@
         (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                         "cannot set both pattern and buffer for the same autocmd"
                         extra-opts)
-        (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
-                                       ?api-opts)]
+        (let [api-opts ;
+              (merge-api-opts (autocmd/->compatible-opts! extra-opts)
+                              ;; TODO: Remove all the if-expr except `?api-opts` here to set `callback` to `command`.
+                              (if vim-cb?
+                                  `(vim.tbl_extend :keep (or ,?api-opts {})
+                                                   (let [cb# ,callback
+                                                         str?# (= :string
+                                                                  (type cb#))]
+                                                     {:command (when str?#
+                                                                 cb#)
+                                                      :callback (when (not str?#)
+                                                                  ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
+                                                                              "another name"
+                                                                              :v0.6.0
+                                                                              `cb#))}))
+                                  ?api-opts))]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (fn autocmd? [args]
