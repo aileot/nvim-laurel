@@ -208,6 +208,28 @@
         pat-vim-fn "^vim%.fn%.(%S+)$"]
     (name:match pat-vim-fn)))
 
+(lambda amp->str [amp]
+  "Convert `'&foo` into `:foo`.
+  @param amp quoted-symbol
+  @return string"
+  (-> (->str (->unquoted amp))
+      (: :sub 2)))
+
+(lambda extract-amps [seq amps]
+  "Extract `'&foo`s from `seq` and return the rest.
+  @param seq sequence
+  @param amps quoted-symbol[]
+  @return sequence"
+  (let [new-seq [] ;
+        ;; e.g., [(quote &foo)] -> {:foo nil}
+        extracted (collect [_ v (ipairs amps)]
+                    (amp->str v))]
+    (each [_ v (ipairs seq)]
+      (if (contains? amps v)
+          (tset extracted (amp->str v) true)
+          (table.insert new-seq v)))
+    (values new-seq extracted)))
+
 (lambda deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
   deprecation when the file including it is `require`d at runtime.
@@ -271,7 +293,7 @@
   (set opts.cb nil)
   opts)
 
-(lambda define-autocmd! [?a1 a2 ?a3 ?x ?y ?z]
+(lambda define-autocmd! [...]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
   ```fennel
   (define-autocmd! events api-opts)
@@ -290,14 +312,14 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
-  (if (nil? ?a3)
+  (if (< (select "#" ...) 3)
       ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
       ;; args are provided.
-      (let [[events api-opts] [?a1 a2]]
+      (let [[events api-opts] [...]]
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
-      (let [[?id events] [?a1 a2]
+      (let [([?id events & rest] {:vim vim?}) (extract-amps [...] [`&vim])
             [?pattern ?extra-opts callback ?api-opts] ;
-            (match [?a3 ?x ?y ?z]
+            (match rest
               [cb nil nil nil] [nil nil cb nil]
               (where [a ex-opts c ?d] (sequence? ex-opts)) [a ex-opts c ?d]
               [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
@@ -305,8 +327,7 @@
                                (contains? autocmd/extra-opt-keys (first a))
                                [nil a b ?c] ;
                                [a nil b ?c])
-              _ (error* (printf "unexpected args:\n%s\n%s\n%s\n%s" (view ?a3)
-                                (view ?x) (view ?y) (view ?z))))
+              _ (error* (printf "unexpected args:\n%s" (view [...]))))
             extra-opts (if (nil? ?extra-opts) {}
                            (seq->kv-table ?extra-opts
                                           [:once
@@ -329,7 +350,7 @@
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
           (error* "cannot set both <command>/ex and <callback>/cb."))
-        (if (or extra-opts.<command> extra-opts.ex)
+        (if (or extra-opts.<command> extra-opts.ex vim?)
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;

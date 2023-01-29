@@ -187,6 +187,11 @@
         (let [cb :callback
               opts {:nested true}]
           (autocmd! default-augroup default-event cb opts)))))
+  (describe "with &vim indicator"
+    (it "set callback to `command`"
+      (au! default-augroup default-event [:pat1] &vim default-command)
+      (let [[autocmd1] (get-autocmds {:pattern :pat1})]
+        (assert.is.same default-command autocmd1.command))))
   (describe "(deprecated)"
     (describe :augroup+
       (it "gets an existing augroup id"
