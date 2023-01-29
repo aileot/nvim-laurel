@@ -215,7 +215,7 @@
   (-> (->str (->unquoted amp))
       (: :sub 2)))
 
-(lambda extract-?amps [seq amps]
+(lambda extract-amps [seq amps]
   "Extract `'&foo`s from `seq` and return the rest.
   @param seq sequence
   @param amps quoted-symbol[]
@@ -317,7 +317,7 @@
       ;; args are provided.
       (let [[events api-opts] [...]]
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
-      (let [([?id events & rest] {:vim vim?}) (extract-?amps [...] [`&vim])
+      (let [([?id events & rest] {:vim vim?}) (extract-amps [...] [`&vim])
             [?pattern ?extra-opts callback ?api-opts] ;
             (match rest
               [cb nil nil nil] [nil nil cb nil]
