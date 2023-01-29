@@ -17,7 +17,10 @@
 
 (local default-rhs :default-rhs)
 (local default-callback #:default-callback)
-(local default {:multi {:sym #:default.multi.sym}})
+(local default
+       {:multi {:sym {:callback #:default.multi.sym.callback
+                      :command :default.multi.sym.command}}})
+
 (local new-callback #(fn []
                        $))
 
@@ -65,8 +68,8 @@
       (assert.is_same default-callback (get-callback :n :lhs)))
     (it "sets callback function with quoted multi-symbol"
       (let [desc :multi.sym]
-        (map! :n :lhs `default.multi.sym {: desc})
-        (assert.is_same default.multi.sym (get-callback :n :lhs))))
+        (map! :n :lhs `default.multi.sym.callback {: desc})
+        (assert.is_same default.multi.sym.callback (get-callback :n :lhs))))
     (it "sets callback function with quoted list"
       (let [desc :list]
         (map! :n :lhs `(default-callback :foo :bar) {: desc})
@@ -133,7 +136,17 @@
       (let [modes [:n]]
         (map! modes [:expr :literal] :lhs :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-          (assert.is_nil replace_keycodes)))))
+          (assert.is_nil replace_keycodes))))
+    (describe "with `&vim` indicator"
+      (it "sets `callback` in symbol as key sequence"
+        (map! :n :lhs &vim default-rhs)
+        (assert.is_same default-rhs (get-rhs :n :lhs)))
+      (it "sets `callback` in multi symbol as key sequence"
+        (map! :n :lhs &vim default.multi.sym.command)
+        (assert.is_same default.multi.sym.command (get-rhs :n :lhs)))
+      (it "sets `callback` in list as key sequence"
+        (map! :n :lhs &vim (macro-command))
+        (assert.is_same (macro-command) (get-rhs :n :lhs)))))
   (describe :unmap!
     (it "`unmap`s key"
       (nnoremap! :lhs :rhs)

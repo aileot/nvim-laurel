@@ -255,11 +255,11 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - `cb`: An alias of `<callback>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
-  function or Ex command. To tell `callback` is Lua function, either prepend a
-  quote `` ` `` as an identifer (the quoted symbol, or list, is supposed to
-  result in Lua function at runtime), or set it in anonymous function
-  constructed by `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex
-  command.
+  function or Key sequence. Insert `&vim` just before to tell the `callback`
+  is Key sequence. To tell `callback` is Lua function, either prepend a quote
+  `` ` `` as an identifer (the quoted symbol, or list, is supposed to result
+  in Lua function at runtime), or set it in anonymous function constructed by
+  `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex command.
 
   Note: To call Vim script function `foobar` without table arg from
   `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar ``
