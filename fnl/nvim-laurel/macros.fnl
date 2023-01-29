@@ -317,7 +317,7 @@
       ;; args are provided.
       (let [[events api-opts] [...]]
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
-      (let [[?id events & rest] [...]
+      (let [([?id events & rest] {: vim}) (extract-?amps [...] [`&vim])
             [?pattern ?extra-opts callback ?api-opts] ;
             (match rest
               [cb nil nil nil] [nil nil cb nil]
