@@ -317,7 +317,7 @@
       ;; args are provided.
       (let [[events api-opts] [...]]
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
-      (let [([?id events & rest] {: vim}) (extract-?amps [...] [`&vim])
+      (let [([?id events & rest] {:vim vim?}) (extract-?amps [...] [`&vim])
             [?pattern ?extra-opts callback ?api-opts] ;
             (match rest
               [cb nil nil nil] [nil nil cb nil]
@@ -350,7 +350,7 @@
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
           (error* "cannot set both <command>/ex and <callback>/cb."))
-        (if (or extra-opts.<command> extra-opts.ex)
+        (if (or extra-opts.<command> extra-opts.ex vim?)
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;
