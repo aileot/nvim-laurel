@@ -112,6 +112,18 @@
   (and (list? x) ;
        (contains? [`fn `hashfn `lambda `partial] (first x))))
 
+(fn vim-callback-format? [callback]
+  "Tell if `callback` is to be interpreted in Vim script just by the
+  `callback` format.
+  @param callback any
+  @return boolean"
+  ;; TODO: Include the `str?` check after removing the deprecated formats.
+  (or ;; (str? callback) ;
+      (and (sym? callback) ;
+           (-> (->str callback) (: :match "^<.+>")))
+      (and (list? callback) ;
+           (-> (->str (first callback)) (: :match "^<.+>")))))
+
 ;; Specific Utils ///1
 
 (lambda error* [msg]
