@@ -362,7 +362,10 @@
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
           (error* "cannot set both <command>/ex and <callback>/cb."))
-        (if (or extra-opts.<command> extra-opts.ex vim?)
+        (if ;; TODO: Deprecate `<command>` option.
+            (or extra-opts.<command> extra-opts.ex)
+            (set extra-opts.command callback)
+            vim?
             (set extra-opts.command callback)
             (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;
