@@ -128,7 +128,8 @@ Create or get an augroup, or override an existing augroup.
   - `<callback>`: It indicates that `callback` must be callback function by
     itself.
   - `cb`: An alias of `<callback>` key.
-- `callback`: (string|function) Set either callback function or Ex command. To
+- `callback`: (string|function) Set either callback function or Ex command.
+  Insert `&vim` symbol just before to tell the `callback` is Ex command. To
   tell `callback` is Lua function, either prepend a quote `` ` `` as an
   identifer (the quoted symbol, or list, is supposed to result in Lua function
   at runtime), or set it in anonymous function constructed by `fn`, `hashfn`,
