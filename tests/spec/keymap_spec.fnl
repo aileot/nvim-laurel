@@ -136,7 +136,17 @@
       (let [modes [:n]]
         (map! modes [:expr :literal] :lhs :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-          (assert.is_nil replace_keycodes)))))
+          (assert.is_nil replace_keycodes))))
+    (describe "with `&vim` indicator"
+      (it "sets `callback` in symbol as key sequence"
+        (map! :n :lhs &vim default-rhs)
+        (assert.is_same default-rhs (get-rhs :n :lhs)))
+      (it "sets `callback` in multi symbol as key sequence"
+        (map! :n :lhs &vim default.multi.sym.command)
+        (assert.is_same default.multi.sym.command (get-rhs :n :lhs)))
+      (it "sets `callback` in list as key sequence"
+        (map! :n :lhs &vim (macro-command))
+        (assert.is_same (macro-command) (get-rhs :n :lhs)))))
   (describe :unmap!
     (it "`unmap`s key"
       (nnoremap! :lhs :rhs)
