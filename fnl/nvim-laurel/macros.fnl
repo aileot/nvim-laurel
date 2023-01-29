@@ -446,7 +446,7 @@
   (set opts.literal nil)
   opts)
 
-(lambda keymap/parse-varargs [a1 a2 ?a3 ?a4]
+(lambda keymap/parse-varargs [...]
   "Parse varargs.
   ```fennel
   (keymap/parse-varargs ?extra-opts lhs rhs ?api-opts)
@@ -460,38 +460,41 @@
   @return lhs string
   @return rhs string|function
   @return ?api-opts kv-table"
-  (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
-      (let [?seq-extra-opts (if (sequence? a1) a1
-                                (sequence? a2) a2)
-            ?extra-opts (when ?seq-extra-opts
-                          (seq->trues ?seq-extra-opts [:desc :buffer :callback]))
-            [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
-                                                 [{} a1 a2 ?a3]
-                                                 (sequence? a1)
-                                                 [?extra-opts a2 ?a3 ?a4]
-                                                 [?extra-opts a1 ?a3 ?a4])
-            rhs (do
-                  (when (and (or extra-opts.<command> extra-opts.ex)
-                             (or extra-opts.<callback> extra-opts.cb))
-                    (error* "cannot set both <command>/ex and <callback>/cb."))
-                  (if (or extra-opts.<command> extra-opts.ex) raw-rhs
-                      (or extra-opts.<callback> extra-opts.cb ;
-                          (sym? raw-rhs) ;
-                          (anonymous-function? raw-rhs) ;
-                          (quoted? raw-rhs))
-                      (do
-                        (set extra-opts.callback
-                             (if (sym? raw-rhs)
-                                 (deprecate "callback function in symbol for `map!`"
-                                            "quote \"`\" like `foobar" :v0.6.0
-                                            raw-rhs)
-                                 (->unquoted raw-rhs)))
-                        "") ;
-                      ;; Otherwise, Normal mode commands.
-                      raw-rhs))
-            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
-        (set extra-opts.buffer ?bufnr)
-        (values extra-opts lhs rhs ?api-opts))))
+  (let [([a1 a2 ?a3 ?a4] {:vim vim?}) (extract-amps [...] [`&vim])]
+    (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
+        (let [?seq-extra-opts (if (sequence? a1) a1
+                                  (sequence? a2) a2)
+              ?extra-opts (when ?seq-extra-opts
+                            (seq->trues ?seq-extra-opts
+                                        [:desc :buffer :callback]))
+              [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
+                                                   [{} a1 a2 ?a3]
+                                                   (sequence? a1)
+                                                   [?extra-opts a2 ?a3 ?a4]
+                                                   [?extra-opts a1 ?a3 ?a4])
+              rhs (do
+                    (when (and (or extra-opts.<command> extra-opts.ex)
+                               (or extra-opts.<callback> extra-opts.cb))
+                      (error* "cannot set both <command>/ex and <callback>/cb."))
+                    (if vim? raw-rhs ;
+                        (or extra-opts.<command> extra-opts.ex) raw-rhs
+                        (or extra-opts.<callback> extra-opts.cb ;
+                            (sym? raw-rhs) ;
+                            (anonymous-function? raw-rhs) ;
+                            (quoted? raw-rhs))
+                        (do
+                          (set extra-opts.callback
+                               (if (sym? raw-rhs)
+                                   (deprecate "callback function in symbol for `map!`"
+                                              "quote \"`\" like `foobar" :v0.6.0
+                                              raw-rhs)
+                                   (->unquoted raw-rhs)))
+                          "") ;
+                        ;; Otherwise, Normal mode commands.
+                        raw-rhs))
+              ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
+          (set extra-opts.buffer ?bufnr)
+          (values extra-opts lhs rhs ?api-opts)))))
 
 (lambda keymap/del-maps! [...]
   "Delete keymap.
