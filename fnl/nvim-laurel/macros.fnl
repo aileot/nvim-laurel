@@ -208,6 +208,28 @@
         pat-vim-fn "^vim%.fn%.(%S+)$"]
     (name:match pat-vim-fn)))
 
+(lambda amp->str [amp]
+  "Convert `'&foo` into `:foo`.
+  @param amp quoted-symbol
+  @return string"
+  (-> (->str (->unquoted amp))
+      (: :sub 2)))
+
+(lambda extract-?amps [seq amps]
+  "Extract `'&foo`s from `seq` and return the rest.
+  @param seq sequence
+  @param amps quoted-symbol[]
+  @return sequence"
+  (let [new-seq [] ;
+        ;; e.g., [(quote &foo)] -> {:foo nil}
+        extracted (collect [_ v (ipairs amps)]
+                    (amp->str v))]
+    (each [_ v (ipairs seq)]
+      (if (contains? amps v)
+          (tset extracted (amp->str v) true)
+          (table.insert new-seq v)))
+    (values new-seq extracted)))
+
 (lambda deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
   deprecation when the file including it is `require`d at runtime.
