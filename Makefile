@@ -14,8 +14,8 @@ SPEC_ROOT:=$(TEST_ROOT)/spec
 
 TEST_DEPS:=$(TEST_ROOT)/.test-deps
 
-FNL_TESTS:=$(wildcard $(SPEC_ROOT)/*_spec.fnl)
-LUA_TESTS:=$(FNL_TESTS:%.fnl=%.lua)
+FNL_SPECS:=$(wildcard $(SPEC_ROOT)/*_spec.fnl)
+LUA_SPECS:=$(FNL_SPECS:%.fnl=%.lua)
 
 FNL_SRC:=$(wildcard fnl/nvim-laurel/*.fnl)
 
@@ -43,10 +43,10 @@ help: ## Show this help
 
 .PHONY: clean
 clean: ## Clean lua test files compiled from fnl
-	@rm $(LUA_TESTS) || exit 0
+	@rm $(LUA_SPECS) || exit 0
 
 .PHONY: test
-test: clean $(LUA_TESTS) ## Run test
+test: clean $(LUA_SPECS) ## Run test
 	@$(VUSTED) \
 		--shuffle \
 		--output=utfTerminal \
