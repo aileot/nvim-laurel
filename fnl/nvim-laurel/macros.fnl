@@ -508,6 +508,7 @@
                       (error* "cannot set both <command>/ex and <callback>/cb."))
                     (if vim? raw-rhs ;
                         (or extra-opts.<command> extra-opts.ex) raw-rhs
+                        (vim-callback-format? raw-rhs) raw-rhs
                         (or extra-opts.<callback> extra-opts.cb ;
                             (sym? raw-rhs) ;
                             (anonymous-function? raw-rhs) ;
@@ -564,10 +565,30 @@
         api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
                                  ?api-opts)
         set-keymap (lambda [mode]
-                     (if ?bufnr
-                         `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs ,rhs
-                                                       ,api-opts)
-                         `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))
+                     ;; TODO: Drop the compatibility on v0.6.0.
+                     (if-not (vim-callback-format? rhs)
+                       (if ?bufnr
+                           `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                         ,rhs ,api-opts)
+                           `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts))
+                       `(let [cb# ,rhs
+                              str?# (= :string (type cb#))
+                              rhs# (if str?# cb# "")
+                              api-opts# ;
+                              (if str?#
+                                  ,api-opts
+                                  (vim.tbl_extend :force
+                                                  ,(keymap/->compatible-opts! extra-opts)
+                                                  {:callback ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
+                                                                         "another name"
+                                                                         :v0.6.0
+                                                                         `cb#)}
+                                                  (or ,?api-opts {})))]
+                          ,(if ?bufnr
+                               `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                             rhs# api-opts#)
+                               `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
+                                                         api-opts#)))))
         modes (if (and (str? modes) (< 1 (length modes)))
                   (icollect [m (modes:gmatch ".")]
                     m)
