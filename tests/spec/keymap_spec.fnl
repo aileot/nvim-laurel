@@ -169,7 +169,7 @@
       (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
       (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs (<C-u> "Do something")))
       (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
-  (describe "(deprecated)"
+  (describe "(Deprecated, v0.6.0 will not support it)"
     (describe :noremap!
       (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
         (let [mode :n]
