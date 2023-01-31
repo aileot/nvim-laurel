@@ -13,6 +13,11 @@
 (local default-command :default-command)
 (local default {:multi {:sym #:default.multi.sym}})
 
+(local <default>-command :<default>-command)
+;; TODO: Remove it on removing the support for Lua callback.
+(local <default>-str-callback #:<default>-str-callback)
+(local <default>-callback-callback ##:<default>-callback-callback)
+
 (lambda get-autocmds [?opts]
   (let [opts (collect [k v (pairs (or ?opts {})) ;
                        &into {:group default-augroup}]
@@ -187,12 +192,32 @@
         (let [cb :callback
               opts {:nested true}]
           (autocmd! default-augroup default-event cb opts)))))
+  (describe :<Cmd>pattern
+    (it "symbol will be set to 'command'"
+      (au! default-augroup default-event [:pat1] <default>-command)
+      (let [au (get-first-autocmd {:pattern :pat1})]
+        (assert.is.same <default>-command au.command)))
+    (it "list will be set to 'command'"
+      (au! default-augroup default-event [:pat1] (<default>-str-callback))
+      (let [au (get-first-autocmd {:pattern :pat1})]
+        (assert.is.same (<default>-str-callback) au.command))))
   (describe "with &vim indicator"
     (it "set callback to `command`"
       (au! default-augroup default-event [:pat1] &vim default-command)
       (let [[autocmd1] (get-autocmds {:pattern :pat1})]
         (assert.is.same default-command autocmd1.command))))
-  (describe "(deprecated)"
+  (describe "(Deprecated, v0.6.0 will not support it)"
+    (describe :<Cmd>pattern
+      (it "symbol can set Lua function as callback"
+        (au! default-augroup default-event [:pat1] <default>-str-callback)
+        (let [au (get-first-autocmd {:pattern :pat1})]
+          (assert.is.same <default>-str-callback au.callback)))
+      (it "list can set Lua function as callback"
+        (let [desc :<default>]
+          (au! default-augroup default-event [:pat1] [:desc desc]
+               (<default>-callback-callback))
+          (let [au (get-first-autocmd {:pattern :pat1})]
+            (assert.is.same desc au.desc)))))
     (describe :augroup+
       (it "gets an existing augroup id"
         (let [id (augroup! default-augroup)]
