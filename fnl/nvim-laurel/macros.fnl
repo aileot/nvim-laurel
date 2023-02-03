@@ -409,6 +409,18 @@
                                                                               "another name"
                                                                               :v0.6.0
                                                                               `cb#))}))
+                                  (and (list? extra-opts.command) (not vim?))
+                                  `(vim.tbl_extend :keep (or ,?api-opts {})
+                                                   (let [cb# ,extra-opts.command
+                                                         str?# (= :string
+                                                                  (type cb#))]
+                                                     {:command (when str?#
+                                                                 ,(deprecate "bare-list to set Ex command"
+                                                                             "&vim, or rename symbol to match `^<.+>`,"
+                                                                             :v0.6.0
+                                                                             `cb#))
+                                                      :callback (when (not str?#)
+                                                                  cb#)}))
                                   ?api-opts))]
           `(vim.api.nvim_create_autocmd ,events
                                         ,(if deprecated-opts-command?
