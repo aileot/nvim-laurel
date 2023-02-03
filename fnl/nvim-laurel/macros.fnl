@@ -391,6 +391,9 @@
         (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                         "cannot set both pattern and buffer for the same autocmd"
                         extra-opts)
+        (local deprecated-opts-command? (or extra-opts.<command> extra-opts.ex))
+        (local deprecated-opts-callback?
+               (or extra-opts.<callback> extra-opts.cb))
         (let [api-opts ;
               (merge-api-opts (autocmd/->compatible-opts! extra-opts)
                               ;; TODO: Remove all the if-expr except `?api-opts` here to set `callback` to `command`.
@@ -407,7 +410,16 @@
                                                                               :v0.6.0
                                                                               `cb#))}))
                                   ?api-opts))]
-          `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
+          `(vim.api.nvim_create_autocmd ,events
+                                        ,(if deprecated-opts-command?
+                                             (deprecate "special opts <command> and ex"
+                                                        "&vim, or rename symbol to match `^<.+>`,"
+                                                        :v0.6.0 api-opts)
+                                             deprecated-opts-callback?
+                                             (deprecate "special opts <callback> and cb"
+                                                        "callback with no decorations"
+                                                        :v0.6.0 api-opts)
+                                             api-opts))))))
 
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
