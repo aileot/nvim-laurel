@@ -112,6 +112,18 @@
   (and (list? x) ;
        (contains? [`fn `hashfn `lambda `partial] (first x))))
 
+(fn vim-callback-format? [callback]
+  "Tell if `callback` is to be interpreted in Vim script just by the
+  `callback` format.
+  @param callback any
+  @return boolean"
+  ;; TODO: Include the `str?` check after removing the deprecated formats.
+  (or ;; (str? callback) ;
+      (and (sym? callback) ;
+           (-> (->str callback) (: :match "^<.+>")))
+      (and (list? callback) ;
+           (-> (->str (first callback)) (: :match "^<.+>")))))
+
 ;; Specific Utils ///1
 
 (lambda error* [msg]
@@ -350,8 +362,16 @@
         (when (and (or extra-opts.<command> extra-opts.ex)
                    (or extra-opts.<callback> extra-opts.cb))
           (error* "cannot set both <command>/ex and <callback>/cb."))
-        (if (or extra-opts.<command> extra-opts.ex vim?)
+        (var vim-cb? false)
+        (if ;; TODO: Deprecate `<command>` option.
+            (or extra-opts.<command> extra-opts.ex)
             (set extra-opts.command callback)
+            vim?
+            (set extra-opts.command callback)
+            (vim-callback-format? callback)
+            ;; TODO: Remove vim-cb? check on v0.6.0.
+            ;; (set extra-opts.command callback)
+            (set vim-cb? true)
             (or extra-opts.<callback> extra-opts.cb ;
                 (sym? callback) ;
                 (anonymous-function? callback) ;
@@ -371,8 +391,22 @@
         (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                         "cannot set both pattern and buffer for the same autocmd"
                         extra-opts)
-        (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
-                                       ?api-opts)]
+        (let [api-opts ;
+              (merge-api-opts (autocmd/->compatible-opts! extra-opts)
+                              ;; TODO: Remove all the if-expr except `?api-opts` here to set `callback` to `command`.
+                              (if vim-cb?
+                                  `(vim.tbl_extend :keep (or ,?api-opts {})
+                                                   (let [cb# ,callback
+                                                         str?# (= :string
+                                                                  (type cb#))]
+                                                     {:command (when str?#
+                                                                 cb#)
+                                                      :callback (when (not str?#)
+                                                                  ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
+                                                                              "another name"
+                                                                              :v0.6.0
+                                                                              `cb#))}))
+                                  ?api-opts))]
           `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (fn autocmd? [args]
