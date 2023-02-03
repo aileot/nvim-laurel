@@ -573,9 +573,20 @@
                           (not (hidden-in-compile-time? ?api-opts))))))
     (set extra-opts.remap nil)
     (set extra-opts.noremap nil))
+  (local deprecated-opts-command? (or extra-opts.<command> extra-opts.ex))
+  (local deprecated-opts-callback? (or extra-opts.<callback> extra-opts.cb))
   (let [?bufnr extra-opts.buffer
-        api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
-                                 ?api-opts)
+        api-opts* (merge-api-opts (keymap/->compatible-opts! extra-opts)
+                                  ?api-opts)
+        api-opts (if deprecated-opts-command?
+                     (deprecate "special opts <command> and ex"
+                                "&vim, or rename symbol to match `^<.+>`,"
+                                :v0.6.0 api-opts*)
+                     deprecated-opts-callback?
+                     (deprecate "special opts <callback> and cb"
+                                "callback with no decorations" :v0.6.0
+                                api-opts*)
+                     api-opts*)
         set-keymap (lambda [mode]
                      ;; TODO: Drop the compatibility on v0.6.0.
                      (if-not (vim-callback-format? rhs)
