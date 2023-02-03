@@ -21,6 +21,13 @@
        {:multi {:sym {:callback #:default.multi.sym.callback
                       :command :default.multi.sym.command}}})
 
+;; Note: Avoid using `<` in string for rhs, which is interpreted as `<lt>`,
+;; lest checks become a bit complicated.
+(local <default>-command :ltgt-command)
+(local <default>-str-callback #:ltgt-str-callback)
+;; TODO: Remove it on removing the support for Lua callback.
+(local <default>-callback-callback ##:ltgt-callback-callback)
+
 (local new-callback #(fn []
                        $))
 
@@ -137,6 +144,15 @@
         (map! modes [:expr :literal] :lhs :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_nil replace_keycodes))))
+    (describe :<Cmd>pattern
+      (it "symbol will be set to 'command'"
+        (map! :n :lhs <default>-command)
+        (let [rhs (get-rhs :n :lhs)]
+          (assert.is.same <default>-command rhs)))
+      (it "list will be set to 'command'"
+        (map! :n :lhs (<default>-str-callback))
+        (let [rhs (get-rhs :n :lhs)]
+          (assert.is.same (<default>-str-callback) rhs))))
     (describe "with `&vim` indicator"
       (it "sets `callback` in symbol as key sequence"
         (map! :n :lhs &vim default-rhs)
@@ -169,7 +185,17 @@
       (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
       (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs (<C-u> "Do something")))
       (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
-  (describe "(deprecated)"
+  (describe "(Deprecated, v0.6.0 will not support it)"
+    (describe :<Cmd>pattern
+      (it "symbol can set Lua function as callback"
+        (map! :n :lhs <default>-str-callback)
+        (let [callback (get-callback :n :lhs)]
+          (assert.is.same <default>-str-callback callback)))
+      (it "list can set Lua function as callback"
+        (let [desc1 :desc1]
+          (map! :n :lhs [:desc desc1] (<default>-callback-callback))
+          (let [{: desc} (get-mapargs :n :lhs)]
+            (assert.is.same desc1 desc)))))
     (describe :noremap!
       (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
         (let [mode :n]
