@@ -548,7 +548,12 @@
                             (anonymous-function? raw-rhs) ;
                             (quoted? raw-rhs))
                         (do
-                          (set extra-opts.callback (->unquoted raw-rhs))
+                          (set extra-opts.callback
+                               (if (quoted? raw-rhs)
+                                   (deprecate "quoted callback"
+                                              "it without quote" :v0.6.0
+                                              (->unquoted raw-rhs))
+                                   (->unquoted raw-rhs)))
                           "") ;
                         (str? raw-rhs) raw-rhs ;
                         ;; TODO: Remove list detection on v0.6.0.
