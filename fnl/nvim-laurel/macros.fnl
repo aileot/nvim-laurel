@@ -381,12 +381,16 @@
             ;; to "callback" key because functions written in Vim script are
             ;; rarely supposed to expect the table from `nvim_create_autocmd` for
             ;; its first arg.
-            (let [cb (->unquoted callback)]
+            (let [cb (->unquoted callback)
+                  cb* (or (extract-?vim-fn-name cb) ;
+                          cb)]
               (set extra-opts.callback
                    ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
                    ;; "foobar" set to "callback" key.
-                   (or (extract-?vim-fn-name cb) ;
-                       cb)))
+                   (if (quoted? callback)
+                       (deprecate "quoted callback" "it without quote" :v0.6.0
+                                  cb*)
+                       cb*)))
             (set extra-opts.command callback))
         (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                         "cannot set both pattern and buffer for the same autocmd"
