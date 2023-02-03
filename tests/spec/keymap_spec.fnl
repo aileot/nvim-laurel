@@ -186,6 +186,16 @@
       (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs (<C-u> "Do something")))
       (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
   (describe "(Deprecated, v0.6.0 will not support it)"
+    (describe :<Cmd>pattern
+      (it "symbol can set Lua function as callback"
+        (map! :n :lhs <default>-str-callback)
+        (let [callback (get-callback :n :lhs)]
+          (assert.is.same <default>-str-callback callback)))
+      (it "list can set Lua function as callback"
+        (let [desc1 :desc1]
+          (map! :n :lhs [:desc desc1] (<default>-callback-callback))
+          (let [{: desc} (get-mapargs :n :lhs)]
+            (assert.is.same desc1 desc)))))
     (describe :noremap!
       (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
         (let [mode :n]
