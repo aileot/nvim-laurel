@@ -601,29 +601,31 @@
                      api-opts*)
         set-keymap (lambda [mode]
                      ;; TODO: Drop the compatibility on v0.6.0.
-                     (if-not (vim-callback-format? rhs)
-                       (if ?bufnr
-                           `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                         ,rhs ,api-opts)
-                           `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts))
-                       `(let [cb# ,rhs
-                              str?# (= :string (type cb#))
-                              rhs# (if str?# cb# "")
-                              api-opts# ;
-                              (if str?#
-                                  ,api-opts
-                                  (vim.tbl_extend :force
-                                                  ,(keymap/->compatible-opts! extra-opts)
-                                                  {:callback ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
-                                                                         "another name"
-                                                                         :v0.6.0
-                                                                         `cb#)}
-                                                  (or ,?api-opts {})))]
-                          ,(if ?bufnr
-                               `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                             rhs# api-opts#)
-                               `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
-                                                         api-opts#)))))
+                     (if (vim-callback-format? rhs)
+                         `(let [cb# ,rhs
+                                str?# (= :string (type cb#))
+                                rhs# (if str?# cb# "")
+                                api-opts# ;
+                                (if str?#
+                                    ,api-opts
+                                    (vim.tbl_extend :force
+                                                    ,(keymap/->compatible-opts! extra-opts)
+                                                    {:callback ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
+                                                                           "another name"
+                                                                           :v0.6.0
+                                                                           `cb#)}
+                                                    (or ,?api-opts {})))]
+                            ,(if ?bufnr
+                                 `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode
+                                                               ,lhs rhs#
+                                                               api-opts#)
+                                 `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
+                                                           api-opts#)))
+                         (if ?bufnr
+                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
+                                                           ,rhs ,api-opts)
+                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
+                                                       ,api-opts))))
         modes (if (and (str? modes) (< 1 (length modes)))
                   (icollect [m (modes:gmatch ".")]
                     m)
