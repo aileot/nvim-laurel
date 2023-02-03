@@ -609,8 +609,7 @@
                                 :v0.6.0 api-opts*)
                      deprecated-opts-callback?
                      (deprecate "special opts <callback> and cb"
-                                "callback with no decorations" :v0.6.0
-                                api-opts*)
+                                "callback with no decorations" :v0.6.0 api-opts*)
                      api-opts*)
         set-keymap (lambda [mode]
                      ;; TODO: Drop the compatibility on v0.6.0.
