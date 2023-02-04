@@ -969,6 +969,33 @@ runtime.
 
 ### List of Deprecated Features
 
+### v0.5.3
+
+- In any laurel macro, quote `'` will no longer work as an identifer as the
+  result of sym/list at runtime is Lua function. Please remove the quotes in
+  that sense.
+
+- In `augroup!`, `autocmd!`, and `au!`, the result of the first symbol of
+  callback in sym/list which matches `^<.+>` cannot be function at runtime:
+  with the pattern, callback is interpreted as Ex command. Please rename it.
+
+- In `map!`, the result of the first symbol of callback in sym/list which
+  matches `^<.+>` cannot be function at runtime: with the pattern, callback is
+  interpreted as key sequence. Please rename it.
+
+- In `augroup!`, `autocmd!`, and `au!`, list itself will no longer indicate
+  that the result is Ex command. To set Ex command, please insert `&vim`, or
+  rename its first symbol to match `^<.+>`.
+
+- In `map!`, list itself will no longer indicate the result is key sequence.
+  To set key sequence, please insert `&vim`, or rename its first symbol to
+  match `^<.+>`.
+
+- In `map!`, `augroup!`, `autocmd!`, and `au!`, special opts `<command>`,
+  `ex`, `<callback>`, and `cb` is no longer available. To set Lua function for
+  its callback, just set it; to set Ex command, please insert `&vim`, or name
+  its first symbol, for callback, to match `^<.+>`.
+
 #### v0.5.2
 
 - `augroup+`: Use [`augroup!`](#augroup) instead.
