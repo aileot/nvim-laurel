@@ -1070,7 +1070,10 @@
                                                   (sequence? a1)
                                                   [?extra-opts a2 ?a3 ?a4]
                                                   [?extra-opts a1 ?a3 ?a4])
-        command (->unquoted raw-command)
+        command (if (quoted? raw-command)
+                    (deprecate "quoted callback" "it without quote" :v0.6.0
+                               (->unquoted raw-command))
+                    raw-command)
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
                                  ?api-opts)]
