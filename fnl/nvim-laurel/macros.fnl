@@ -802,6 +802,16 @@
 
 ;; Option ///1
 
+(fn option/concatenatable? [x]
+  "Check if `x` can be concatenated into string for Vim option value."
+  (when (or (sequence? x) (table? x))
+    (let [concatable-types [:string :number]]
+      (accumulate [concatable? nil ;
+                   k v (pairs x) ;
+                   &until (= false concatable?)]
+        (and (contains? concatable-types (type k))
+             (contains? concatable-types (type v)))))))
+
 (lambda option/concat-kv-table [kv-table]
   "Concat kv table into a string for `vim.api.nvim_set_option_value`.
   For example,
@@ -817,14 +827,18 @@
 (lambda option/->?vim-value [?val]
   "Return in vim value for such API as `nvim_set_option`.
   @param val any
-  @return boolean|number|string|nil|'vim.NIL'"
+  @return 'vim.NIL|boolean|number|string|nil"
   (match (type ?val)
     :nil `vim.NIL
     :boolean ?val
     :string ?val
     :number ?val
-    _ (if (sequence? ?val) (table.concat ?val ",")
-          (table? ?val) (option/concat-kv-table ?val))))
+    _ (if-not (option/concatenatable? ?val)
+        nil
+        (sequence? ?val)
+        (table.concat ?val ",")
+        (table? ?val)
+        (option/concat-kv-table ?val))))
 
 (lambda option/modify [api-opts name ?val ?flag]
   (let [name (if (str? name) (name:lower) name)
