@@ -140,11 +140,11 @@ Create or get an augroup, or override an existing augroup.
 (augroup! :sample-augroup
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! [:InsertEnter :InsertLeave]
-      [:<buffer> :desc "call foo#bar() without any args"] `vim.fn.foo#bar)
+      [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
   (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
       #(vim.fn.baz#qux $.match)))
   (autocmd! :LspAttach
-      #(au! $.group :CursorHold [:buffer $.buf] `vim.lsp.buf.document_highlight))
+      #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
 ```
 
 is equivalent to
@@ -252,15 +252,11 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - Set it in bare-string.
   - Insert `&vim` symbol just before the callback.
   - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
-
-  Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
-  argument from `nvim_create_autocmd()`; on the other hand, set
-  `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
 (map! :i :jk :<Esc>)
-(map! :n :lhs [:desc "call foo#bar()"] `vim.fn.foo#bar)
+(map! :n :lhs [:desc "call foo#bar()"] #(vim.fn.foo#bar))
 (map! [:n :x] [:remap :expr :literal] :d "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'")
 (map! [:n :x] [:remap :expr] :u #(if vim.bo.readonly
                                      "<Plug>(readonly-u)"
@@ -277,12 +273,37 @@ xmap <expr> u &readonly ? "\<Plug>(readonly-u)" : "\<Plug>(noreadonly-u)"
 ```
 
 ```lua
+vim.api.nvim_set_keymap("i", "jk", "<Esc>", {})
+vim.api.nvim_set_keymap("n", "lhs", "", {
+  -- callback = vim.fn["foo#bar"], -- If you don't care autoload.
+  callback = function()
+    vim.fn["foo#bar"]()
+end})
+vim.api.nvim_set_keymap("n", "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
+  expr = true,
+  replace_keycodes = false,
+})
+vim.api.nvim_set_keymap("x", "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
+  expr = true,
+  replace_keycodes = false,
+})
+vim.api.nvim_set_keymap("n", "u", "", {
+  expr = true,
+  callback = function()
+    return vim.bo.readonly and "<Plug>(readonly-u)" or "<Plug>(noreadonly-u)"
+  end,
+})
+vim.api.nvim_set_keymap("x", "u", "", {
+  expr = true,
+  callback = function()
+    return vim.bo.readonly and "<Plug>(readonly-u)" or "<Plug>(noreadonly-u)"
+  end,
+})
+-- or with vim.keymap.set wrapper,
 vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("n", "lhs", function()
   vim.fn["foo#bar"]()
 end)
--- or, if you don't care about lazy loading,
-vim.keymap.set("n", "lhs", vim.fn["foo#bar"])
 vim.keymap.set({ "n", "x" }, "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
   remap = true,
   expr = true,
