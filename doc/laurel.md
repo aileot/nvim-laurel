@@ -123,20 +123,16 @@ Create or get an augroup, or override an existing augroup.
   first pattern in string cannot be any of the keys used in `?extra-opts`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
-  - `<command>`: It indicates that `callback` must be Ex command by itself.
-  - `ex`: An alias of `<command>` key.
-  - `<callback>`: It indicates that `callback` must be callback function by
-    itself.
-  - `cb`: An alias of `<callback>` key.
-- `callback`: (string|function) Set either callback function or Ex command.
-  Insert `&vim` symbol just before to tell the `callback` is Ex command. To
-  tell `callback` is Lua function, either prepend a quote `` ` `` as an
-  identifer (the quoted symbol, or list, is supposed to result in Lua function
-  at runtime), or set it in anonymous function constructed by `fn`, `hashfn`,
-  `lambda`, and `partial`; otherwise, Ex command.
+- `callback`: (string|function) Set either callback function or Ex command. A
+  callback is interpreted as Lua function by default. To set Ex command, you
+  have three options:
 
-  Note: Set `` `vim.fn.foobar `` to call Vim script function `foobar` without
-  table argument from `nvim_create_autocmd()`; on the other hand, set
+  - Set it in bare-string.
+  - Insert `&vim` symbol just before the callback.
+  - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
+
+  Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
+  argument from `nvim_create_autocmd()`; on the other hand, set
   `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
@@ -248,23 +244,18 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
     `expr` is set in `extra-opts`.
   - `<buffer>`: Map `lhs` in current buffer by itself.
   - `buffer`: Map `lhs` to a buffer of the next value.
-  - `<command>`: It indicates that `rhs` must be Normal mode command execution
-    by itself.
-  - `ex`: An alias of `<command>` key.
-  - `<callback>`: It indicates that `rhs` must be callback function by itself.
-  - `cb`: An alias of `<callback>` key.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
-  function or Key sequence. Insert `&vim` just before to tell the `callback`
-  is Key sequence. To tell `callback` is Lua function, either prepend a quote
-  `` ` `` as an identifer (the quoted symbol, or list, is supposed to result
-  in Lua function at runtime), or set it in anonymous function constructed by
-  `fn`, `hashfn`, `lambda`, and `partial`; otherwise, Ex command.
+  function or Key sequence. A callback is interpreted as Lua function by
+  default. To set Ex command, you have three options:
 
-  Note: To call Vim script function `foobar` without table arg from
-  `nvim_create_autocmd()`, just set `vim.fn.foobar`, or `` `vim.fn.foobar ``
-  if you prefer, there; on the other hand, set `#(vim.fn.foobar $)` to call
-  `foobar` with the table arg.
+  - Set it in bare-string.
+  - Insert `&vim` symbol just before the callback.
+  - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
+
+  Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
+  argument from `nvim_create_autocmd()`; on the other hand, set
+  `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
@@ -968,6 +959,33 @@ runtime.
    ```
 
 ### List of Deprecated Features
+
+### v0.5.3
+
+- In any laurel macro, quote `'` will no longer work as an identifer as the
+  result of sym/list at runtime is Lua function. Please remove the quotes in
+  that sense.
+
+- In `augroup!`, `autocmd!`, and `au!`, the result of the first symbol of
+  callback in sym/list which matches `^<.+>` cannot be function at runtime:
+  with the pattern, callback is interpreted as Ex command. Please rename it.
+
+- In `map!`, the result of the first symbol of callback in sym/list which
+  matches `^<.+>` cannot be function at runtime: with the pattern, callback is
+  interpreted as key sequence. Please rename it.
+
+- In `augroup!`, `autocmd!`, and `au!`, list itself will no longer indicate
+  that the result is Ex command. To set Ex command, please insert `&vim`, or
+  rename its first symbol to match `^<.+>`.
+
+- In `map!`, list itself will no longer indicate the result is key sequence.
+  To set key sequence, please insert `&vim`, or rename its first symbol to
+  match `^<.+>`.
+
+- In `map!`, `augroup!`, `autocmd!`, and `au!`, special opts `<command>`,
+  `ex`, `<callback>`, and `cb` is no longer available. To set Lua function for
+  its callback, just set it; to set Ex command, please insert `&vim`, or name
+  its first symbol, for callback, to match `^<.+>`.
 
 #### v0.5.2
 
