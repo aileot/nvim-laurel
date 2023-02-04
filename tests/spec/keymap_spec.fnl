@@ -1,13 +1,6 @@
 (import-macros {: describe : it} :_busted_macros)
-(import-macros {: map!
-                : noremap!
-                : nnoremap!
-                : unmap!
-                : smap!
-                : map-range!
-                : map-motion!
-                : <C-u>
-                : <Cmd>} :nvim-laurel.macros)
+(import-macros {: nmap! : omni-map!} :_wrapper_macros)
+(import-macros {: map! : unmap! : <C-u> : <Cmd>} :nvim-laurel.macros)
 
 (macro macro-callback []
   `#:macro-callback)
@@ -25,8 +18,6 @@
 ;; lest checks become a bit complicated.
 (local <default>-command :ltgt-command)
 (local <default>-str-callback #:ltgt-str-callback)
-;; TODO: Remove it on removing the support for Lua callback.
-(local <default>-callback-callback ##:ltgt-callback-callback)
 
 (local new-callback #(fn []
                        $))
@@ -70,19 +61,19 @@
                      (pcall vim.api.nvim_del_keymap mode :lhs)
                      (assert.is_nil (get-rhs mode :lhs))))))
   (describe :map!
-    (it "sets callback function with quoted symbol"
-      (map! :n :lhs `default-callback)
+    (it "should set callback function in symbol"
+      (map! :n :lhs default-callback)
       (assert.is_same default-callback (get-callback :n :lhs)))
-    (it "sets callback function with quoted multi-symbol"
+    (it "should set callback function in multi-symbol"
       (let [desc :multi.sym]
-        (map! :n :lhs `default.multi.sym.callback {: desc})
+        (map! :n :lhs default.multi.sym.callback {: desc})
         (assert.is_same default.multi.sym.callback (get-callback :n :lhs))))
-    (it "sets callback function with quoted list"
+    (it "should set callback function in list"
       (let [desc :list]
-        (map! :n :lhs `(default-callback :foo :bar) {: desc})
+        (map! :n :lhs (default-callback :foo :bar) {: desc})
         (assert.is_same desc (. (get-mapargs :n :lhs) :desc))))
-    (it "set callback function in string for `vim.fn.Test"
-      (map! :n :lhs `vim.fn.Test)
+    (it "should set callback function in string for vim.fn.Test"
+      (map! :n :lhs vim.fn.Test)
       (assert.is_same vim.fn.Test (get-callback :n :lhs)))
     (it "maps non-recursively by default"
       (let [mode :n
@@ -116,22 +107,22 @@
         (each [_ m (ipairs modes)]
           (let [{: noremap} (get-mapargs m :lhs)]
             (assert.is.same 1 noremap)))))
-    (it "sets callback via macro with quote"
-      (map! :n :lhs `(macro-callback))
+    (it "should set callback via macro"
+      (map! :n :lhs (macro-callback))
       (assert.is_not_nil (get-callback :n :lhs)))
     (it "set command in macro with no args"
-      (map! :n :lhs (macro-command))
+      (map! :n :lhs &vim (macro-command))
       (assert.is_same :macro-command (get-rhs :n :lhs)))
     (it "set command in macro with some args"
-      (map! :n :lhs (macro-command :foo :bar))
+      (map! :n :lhs &vim (macro-command :foo :bar))
       (assert.is_same :macro-command (get-rhs :n :lhs)))
     (it "maps multiple mode mappings with a sequence at once"
       (let [modes [:n :c :t]]
-        (noremap! modes :lhs :rhs)
+        (map! modes :lhs :rhs)
         (each [_ mode (ipairs modes)]
           (assert.is.same :rhs (get-rhs mode :lhs)))))
     (it "maps multiple mode mappings with a bare-string at once"
-      (noremap! :nct :lhs :rhs)
+      (map! :nct :lhs :rhs)
       (each [mode (-> :nct (: :gmatch "."))]
         (assert.is.same :rhs (get-rhs mode :lhs))))
     (it "enables `replace_keycodes` with `expr` in `extra-opts`"
@@ -165,101 +156,57 @@
         (assert.is_same (macro-command) (get-rhs :n :lhs)))))
   (describe :unmap!
     (it "`unmap`s key"
-      (nnoremap! :lhs :rhs)
+      (map! :n :lhs :rhs)
       (assert.is.same :rhs (get-rhs :n :lhs))
       (unmap! :n :lhs)
       (assert.is_nil (get-rhs :n :lhs)))
     (it "can unmap buffer local key"
       (let [bufnr (vim.api.nvim_get_current_buf)]
-        (nnoremap! [:<buffer>] :lhs :rhs)
+        (map! :n [:<buffer>] :lhs :rhs)
         (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))
         (unmap! 0 :n :lhs)
         (assert.is_nil (buf-get-rhs 0 :n :lhs))
-        (nnoremap! [:buffer bufnr] :lhs :rhs)
+        (map! :n [:buffer bufnr] :lhs :rhs)
         (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
         (unmap! bufnr :n :lhs)
         (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))
   (describe :<Cmd>/<C-u>
     (it "is set to rhs as a string"
-      (assert.has_no.errors #(nnoremap! :lhs (<Cmd> "Do something")))
+      (assert.has_no.errors #(map! :n :lhs (<Cmd> "Do something")))
       (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
-      (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs (<C-u> "Do something")))
+      (assert.has_no.errors #(map! :n [:<buffer>] :lhs (<C-u> "Do something")))
       (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
-  (describe "(Deprecated, v0.6.0 will not support it)"
-    (it "list as key sequence"
-      (map! :n :lhs (default-callback))
-      (assert.is_same (default-callback) (get-rhs :n :lhs)))
-    (describe :<Cmd>pattern
-      (it "symbol can set Lua function as callback"
-        (map! :n :lhs <default>-str-callback)
-        (let [callback (get-callback :n :lhs)]
-          (assert.is.same <default>-str-callback callback)))
-      (it "list can set Lua function as callback"
-        (let [desc1 :desc1]
-          (map! :n :lhs [:desc desc1] (<default>-callback-callback))
-          (let [{: desc} (get-mapargs :n :lhs)]
-            (assert.is.same desc1 desc)))))
-    (describe :noremap!
-      (it "maps lhs to rhs with `noremap` set to `true` represented by `1`"
-        (let [mode :n]
-          (noremap! mode :lhs :rhs)
-          (let [{: noremap} (get-mapargs mode :lhs)]
-            (assert.is.same 1 noremap))))
-      (it "maps multiple mode mappings with sequence at once"
-        (let [modes [:n :t :o]]
-          (noremap! modes :lhs :rhs)
-          (each [_ mode (ipairs modes)]
-            (assert.is.same :rhs (get-rhs mode :lhs)))))
-      (it "maps recursively with `remap` key in `extra-opts`"
-        (let [modes [:n :o :x]]
-          (noremap! modes [:remap] :lhs :rhs)
-          (each [_ m (ipairs modes)]
-            (let [{: noremap} (get-mapargs m :lhs)]
-              (assert.is.same 0 noremap))))))
-    (describe :nnoremap!
+  (describe "(wrapper)"
+    (describe :omni-map!
+      (it "should map to lhs in any mode"
+        (each [_ mode (ipairs [:n :v :x :s :o :i :l :c :t])]
+          (assert.is_nil (get-rhs mode :lhs)))
+        (omni-map! :lhs :rhs)
+        (each [_ mode (ipairs [:n :v :x :s :o :i :l :c :t])]
+          (assert.is_same :rhs (get-rhs mode :lhs)))))
+    (describe :nmap!
       (it "can include extra-opts in either first or second arg"
-        (assert.has_no.errors #(nnoremap! [:nowait] :lhs :rhs))
-        (assert.has_no.errors #(nnoremap! :lhs [:nowait] :rhs)))
+        (assert.has_no.errors #(nmap! [:nowait] :lhs :rhs))
+        (assert.has_no.errors #(nmap! :lhs [:nowait] :rhs)))
       (it "maps to current buffer with `<buffer>`"
-        (nnoremap! [:<buffer>] :lhs :rhs)
+        (nmap! [:<buffer>] :lhs :rhs)
         (assert.is.same :rhs (buf-get-rhs 0 :n :lhs)))
       (it "maps to specific buffer with `buffer`"
         (let [bufnr (vim.api.nvim_get_current_buf)]
           (refresh-buffer)
-          (nnoremap! [:buffer bufnr] :lhs :rhs)
+          (nmap! [:buffer bufnr] :lhs :rhs)
           (assert.is_nil (buf-get-rhs 0 :n :lhs))
           (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))))
       (it "set a list which will result in string without callback"
-        (nnoremap! :lhs (.. :r :h :s))
-        (nnoremap! :lhs1 (.. (<Cmd> :foobar) :<Esc>))
+        (nmap! :lhs &vim (.. :r :h :s))
+        (nmap! :lhs1 &vim (.. (<Cmd> :foobar) :<Esc>))
         (assert.is.same :rhs (get-rhs :n :lhs))
         (assert.is.same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1)))
-      (it "can set Ex command in autocmds with `<command>` key"
-        (nnoremap! :lhs1 [:<command>] default-rhs)
-        (nnoremap! :lhs2 [:<command>] (.. :foo :bar))
-        (assert.is.same default-rhs (get-rhs :n :lhs1))
-        (assert.is.same :foobar (get-rhs :n :lhs2)))
-      (it "can set Ex command in autocmds with `ex` key"
-        (nnoremap! :lhs1 [:ex] default-rhs)
-        (nnoremap! :lhs2 [:ex] (.. :foo :bar))
-        (assert.is.same default-rhs (get-rhs :n :lhs1))
-        (assert.is.same :foobar (get-rhs :n :lhs2)))
-      (it "can set callback function in autocmds with `<callback>` key"
-        (nnoremap! :lhs1 [:<callback>] default-callback)
-        ;; Note: vim.api.nvim_get_keymap cannot get vim function.
-        (nnoremap! :lhs2 [:<callback>] (new-callback (.. :foo :bar)))
-        (assert.is.same default-callback (get-callback :n :lhs1))
-        (assert.is_true (= :function (type (get-callback :n :lhs2)))))
-      (it "can set callback function in autocmds with `cb` key"
-        (nnoremap! :lhs1 [:cb] default-callback)
-        (nnoremap! :lhs2 [:cb] (new-callback (.. :foo :bar)))
-        (assert.is.same default-callback (get-callback :n :lhs1))
-        (assert.is_true (= :function (type (get-callback :n :lhs2)))))
       (it "enables `replace_keycodes` when `expr` is set in `extra-opts`"
-        (nnoremap! :lhs [:expr] :rhs)
-        (nnoremap! :lhs1 :rhs {:expr true})
+        (nmap! :lhs [:expr] :rhs)
+        (nmap! :lhs1 :rhs {:expr true})
         (let [opt {:expr true}]
-          (nnoremap! :lhs2 :rhs opt))
+          (nmap! :lhs2 :rhs opt))
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is.same 1 replace_keycodes))
         (let [{: replace_keycodes} (get-mapargs :n :lhs1)]
@@ -267,40 +214,6 @@
         (let [{: replace_keycodes} (get-mapargs :n :lhs2)]
           (assert.is_nil replace_keycodes)))
       (it "disables `replace_keycodes` when `literal` is set in `extra-opts`"
-        (nnoremap! :lhs [:expr :literal] :rhs)
+        (nmap! :lhs [:expr :literal] :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-          (assert.is_nil replace_keycodes))))
-    (describe :map-range!
-      (it "maps lhs in Normal mode and Visual mode"
-        (map-range! :lhs :rhs)
-        (assert.is_same :rhs (get-rhs :n :lhs))
-        (assert.is_same :rhs (get-rhs :x :lhs))
-        (assert.is_same :rhs (get-rhs :v :lhs))
-        (assert.is_nil (get-rhs :s :lhs))))
-    (describe :map-motion!
-      (it "`unmap`s `smap` internally without errors"
-        (assert.has_no.errors #(map-motion! :lhs :rhs))
-        (let [bufnr (vim.api.nvim_get_current_buf)]
-          (assert.has_no.errors #(map-motion! [:<buffer>] :lhs :rhs))
-          (refresh-buffer)
-          (assert.has_no.errors #(map-motion! [:buffer bufnr] :lhs :rhs))))
-      (it "`sunmap`s when lhs is visible key in compile time."
-        (let [lhs :sym]
-          (smap! :lhs :old)
-          (smap! lhs :old)
-          (smap! :<Esc> :old)
-          (smap! :<C-f> :old)
-          (smap! :<k9> :old)
-          (smap! :<S-f> :old)
-          (assert.has_no.errors #(map-motion! :lhs :new))
-          (assert.has_no.errors #(map-motion! lhs :new))
-          (assert.has_no.errors #(map-motion! :<Esc> :new))
-          (assert.has_no.errors #(map-motion! :<C-f> :new))
-          (assert.has_no.errors #(map-motion! :<k9> :new))
-          (assert.has_no.errors #(map-motion! :<S-f> :new))
-          (assert.is_nil (get-rhs :s :lhs))
-          (assert.is.same :old (get-rhs :s lhs))
-          (assert.is.same :new (get-rhs :s :<Esc>))
-          (assert.is.same :new (get-rhs :s :<C-F>))
-          (assert.is.same :new (get-rhs :s :<k9>))
-          (assert.is_nil (get-rhs :s :<S-f>)))))))
+          (assert.is_nil replace_keycodes))))))
