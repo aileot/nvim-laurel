@@ -140,11 +140,11 @@ Create or get an augroup, or override an existing augroup.
 (augroup! :sample-augroup
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! [:InsertEnter :InsertLeave]
-      [:<buffer> :desc "call foo#bar() without any args"] `vim.fn.foo#bar)
+      [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
   (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
       #(vim.fn.baz#qux $.match)))
   (autocmd! :LspAttach
-      #(au! $.group :CursorHold [:buffer $.buf] `vim.lsp.buf.document_highlight))
+      #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
 ```
 
 is equivalent to
@@ -260,7 +260,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
 
 ```fennel
 (map! :i :jk :<Esc>)
-(map! :n :lhs [:desc "call foo#bar()"] `vim.fn.foo#bar)
+(map! :n :lhs [:desc "call foo#bar()"] vim.fn.foo#bar)
 (map! [:n :x] [:remap :expr :literal] :d "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'")
 (map! [:n :x] [:remap :expr] :u #(if vim.bo.readonly
                                      "<Plug>(readonly-u)"
