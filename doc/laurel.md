@@ -252,15 +252,11 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - Set it in bare-string.
   - Insert `&vim` symbol just before the callback.
   - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
-
-  Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
-  argument from `nvim_create_autocmd()`; on the other hand, set
-  `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
 (map! :i :jk :<Esc>)
-(map! :n :lhs [:desc "call foo#bar()"] vim.fn.foo#bar)
+(map! :n :lhs [:desc "call foo#bar()"] #(vim.fn.foo#bar))
 (map! [:n :x] [:remap :expr :literal] :d "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'")
 (map! [:n :x] [:remap :expr] :u #(if vim.bo.readonly
                                      "<Plug>(readonly-u)"
@@ -308,8 +304,6 @@ vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("n", "lhs", function()
   vim.fn["foo#bar"]()
 end)
--- or, if you don't care about lazy loading,
-vim.keymap.set("n", "lhs", vim.fn["foo#bar"])
 vim.keymap.set({ "n", "x" }, "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
   remap = true,
   expr = true,
