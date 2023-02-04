@@ -186,6 +186,9 @@
       (assert.has_no.errors #(nnoremap! [:<buffer>] :lhs (<C-u> "Do something")))
       (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
   (describe "(Deprecated, v0.6.0 will not support it)"
+    (it "list as key sequence"
+      (map! :n :lhs (default-callback))
+      (assert.is_same (default-callback) (get-rhs :n :lhs)))
     (describe :<Cmd>pattern
       (it "symbol can set Lua function as callback"
         (map! :n :lhs <default>-str-callback)
