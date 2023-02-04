@@ -123,20 +123,16 @@ Create or get an augroup, or override an existing augroup.
   first pattern in string cannot be any of the keys used in `?extra-opts`.
 - [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
-  - `<command>`: It indicates that `callback` must be Ex command by itself.
-  - `ex`: An alias of `<command>` key.
-  - `<callback>`: It indicates that `callback` must be callback function by
-    itself.
-  - `cb`: An alias of `<callback>` key.
-- `callback`: (string|function) Set either callback function or Ex command.
-  Insert `&vim` symbol just before to tell the `callback` is Ex command. To
-  tell `callback` is Lua function, either prepend a quote `` ` `` as an
-  identifer (the quoted symbol, or list, is supposed to result in Lua function
-  at runtime), or set it in anonymous function constructed by `fn`, `hashfn`,
-  `lambda`, and `partial`; otherwise, Ex command.
+- `callback`: (string|function) Set either callback function or Ex command. A
+  callback is interpreted as Lua function by default. To set Ex command, you
+  have three options:
 
-  Note: Set `` `vim.fn.foobar `` to call Vim script function `foobar` without
-  table argument from `nvim_create_autocmd()`; on the other hand, set
+  - Set it in bare-string.
+  - Insert `&vim` symbol just before the callback.
+  - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
+
+  Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
+  argument from `nvim_create_autocmd()`; on the other hand, set
   `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
