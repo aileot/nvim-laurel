@@ -277,6 +277,33 @@ xmap <expr> u &readonly ? "\<Plug>(readonly-u)" : "\<Plug>(noreadonly-u)"
 ```
 
 ```lua
+vim.api.nvim_set_keymap("i", "jk", "<Esc>", {})
+vim.api.nvim_set_keymap("n", "lhs", "", {
+  -- callback = vim.fn["foo#bar"], -- If you don't care autoload.
+  callback = function()
+    vim.fn["foo#bar"]()
+end})
+vim.api.nvim_set_keymap("n", "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
+  expr = true,
+  replace_keycodes = false,
+})
+vim.api.nvim_set_keymap("x", "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
+  expr = true,
+  replace_keycodes = false,
+})
+vim.api.nvim_set_keymap("n", "u", "", {
+  expr = true,
+  callback = function()
+    return vim.bo.readonly and "<Plug>(readonly-u)" or "<Plug>(noreadonly-u)"
+  end,
+})
+vim.api.nvim_set_keymap("x", "u", "", {
+  expr = true,
+  callback = function()
+    return vim.bo.readonly and "<Plug>(readonly-u)" or "<Plug>(noreadonly-u)"
+  end,
+})
+-- or with vim.keymap.set wrapper,
 vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("n", "lhs", function()
   vim.fn["foo#bar"]()
