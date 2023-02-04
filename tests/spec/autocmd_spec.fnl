@@ -15,9 +15,7 @@
 (local default {:multi {:sym #:default.multi.sym}})
 
 (local <default>-command :<default>-command)
-;; TODO: Remove it on removing the support for Lua callback.
 (local <default>-str-callback #:<default>-str-callback)
-(local <default>-callback-callback ##:<default>-callback-callback)
 
 (lambda get-autocmds [?opts]
   (let [opts (collect [k v (pairs (or ?opts {})) ;
@@ -46,18 +44,12 @@
                                [default-event default-callback]
                                (au! :FileType [:foo :bar] #:foobar)))))
   (describe :au!/autocmd!
-    (it "sets callback via macro with quote"
-      (autocmd! default-augroup default-event [:pat] `(macro-callback))
-      (let [au (get-first-autocmd {:pattern :pat})]
-        (assert.is_not_nil au.callback)))
-    (it "set command in macro with no args"
-      (autocmd! default-augroup default-event [:pat] &vim (macro-command))
-      (let [au (get-first-autocmd {:pattern :pat})]
-        (assert.is_same :macro-command au.command)))
-    (it "set command in macro with some args"
-      (autocmd! default-augroup default-event [:pat] (macro-command :foo :bar))
-      (let [au (get-first-autocmd {:pattern :pat})]
-        (assert.is_same :macro-command au.command)))
+    (it "should set callback via macro"
+      (let [desc "macro callback"]
+        (autocmd! default-augroup default-event [:pat] [:desc desc]
+                  (macro-callback))
+        (let [au (get-first-autocmd {:pattern :pat})]
+          (assert.is_same desc au.desc))))
     (it "should set callback function in symbol"
       (autocmd! default-augroup default-event [:pat] default-callback)
       (assert.is_same default-callback
@@ -171,10 +163,14 @@
       (let [au (get-first-autocmd {:pattern :pat1})]
         (assert.is.same (<default>-str-callback) au.command))))
   (describe "with symbol &vim"
-    (it "set callback to `command`"
+    (it "should set symbol to `command`"
       (au! default-augroup default-event [:pat1] &vim default-command)
       (let [[autocmd1] (get-autocmds {:pattern :pat1})]
-        (assert.is.same default-command autocmd1.command))))
+        (assert.is.same default-command autocmd1.command)))
+    (it "should set list to `command`"
+      (autocmd! default-augroup default-event [:pat] &vim (macro-command))
+      (let [au (get-first-autocmd {:pattern :pat})]
+        (assert.is_same :macro-command au.command))))
   (describe "(wrapper)"
     (describe :augroup+
       (it "gets an existing augroup id"
