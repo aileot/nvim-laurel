@@ -242,6 +242,21 @@
           (table.insert new-seq v)))
     (values new-seq extracted)))
 
+;;; Deprecation Utils ///1
+
+(var deprecate/ast {})
+
+(fn deprecate/set-ast! [...]
+  "(Compile time) Set informative ast included in currently compiled macro.
+  @param ... any
+  @return kv-table"
+  (set deprecate/ast (accumulate [ast {} _ v (ipairs [...]) ;
+                                  &until ast.filename]
+                       (ast-source v))))
+
+(fn deprecate/reset-ast! []
+  (set deprecate/ast {}))
+
 (lambda deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
   deprecation when the file including it is `require`d at runtime.
