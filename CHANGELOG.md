@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.5](https://github.com/aileot/nvim-laurel/compare/v0.5.4...v0.5.5) (2023-02-05)
+
+
+### Bug Fixes
+
+* **autocmd:** filter non-deprecated format `^<.+>` not to deprecate ([#217](https://github.com/aileot/nvim-laurel/issues/217)) ([3a4b048](https://github.com/aileot/nvim-laurel/commit/3a4b048431973eee207072c3ad98d20184710903))
+* **keymap:** filter non-deprecated format `^<.+>` not to deprecate ([#214](https://github.com/aileot/nvim-laurel/issues/214)) ([2812d82](https://github.com/aileot/nvim-laurel/commit/2812d82abc2a58201c67e3a7007dd9417faa6274))
+
 ## [0.5.4](https://github.com/aileot/nvim-laurel/compare/v0.5.3...v0.5.4) (2023-02-04)
 
 
