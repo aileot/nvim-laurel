@@ -281,18 +281,23 @@
           (tset vim.g :__laurel_has_fnl_dir
                 (= 1 (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
         (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
-        (let [{:source source# :linedefined row#} (debug.getinfo 1 :S)
-              lua-path# (source#:gsub "^@" "")
-              /fnl/-or-/lua/# (if vim.g.__laurel_has_fnl_dir :/fnl/ :/lua/)
-              fnl-path# (.. (vim.fn.stdpath :config)
-                            (-> lua-path#
-                                (: :gsub "%.lua$" :.fnl)
-                                (: :gsub :^.*/nvim/fnl/ :/fnl/)
-                                (: :gsub :^.*/nvim/lua/ /fnl/-or-/lua/#)))
-              qf-what# (string.format ,gcc-error-format fnl-path# row# ,msg)]
-          ;; Note: `table.insert` instead cannot handle `vim.g` interface.
-          (tset vim.g :laurel_deprecated
-                (vim.fn.add vim.g.laurel_deprecated qf-what#)))
+        ;; Note: `table.insert` instead cannot handle `vim.g` interface.
+        (tset vim.g :laurel_deprecated
+              (vim.fn.add vim.g.laurel_deprecated
+                          (let [{:source source# :linedefined row#} ;
+                                (debug.getinfo 1 :S)
+                                lua-path# (source#:gsub "^@" "")
+                                /fnl/-or-/lua/# (if vim.g.__laurel_has_fnl_dir
+                                                    :/fnl/ :/lua/)
+                                fnl-path# (.. (vim.fn.stdpath :config)
+                                              (-> lua-path#
+                                                  (: :gsub "%.lua$" :.fnl)
+                                                  (: :gsub :^.*/nvim/fnl/
+                                                     :/fnl/)
+                                                  (: :gsub :^.*/nvim/lua/
+                                                     /fnl/-or-/lua/#)))]
+                            (string.format ,gcc-error-format fnl-path# row#
+                                           ,msg))))
         ;; Note: It's safer to wrap it in `vim.schedule`.
         (vim.schedule #,deprecation)
         ,compatible))))
