@@ -275,7 +275,11 @@
                                              version)
                                     :nvim-laurel false)
         msg (printf "[nvim-laurel] %s is deprecated. Please update it with %s."
-                    deprecated alternative)]
+                    deprecated alternative)
+        {: filename : line} deprecate/ast
+        ?msg-in-gcc-error-format (when filename
+                                   (gcc-error-format:format filename line msg))]
+    (deprecate/reset-ast!)
     `((fn []
         (when (= nil vim.g.__laurel_has_fnl_dir)
           (tset vim.g :__laurel_has_fnl_dir
@@ -284,20 +288,21 @@
         ;; Note: `table.insert` instead cannot handle `vim.g` interface.
         (tset vim.g :laurel_deprecated
               (vim.fn.add vim.g.laurel_deprecated
-                          (let [{:source source# :linedefined row#} ;
-                                (debug.getinfo 1 :S)
-                                lua-path# (source#:gsub "^@" "")
-                                /fnl/-or-/lua/# (if vim.g.__laurel_has_fnl_dir
-                                                    :/fnl/ :/lua/)
-                                fnl-path# (.. (vim.fn.stdpath :config)
-                                              (-> lua-path#
-                                                  (: :gsub "%.lua$" :.fnl)
-                                                  (: :gsub :^.*/nvim/fnl/
-                                                     :/fnl/)
-                                                  (: :gsub :^.*/nvim/lua/
-                                                     /fnl/-or-/lua/#)))]
-                            (string.format ,gcc-error-format fnl-path# row#
-                                           ,msg))))
+                          ,(or ?msg-in-gcc-error-format
+                               `(let [{:source source# :linedefined row#} ;
+                                      (debug.getinfo 1 :S)
+                                      lua-path# (source#:gsub "^@" "")
+                                      /fnl/-or-/lua/# (if vim.g.__laurel_has_fnl_dir
+                                                          :/fnl/ :/lua/)
+                                      fnl-path# (.. (vim.fn.stdpath :config)
+                                                    (-> lua-path#
+                                                        (: :gsub "%.lua$" :.fnl)
+                                                        (: :gsub :^.*/nvim/fnl/
+                                                           :/fnl/)
+                                                        (: :gsub :^.*/nvim/lua/
+                                                           /fnl/-or-/lua/#)))]
+                                  (string.format ,gcc-error-format fnl-path#
+                                                 row# ,msg)))))
         ;; Note: It's safer to wrap it in `vim.schedule`.
         (vim.schedule #,deprecation)
         ,compatible))))
