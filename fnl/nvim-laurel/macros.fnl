@@ -642,7 +642,9 @@
                                                                api-opts#)
                                  `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
                                                            api-opts#)))
-                         (and (list? rhs) (not vim?))
+                         (and (list? rhs)
+                              (and (not vim?) ;
+                                   (not (vim-callback-format? rhs))))
                          `(let [cb# ,rhs
                                 fn?# (= :function (type cb#))
                                 rhs# (if fn?# ""
