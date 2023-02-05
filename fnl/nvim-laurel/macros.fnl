@@ -413,7 +413,9 @@
                                                                               "another name"
                                                                               :v0.6.0
                                                                               `cb#))}))
-                                  (and (list? extra-opts.command) (not vim?))
+                                  (and (list? extra-opts.command)
+                                       (and (not vim?)
+                                            (not (vim-callback-format? extra-opts.command))))
                                   `(vim.tbl_extend :keep (or ,?api-opts {})
                                                    (let [cb# ,extra-opts.command
                                                          str?# (= :string
