@@ -932,9 +932,10 @@ launching nvim itself. In this case, you have two choices:
 
 #### g:laurel_deprecated
 
-This variable is designed to help you update your codes safely with
-[Quickfix]. It will collect lines where deprecated features are detected. It
-is only useful when you compile, or recompile, your Fennel codes with
+This variable is designed to help you update your codes with [Quickfix]. It
+will collect lines where deprecated features are detected.
+
+Note: It's strongly recommended to compile your Fennel codes with
 `--correlate` flag because the detection runs on compiled Lua codes at
 runtime.
 
