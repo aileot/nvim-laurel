@@ -331,7 +331,7 @@
   opts)
 
 (lambda define-autocmd! [...]
-  "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
+  "Define an autocmd.
   ```fennel
   (define-autocmd! events api-opts)
   (define-autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
@@ -518,6 +518,27 @@
                                 [{} [?api-opts|?autocmd ...]]
                                 [?api-opts|?autocmd [...]])]
     (define-augroup! name api-opts autocmds)))
+
+(fn autocmd! [...]
+  "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
+  ```fennel
+  (autocmd! events api-opts)
+  (autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
+  ```
+  @param name|id string|integer|nil The autocmd group name or id to match
+      against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
+      this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
+      Set it to `nil` to define `autocmd`s affiliated with no augroup.
+  @param events string|string[] The event or events to register this autocmd.
+  @param ?pattern bare-sequence
+  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
+      available to set `autocmd` to current buffer.
+  @param callback string|function Set either vim Ex command, or function. Any
+      bare string here is interpreted as vim Ex command; use `vim.fn` interface
+      instead to set a Vimscript function.
+  @param ?api-opts kv-table Optional autocmd attributes.
+  @return undefined The return value of `nvim_create_autocmd`"
+  (define-autocmd! ...))
 
 ;; Keymap ///1
 
@@ -1718,8 +1739,8 @@
  : <Cmd>
  : <C-u>
  : augroup!
- :autocmd! define-autocmd!
- :au! define-autocmd!
+ : autocmd!
+ :au! autocmd!
  : set!
  : set+
  : set^
