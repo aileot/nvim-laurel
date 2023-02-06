@@ -766,6 +766,16 @@
     (merge-default-kv-table! default-opts extra-opts)
     (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
 
+(lambda unmap! [...]
+  "Delete keymap.
+  ```fennel
+  (unmap! ?bufnr mode lhs)
+  ```
+  @param ?bufnr integer Buffer handle, or 0 for current buffer
+  @param mode string
+  @param lhs string"
+  (keymap/del-maps! ...))
+
 (lambda <Cmd> [x]
   "Return \"<Cmd>`x`<CR>\"
   @param x string
@@ -1735,7 +1745,7 @@
 ;; Export ///1
 
 {: map!
- :unmap! keymap/del-maps!
+ : unmap!
  : <Cmd>
  : <C-u>
  : augroup!
