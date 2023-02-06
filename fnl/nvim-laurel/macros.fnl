@@ -274,7 +274,7 @@
                                     ,(printf "%s. `:cexpr g:laurel_deprecated` would help you update it. See `:h g:laurel_deprecated` for the details."
                                              version)
                                     :nvim-laurel false)
-        msg (printf "[nvim-laurel] %s is deprecated. Please update it with %s."
+        msg (printf "nvim-laurel: %s is deprecated. Please update it with %s."
                     deprecated alternative)
         {: filename : line} deprecate/ast
         ?msg-in-gcc-error-format (when filename
