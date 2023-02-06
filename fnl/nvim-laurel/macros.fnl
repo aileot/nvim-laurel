@@ -376,7 +376,7 @@
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
 (lambda define-augroup! [name api-opts autocmds]
-  "Define an augroup.
+  "Define autocmds in an augroup.
   ```fennel
   (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
   (define-augroup! name api-opts (au! events ?pattern ?extra-opts callback ?api-opts))
