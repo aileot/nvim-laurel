@@ -192,7 +192,7 @@
 
 (lambda merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
-  @param ?extra-opts table Not a sequence.
+  @param ?extra-opts kv-table|nil
   @param ?api-opts table
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
