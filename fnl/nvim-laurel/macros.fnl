@@ -246,7 +246,7 @@
 
 (var deprecate/ast {})
 
-(fn deprecate/set-ast! [...]
+(fn deprecate/pin-ast! [...]
   "(Compile time) Set informative ast included in currently compiled macro.
   @param ... any
   @return kv-table"
@@ -254,7 +254,7 @@
                                   &until ast.filename]
                        (ast-source v))))
 
-(fn deprecate/reset-ast! []
+(fn deprecate/unpin-ast! []
   (set deprecate/ast {}))
 
 (lambda deprecate [deprecated alternative version compatible]
@@ -279,7 +279,7 @@
         {: filename : line} deprecate/ast
         ?msg-in-gcc-error-format (when filename
                                    (gcc-error-format:format filename line msg))]
-    (deprecate/reset-ast!)
+    (deprecate/unpin-ast!)
     `((fn []
         (when (= nil vim.g.__laurel_has_fnl_dir)
           (tset vim.g :__laurel_has_fnl_dir
@@ -511,7 +511,7 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
   ;; Note: "clear" value in api-opts is true by default.
-  (deprecate/set-ast! name ?api-opts|?autocmd ...)
+  (deprecate/pin-ast! name ?api-opts|?autocmd ...)
   (let [[api-opts autocmds] (if (nil? ?api-opts|?autocmd) [{} []]
                                 (or (sequence? ?api-opts|?autocmd)
                                     (autocmd? ?api-opts|?autocmd)) ;
@@ -762,7 +762,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! modes ...)
+  (deprecate/pin-ast! modes ...)
   (let [default-opts {:noremap true}
         (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
     (merge-default-kv-table! default-opts extra-opts)
@@ -782,7 +782,7 @@
   "Return \"<Cmd>`x`<CR>\"
   @param x string
   @return string"
-  (deprecate/set-ast! x)
+  (deprecate/pin-ast! x)
   (if (str? x)
       (.. :<Cmd> x :<CR>)
       `(.. :<Cmd> ,x :<CR>)))
@@ -791,7 +791,7 @@
   "Return \":<C-u>`x`<CR>\"
   @param x string
   @return string"
-  (deprecate/set-ast! x)
+  (deprecate/pin-ast! x)
   (if (str? x)
       (.. ":<C-u>" x :<CR>)
       `(.. ":<C-u>" ,x :<CR>)))
@@ -805,7 +805,7 @@
   ```
   @param name string Variable name.
   @param val any Variable value."
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   `(vim.api.nvim_set_var ,name ,val))
 
 (lambda b! [id|name name|val ?val]
@@ -817,7 +817,7 @@
   @param ?id integer Buffer handle, or 0 for current buffer.
   @param name string Variable name.
   @param val any Variable value."
-  (deprecate/set-ast! id|name name|val ?val)
+  (deprecate/pin-ast! id|name name|val ?val)
   (if ?val
       `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
@@ -831,7 +831,7 @@
   @param ?id integer Window handle, or 0 for current window.
   @param name string Variable name.
   @param val any Variable value."
-  (deprecate/set-ast! id|name name|val ?val)
+  (deprecate/pin-ast! id|name name|val ?val)
   (if ?val
       `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
@@ -845,7 +845,7 @@
   @param ?id integer Tabpage handle, or 0 for current tabpage.
   @param name string Variable name.
   @param val any Variable value."
-  (deprecate/set-ast! id|name name|val ?val)
+  (deprecate/pin-ast! id|name name|val ?val)
   (if ?val
       `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
@@ -857,7 +857,7 @@
   ```
   @param name string Variable name.
   @param val any Variable value."
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   `(vim.api.nvim_set_vvar ,name ,val))
 
 (lambda env! [name val]
@@ -868,7 +868,7 @@
   @param name string Variable name. A bare-string can starts with `$` (ignored
     internally), which helps `gf` jump to the path.
   @param val any Variable value."
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
     `(vim.fn.setenv ,new-name ,val)))
 
@@ -995,7 +995,7 @@
   (let [opt :formatOptions]
     (set+ opt [:1 :B]))
   ```"
-  (deprecate/set-ast! name-?flag ?val)
+  (deprecate/pin-ast! name-?flag ?val)
   (option/set {} name-?flag ?val))
 
 (lambda set+ [name val]
@@ -1004,7 +1004,7 @@
   ```fennel
   (set+ name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {} name val "+"))
 
 (lambda set^ [name val]
@@ -1013,7 +1013,7 @@
   ```fennel
   (set^ name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {} name val "^"))
 
 (lambda set- [name val]
@@ -1022,7 +1022,7 @@
   ```fennel
   (set- name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {} name val "-"))
 
 (lambda setlocal! [name-?flag ?val]
@@ -1032,7 +1032,7 @@
   (setlocal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (deprecate/set-ast! name-?flag ?val)
+  (deprecate/pin-ast! name-?flag ?val)
   (option/set {:scope :local} name-?flag ?val))
 
 (lambda setlocal+ [name val]
@@ -1041,7 +1041,7 @@
   ```fennel
   (setlocal+ name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {:scope :local} name val "+"))
 
 (lambda setlocal^ [name val]
@@ -1050,7 +1050,7 @@
   ```fennel
   (setlocal^ name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {:scope :local} name val "^"))
 
 (lambda setlocal- [name val]
@@ -1059,7 +1059,7 @@
   ```fennel
   (setlocal- name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {:scope :local} name val "-"))
 
 (lambda setglobal! [name-?flag ?val]
@@ -1069,7 +1069,7 @@
   (setglobal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (deprecate/set-ast! name-?flag ?val)
+  (deprecate/pin-ast! name-?flag ?val)
   (option/set {:scope :global} name-?flag ?val))
 
 (lambda setglobal+ [name val]
@@ -1080,7 +1080,7 @@
   ```
   - name: (string) Option name.
   - val: (string) Additional option value."
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {:scope :global} name val "+"))
 
 (lambda setglobal^ [name val]
@@ -1089,7 +1089,7 @@
   ```fennel
   (setglobal^ name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {:scope :global} name val "^"))
 
 (lambda setglobal- [name val]
@@ -1098,7 +1098,7 @@
   ```fennel
   (setglobal- name val)
   ```"
-  (deprecate/set-ast! name val)
+  (deprecate/pin-ast! name val)
   (option/modify {:scope :global} name val "-"))
 
 (lambda bo! [name|?id val|name ...]
@@ -1109,7 +1109,7 @@
   @param ?id integer Buffer handle, or 0 for current buffer.
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
-  (deprecate/set-ast! name|?id val|name ...)
+  (deprecate/pin-ast! name|?id val|name ...)
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
                           [name|?id val|name ...])
         ?vim-val (option/->?vim-value val)]
@@ -1123,7 +1123,7 @@
   @param ?id integer Window handle, or 0 for current window.
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
-  (deprecate/set-ast! name|?id val|name ...)
+  (deprecate/pin-ast! name|?id val|name ...)
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
                           [name|?id val|name ...])
         ?vim-val (option/->?vim-value val)]
@@ -1152,7 +1152,7 @@
   @param command string|function Replacement command.
   @param ?api-opts kv-table Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
-  (deprecate/set-ast! a1 a2 ?a3 ?a4)
+  (deprecate/pin-ast! a1 a2 ?a3 ?a4)
   (let [?seq-extra-opts (if (sequence? a1) a1
                             (sequence? a2) a2)
         ?extra-opts (when ?seq-extra-opts
@@ -1196,7 +1196,7 @@
   ```
   @param keys string
   @param ?flags string"
-  (deprecate/set-ast! keys ?flags)
+  (deprecate/pin-ast! keys ?flags)
   (let [flags (if (str? ?flags)
                   (or ?flags "")
                   `(or ,?flags ""))]
@@ -1216,7 +1216,7 @@
  @param ?ns-id integer
  @param name string
  @param val kv-table"
-  (deprecate/set-ast! ns-id|name name|val ?val)
+  (deprecate/pin-ast! ns-id|name name|val ?val)
   (let [[?ns-id name val] (if ?val [ns-id|name name|val ?val]
                               [nil ns-id|name name|val])]
     (if (?. val :link)
@@ -1255,7 +1255,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :map-all! "`map!` or your own wrapper" :v0.6.0 ;
              (map! ["" "!" :l :t] ...)))
 
@@ -1270,7 +1270,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :map-motion! "`map!` or your own wrapper" :v0.6.0 ;
              (map! "!" ...)))
 
@@ -1288,7 +1288,7 @@
   @param ?api-opts kv-table
     Note: This macro could `unmap` `lhs` in Select mode for the performance.
   To avoid this, use `(map! [:n :o :x] ...)` instead."
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :map-motion! "`map!` or your own wrapper" :v0.6.0 ;
              (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
                    ?bufnr extra-opts.buffer]
@@ -1310,13 +1310,13 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :map-range! "`map!` or your own wrapper" :v0.6.0 ;
              (map! [:n :x] ...)))
 
 (lambda map-operator! [...]
   "(Deprecated) Alias of `map-range!."
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :map-operator! "`map!` or your own wrapper" :v0.6.0 ;
              (map-range! ...)))
 
@@ -1332,7 +1332,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :map-textobj! "`map!` or your own wrapper" :v0.6.0 ;
              (map! [:o :x] ...)))
 
@@ -1347,7 +1347,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :nmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :n ...)))
 
@@ -1362,7 +1362,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :vmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :v ...)))
 
@@ -1377,7 +1377,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :xmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :x ...)))
 
@@ -1392,7 +1392,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :smap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :s ...)))
 
@@ -1407,7 +1407,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :omap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :o ...)))
 
@@ -1422,7 +1422,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :imap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :i ...)))
 
@@ -1438,7 +1438,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :lmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :l ...)))
 
@@ -1453,7 +1453,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :cmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :c ...)))
 
@@ -1468,7 +1468,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :tmap! "`map!` or your own wrapper" :v0.6.0 ;
              (map! :t ...)))
 
@@ -1483,7 +1483,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! modes ...)
+  (deprecate/pin-ast! modes ...)
   (deprecate :noremap! "`map!` or your own wrapper" :v0.6.0 ;
              (let [default-opts {:noremap true}
                    (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
@@ -1501,7 +1501,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :noremap-all! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap! ["" "!" :l :t] ...)))
 
@@ -1517,7 +1517,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :noremap-input! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap! "!" ...)))
 
@@ -1535,7 +1535,7 @@
   @param ?api-opts kv-table
   Note: This macro could `unmap` `lhs` in Select mode for the performance.
   To avoid this, use `(noremap! [:n :o :x] ...)` instead."
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :noremap-motion! "`map!` or your own wrapper" :v0.6.0 ;
              (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
                    ;; Note: With unknown reason, keymap/del-maps! fails to get
@@ -1559,13 +1559,13 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :noremap-range! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap! [:n :x] ...)))
 
 (lambda noremap-operator! [...]
   "(Deprecated) Alias of `noremap-range!`."
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :noremap-operator! "`map!` or your own wrapper" :v0.6.0 ;
              (noremap-range! ...)))
 
@@ -1581,7 +1581,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (noremap! [:o :x] ...))
 
 (lambda nnoremap! [...]
@@ -1595,7 +1595,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :nnoremap! :map! :v0.6.0 ;
              (noremap! :n ...)))
 
@@ -1610,7 +1610,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :vnoremap! :map! :v0.6.0 ;
              (noremap! :v ...)))
 
@@ -1625,7 +1625,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :xnoremap! :map! :v0.6.0 ;
              (noremap! :x ...)))
 
@@ -1640,7 +1640,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :snoremap! :map! :v0.6.0 ;
              (noremap! :s ...)))
 
@@ -1655,7 +1655,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :onoremap! :map! :v0.6.0 ;
              (noremap! :o ...)))
 
@@ -1670,7 +1670,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :inoremap! :map! :v0.6.0 ;
              (noremap! :i ...)))
 
@@ -1686,7 +1686,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :lnoremap! :map! :v0.6.0 ;
              (noremap! :l ...)))
 
@@ -1701,7 +1701,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :cnoremap! :map! :v0.6.0 ;
              (noremap! :c ...)))
 
@@ -1716,7 +1716,7 @@
   @param lhs string
   @param rhs string|function
   @param ?api-opts kv-table"
-  (deprecate/set-ast! ...)
+  (deprecate/pin-ast! ...)
   (deprecate :tnoremap! :map! :v0.6.0 ;
              (noremap! :t ...)))
 
@@ -1734,7 +1734,7 @@
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
-  (deprecate/set-ast! name ...)
+  (deprecate/pin-ast! name ...)
   (deprecate :augroup+ :augroup! :v0.6.0
              (augroup! name
                {:clear false}
