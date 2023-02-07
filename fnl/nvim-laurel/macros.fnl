@@ -924,11 +924,9 @@
                       ;; Convert sequence of table values into a sequence of
                       ;; letters; let us set them in sequential table.
                       (sequence? ?val) (not= ?flag "-"))
-                 (accumulate [str "" _ v (ipairs ?val) &until (not (str? str))]
-                   ;; TODO: test `formatoptions`
-                   (if (str? v)
-                       (.. str v)
-                       `(.. ,(unpack ?val))))
+                 (if (option/concatenatable? ?val)
+                     (table.concat ?val)
+                     `(table.concat ,?val))
                  ?val)]
     (match ?flag
       nil
