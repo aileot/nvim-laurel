@@ -48,6 +48,12 @@
   @return boolean"
   (= :string (type x)))
 
+(fn tbl? [x]
+  "Check if `x` is `table`.
+  @param x any
+  @return boolean"
+  (= :table (type x)))
+
 (fn num? [x]
   "Check if `x` is `number`.
   @param x any
