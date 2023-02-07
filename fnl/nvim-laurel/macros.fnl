@@ -538,6 +538,7 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
+  (deprecate/pin-ast! ...)
   (define-autocmd! ...))
 
 ;; Keymap ///1
