@@ -603,10 +603,12 @@
                                               "it without quote" :v0.6.0
                                               (->unquoted raw-rhs))
                                    (->unquoted raw-rhs)))
-                          "") ;
-                        (str? raw-rhs) raw-rhs ;
+                          "")
+                        (str? raw-rhs)
+                        raw-rhs
                         ;; TODO: Remove list detection on v0.6.0.
-                        (list? raw-rhs) raw-rhs
+                        (list? raw-rhs)
+                        raw-rhs
                         (do
                           (set extra-opts.callback raw-rhs)
                           "")))
