@@ -776,6 +776,7 @@
   @param ?bufnr integer Buffer handle, or 0 for current buffer
   @param mode string
   @param lhs string"
+  (deprecate/pin-ast! ...)
   (keymap/del-maps! ...))
 
 (lambda <Cmd> [x]
