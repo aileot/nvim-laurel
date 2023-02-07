@@ -920,7 +920,7 @@
                     {: win :buf nil} (if (= 0 win) `vim.wo `(. vim.wo ,win))
                     _ (error* (.. "invalid api-opts: " (view api-opts))))
         opt-obj `(. ,interface ,name)
-        ?val (if (and (contains? [:formatoptions :shortmess] name)
+        ?val (if (and (contains? [:formatoptions :fo :shortmess :shm] name)
                       ;; Convert sequence of table values into a sequence of
                       ;; letters; let us set them in sequential table.
                       (sequence? ?val) (not= ?flag "-"))
