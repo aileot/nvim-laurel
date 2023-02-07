@@ -285,7 +285,11 @@
                         (get-lo :formatoptions)))
       (it "can remove flags in sequence"
         (setlocal! :formatOptions- [:b :2])
-        (assert.is_same {:1 true} (get-lo :formatoptions)))))
+        (assert.is_same {:1 true} (get-lo :formatoptions)))
+      (it "can set symbol in sequence"
+        (let [val :r]
+          (setlocal! :formatOptions [val])
+          (assert.is_same {val true} (get-lo :formatoptions))))))
   (describe :setglobal!
     (it "can update option value with boolean"
       (vim.cmd "setglobal nowrap")

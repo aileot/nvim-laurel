@@ -603,10 +603,12 @@
                                               "it without quote" :v0.6.0
                                               (->unquoted raw-rhs))
                                    (->unquoted raw-rhs)))
-                          "") ;
-                        (str? raw-rhs) raw-rhs ;
+                          "")
+                        (str? raw-rhs)
+                        raw-rhs
                         ;; TODO: Remove list detection on v0.6.0.
-                        (list? raw-rhs) raw-rhs
+                        (list? raw-rhs)
+                        raw-rhs
                         (do
                           (set extra-opts.callback raw-rhs)
                           "")))
@@ -921,14 +923,10 @@
                     _ (error* (.. "invalid api-opts: " (view api-opts))))
         opt-obj `(. ,interface ,name)
         ?val (if (and (contains? [:formatoptions :fo :shortmess :shm] name)
-                      ;; Convert sequence of table values into a sequence of
-                      ;; letters; let us set them in sequential table.
                       (sequence? ?val) (not= ?flag "-"))
-                 (accumulate [str "" _ v (ipairs ?val) &until (not (str? str))]
-                   ;; TODO: test `formatoptions`
-                   (if (str? v)
-                       (.. str v)
-                       `(.. ,(unpack ?val))))
+                 (if (option/concatenatable? ?val)
+                     (table.concat ?val)
+                     `(table.concat ,?val))
                  ?val)]
     (match ?flag
       nil
