@@ -74,6 +74,20 @@
   @return string"
   (tostring x))
 
+(fn inc [x]
+  "Increment number `x`.
+  @param x number
+  @return number"
+  (assert-compile (num? x) "Expected number" x)
+  (+ x 1))
+
+(fn dec [x]
+  "Decrement number `x`.
+  @param x number
+  @return number"
+  (assert-compile (num? x) "Expected number" x)
+  (- x 1))
+
 (lambda first [xs]
   "Return the first value in `xs`
   @param xs sequence
