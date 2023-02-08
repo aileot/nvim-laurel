@@ -747,11 +747,11 @@
 (lambda option/extract-flag [name-?flag]
   (let [?flag (: name-?flag :match "[^a-zA-Z]")
         name (if ?flag (: name-?flag :match "[a-zA-Z]+") name-?flag)]
-    [name ?flag]))
+    (values name ?flag)))
 
 (lambda option/set [scope name-?flag ?val]
   (let [[name ?flag] (if (str? name-?flag)
-                         (option/extract-flag name-?flag)
+                         [(option/extract-flag name-?flag)]
                          [name-?flag nil])
         val (if (nil? ?val) true ?val)]
     (option/modify scope name val ?flag)))
