@@ -762,16 +762,15 @@
   "Set value to the option.
   Almost equivalent to `:set` in Vim script.
   ```fennel
-  (set! name-?flag ?val)
+  (set! name ?'flag ?val)
   ```
-  @param name-?flag string Option name.
+  @param name string Option name.
     As long as the option name is a bare string, i.e., neither symbol nor list,
-    this macro has two advantages:
-    1. A flag can be appended to the option name. Append `+`, `^`, or `-`,
-       to append, prepend, or remove values, respectively.
-    2. Option name is case-insensitive. You can improve readability a bit with
-       camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
-       `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
+    this macro has an advantage: option name is case-insensitive. You can
+    improve readability a bit with camelCase/PascalCase. Since `:h {option}`
+    is also case-insensitive, `(setlocal! :keywordPrg \":help\")` for fennel
+    still makes sense.
+  @param ?'flag quoted-symbol One of \"'+\", \"'-\", \"^\" is available.
   @param ?val boolean|number|string|table New option value.
     If not provided, the value is supposed to be `true` (experimental).
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
