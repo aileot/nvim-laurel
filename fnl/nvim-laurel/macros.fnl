@@ -281,8 +281,8 @@
                                    (gcc-error-format:format filename line msg))]
     (deprecate/unpin-ast!)
     `((fn []
-        (when (= nil vim.g.__laurel_has_fnl_dir)
-          (tset vim.g :__laurel_has_fnl_dir
+        (when (= nil _G.__laurel_has_fnl_dir)
+          (tset _G :__laurel_has_fnl_dir
                 (= 1 (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
         (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
         ;; Note: `table.insert` instead cannot handle `vim.g` interface.
@@ -292,7 +292,7 @@
                                `(let [{:source source# :linedefined row#} ;
                                       (debug.getinfo 1 :S)
                                       lua-path# (source#:gsub "^@" "")
-                                      /fnl/-or-/lua/# (if vim.g.__laurel_has_fnl_dir
+                                      /fnl/-or-/lua/# (if _G.__laurel_has_fnl_dir
                                                           :/fnl/ :/lua/)
                                       fnl-path# (.. (vim.fn.stdpath :config)
                                                     (-> lua-path#
