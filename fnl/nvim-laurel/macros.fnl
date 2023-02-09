@@ -749,11 +749,22 @@
         name (if ?flag (: name-?flag :match "[a-zA-Z]+") name-?flag)]
     (values name ?flag)))
 
-(lambda option/set [scope name-?flag ?val]
-  (let [[name ?flag] (if (str? name-?flag)
-                         [(option/extract-flag name-?flag)]
-                         [name-?flag nil])
-        val (if (nil? ?val) true ?val)]
+(fn option/set [scope ...]
+  (assert-compile (table? scope) "Expected kv-table" scope)
+  (let [[name ?flag val] ;
+        (match ...
+          (name nil)
+          [name nil true]
+          (where (name flag ?val)
+                 (and (sym? flag)
+                      (contains? ["+" "-" "^" "!" "&" "<"] (->str flag))))
+          [name (->str flag) ?val]
+          ;; TODO: Remove flag-extraction on v0.7.0.
+          (name-?flag val nil)
+          (if (str? name-?flag)
+              (let [(name ?flag) (option/extract-flag name-?flag)]
+                [name ?flag val])
+              [name-?flag nil val]))]
     (option/modify scope name val ?flag)))
 
 ;; Export ///2
