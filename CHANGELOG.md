@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.6](https://github.com/aileot/nvim-laurel/compare/v0.5.5...v0.5.6) (2023-02-09)
+
+
+### Bug Fixes
+
+* **option:** optimize values for short forms: `fo` and `shm` ([#223](https://github.com/aileot/nvim-laurel/issues/223)) ([1d3046b](https://github.com/aileot/nvim-laurel/commit/1d3046b3ec4d127febe289f9495ee9853566be65))
+
 ## [0.5.5](https://github.com/aileot/nvim-laurel/compare/v0.5.4...v0.5.5) (2023-02-05)
 
 
