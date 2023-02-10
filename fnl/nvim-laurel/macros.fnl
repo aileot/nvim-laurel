@@ -1120,15 +1120,11 @@
                                       :<buffer>
                                       :register
                                       :keepscript]))
-        [extra-opts name raw-command ?api-opts] (if-not ?extra-opts
-                                                  [{} a1 a2 ?a3]
-                                                  (sequence? a1)
-                                                  [?extra-opts a2 ?a3 ?a4]
-                                                  [?extra-opts a1 ?a3 ?a4])
-        command (if (quoted? raw-command)
-                    (deprecate "quoted callback" "it without quote" :v0.6.0
-                               (->unquoted raw-command))
-                    raw-command)
+        [extra-opts name command ?api-opts] (if-not ?extra-opts
+                                              [{} a1 a2 ?a3]
+                                              (sequence? a1)
+                                              [?extra-opts a2 ?a3 ?a4]
+                                              [?extra-opts a1 ?a3 ?a4])
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
                                  ?api-opts)]
