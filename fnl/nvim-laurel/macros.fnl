@@ -117,9 +117,7 @@
   `callback` format.
   @param callback any
   @return boolean"
-  ;; TODO: Include the `str?` check after removing the deprecated formats.
-  (or ;; (str? callback) ;
-      (and (sym? callback) ;
+  (or (and (sym? callback) ;
            (-> (->str callback) (: :match "^<.+>")))
       (and (list? callback) ;
            (-> (->str (first callback)) (: :match "^<.+>")))))
