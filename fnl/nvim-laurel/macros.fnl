@@ -296,8 +296,6 @@
                                :pattern
                                :buffer
                                :<buffer>
-                               :ex
-                               :<command>
                                :desc
                                :callback
                                :command
@@ -307,10 +305,6 @@
 (lambda autocmd/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  (set opts.<callback> nil)
-  (set opts.cb nil)
   opts)
 
 (lambda define-autocmd! [...]
@@ -349,14 +343,7 @@
                                [a nil b ?c])
               _ (error* (printf "unexpected args:\n%s" (view [...]))))
             extra-opts (if (nil? ?extra-opts) {}
-                           (seq->kv-table ?extra-opts
-                                          [:once
-                                           :nested
-                                           :<buffer>
-                                           :ex
-                                           :<command>
-                                           :cb
-                                           :<callback>]))
+                           (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
             ?pat (or extra-opts.pattern ?pattern)]
         (set extra-opts.group ?id)
@@ -367,85 +354,22 @@
           ;; Note: `*` is the default pattern and redundant.
           (when-not (and (str? pattern) (= "*" pattern))
             (set extra-opts.pattern pattern)))
-        (when (and (or extra-opts.<command> extra-opts.ex)
-                   (or extra-opts.<callback> extra-opts.cb))
-          (error* "cannot set both <command>/ex and <callback>/cb."))
-        (var vim-cb? false)
-        (if ;; TODO: Deprecate `<command>` option.
-            (or extra-opts.<command> extra-opts.ex)
+        (if (or vim? (str? callback) (vim-callback-format? callback))
             (set extra-opts.command callback)
-            vim?
-            (set extra-opts.command callback)
-            (vim-callback-format? callback)
-            ;; TODO: Remove vim-cb? check on v0.6.0.
-            ;; (set extra-opts.command callback)
-            (set vim-cb? true)
-            (or extra-opts.<callback> extra-opts.cb ;
-                (sym? callback) ;
-                (anonymous-function? callback) ;
-                (quoted? callback))
-            ;; Note: Ignore the possibility to set Vimscript function to callback
-            ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
-            ;; to "callback" key because functions written in Vim script are
-            ;; rarely supposed to expect the table from `nvim_create_autocmd` for
-            ;; its first arg.
-            (let [cb (->unquoted callback)
-                  cb* (or (extract-?vim-fn-name cb) ;
-                          cb)]
-              (set extra-opts.callback
-                   ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
-                   ;; "foobar" set to "callback" key.
-                   (if (quoted? callback)
-                       (deprecate "quoted callback" "it without quote" :v0.6.0
-                                  cb*)
-                       cb*)))
-            (set extra-opts.command callback))
+            ;; Note: Ignore the possibility to set Vimscript function to
+            ;; callback in string; however, convert `vim.fn.foobar` into
+            ;; "foobar" to set to "callback" key because functions written in
+            ;; Vim script are rarely supposed to expect the table from
+            ;; `nvim_create_autocmd` for its first arg.
+            (let [cb (or (extract-?vim-fn-name callback) ;
+                         callback)]
+              (set extra-opts.callback cb)))
         (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                         "cannot set both pattern and buffer for the same autocmd"
                         extra-opts)
-        (local deprecated-opts-command? (or extra-opts.<command> extra-opts.ex))
-        (local deprecated-opts-callback?
-               (or extra-opts.<callback> extra-opts.cb))
-        (let [api-opts ;
-              (merge-api-opts (autocmd/->compatible-opts! extra-opts)
-                              ;; TODO: Remove all the if-expr except `?api-opts` here to set `callback` to `command`.
-                              (if vim-cb?
-                                  `(vim.tbl_extend :keep (or ,?api-opts {})
-                                                   (let [cb# ,callback
-                                                         str?# (= :string
-                                                                  (type cb#))]
-                                                     {:command (when str?#
-                                                                 cb#)
-                                                      :callback (when (not str?#)
-                                                                  ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
-                                                                              "another name"
-                                                                              :v0.6.0
-                                                                              `cb#))}))
-                                  (and (list? extra-opts.command)
-                                       (and (not vim?)
-                                            (not (vim-callback-format? extra-opts.command))))
-                                  `(vim.tbl_extend :keep (or ,?api-opts {})
-                                                   (let [cb# ,extra-opts.command
-                                                         str?# (= :string
-                                                                  (type cb#))]
-                                                     {:command (when str?#
-                                                                 ,(deprecate "bare-list to set Ex command"
-                                                                             "&vim, or rename symbol to match `^<.+>`,"
-                                                                             :v0.6.0
-                                                                             `cb#))
-                                                      :callback (when (not str?#)
-                                                                  cb#)}))
-                                  ?api-opts))]
-          `(vim.api.nvim_create_autocmd ,events
-                                        ,(if deprecated-opts-command?
-                                             (deprecate "special opts <command> and ex"
-                                                        "&vim, or rename symbol to match `^<.+>`,"
-                                                        :v0.6.0 api-opts)
-                                             deprecated-opts-callback?
-                                             (deprecate "special opts <callback> and cb"
-                                                        "callback with no decorations"
-                                                        :v0.6.0 api-opts)
-                                             api-opts))))))
+        (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
+                                       ?api-opts)]
+          `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
