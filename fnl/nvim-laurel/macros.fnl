@@ -528,10 +528,6 @@
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
   (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  (set opts.<callback> nil)
-  (set opts.cb nil)
   (set opts.literal nil)
   opts)
 
@@ -561,39 +557,11 @@
                                                    (sequence? a1)
                                                    [?extra-opts a2 ?a3 ?a4]
                                                    [?extra-opts a1 ?a3 ?a4])
-              rhs (do
-                    (when (and (or extra-opts.<command> extra-opts.ex)
-                               (or extra-opts.<callback> extra-opts.cb))
-                      (error* "cannot set both <command>/ex and <callback>/cb."))
-                    (if vim?
-                        (do
-                          ;; TODO: Remove the dirty hack on v0.6.0.
-                          (set extra-opts.vim? true)
-                          raw-rhs)
-                        (or extra-opts.<command> extra-opts.ex)
-                        raw-rhs
-                        (vim-callback-format? raw-rhs)
-                        raw-rhs
-                        (or extra-opts.<callback> extra-opts.cb ;
-                            (sym? raw-rhs) ;
-                            (anonymous-function? raw-rhs) ;
-                            (quoted? raw-rhs))
-                        (do
-                          (set extra-opts.callback
-                               (if (quoted? raw-rhs)
-                                   (deprecate "quoted callback"
-                                              "it without quote" :v0.6.0
-                                              (->unquoted raw-rhs))
-                                   (->unquoted raw-rhs)))
-                          "")
-                        (str? raw-rhs)
-                        raw-rhs
-                        ;; TODO: Remove list detection on v0.6.0.
-                        (list? raw-rhs)
-                        raw-rhs
-                        (do
-                          (set extra-opts.callback raw-rhs)
-                          "")))
+              rhs (if (or vim? (str? raw-rhs) (vim-callback-format? raw-rhs))
+                      raw-rhs
+                      (do
+                        (set extra-opts.callback raw-rhs)
+                        ""))
               ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
           (set extra-opts.buffer ?bufnr)
           (values extra-opts lhs rhs ?api-opts)))))
@@ -637,71 +605,14 @@
                           (not (hidden-in-compile-time? ?api-opts))))))
     (set extra-opts.remap nil)
     (set extra-opts.noremap nil))
-  ;; TODO: Remove the dirty workarounds for the compatibility before v0.6.0.
-  (local vim? extra-opts.vim?)
-  (set extra-opts.vim? nil)
-  (local deprecated-opts-command? (or extra-opts.<command> extra-opts.ex))
-  (local deprecated-opts-callback? (or extra-opts.<callback> extra-opts.cb))
   (let [?bufnr extra-opts.buffer
-        api-opts* (merge-api-opts (keymap/->compatible-opts! extra-opts)
-                                  ?api-opts)
-        api-opts (if deprecated-opts-command?
-                     (deprecate "special opts <command> and ex"
-                                "&vim, or rename symbol to match `^<.+>`,"
-                                :v0.6.0 api-opts*)
-                     deprecated-opts-callback?
-                     (deprecate "special opts <callback> and cb"
-                                "callback with no decorations" :v0.6.0 api-opts*)
-                     api-opts*)
+        api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
+                                 ?api-opts)
         set-keymap (lambda [mode]
-                     ;; TODO: Drop the compatibility on v0.6.0.
-                     (if (vim-callback-format? rhs)
-                         `(let [cb# ,rhs
-                                str?# (= :string (type cb#))
-                                rhs# (if str?# cb# "")
-                                api-opts# ;
-                                (if str?#
-                                    ,api-opts
-                                    (vim.tbl_extend :force
-                                                    ,(keymap/->compatible-opts! extra-opts)
-                                                    {:callback ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
-                                                                           "another name"
-                                                                           :v0.6.0
-                                                                           `cb#)}
-                                                    (or ,?api-opts {})))]
-                            ,(if ?bufnr
-                                 `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode
-                                                               ,lhs rhs#
-                                                               api-opts#)
-                                 `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
-                                                           api-opts#)))
-                         (and (list? rhs)
-                              (and (not vim?) ;
-                                   (not (vim-callback-format? rhs))))
-                         `(let [cb# ,rhs
-                                fn?# (= :function (type cb#))
-                                rhs# (if fn?# ""
-                                         ,(deprecate "list for key sequence"
-                                                     "&vim, or rename symbol to match `^<.+>`,"
-                                                     :v0.6.0 `cb#))
-                                api-opts# ;
-                                (if fn?#
-                                    (vim.tbl_extend :force
-                                                    ,(keymap/->compatible-opts! extra-opts)
-                                                    {:callback cb#}
-                                                    (or ,?api-opts {}))
-                                    ,api-opts)]
-                            ,(if ?bufnr
-                                 `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode
-                                                               ,lhs rhs#
-                                                               api-opts#)
-                                 `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
-                                                           api-opts#)))
-                         (if ?bufnr
-                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                           ,rhs ,api-opts)
-                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                       ,api-opts))))
+                     (if ?bufnr
+                         `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs ,rhs
+                                                       ,api-opts)
+                         `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))
         modes (if (and (str? modes) (< 1 (length modes)))
                   (icollect [m (modes:gmatch ".")]
                     m)
