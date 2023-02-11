@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.6.0](https://github.com/aileot/nvim-laurel/compare/v0.5.6...v0.6.0) (2023-02-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* `command!` drops support to resolve unnecessary quote on callback
+* `map!` no longer resolves quoted callback in itself.
+* `map!` no longer accept special options `<command>`, `ex`, `<callback>`, and `cb`.
+* `map!` no longer interpret callback of which the first symbol matches `^<.+>` as Lua function, but as Ex command.
+* `map!` interprets callback in list as Lua function unless either symbol `&vim` precedes it or the first symbol of the list matches pattern `^<.+>`.
+* `augroup!` & `autocmd!`/`au!` no longer resolves quoted callback in itself.
+* `augroup!` & `autocmd!`/`au!` no longer accept special options `<command>`, `ex`, `<callback>`, and `cb`.
+* `augroup!` & `autocmd!`/`au!` no longer interpret callback of which the first symbol matches `^<.+>` as Lua function, but as key sequence.
+* `augroup!` & `autocmd!`/`au!` interprets callback in list as Lua function unless either symbol `&vim` precedes it or the first symbol of the list matches pattern `^<.+>`.
+* `map!` wrapper macros, `nmap!`, `vmap!`, ..., are removed.
+* `augroup+` is removed; use `augroup!` with `{:clear false}` instead.
+  
+### Code Refactoring
+
+* remove support for deprecated features ([#210](https://github.com/aileot/nvim-laurel/issues/210)) ([c7f4069](https://github.com/aileot/nvim-laurel/commit/c7f4069faed58d7021c0a3533c219ba22d7cb9d7))
+
 ## [0.5.6](https://github.com/aileot/nvim-laurel/compare/v0.5.5...v0.5.6) (2023-02-09)
 
 
