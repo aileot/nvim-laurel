@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.0](https://github.com/aileot/nvim-laurel/compare/v0.5.6...v0.6.0) (2023-02-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* `command!` drops support to resolve unnecessary quote on callback
+
+### Code Refactoring
+
+* remove support for deprecated features ([#210](https://github.com/aileot/nvim-laurel/issues/210)) ([c7f4069](https://github.com/aileot/nvim-laurel/commit/c7f4069faed58d7021c0a3533c219ba22d7cb9d7))
+
 ## [0.5.6](https://github.com/aileot/nvim-laurel/compare/v0.5.5...v0.5.6) (2023-02-09)
 
 
