@@ -1,5 +1,6 @@
 (import-macros {: describe : it} :_busted_macros)
-(import-macros {: augroup! : augroup+ : au! : autocmd!} :nvim-laurel.macros)
+(import-macros {: augroup+} :_wrapper_macros)
+(import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
 
 (macro macro-callback []
   `#:macro-callback)
@@ -14,9 +15,7 @@
 (local default {:multi {:sym #:default.multi.sym}})
 
 (local <default>-command :<default>-command)
-;; TODO: Remove it on removing the support for Lua callback.
 (local <default>-str-callback #:<default>-str-callback)
-(local <default>-callback-callback ##:<default>-callback-callback)
 
 (lambda get-autocmds [?opts]
   (let [opts (collect [k v (pairs (or ?opts {})) ;
@@ -42,41 +41,35 @@
         (assert.has_no.errors #(vim.api.nvim_del_augroup_by_id id))))
     (it "can create augroup with sequence and `au!` macro mixed"
       (assert.has_no.errors #(augroup! default-augroup
-                               [default-event `default-callback]
+                               [default-event default-callback]
                                (au! :FileType [:foo :bar] #:foobar)))))
   (describe :au!/autocmd!
-    (it "sets callback via macro with quote"
-      (autocmd! default-augroup default-event [:pat] `(macro-callback))
-      (let [au (get-first-autocmd {:pattern :pat})]
-        (assert.is_not_nil au.callback)))
-    (it "set command in macro with no args"
-      (autocmd! default-augroup default-event [:pat] (macro-command))
-      (let [au (get-first-autocmd {:pattern :pat})]
-        (assert.is_same :macro-command au.command)))
-    (it "set command in macro with some args"
-      (autocmd! default-augroup default-event [:pat] (macro-command :foo :bar))
-      (let [au (get-first-autocmd {:pattern :pat})]
-        (assert.is_same :macro-command au.command)))
-    (it "sets callback function with quoted symbol"
-      (autocmd! default-augroup default-event [:pat] `default-callback)
+    (it "should set callback via macro"
+      (let [desc "macro callback"]
+        (autocmd! default-augroup default-event [:pat] [:desc desc]
+                  (macro-callback))
+        (let [au (get-first-autocmd {:pattern :pat})]
+          (assert.is_same desc au.desc))))
+    (it "should set callback function in symbol"
+      (autocmd! default-augroup default-event [:pat] default-callback)
       (assert.is_same default-callback
                       (. (get-first-autocmd {:pattern :pat}) :callback)))
-    (it "sets callback function with quoted multi-symbol"
+    (it "should set callback function in multi-symbol"
       (let [desc :multi.sym]
-        (autocmd! default-augroup default-event [:pat] `default.multi.sym
+        (autocmd! default-augroup default-event [:pat] default.multi.sym
                   {: desc})
         ;; FIXME: In vusted, callback is unexpectedly set to a string
         ;; "<vim function: default.multi.sym>"; it must be the same as
         ;; `default.multi.sym`.
         (assert.is_same desc (. (get-first-autocmd {:pattern :pat}) :desc))))
-    (it "sets callback function with quoted list"
+    (it "should set callback function in list"
       (let [desc :list]
         (autocmd! default-augroup default-event [:pat]
-                  `(default-callback :foo :bar) {: desc})
+                  (default-callback :foo :bar) {: desc})
         (let [au (get-first-autocmd {:pattern :pat})]
           (assert.is_same desc au.desc))))
-    (it "set `vim.fn.Test in string \"Test\""
-      (autocmd! default-augroup default-event [:pat] `vim.fn.Test)
+    (it "should set vim.fn.Test in string \"Test\""
+      (autocmd! default-augroup default-event [:pat] vim.fn.Test)
       (let [au (get-first-autocmd {:pattern :pat})]
         (assert.is_same "<vim function: Test>" au.callback)))
     (it "set #(vim.fn.Test) to callback without modification"
@@ -84,49 +77,17 @@
       (let [au (get-first-autocmd {:pattern :pat})]
         (assert.is_not_same "<vim function: Test>" au.callback)))
     (it "can add an autocmd to an existing augroup"
-      (autocmd! default-augroup default-event [:pat1 :pat2] `default-callback)
+      (autocmd! default-augroup default-event [:pat1 :pat2] default-callback)
       (let [[autocmd] (get-autocmds)]
         (assert.is.same default-callback autocmd.callback)))
     (it "can add autocmd with no patterns for macro"
       (assert.has_no.errors #(autocmd! default-augroup default-event
-                                       `default-callback)))
+                                       default-callback)))
     (it "can add autocmds to an existing augroup within `augroup+`"
       (augroup+ default-augroup
-                (au! default-event [:pat1 :pat2] `default-callback))
+                (au! default-event [:pat1 :pat2] default-callback))
       (let [[autocmd] (get-autocmds)]
         (assert.is.same default-callback autocmd.callback)))
-    (it "can set Ex command in autocmds with `<command>` key"
-      (augroup! default-augroup
-        (au! default-event [:pat1] [:<command>] default-command)
-        (au! default-event [:pat2] [:<command>] (.. :foo :bar)))
-      (let [[autocmd1] (get-autocmds {:pattern :pat1})
-            [autocmd2] (get-autocmds {:pattern :pat2})]
-        (assert.is.same default-command autocmd1.command)
-        (assert.is.same :foobar autocmd2.command)))
-    (it "can set Ex command in autocmds with `ex` key"
-      (augroup! default-augroup
-        (au! default-event [:pat1] [:ex] default-command)
-        (au! default-event [:pat2] [:ex] (.. :foo :bar)))
-      (let [[autocmd1] (get-autocmds {:pattern :pat1})
-            [autocmd2] (get-autocmds {:pattern :pat2})]
-        (assert.is.same default-command autocmd1.command)
-        (assert.is.same :foobar autocmd2.command)))
-    (it "can set callback function in autocmds with `<callback>` key"
-      (augroup! default-augroup
-        (au! default-event [:pat1] [:<callback>] `default-callback)
-        (au! default-event [:pat2] [:<callback>] (.. :foo :bar)))
-      (let [[autocmd1] (get-autocmds {:pattern :pat1})
-            [autocmd2] (get-autocmds {:pattern :pat2})]
-        (assert.is.same default-callback autocmd1.callback)
-        (assert.is.same "<vim function: foobar>" autocmd2.callback)))
-    (it "can set callback function in autocmds with `cb` key"
-      (augroup! default-augroup
-        (au! default-event [:pat1] [:cb] `default-callback)
-        (au! default-event [:pat2] [:cb] (.. :foo :bar)))
-      (let [[autocmd1] (get-autocmds {:pattern :pat1})
-            [autocmd2] (get-autocmds {:pattern :pat2})]
-        (assert.is.same default-callback autocmd1.callback)
-        (assert.is.same "<vim function: foobar>" autocmd2.callback)))
     (it "sets vim.fn.Test to callback in string"
       (assert.has_no.errors #(autocmd! default-augroup default-event
                                        vim.fn.Test))
@@ -135,25 +96,25 @@
     (it "creates buffer-local autocmd with `buffer` key"
       (let [bufnr (vim.api.nvim_get_current_buf)
             au1 (au! default-augroup default-event [:buffer bufnr]
-                     `default-callback)]
+                     default-callback)]
         (vim.cmd.new)
         (vim.cmd.only)
         (let [au2 (au! default-augroup default-event [:<buffer>]
-                       `default-callback)
+                       default-callback)
               [autocmd1] (get-autocmds {:buffer bufnr})
               [autocmd2] ;
               (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
           (assert.is.same au1 autocmd1.id)
           (assert.is.same au2 autocmd2.id))))
     (it "can define autocmd without any augroup"
-      (assert.has_no.errors #(let [id (au! nil default-event `default-callback)]
+      (assert.has_no.errors #(let [id (au! nil default-event default-callback)]
                                (vim.api.nvim_del_autocmd id))))
     (it "gives lowest priority to `pattern` as (< raw seq tbl)"
       (let [seq-pat :seq-pat
             tbl-pat :tbl-pat]
-        (au! default-augroup default-event [:raw-seq-pat] `default-callback)
-        (au! default-augroup default-event [:pattern seq-pat] `default-callback)
-        (au! default-augroup default-event `default-callback {:pattern tbl-pat})
+        (au! default-augroup default-event [:raw-seq-pat] default-callback)
+        (au! default-augroup default-event [:pattern seq-pat] default-callback)
+        (au! default-augroup default-event default-callback {:pattern tbl-pat})
         (let [au (get-first-autocmd {:pattern [:raw-seq-pat]})]
           (assert.is.same :raw-seq-pat au.pattern))
         (let [au (get-first-autocmd {:pattern seq-pat})]
@@ -201,23 +162,16 @@
       (au! default-augroup default-event [:pat1] (<default>-str-callback))
       (let [au (get-first-autocmd {:pattern :pat1})]
         (assert.is.same (<default>-str-callback) au.command))))
-  (describe "with &vim indicator"
-    (it "set callback to `command`"
+  (describe "with symbol &vim"
+    (it "should set symbol to `command`"
       (au! default-augroup default-event [:pat1] &vim default-command)
       (let [[autocmd1] (get-autocmds {:pattern :pat1})]
-        (assert.is.same default-command autocmd1.command))))
-  (describe "(Deprecated, v0.6.0 will not support it)"
-    (describe :<Cmd>pattern
-      (it "symbol can set Lua function as callback"
-        (au! default-augroup default-event [:pat1] <default>-str-callback)
-        (let [au (get-first-autocmd {:pattern :pat1})]
-          (assert.is.same <default>-str-callback au.callback)))
-      (it "list can set Lua function as callback"
-        (let [desc :<default>]
-          (au! default-augroup default-event [:pat1] [:desc desc]
-               (<default>-callback-callback))
-          (let [au (get-first-autocmd {:pattern :pat1})]
-            (assert.is.same desc au.desc)))))
+        (assert.is.same default-command autocmd1.command)))
+    (it "should set list to `command`"
+      (autocmd! default-augroup default-event [:pat] &vim (macro-command))
+      (let [au (get-first-autocmd {:pattern :pat})]
+        (assert.is_same :macro-command au.command))))
+  (describe "(wrapper)"
     (describe :augroup+
       (it "gets an existing augroup id"
         (let [id (augroup! default-augroup)]

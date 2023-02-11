@@ -117,9 +117,7 @@
   `callback` format.
   @param callback any
   @return boolean"
-  ;; TODO: Include the `str?` check after removing the deprecated formats.
-  (or ;; (str? callback) ;
-      (and (sym? callback) ;
+  (or (and (sym? callback) ;
            (-> (->str callback) (: :match "^<.+>")))
       (and (list? callback) ;
            (-> (->str (first callback)) (: :match "^<.+>")))))
@@ -298,8 +296,6 @@
                                :pattern
                                :buffer
                                :<buffer>
-                               :ex
-                               :<command>
                                :desc
                                :callback
                                :command
@@ -309,10 +305,6 @@
 (lambda autocmd/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  (set opts.<callback> nil)
-  (set opts.cb nil)
   opts)
 
 (lambda define-autocmd! [...]
@@ -351,14 +343,7 @@
                                [a nil b ?c])
               _ (error* (printf "unexpected args:\n%s" (view [...]))))
             extra-opts (if (nil? ?extra-opts) {}
-                           (seq->kv-table ?extra-opts
-                                          [:once
-                                           :nested
-                                           :<buffer>
-                                           :ex
-                                           :<command>
-                                           :cb
-                                           :<callback>]))
+                           (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
             ?pat (or extra-opts.pattern ?pattern)]
         (set extra-opts.group ?id)
@@ -369,85 +354,22 @@
           ;; Note: `*` is the default pattern and redundant.
           (when-not (and (str? pattern) (= "*" pattern))
             (set extra-opts.pattern pattern)))
-        (when (and (or extra-opts.<command> extra-opts.ex)
-                   (or extra-opts.<callback> extra-opts.cb))
-          (error* "cannot set both <command>/ex and <callback>/cb."))
-        (var vim-cb? false)
-        (if ;; TODO: Deprecate `<command>` option.
-            (or extra-opts.<command> extra-opts.ex)
+        (if (or vim? (str? callback) (vim-callback-format? callback))
             (set extra-opts.command callback)
-            vim?
-            (set extra-opts.command callback)
-            (vim-callback-format? callback)
-            ;; TODO: Remove vim-cb? check on v0.6.0.
-            ;; (set extra-opts.command callback)
-            (set vim-cb? true)
-            (or extra-opts.<callback> extra-opts.cb ;
-                (sym? callback) ;
-                (anonymous-function? callback) ;
-                (quoted? callback))
-            ;; Note: Ignore the possibility to set Vimscript function to callback
-            ;; in string; however, convert `vim.fn.foobar` into "foobar" to set
-            ;; to "callback" key because functions written in Vim script are
-            ;; rarely supposed to expect the table from `nvim_create_autocmd` for
-            ;; its first arg.
-            (let [cb (->unquoted callback)
-                  cb* (or (extract-?vim-fn-name cb) ;
-                          cb)]
-              (set extra-opts.callback
-                   ;; Note: Either vim.fn.foobar or `vim.fn.foobar should be
-                   ;; "foobar" set to "callback" key.
-                   (if (quoted? callback)
-                       (deprecate "quoted callback" "it without quote" :v0.6.0
-                                  cb*)
-                       cb*)))
-            (set extra-opts.command callback))
+            ;; Note: Ignore the possibility to set Vimscript function to
+            ;; callback in string; however, convert `vim.fn.foobar` into
+            ;; "foobar" to set to "callback" key because functions written in
+            ;; Vim script are rarely supposed to expect the table from
+            ;; `nvim_create_autocmd` for its first arg.
+            (let [cb (or (extract-?vim-fn-name callback) ;
+                         callback)]
+              (set extra-opts.callback cb)))
         (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                         "cannot set both pattern and buffer for the same autocmd"
                         extra-opts)
-        (local deprecated-opts-command? (or extra-opts.<command> extra-opts.ex))
-        (local deprecated-opts-callback?
-               (or extra-opts.<callback> extra-opts.cb))
-        (let [api-opts ;
-              (merge-api-opts (autocmd/->compatible-opts! extra-opts)
-                              ;; TODO: Remove all the if-expr except `?api-opts` here to set `callback` to `command`.
-                              (if vim-cb?
-                                  `(vim.tbl_extend :keep (or ,?api-opts {})
-                                                   (let [cb# ,callback
-                                                         str?# (= :string
-                                                                  (type cb#))]
-                                                     {:command (when str?#
-                                                                 cb#)
-                                                      :callback (when (not str?#)
-                                                                  ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
-                                                                              "another name"
-                                                                              :v0.6.0
-                                                                              `cb#))}))
-                                  (and (list? extra-opts.command)
-                                       (and (not vim?)
-                                            (not (vim-callback-format? extra-opts.command))))
-                                  `(vim.tbl_extend :keep (or ,?api-opts {})
-                                                   (let [cb# ,extra-opts.command
-                                                         str?# (= :string
-                                                                  (type cb#))]
-                                                     {:command (when str?#
-                                                                 ,(deprecate "bare-list to set Ex command"
-                                                                             "&vim, or rename symbol to match `^<.+>`,"
-                                                                             :v0.6.0
-                                                                             `cb#))
-                                                      :callback (when (not str?#)
-                                                                  cb#)}))
-                                  ?api-opts))]
-          `(vim.api.nvim_create_autocmd ,events
-                                        ,(if deprecated-opts-command?
-                                             (deprecate "special opts <command> and ex"
-                                                        "&vim, or rename symbol to match `^<.+>`,"
-                                                        :v0.6.0 api-opts)
-                                             deprecated-opts-callback?
-                                             (deprecate "special opts <callback> and cb"
-                                                        "callback with no decorations"
-                                                        :v0.6.0 api-opts)
-                                             api-opts))))))
+        (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
+                                       ?api-opts)]
+          `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
@@ -530,10 +452,6 @@
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
   (set opts.<buffer> nil)
-  (set opts.<command> nil)
-  (set opts.ex nil)
-  (set opts.<callback> nil)
-  (set opts.cb nil)
   (set opts.literal nil)
   opts)
 
@@ -563,39 +481,11 @@
                                                    (sequence? a1)
                                                    [?extra-opts a2 ?a3 ?a4]
                                                    [?extra-opts a1 ?a3 ?a4])
-              rhs (do
-                    (when (and (or extra-opts.<command> extra-opts.ex)
-                               (or extra-opts.<callback> extra-opts.cb))
-                      (error* "cannot set both <command>/ex and <callback>/cb."))
-                    (if vim?
-                        (do
-                          ;; TODO: Remove the dirty hack on v0.6.0.
-                          (set extra-opts.vim? true)
-                          raw-rhs)
-                        (or extra-opts.<command> extra-opts.ex)
-                        raw-rhs
-                        (vim-callback-format? raw-rhs)
-                        raw-rhs
-                        (or extra-opts.<callback> extra-opts.cb ;
-                            (sym? raw-rhs) ;
-                            (anonymous-function? raw-rhs) ;
-                            (quoted? raw-rhs))
-                        (do
-                          (set extra-opts.callback
-                               (if (quoted? raw-rhs)
-                                   (deprecate "quoted callback"
-                                              "it without quote" :v0.6.0
-                                              (->unquoted raw-rhs))
-                                   (->unquoted raw-rhs)))
-                          "")
-                        (str? raw-rhs)
-                        raw-rhs
-                        ;; TODO: Remove list detection on v0.6.0.
-                        (list? raw-rhs)
-                        raw-rhs
-                        (do
-                          (set extra-opts.callback raw-rhs)
-                          "")))
+              rhs (if (or vim? (str? raw-rhs) (vim-callback-format? raw-rhs))
+                      raw-rhs
+                      (do
+                        (set extra-opts.callback raw-rhs)
+                        ""))
               ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
           (set extra-opts.buffer ?bufnr)
           (values extra-opts lhs rhs ?api-opts)))))
@@ -639,71 +529,14 @@
                           (not (hidden-in-compile-time? ?api-opts))))))
     (set extra-opts.remap nil)
     (set extra-opts.noremap nil))
-  ;; TODO: Remove the dirty workarounds for the compatibility before v0.6.0.
-  (local vim? extra-opts.vim?)
-  (set extra-opts.vim? nil)
-  (local deprecated-opts-command? (or extra-opts.<command> extra-opts.ex))
-  (local deprecated-opts-callback? (or extra-opts.<callback> extra-opts.cb))
   (let [?bufnr extra-opts.buffer
-        api-opts* (merge-api-opts (keymap/->compatible-opts! extra-opts)
-                                  ?api-opts)
-        api-opts (if deprecated-opts-command?
-                     (deprecate "special opts <command> and ex"
-                                "&vim, or rename symbol to match `^<.+>`,"
-                                :v0.6.0 api-opts*)
-                     deprecated-opts-callback?
-                     (deprecate "special opts <callback> and cb"
-                                "callback with no decorations" :v0.6.0 api-opts*)
-                     api-opts*)
+        api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
+                                 ?api-opts)
         set-keymap (lambda [mode]
-                     ;; TODO: Drop the compatibility on v0.6.0.
-                     (if (vim-callback-format? rhs)
-                         `(let [cb# ,rhs
-                                str?# (= :string (type cb#))
-                                rhs# (if str?# cb# "")
-                                api-opts# ;
-                                (if str?#
-                                    ,api-opts
-                                    (vim.tbl_extend :force
-                                                    ,(keymap/->compatible-opts! extra-opts)
-                                                    {:callback ,(deprecate "symbol which, or list whose first symbol, matches \"^<.+>\" to set Lua callback"
-                                                                           "another name"
-                                                                           :v0.6.0
-                                                                           `cb#)}
-                                                    (or ,?api-opts {})))]
-                            ,(if ?bufnr
-                                 `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode
-                                                               ,lhs rhs#
-                                                               api-opts#)
-                                 `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
-                                                           api-opts#)))
-                         (and (list? rhs)
-                              (and (not vim?) ;
-                                   (not (vim-callback-format? rhs))))
-                         `(let [cb# ,rhs
-                                fn?# (= :function (type cb#))
-                                rhs# (if fn?# ""
-                                         ,(deprecate "list for key sequence"
-                                                     "&vim, or rename symbol to match `^<.+>`,"
-                                                     :v0.6.0 `cb#))
-                                api-opts# ;
-                                (if fn?#
-                                    (vim.tbl_extend :force
-                                                    ,(keymap/->compatible-opts! extra-opts)
-                                                    {:callback cb#}
-                                                    (or ,?api-opts {}))
-                                    ,api-opts)]
-                            ,(if ?bufnr
-                                 `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode
-                                                               ,lhs rhs#
-                                                               api-opts#)
-                                 `(vim.api.nvim_set_keymap ,mode ,lhs rhs#
-                                                           api-opts#)))
-                         (if ?bufnr
-                             `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs
-                                                           ,rhs ,api-opts)
-                             `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs
-                                                       ,api-opts))))
+                     (if ?bufnr
+                         `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs ,rhs
+                                                       ,api-opts)
+                         `(vim.api.nvim_set_keymap ,mode ,lhs ,rhs ,api-opts)))
         modes (if (and (str? modes) (< 1 (length modes)))
                   (icollect [m (modes:gmatch ".")]
                     m)
@@ -719,19 +552,6 @@
                             ,(set-keymap `m#)) ,modes))
         (icollect [_ m (ipairs modes)]
           (set-keymap m)))))
-
-(lambda keymap/invisible-key? [lhs]
-  "Check if `lhs` is invisible key like `<Plug>`, `<CR>`, `<C-f>`, `<F5>`, etc.
-  @param lhs string
-  @return boolean"
-  (or ;; cspell:ignore acdms
-      ;; <C-f>, <M-b>, ...
-      (and (lhs:match "<[acdmsACDMS]%-[a-zA-Z0-9]+>")
-           (not (lhs:match "<[sS]%-[a-zA-Z]>"))) ;
-      ;; <CR>, <Left>, ...
-      (lhs:match "<[a-zA-Z][a-zA-Z]+>") ;
-      ;; <k0>, <F5>, ...
-      (lhs:match "<[fkFK][0-9]>")))
 
 ;; Export ///2
 
@@ -1122,15 +942,11 @@
                                       :<buffer>
                                       :register
                                       :keepscript]))
-        [extra-opts name raw-command ?api-opts] (if-not ?extra-opts
-                                                  [{} a1 a2 ?a3]
-                                                  (sequence? a1)
-                                                  [?extra-opts a2 ?a3 ?a4]
-                                                  [?extra-opts a1 ?a3 ?a4])
-        command (if (quoted? raw-command)
-                    (deprecate "quoted callback" "it without quote" :v0.6.0
-                               (->unquoted raw-command))
-                    raw-command)
+        [extra-opts name command ?api-opts] (if-not ?extra-opts
+                                              [{} a1 a2 ?a3]
+                                              (sequence? a1)
+                                              [?extra-opts a2 ?a3 ?a4]
+                                              [?extra-opts a1 ?a3 ?a4])
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
                                  ?api-opts)]
@@ -1202,470 +1018,6 @@
 
 ;; Deprecated ///1
 
-(lambda map-all! [...]
-  "(Deprecated) Map `lhs` to `rhs` in all modes recursively.
-  ```fennel
-  (map-all! ?extra-opts lhs rhs ?api-opts)
-  (map-all! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :map-all! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! ["" "!" :l :t] ...)))
-
-(lambda map-input! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode recursively.
-  ```fennel
-  (map-input! ?extra-opts lhs rhs ?api-opts)
-  (map-input! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :map-motion! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! "!" ...)))
-
-(lambda map-motion! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
-  recursively.
-  ```fennel
-  (map-motion! ?extra-opts lhs rhs ?api-opts)
-  (map-motion! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table
-    Note: This macro could `unmap` `lhs` in Select mode for the performance.
-  To avoid this, use `(map! [:n :o :x] ...)` instead."
-  (deprecate :map-motion! "`map!` or your own wrapper" :v0.6.0 ;
-             (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
-                   ?bufnr extra-opts.buffer]
-               (if (str? lhs)
-                   (if (keymap/invisible-key? lhs)
-                       (map! "" extra-opts lhs rhs ?api-opts)
-                       [(map! "" extra-opts lhs rhs ?api-opts)
-                        (keymap/del-maps! ?bufnr :s lhs)])
-                   (map! [:n :o :x] extra-opts lhs rhs ?api-opts)))))
-
-(lambda map-range! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Normal/Visual mode recursively.
-  ```fennel
-  (map-range! ?extra-opts lhs rhs ?api-opts)
-  (map-range! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :map-range! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! [:n :x] ...)))
-
-(lambda map-operator! [...]
-  "(Deprecated) Alias of `map-range!."
-  (deprecate :map-operator! "`map!` or your own wrapper" :v0.6.0 ;
-             (map-range! ...)))
-
-(lambda map-textobj! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual/Operator-pending mode
-  recursively.
-  ```fennel
-  (map-textobj! ?extra-opts lhs rhs ?api-opts)
-  (map-textobj! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :map-textobj! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! [:o :x] ...)))
-
-(lambda nmap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Normal mode recursively.
-  ```fennel
-  (nmap! ?extra-opts lhs rhs ?api-opts)
-  (nmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :nmap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :n ...)))
-
-(lambda vmap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual/Select mode recursively.
-  ```fennel
-  (vmap! ?extra-opts lhs rhs ?api-opts)
-  (vmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :vmap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :v ...)))
-
-(lambda xmap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual mode recursively.
-  ```fennel
-  (xmap! ?extra-opts lhs rhs ?api-opts)
-  (xmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :xmap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :x ...)))
-
-(lambda smap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Select mode recursively.
-  ```fennel
-  (smap! ?extra-opts lhs rhs ?api-opts)
-  (smap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :smap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :s ...)))
-
-(lambda omap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Operator-pending mode recursively.
-  ```fennel
-  (omap! ?extra-opts lhs rhs ?api-opts)
-  (omap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :omap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :o ...)))
-
-(lambda imap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert mode recursively.
-  ```fennel
-  (imap! ?extra-opts lhs rhs ?api-opts)
-  (imap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :imap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :i ...)))
-
-(lambda lmap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode, etc.,
-  recursively. `:h language-mapping` for the details.
-  ```fennel
-  (lmap! ?extra-opts lhs rhs ?api-opts)
-  (lmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :lmap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :l ...)))
-
-(lambda cmap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Command-line mode recursively.
-  ```fennel
-  (cmap! ?extra-opts lhs rhs ?api-opts)
-  (cmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :cmap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :c ...)))
-
-(lambda tmap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Terminal mode recursively.
-  ```fennel
-  (tmap! ?extra-opts lhs rhs ?api-opts)
-  (tmap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :tmap! "`map!` or your own wrapper" :v0.6.0 ;
-             (map! :t ...)))
-
-(lambda noremap! [modes ...]
-  "(Deprecated) Map `lhs` to `rhs` in `modes` non-recursively.
-  ```fennel
-  (noremap! modes ?extra-opts lhs rhs ?api-opts)
-  (noremap! modes lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :noremap! "`map!` or your own wrapper" :v0.6.0 ;
-             (let [default-opts {:noremap true}
-                   (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-               (merge-default-kv-table! default-opts extra-opts)
-               (keymap/set-maps! modes extra-opts lhs rhs ?api-opts))))
-
-(lambda noremap-all! [...]
-  "(Deprecated) Map `lhs` to `rhs` in all modes non-recursively.
-  ```fennel
-  (noremap-all! ?extra-opts lhs rhs ?api-opts)
-  (noremap-all! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :noremap-all! "`map!` or your own wrapper" :v0.6.0 ;
-             (noremap! ["" "!" :l :t] ...)))
-
-(lambda noremap-input! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode
-  non-recursively.
-  ```fennel
-  (noremap-input! ?extra-opts lhs rhs ?api-opts)
-  (noremap-input! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :noremap-input! "`map!` or your own wrapper" :v0.6.0 ;
-             (noremap! "!" ...)))
-
-(lambda noremap-motion! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Normal/Visual/Operator-pending mode
-  non-recursively.
-  ```fennel
-  (noremap-motion! ?extra-opts lhs rhs ?api-opts)
-  (noremap-motion! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table
-  Note: This macro could `unmap` `lhs` in Select mode for the performance.
-  To avoid this, use `(noremap! [:n :o :x] ...)` instead."
-  (deprecate :noremap-motion! "`map!` or your own wrapper" :v0.6.0 ;
-             (let [(extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)
-                   ;; Note: With unknown reason, keymap/del-maps! fails to get
-                   ;; `extra-opts.buffer` only to find it `nil` unless it's set to `?bufnr`.
-                   ?bufnr extra-opts.buffer]
-               (if (str? lhs)
-                   (if (keymap/invisible-key? lhs)
-                       (noremap! "" extra-opts lhs rhs ?api-opts)
-                       [(noremap! "" extra-opts lhs rhs ?api-opts)
-                        (keymap/del-maps! ?bufnr :s lhs)])
-                   (noremap! [:n :o :x] extra-opts lhs rhs ?api-opts)))))
-
-(lambda noremap-range! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Normal/Visual mode non-recursively.
-  ```fennel
-  (noremap-range! ?extra-opts lhs rhs ?api-opts)
-  (noremap-range! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :noremap-range! "`map!` or your own wrapper" :v0.6.0 ;
-             (noremap! [:n :x] ...)))
-
-(lambda noremap-operator! [...]
-  "(Deprecated) Alias of `noremap-range!`."
-  (deprecate :noremap-operator! "`map!` or your own wrapper" :v0.6.0 ;
-             (noremap-range! ...)))
-
-(lambda noremap-textobj! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual/Operator-pending mode
-  non-recursively.
-  ```fennel
-  (noremap-textobj! ?extra-opts lhs rhs ?api-opts)
-  (noremap-textobj! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (noremap! [:o :x] ...))
-
-(lambda nnoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Normal mode non-recursively.
-  ```fennel
-  (nnoremap! ?extra-opts lhs rhs ?api-opts)
-  (nnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :nnoremap! :map! :v0.6.0 ;
-             (noremap! :n ...)))
-
-(lambda vnoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual/Select mode non-recursively.
-  ```fennel
-  (vnoremap! ?extra-opts lhs rhs ?api-opts)
-  (vnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :vnoremap! :map! :v0.6.0 ;
-             (noremap! :v ...)))
-
-(lambda xnoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Visual mode non-recursively.
-  ```fennel
-  (xnoremap! ?extra-opts lhs rhs ?api-opts)
-  (xnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :xnoremap! :map! :v0.6.0 ;
-             (noremap! :x ...)))
-
-(lambda snoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Select mode non-recursively.
-  ```fennel
-  (snoremap! ?extra-opts lhs rhs ?api-opts)
-  (snoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :snoremap! :map! :v0.6.0 ;
-             (noremap! :s ...)))
-
-(lambda onoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Operator-pending mode non-recursively.
-  ```fennel
-  (onoremap! ?extra-opts lhs rhs ?api-opts)
-  (onoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :onoremap! :map! :v0.6.0 ;
-             (noremap! :o ...)))
-
-(lambda inoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert mode non-recursively.
-  ```fennel
-  (inoremap! ?extra-opts lhs rhs ?api-opts)
-  (inoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :inoremap! :map! :v0.6.0 ;
-             (noremap! :i ...)))
-
-(lambda lnoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Insert/Command-line mode, etc.,
-  non-recursively. `:h language-mapping` for the details.
-  ```fennel
-  (lnoremap! ?extra-opts lhs rhs ?api-opts)
-  (lnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :lnoremap! :map! :v0.6.0 ;
-             (noremap! :l ...)))
-
-(lambda cnoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Command-line mode non-recursively.
-  ```fennel
-  (cnoremap! ?extra-opts lhs rhs ?api-opts)
-  (cnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :cnoremap! :map! :v0.6.0 ;
-             (noremap! :c ...)))
-
-(lambda tnoremap! [...]
-  "(Deprecated) Map `lhs` to `rhs` in Terminal mode non-recursively.
-  ```fennel
-  (tnoremap! ?extra-opts lhs rhs ?api-opts)
-  (tnoremap! lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
-  (deprecate :tnoremap! :map! :v0.6.0 ;
-             (noremap! :t ...)))
-
-(lambda augroup+ [name ...]
-  "(Deprecated) Create, or get, an augroup, or add `autocmd`s to an existing
-  augroup.
-  ```fennel
-  (augroup+ name
-    ?[events ?pattern ?extra-opts callback ?api-opts]
-    ?(au! events ?pattern ?extra-opts callback ?api-opts)
-    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
-    ?...)
-  ```
-  @param name string Augroup name.
-  @return undefined Without `...`, the return value of `nvim_create_augroup`;
-      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
-      augroup."
-  (deprecate :augroup+ :augroup! :v0.6.0
-             (augroup! name
-               {:clear false}
-               ...)))
-
 ;; Export ///1
 
 {: map!
@@ -1702,38 +1054,6 @@
  : command!
  : feedkeys!
  : highlight!
- :hi! highlight!
- : map-all!
- : map-input!
- : map-motion!
- : map-range!
- : map-operator!
- : map-textobj!
- : nmap!
- : vmap!
- : xmap!
- : smap!
- : omap!
- : imap!
- : lmap!
- : cmap!
- : tmap!
- : noremap!
- : noremap-all!
- : noremap-input!
- : noremap-motion!
- : noremap-range!
- : noremap-operator!
- : noremap-textobj!
- : nnoremap!
- : vnoremap!
- : xnoremap!
- : snoremap!
- : onoremap!
- : inoremap!
- : lnoremap!
- : cnoremap!
- : tnoremap!
- : augroup+}
+ :hi! highlight!}
 
 ;; vim:fdm=marker:foldmarker=///,""""
