@@ -953,7 +953,7 @@
   ```fennel
   (set+ name val)
   ```"
-  (option/modify {} name val "+"))
+  (set! name `+ val))
 
 (lambda set^ [name val]
   "Prepend a value to string-style options.
@@ -961,7 +961,7 @@
   ```fennel
   (set^ name val)
   ```"
-  (option/modify {} name val "^"))
+  (set! name `^ val))
 
 (lambda set- [name val]
   "Remove a value from string-style options.
@@ -969,7 +969,7 @@
   ```fennel
   (set- name val)
   ```"
-  (option/modify {} name val "-"))
+  (set! name `- val))
 
 (lambda setlocal+ [name val]
   "Append a value to string-style local options.
@@ -977,7 +977,7 @@
   ```fennel
   (setlocal+ name val)
   ```"
-  (option/modify {:scope :local} name val "+"))
+  (setlocal! name `+ val))
 
 (lambda setlocal^ [name val]
   "Prepend a value to string-style local options.
@@ -985,7 +985,7 @@
   ```fennel
   (setlocal^ name val)
   ```"
-  (option/modify {:scope :local} name val "^"))
+  (setlocal! name `^ val))
 
 (lambda setlocal- [name val]
   "Remove a value from string-style local options.
@@ -993,7 +993,7 @@
   ```fennel
   (setlocal- name val)
   ```"
-  (option/modify {:scope :local} name val "-"))
+  (setlocal! name `- val))
 
 (lambda setglobal+ [name val]
   "Append a value to string-style global options.
@@ -1002,8 +1002,8 @@
   (setglobal+ name val)
   ```
   - name: (string) Option name.
-  - val: (string) Additional option value."
-  (option/modify {:scope :global} name val "+"))
+  `- val: (string) Additional option value."
+  (setglobal! name `+ val))
 
 (lambda setglobal^ [name val]
   "Prepend a value from string-style global options.
@@ -1011,7 +1011,7 @@
   ```fennel
   (setglobal^ name val)
   ```"
-  (option/modify {:scope :global} name val "^"))
+  (setglobal! name `^ val))
 
 (lambda setglobal- [name val]
   "Remove a value from string-style global options.
@@ -1019,7 +1019,7 @@
   ```fennel
   (setglobal- name val)
   ```"
-  (option/modify {:scope :global} name val "-"))
+  (setglobal! name `- val))
 
 ;; Export ///1
 
