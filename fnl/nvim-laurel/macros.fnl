@@ -757,7 +757,7 @@
         name (if ?flag (: name-?flag :match "[a-zA-Z]+") name-?flag)]
     (values name ?flag)))
 
-(fn option/set [scope ...]
+(fn option/set-with-scope [scope ...]
   (assert-compile (table? scope) "Expected kv-table" scope)
   (let [supported-flags [`+ `- `^ `! `& `<]
         [name ?flag val] ;
@@ -801,7 +801,7 @@
   (let [opt :formatOptions]
     (set! opt + [:1 :B]))
   ```"
-  (option/set {} ...))
+  (option/set-with-scope {} ...))
 
 (lambda setlocal! [...]
   "Set local value to the option.
@@ -810,7 +810,7 @@
   (setlocal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set {:scope :local} ...))
+  (option/set-with-scope {:scope :local} ...))
 
 (lambda setglobal! [...]
   "Set global value to the option.
@@ -819,7 +819,7 @@
   (setglobal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set {:scope :global} ...))
+  (option/set-with-scope {:scope :global} ...))
 
 (lambda bo! [name|?id val|name ...]
   "Set a buffer option value.
