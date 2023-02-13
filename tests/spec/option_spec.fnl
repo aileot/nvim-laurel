@@ -1,12 +1,7 @@
 (import-macros {: describe : it} :_busted_macros)
-(import-macros {: set!
-                : set+
-                : set^
-                : set-
-                : setglobal!
-                : setlocal!
-                : bo!
-                : wo!} :nvim-laurel.macros)
+(import-macros {: set+ : set- : set^} :_wrapper_macros)
+(import-macros {: set! : setglobal! : setlocal! : bo! : wo!}
+               :nvim-laurel.macros)
 
 (macro get-o [name]
   `(-> (. vim.opt ,name) (: :get)))
