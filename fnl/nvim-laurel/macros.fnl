@@ -953,7 +953,7 @@
   ```fennel
   (set+ name val)
   ```"
-  (set! name `+ val))
+  (deprecate :set+ "set! with '+ flag" :v0.7.0 (set! name `+ val)))
 
 (lambda set^ [name val]
   "(Deprecated) Prepend a value to string-style options.
@@ -961,7 +961,7 @@
   ```fennel
   (set^ name val)
   ```"
-  (set! name `^ val))
+  (deprecate :set^ "set! with '^ flag" :v0.7.0 (set! name `^ val)))
 
 (lambda set- [name val]
   "(Deprecated) Remove a value from string-style options.
@@ -969,7 +969,7 @@
   ```fennel
   (set- name val)
   ```"
-  (set! name `- val))
+  (deprecate :set- "set! with '- flag" :v0.7.0 (set! name `- val)))
 
 (lambda setlocal+ [name val]
   "(Deprecated) Append a value to string-style local options.
@@ -977,7 +977,8 @@
   ```fennel
   (setlocal+ name val)
   ```"
-  (setlocal! name `+ val))
+  (deprecate :setlocal+ "setlocal! with '+ flag" :v0.7.0
+             (setlocal! name `+ val)))
 
 (lambda setlocal^ [name val]
   "(Deprecated) Prepend a value to string-style local options.
@@ -985,7 +986,8 @@
   ```fennel
   (setlocal^ name val)
   ```"
-  (setlocal! name `^ val))
+  (deprecate :setlocal+ "setlocal! with '^ flag" :v0.7.0
+             (setlocal! name `^ val)))
 
 (lambda setlocal- [name val]
   "(Deprecated) Remove a value from string-style local options.
@@ -993,7 +995,8 @@
   ```fennel
   (setlocal- name val)
   ```"
-  (setlocal! name `- val))
+  (deprecate :setlocal- "setlocal! with '- flag" :v0.7.0
+             (setlocal! name `- val)))
 
 (lambda setglobal+ [name val]
   "(Deprecated) Append a value to string-style global options.
@@ -1003,7 +1006,8 @@
   ```
   - name: (string) Option name.
   `- val: (string) Additional option value."
-  (setglobal! name `+ val))
+  (deprecate :setglobal+ "setglobal! with '+ flag" :v0.7.0
+             (setglobal! name `+ val)))
 
 (lambda setglobal^ [name val]
   "(Deprecated) Prepend a value from string-style global options.
@@ -1011,7 +1015,8 @@
   ```fennel
   (setglobal^ name val)
   ```"
-  (setglobal! name `^ val))
+  (deprecate :setglobal^ "setglobal! with '^ flag" :v0.7.0
+             (setglobal! name `^ val)))
 
 (lambda setglobal- [name val]
   "(Deprecated) Remove a value from string-style global options.
@@ -1019,7 +1024,8 @@
   ```fennel
   (setglobal- name val)
   ```"
-  (setglobal! name `- val))
+  (deprecate :setglobal- "setglobal! with '- flag" :v0.7.0
+             (setglobal! name `- val)))
 
 ;; Export ///1
 
