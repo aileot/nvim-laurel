@@ -707,8 +707,11 @@
         (table? ?val)
         (option/concat-kv-table ?val))))
 
-(lambda option/modify [api-opts name ?val ?flag]
+(lambda option/modify [api-opts name ?val ?q-flag]
   (let [name (if (str? name) (name:lower) name)
+        ?flag (when ?q-flag
+                ;; Note: ->str rips quote off.
+                (->str ?q-flag))
         interface (match api-opts
                     {:scope nil :buf nil :win nil} `vim.opt
                     {:scope :local} `vim.opt_local
@@ -716,7 +719,12 @@
                     {: buf :win nil} (if (= 0 buf) `vim.bo `(. vim.bo ,buf))
                     {: win :buf nil} (if (= 0 win) `vim.wo `(. vim.wo ,win))
                     _ (error* (.. "invalid api-opts: " (view api-opts))))
-        opt-obj `(. ,interface ,name)
+        ;; opt-obj `(. ,interface ,name)
+        opt-obj (if (str? ?q-flag)
+                    (deprecate "flag-in-name format like `(set! :foo+ :bar)`"
+                               "infix flag like `(set! :foo + :bar)`" :v0.7.0
+                               `(. ,interface ,name))
+                    `(. ,interface ,name))
         ?val (if (and (contains? [:formatoptions :fo :shortmess :shm] name)
                       (sequence? ?val) (not= ?flag "-"))
                  (if (option/concatenatable? ?val)
@@ -751,14 +759,14 @@
 
 (fn option/set [scope ...]
   (assert-compile (table? scope) "Expected kv-table" scope)
-  (let [supported-flags ["+" "-" "^" "!" "&" "<"]
+  (let [supported-flags [`+ `- `^ `! `& `<]
         [name ?flag val] ;
         (match ...
           (name nil)
           [name nil true]
           (where (name flag ?val)
-                 (and (sym? flag) (contains? supported-flags (->str flag))))
-          [name (->str flag) ?val]
+                 (and (sym? flag) (contains? supported-flags flag)))
+          [name flag ?val]
           ;; TODO: Remove flag-extraction on v0.7.0.
           (name-?flag val nil)
           (if (str? name-?flag)
