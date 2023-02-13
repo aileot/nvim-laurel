@@ -751,13 +751,13 @@
 
 (fn option/set [scope ...]
   (assert-compile (table? scope) "Expected kv-table" scope)
-  (let [[name ?flag val] ;
+  (let [supported-flags ["+" "-" "^" "!" "&" "<"]
+        [name ?flag val] ;
         (match ...
           (name nil)
           [name nil true]
           (where (name flag ?val)
-                 (and (sym? flag)
-                      (contains? ["+" "-" "^" "!" "&" "<"] (->str flag))))
+                 (and (sym? flag) (contains? supported-flags (->str flag))))
           [name (->str flag) ?val]
           ;; TODO: Remove flag-extraction on v0.7.0.
           (name-?flag val nil)
