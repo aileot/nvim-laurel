@@ -147,8 +147,8 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
    ```fennel
    (local lazy (require :lazy))
    (lazy.setup [{1 :aileot/nvim-laurel
-                 ;; v0.5.0 <= {version} < v0.6.0
-                 :version "~v0.5.0"}
+                 ;; v0.6.0 <= {version} < v0.7.0
+                 :version "~v0.6.0"}
                 ...]
                {:defaults {:lazy true}})
    ```
@@ -158,7 +158,7 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
    ```toml
    [[plugins]]
    repo = "aileot/nvim-laurel"
-   rev = "v0.5.*"
+   rev = "v0.6.*"
    ```
 
 ### To compile outside Neovim
