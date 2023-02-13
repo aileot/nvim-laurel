@@ -769,7 +769,7 @@
 
 ;; Export ///2
 
-(lambda set! [name-?flag ?val]
+(lambda set! [...]
   "Set value to the option.
   Almost equivalent to `:set` in Vim script.
   ```fennel
@@ -781,7 +781,7 @@
     improve readability a bit with camelCase/PascalCase. Since `:h {option}`
     is also case-insensitive, `(setlocal! :keywordPrg \":help\")` for fennel
     still makes sense.
-  @param ?'flag quoted-symbol One of \"'+\", \"'-\", \"^\" is available.
+  @param ?'flag quoted-symbol One of \"'+\", \"'-\", \"'^\" is available.
   @param ?val boolean|number|string|table New option value.
     If not provided, the value is supposed to be `true` (experimental).
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
@@ -789,18 +789,11 @@
     this macro is expanding to `(tset vim.opt name val)` instead.
   Note: There is no plan to support option prefix either `no` or `inv`;
   instead, set `false` or `(not vim.go.foo)` respectively.
-  Note: This macro has no support for either symbol or list with any flag at
-  option name; instead, use `set+`, `set^`, or `set-`, respectively for such
-  usage:
   ```fennel
-  ;; Invalid usage!
-  (let [opt :formatOptions+]
-    (set! opt [:1 :B]))
-  ;; Use the corresponding macro instead.
   (let [opt :formatOptions]
-    (set+ opt [:1 :B]))
+    (set! opt + [:1 :B]))
   ```"
-  (option/set {} name-?flag ?val))
+  (option/set {} ...))
 
 (lambda set+ [name val]
   "Append a value to string-style options.
@@ -826,14 +819,14 @@
   ```"
   (option/modify {} name val "-"))
 
-(lambda setlocal! [name-?flag ?val]
+(lambda setlocal! [...]
   "Set local value to the option.
   Almost equivalent to `:setlocal` in Vim script.
   ```fennel
   (setlocal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set {:scope :local} name-?flag ?val))
+  (option/set {:scope :local} ...))
 
 (lambda setlocal+ [name val]
   "Append a value to string-style local options.
@@ -859,14 +852,14 @@
   ```"
   (option/modify {:scope :local} name val "-"))
 
-(lambda setglobal! [name-?flag ?val]
+(lambda setglobal! [...]
   "Set global value to the option.
   Almost equivalent to `:setglobal` in Vim script.
   ```fennel
   (setglobal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set {:scope :global} name-?flag ?val))
+  (option/set {:scope :global} ...))
 
 (lambda setglobal+ [name val]
   "Append a value to string-style global options.
