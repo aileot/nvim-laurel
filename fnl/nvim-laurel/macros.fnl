@@ -795,30 +795,6 @@
   ```"
   (option/set {} ...))
 
-(lambda set+ [name val]
-  "Append a value to string-style options.
-  Almost equivalent to `:set {option}+={value}` in Vim script.
-  ```fennel
-  (set+ name val)
-  ```"
-  (option/modify {} name val "+"))
-
-(lambda set^ [name val]
-  "Prepend a value to string-style options.
-  Almost equivalent to `:set {option}^={value}` in Vim script.
-  ```fennel
-  (set^ name val)
-  ```"
-  (option/modify {} name val "^"))
-
-(lambda set- [name val]
-  "Remove a value from string-style options.
-  Almost equivalent to `:set {option}-={value}` in Vim script.
-  ```fennel
-  (set- name val)
-  ```"
-  (option/modify {} name val "-"))
-
 (lambda setlocal! [...]
   "Set local value to the option.
   Almost equivalent to `:setlocal` in Vim script.
@@ -828,30 +804,6 @@
   See `set!` for the details."
   (option/set {:scope :local} ...))
 
-(lambda setlocal+ [name val]
-  "Append a value to string-style local options.
-  Almost equivalent to `:setlocal {option}+={value}` in Vim script.
-  ```fennel
-  (setlocal+ name val)
-  ```"
-  (option/modify {:scope :local} name val "+"))
-
-(lambda setlocal^ [name val]
-  "Prepend a value to string-style local options.
-  Almost equivalent to `:setlocal {option}^={value}` in Vim script.
-  ```fennel
-  (setlocal^ name val)
-  ```"
-  (option/modify {:scope :local} name val "^"))
-
-(lambda setlocal- [name val]
-  "Remove a value from string-style local options.
-  Almost equivalent to `:setlocal {option}-={value}` in Vim script.
-  ```fennel
-  (setlocal- name val)
-  ```"
-  (option/modify {:scope :local} name val "-"))
-
 (lambda setglobal! [...]
   "Set global value to the option.
   Almost equivalent to `:setglobal` in Vim script.
@@ -860,32 +812,6 @@
   ```
   See `set!` for the details."
   (option/set {:scope :global} ...))
-
-(lambda setglobal+ [name val]
-  "Append a value to string-style global options.
-  Almost equivalent to `:setglobal {option}+={value}` in Vim script.
-  ```fennel
-  (setglobal+ name val)
-  ```
-  - name: (string) Option name.
-  - val: (string) Additional option value."
-  (option/modify {:scope :global} name val "+"))
-
-(lambda setglobal^ [name val]
-  "Prepend a value from string-style global options.
-  Almost equivalent to `:setglobal {option}^={value}` in Vim script.
-  ```fennel
-  (setglobal^ name val)
-  ```"
-  (option/modify {:scope :global} name val "^"))
-
-(lambda setglobal- [name val]
-  "Remove a value from string-style global options.
-  Almost equivalent to `:setglobal {option}-={value}` in Vim script.
-  ```fennel
-  (setglobal- name val)
-  ```"
-  (option/modify {:scope :global} name val "-"))
 
 (lambda bo! [name|?id val|name ...]
   "Set a buffer option value.
@@ -1021,6 +947,80 @@
 
 ;; Deprecated ///1
 
+(lambda set+ [name val]
+  "Append a value to string-style options.
+  Almost equivalent to `:set {option}+={value}` in Vim script.
+  ```fennel
+  (set+ name val)
+  ```"
+  (option/modify {} name val "+"))
+
+(lambda set^ [name val]
+  "Prepend a value to string-style options.
+  Almost equivalent to `:set {option}^={value}` in Vim script.
+  ```fennel
+  (set^ name val)
+  ```"
+  (option/modify {} name val "^"))
+
+(lambda set- [name val]
+  "Remove a value from string-style options.
+  Almost equivalent to `:set {option}-={value}` in Vim script.
+  ```fennel
+  (set- name val)
+  ```"
+  (option/modify {} name val "-"))
+
+(lambda setlocal+ [name val]
+  "Append a value to string-style local options.
+  Almost equivalent to `:setlocal {option}+={value}` in Vim script.
+  ```fennel
+  (setlocal+ name val)
+  ```"
+  (option/modify {:scope :local} name val "+"))
+
+(lambda setlocal^ [name val]
+  "Prepend a value to string-style local options.
+  Almost equivalent to `:setlocal {option}^={value}` in Vim script.
+  ```fennel
+  (setlocal^ name val)
+  ```"
+  (option/modify {:scope :local} name val "^"))
+
+(lambda setlocal- [name val]
+  "Remove a value from string-style local options.
+  Almost equivalent to `:setlocal {option}-={value}` in Vim script.
+  ```fennel
+  (setlocal- name val)
+  ```"
+  (option/modify {:scope :local} name val "-"))
+
+(lambda setglobal+ [name val]
+  "Append a value to string-style global options.
+  Almost equivalent to `:setglobal {option}+={value}` in Vim script.
+  ```fennel
+  (setglobal+ name val)
+  ```
+  - name: (string) Option name.
+  - val: (string) Additional option value."
+  (option/modify {:scope :global} name val "+"))
+
+(lambda setglobal^ [name val]
+  "Prepend a value from string-style global options.
+  Almost equivalent to `:setglobal {option}^={value}` in Vim script.
+  ```fennel
+  (setglobal^ name val)
+  ```"
+  (option/modify {:scope :global} name val "^"))
+
+(lambda setglobal- [name val]
+  "Remove a value from string-style global options.
+  Almost equivalent to `:setglobal {option}-={value}` in Vim script.
+  ```fennel
+  (setglobal- name val)
+  ```"
+  (option/modify {:scope :global} name val "-"))
+
 ;; Export ///1
 
 {: map!
@@ -1031,21 +1031,9 @@
  : autocmd!
  :au! autocmd!
  : set!
- : set+
- : set^
- : set-
  : setlocal!
- : setlocal+
- : setlocal^
- : setlocal-
  : setglobal!
- : setglobal+
- : setglobal^
- : setglobal-
  :go! setglobal!
- :go+ setglobal+
- :go^ setglobal^
- :go- setglobal-
  : bo!
  : wo!
  : g!
@@ -1057,6 +1045,18 @@
  : command!
  : feedkeys!
  : highlight!
- :hi! highlight!}
+ :hi! highlight!
+ : set+
+ : set^
+ : set-
+ : setlocal+
+ : setlocal^
+ : setlocal-
+ : setglobal+
+ : setglobal^
+ : setglobal-
+ :go+ setglobal+
+ :go^ setglobal^
+ :go- setglobal-}
 
 ;; vim:fdm=marker:foldmarker=///,""""
