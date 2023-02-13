@@ -781,7 +781,7 @@
   "Set value to the option.
   Almost equivalent to `:set` in Vim script.
   ```fennel
-  (set! name ?'flag ?val)
+  (set! name ?flag ?val)
   ```
   @param name string Option name.
     As long as the option name is a bare string, i.e., neither symbol nor list,
@@ -789,7 +789,7 @@
     improve readability a bit with camelCase/PascalCase. Since `:h {option}`
     is also case-insensitive, `(setlocal! :keywordPrg \":help\")` for fennel
     still makes sense.
-  @param ?'flag quoted-symbol One of \"'+\", \"'-\", \"'^\" is available.
+  @param ?flag symbol One of `+`, `-`, or `^` is available.
   @param ?val boolean|number|string|table New option value.
     If not provided, the value is supposed to be `true` (experimental).
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
