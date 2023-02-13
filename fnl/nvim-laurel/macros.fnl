@@ -948,7 +948,7 @@
 ;; Deprecated ///1
 
 (lambda set+ [name val]
-  "Append a value to string-style options.
+  "(Deprecated) Append a value to string-style options.
   Almost equivalent to `:set {option}+={value}` in Vim script.
   ```fennel
   (set+ name val)
@@ -956,7 +956,7 @@
   (set! name `+ val))
 
 (lambda set^ [name val]
-  "Prepend a value to string-style options.
+  "(Deprecated) Prepend a value to string-style options.
   Almost equivalent to `:set {option}^={value}` in Vim script.
   ```fennel
   (set^ name val)
@@ -964,7 +964,7 @@
   (set! name `^ val))
 
 (lambda set- [name val]
-  "Remove a value from string-style options.
+  "(Deprecated) Remove a value from string-style options.
   Almost equivalent to `:set {option}-={value}` in Vim script.
   ```fennel
   (set- name val)
@@ -972,7 +972,7 @@
   (set! name `- val))
 
 (lambda setlocal+ [name val]
-  "Append a value to string-style local options.
+  "(Deprecated) Append a value to string-style local options.
   Almost equivalent to `:setlocal {option}+={value}` in Vim script.
   ```fennel
   (setlocal+ name val)
@@ -980,7 +980,7 @@
   (setlocal! name `+ val))
 
 (lambda setlocal^ [name val]
-  "Prepend a value to string-style local options.
+  "(Deprecated) Prepend a value to string-style local options.
   Almost equivalent to `:setlocal {option}^={value}` in Vim script.
   ```fennel
   (setlocal^ name val)
@@ -988,7 +988,7 @@
   (setlocal! name `^ val))
 
 (lambda setlocal- [name val]
-  "Remove a value from string-style local options.
+  "(Deprecated) Remove a value from string-style local options.
   Almost equivalent to `:setlocal {option}-={value}` in Vim script.
   ```fennel
   (setlocal- name val)
@@ -996,7 +996,7 @@
   (setlocal! name `- val))
 
 (lambda setglobal+ [name val]
-  "Append a value to string-style global options.
+  "(Deprecated) Append a value to string-style global options.
   Almost equivalent to `:setglobal {option}+={value}` in Vim script.
   ```fennel
   (setglobal+ name val)
@@ -1006,7 +1006,7 @@
   (setglobal! name `+ val))
 
 (lambda setglobal^ [name val]
-  "Prepend a value from string-style global options.
+  "(Deprecated) Prepend a value from string-style global options.
   Almost equivalent to `:setglobal {option}^={value}` in Vim script.
   ```fennel
   (setglobal^ name val)
@@ -1014,7 +1014,7 @@
   (setglobal! name `^ val))
 
 (lambda setglobal- [name val]
-  "Remove a value from string-style global options.
+  "(Deprecated) Remove a value from string-style global options.
   Almost equivalent to `:setglobal {option}-={value}` in Vim script.
   ```fennel
   (setglobal- name val)
