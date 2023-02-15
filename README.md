@@ -220,14 +220,12 @@ See [laurel.md](./doc/laurel.md) for each macro usage in details.
 
 - [Option](./doc/laurel.md#Option)
 
-| Set (`!`)                 | Append (`+`)              | Prepend (`^`)             | Remove (`-`)              |
-| :------------------------ | :------------------------ | :------------------------ | :------------------------ |
-| [`set!`][set]             | [`set+`][set]             | [`set^`][set]             | [`set-`][set]             |
-| [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal^`][setglobal] | [`setglobal-`][setglobal] |
-| [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal^`][setlocal]   | [`setlocal-`][setlocal]   |
-| [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
-| [`bo!`][bo]               | --                        | --                        | --                        |
-| [`wo!`][wo]               | --                        | --                        | --                        |
+  - [`set!`](./doc/laurel.md#set)
+  - [`setglobal!`](./doc/laurel.md#setglobal)
+  - [`setlocal!`](./doc/laurel.md#setlocal)
+  - [`go!`](./doc/laurel.md#go)
+  - [`bo!`](./doc/laurel.md#bo)
+  - [`wo!`](./doc/laurel.md#wo)
 
 - [Others](./doc/laurel.md#Others)
   - [`command!`](./doc/laurel.md#command)
@@ -250,9 +248,3 @@ See [CHANGELOG.md](./CHANGELOG.md).
 
 [Fennel]: https://github.com/bakpakin/Fennel
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
-[set]: ./doc/laurel.md#setsetsetset-
-[setglobal]: ./doc/laurel.md#setglobalsetglobalsetglobalsetglobal-
-[setlocal]: ./doc/laurel.md#setlocalsetlocalsetlocalsetlocal-
-[go]: ./doc/laurel.md#gogogogo-
-[wo]: ./doc/laurel.md#wo
-[bo]: ./doc/laurel.md#bo
