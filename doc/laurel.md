@@ -567,7 +567,7 @@ vim.api.nvim_set_option_value("listchars", "space:_,tab:>~")
 vim.go.number = true
 vim.go.signcolumn = "yes"
 vim.go.formatoptions = "12cB"
-vim.go.completeopt = ["menu", "menuone", "noselect"]
+vim.go.completeopt = {"menu", "menuone", "noselect"}
 vim.go.listchars = {
   space = "_",
   tab = ">~",
