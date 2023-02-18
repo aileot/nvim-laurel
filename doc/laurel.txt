@@ -1,4 +1,4 @@
-*laurel.txt*         For Neovim >= 0.8.0         Last change: 2023 February 11
+*laurel.txt*         For Neovim >= 0.8.0         Last change: 2023 February 18
 
 ==============================================================================
 Table of Contents                                   *laurel-table-of-contents*
@@ -588,38 +588,34 @@ is equivalent to
 
 OPTION ~
 
-│        Set (!)        │      Append (+)       │      Prepend (^)      │      Remove (-)       │
-│|laurel-set!|          │|laurel-set+|          │|laurel-set^|          │|laurel-set-|          │
-│|laurel-setglobal!|    │|laurel-setglobal+|    │|laurel-setglobal^|    │|laurel-setglobal-|    │
-│|laurel-setlocal!|     │|laurel-setlocal+|     │|laurel-setlocal^|     │|laurel-setlocal-|     │
-│|laurel-go!|           │|laurel-go+|           │|laurel-go^|           │|laurel-go-|           │
-│|laurel-bo!|           │undefined              │undefined              │undefined              │
-│|laurel-wo!|           │undefined              │undefined              │undefined              │
+
+- |laurel-`set!`|
+- |laurel-`setglobal!`|
+- |laurel-`setlocal!`|
+- |laurel-`go!`|
+- |laurel-`bo!`|
+- |laurel-`wo!`|
 
 
-                                            *laurel-set!-/-set+-/-set^-/-set-*
+                                                                 *laurel-set!*
 
-set! / set+ / set^ / set-              Set, append, prepend, or remove, value
+set!                                   Set, append, prepend, or remove, value
                                        to the option. Almost equivalent to
                                        `:set` in Vim script.
 
 
 >fennel
-    (set! name-?flag ?val)
-    (set+ name val)
-    (set^ name val)
-    (set- name val)
+    (set! name ?flag ?val)
 <
 
 
 
-- `name-?flag`: (string) Option name. As long as the option name is bare-string,
-    i.e., neither symbol nor list, this macro has two advantages:
-    1. A flag can be appended to the option name. Append `+`, `^`, or `-`, to
-    append, prepend, or remove, values respectively.
-    2. Option name is case-insensitive. You can improve readability a bit with
+- `name`: (string) Option name. As long as the option name is bare-string,
+    option name is case-insensitive; you can improve readability a bit with
     camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
     `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
+- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
+    prepend, or remove, value to the option.
 - `?val`: (boolean|number|string|table) New option value. If not provided, the
     value is supposed to be `true` (experimental).
 
@@ -630,8 +626,8 @@ set! / set+ / set^ / set-              Set, append, prepend, or remove, value
     (set! :completeOpt [:menu :menuone :noselect])
     (set! :listChars {:space :_ :tab: ">~"})
     
-    (set! :colorColumn+ :+1)
-    (set! :rtp^ [:/path/to/another/dir])
+    (set! :colorColumn + :+1)
+    (set! :rtp ^ [:/path/to/another/dir])
     
     (local val :yes)
     (set! :signColumn val)
@@ -669,7 +665,7 @@ is equivalent to
     vim.go.number = true
     vim.go.signcolumn = "yes"
     vim.go.formatoptions = "12cB"
-    vim.go.completeopt = ["menu", "menuone", "noselect"]
+    vim.go.completeopt = {"menu", "menuone", "noselect"}
     vim.go.listchars = {
       space = "_",
       tab = ">~",
@@ -688,59 +684,37 @@ is equivalent to
 Note: There is no plan to support option prefix either `no` or `inv`; instead,
 set `false` or `(not vim.go.foo)` respectively.
 
-Note: This macro has no support for either symbol or list with any flag at
-option name; instead, use `set+`, `set^`, or `set-`, respectively for such
-usage:
+                                                           *laurel-setglobal!*
 
->fennel
-    ;; Invalid usage!
-    (let [opt :formatoptions+]
-      (set! opt [:1 :B]))
-    ;; Use the corresponding macro instead.
-    (let [opt :formatoptions]
-      (set+ opt [:1 :B]))
-<
-
-
-                    *laurel-setglobal!-/-setglobal+-/-setglobal^-/-setglobal-*
-
-setglobal! / setglobal+ / setglobal^ / setglobal- Set, append, prepend, or
-                                       remove, global value to the option.
-                                       Almost equivalent to `:setglobal` in Vim
-                                       script.
+setglobal!                             Set, append, prepend, or remove, global
+                                       value to the option. Almost equivalent
+                                       to `:setglobal` in Vim script.
 
 
 >fennel
-    (setglobal! name-?flag ?val)
-    (setglobal+ name val)
-    (setglobal^ name val)
-    (setglobal- name val)
+    (setglobal! name ?flag ?val)
 <
 
 
 See |laurel-`set!`| for the details.
 
-                        *laurel-setlocal!-/-setlocal+-/-setlocal^-/-setlocal-*
+                                                            *laurel-setlocal!*
 
-setlocal! / setlocal+ / setlocal^ / setlocal- Set, append, prepend, or remove,
-                                       local value to the option. Almost
-                                       equivalent to `:setlocal` in Vim script.
+setlocal!                              Set, append, prepend, or remove, local
+                                       value to the option. Almost equivalent
+                                       to `:setlocal` in Vim script.
 
 
 >fennel
-    (setlocal! name-?flag ?val)
-    (setlocal+ name val)
-    (setlocal^ name val)
-    (setlocal- name val)
+    (setlocal! name ?flag ?val)
 <
 
 
 See |laurel-`set!`| for the details.
 
-                                                *laurel-go!-/-go+-/-go^-/-go-*
+                                                                  *laurel-go!*
 
-go! / go+ / go^ / go-                  Aliases of |laurel-`setglobal!`|,
-                                       |laurel-`setglobal+`|, and so on.
+go!                                    Alias of |laurel-`setglobal!`|.
 
 
 >fennel
