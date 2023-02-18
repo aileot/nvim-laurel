@@ -499,36 +499,28 @@ let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 
 ### Option
 
-| Set (`!`)                 | Append (`+`)              | Prepend (`^`)             | Remove (`-`)              |
-| :------------------------ | :------------------------ | :------------------------ | :------------------------ |
-| [`set!`][set]             | [`set+`][set]             | [`set^`][set]             | [`set-`][set]             |
-| [`setglobal!`][setglobal] | [`setglobal+`][setglobal] | [`setglobal^`][setglobal] | [`setglobal-`][setglobal] |
-| [`setlocal!`][setlocal]   | [`setlocal+`][setlocal]   | [`setlocal^`][setlocal]   | [`setlocal-`][setlocal]   |
-| [`go!`][go]               | [`go+`][go]               | [`go^`][go]               | [`go-`][go]               |
-| [`bo!`][bo]               | undefined                 | undefined                 | undefined                 |
-| [`wo!`][wo]               | undefined                 | undefined                 | undefined                 |
+- [`set!`](#set)
+- [`setglobal!`](#setglobal)
+- [`setlocal!`](#setlocal)
+- [`go!`](#go)
+- [`bo!`](#bo)
+- [`wo!`](#wo)
 
-#### set! / set+ / set^ / set-
+#### set!
 
 Set, append, prepend, or remove, value to the option. Almost equivalent to
 `:set` in Vim script.
 
 ```fennel
-(set! name-?flag ?val)
-(set+ name val)
-(set^ name val)
-(set- name val)
+(set! name ?flag ?val)
 ```
 
-- `name-?flag`: (string) Option name. As long as the option name is
-  bare-string, i.e., neither symbol nor list, this macro has two advantages:
-
-  1. A flag can be appended to the option name. Append `+`, `^`, or `-`, to
-     append, prepend, or remove, values respectively.
-  2. Option name is case-insensitive. You can improve readability a bit with
-     camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
-     `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
-
+- `name`: (string) Option name. As long as the option name is bare-string,
+  option name is case-insensitive; you can improve readability a bit with
+  camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+  `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
+- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
+  prepend, or remove, value to the option.
 - `?val`: (boolean|number|string|table) New option value. If not provided, the
   value is supposed to be `true` (experimental).
 
@@ -538,8 +530,8 @@ Set, append, prepend, or remove, value to the option. Almost equivalent to
 (set! :completeOpt [:menu :menuone :noselect])
 (set! :listChars {:space :_ :tab: ">~"})
 
-(set! :colorColumn+ :+1)
-(set! :rtp^ [:/path/to/another/dir])
+(set! :colorColumn + :+1)
+(set! :rtp ^ [:/path/to/another/dir])
 
 (local val :yes)
 (set! :signColumn val)
@@ -575,7 +567,7 @@ vim.api.nvim_set_option_value("listchars", "space:_,tab:>~")
 vim.go.number = true
 vim.go.signcolumn = "yes"
 vim.go.formatoptions = "12cB"
-vim.go.completeopt = ["menu", "menuone", "noselect"]
+vim.go.completeopt = {"menu", "menuone", "noselect"}
 vim.go.listchars = {
   space = "_",
   tab = ">~",
@@ -593,50 +585,31 @@ vim.opt[opt] = false
 Note: There is no plan to support option prefix either `no` or `inv`; instead,
 set `false` or `(not vim.go.foo)` respectively.
 
-Note: This macro has no support for either symbol or list with any flag at
-option name; instead, use `set+`, `set^`, or `set-`, respectively for such
-usage:
-
-```fennel
-;; Invalid usage!
-(let [opt :formatoptions+]
-  (set! opt [:1 :B]))
-;; Use the corresponding macro instead.
-(let [opt :formatoptions]
-  (set+ opt [:1 :B]))
-```
-
-#### setglobal! / setglobal+ / setglobal^ / setglobal-
+#### setglobal!
 
 Set, append, prepend, or remove, global value to the option. Almost equivalent
 to `:setglobal` in Vim script.
 
 ```fennel
-(setglobal! name-?flag ?val)
-(setglobal+ name val)
-(setglobal^ name val)
-(setglobal- name val)
+(setglobal! name ?flag ?val)
 ```
 
-See [`set!`][set] for the details.
+See [`set!`](#set) for the details.
 
-#### setlocal! / setlocal+ / setlocal^ / setlocal-
+#### setlocal!
 
 Set, append, prepend, or remove, local value to the option. Almost equivalent
 to `:setlocal` in Vim script.
 
 ```fennel
-(setlocal! name-?flag ?val)
-(setlocal+ name val)
-(setlocal^ name val)
-(setlocal- name val)
+(setlocal! name ?flag ?val)
 ```
 
-See [`set!`][set] for the details.
+See [`set!`](#set) for the details.
 
-#### go! / go+ / go^ / go-
+#### go!
 
-Aliases of [`setglobal!`][setglobal], [`setglobal+`][setglobal], and so on.
+Alias of [`setglobal!`](#setglobal).
 
 ```fennel
 (go! name value)
@@ -980,12 +953,6 @@ runtime.
    :!git commit -m 'refactor(laurel): update macros'
    ```
 
-[set]: #setsetsetset-
-[setglobal]: #setglobalsetglobalsetglobalsetglobal-
-[setlocal]: #setlocalsetlocalsetlocalsetlocal-
-[go]: #gogogogo-
-[wo]: #wo
-[bo]: #bo
 [-u]: https://neovim.io/doc/user/starting.html#-u
 [Quickfix]: https://neovim.io/doc/user/quickfix.html
 [`:cdo`]: https://neovim.io/doc/user/quickfix.html#%3Acdo

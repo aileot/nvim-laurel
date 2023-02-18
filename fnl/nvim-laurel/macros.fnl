@@ -707,8 +707,11 @@
         (table? ?val)
         (option/concat-kv-table ?val))))
 
-(lambda option/modify [api-opts name ?val ?flag]
+(lambda option/modify [api-opts name ?val ?q-flag]
   (let [name (if (str? name) (name:lower) name)
+        ?flag (when ?q-flag
+                ;; Note: ->str rips quote off.
+                (->str ?q-flag))
         interface (match api-opts
                     {:scope nil :buf nil :win nil} `vim.opt
                     {:scope :local} `vim.opt_local
@@ -716,7 +719,12 @@
                     {: buf :win nil} (if (= 0 buf) `vim.bo `(. vim.bo ,buf))
                     {: win :buf nil} (if (= 0 win) `vim.wo `(. vim.wo ,win))
                     _ (error* (.. "invalid api-opts: " (view api-opts))))
-        opt-obj `(. ,interface ,name)
+        ;; opt-obj `(. ,interface ,name)
+        opt-obj (if (str? ?q-flag)
+                    (deprecate "flag-in-name format like `(set! :foo+ :bar)`"
+                               "infix flag like `(set! :foo + :bar)`" :v0.7.0
+                               `(. ,interface ,name))
+                    `(. ,interface ,name))
         ?val (if (and (contains? [:formatoptions :fo :shortmess :shm] name)
                       (sequence? ?val) (not= ?flag "-"))
                  (if (option/concatenatable? ?val)
@@ -747,31 +755,41 @@
 (lambda option/extract-flag [name-?flag]
   (let [?flag (: name-?flag :match "[^a-zA-Z]")
         name (if ?flag (: name-?flag :match "[a-zA-Z]+") name-?flag)]
-    [name ?flag]))
+    (values name ?flag)))
 
-(lambda option/set [scope name-?flag ?val]
-  (let [[name ?flag] (if (str? name-?flag)
-                         (option/extract-flag name-?flag)
-                         [name-?flag nil])
-        val (if (nil? ?val) true ?val)]
+(fn option/set-with-scope [scope ...]
+  (assert-compile (table? scope) "Expected kv-table" scope)
+  (let [supported-flags [`+ `- `^ `! `& `<]
+        [name ?flag val] ;
+        (match ...
+          (name nil)
+          [name nil true]
+          (where (name flag ?val)
+                 (and (sym? flag) (contains? supported-flags flag)))
+          [name flag ?val]
+          ;; TODO: Remove flag-extraction on v0.7.0.
+          (name-?flag val nil)
+          (if (str? name-?flag)
+              (let [(name ?flag) (option/extract-flag name-?flag)]
+                [name ?flag val])
+              [name-?flag nil val]))]
     (option/modify scope name val ?flag)))
 
 ;; Export ///2
 
-(lambda set! [name-?flag ?val]
+(lambda set! [...]
   "Set value to the option.
   Almost equivalent to `:set` in Vim script.
   ```fennel
-  (set! name-?flag ?val)
+  (set! name ?flag ?val)
   ```
-  @param name-?flag string Option name.
+  @param name string Option name.
     As long as the option name is a bare string, i.e., neither symbol nor list,
-    this macro has two advantages:
-    1. A flag can be appended to the option name. Append `+`, `^`, or `-`,
-       to append, prepend, or remove values, respectively.
-    2. Option name is case-insensitive. You can improve readability a bit with
-       camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
-       `(setlocal! :keywordPrg \":help\")` for fennel still makes sense.
+    this macro has an advantage: option name is case-insensitive. You can
+    improve readability a bit with camelCase/PascalCase. Since `:h {option}`
+    is also case-insensitive, `(setlocal! :keywordPrg \":help\")` for fennel
+    still makes sense.
+  @param ?flag symbol One of `+`, `-`, or `^` is available.
   @param ?val boolean|number|string|table New option value.
     If not provided, the value is supposed to be `true` (experimental).
     This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
@@ -779,110 +797,29 @@
     this macro is expanding to `(tset vim.opt name val)` instead.
   Note: There is no plan to support option prefix either `no` or `inv`;
   instead, set `false` or `(not vim.go.foo)` respectively.
-  Note: This macro has no support for either symbol or list with any flag at
-  option name; instead, use `set+`, `set^`, or `set-`, respectively for such
-  usage:
   ```fennel
-  ;; Invalid usage!
-  (let [opt :formatOptions+]
-    (set! opt [:1 :B]))
-  ;; Use the corresponding macro instead.
   (let [opt :formatOptions]
-    (set+ opt [:1 :B]))
+    (set! opt + [:1 :B]))
   ```"
-  (option/set {} name-?flag ?val))
+  (option/set-with-scope {} ...))
 
-(lambda set+ [name val]
-  "Append a value to string-style options.
-  Almost equivalent to `:set {option}+={value}` in Vim script.
-  ```fennel
-  (set+ name val)
-  ```"
-  (option/modify {} name val "+"))
-
-(lambda set^ [name val]
-  "Prepend a value to string-style options.
-  Almost equivalent to `:set {option}^={value}` in Vim script.
-  ```fennel
-  (set^ name val)
-  ```"
-  (option/modify {} name val "^"))
-
-(lambda set- [name val]
-  "Remove a value from string-style options.
-  Almost equivalent to `:set {option}-={value}` in Vim script.
-  ```fennel
-  (set- name val)
-  ```"
-  (option/modify {} name val "-"))
-
-(lambda setlocal! [name-?flag ?val]
+(lambda setlocal! [...]
   "Set local value to the option.
   Almost equivalent to `:setlocal` in Vim script.
   ```fennel
   (setlocal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set {:scope :local} name-?flag ?val))
+  (option/set-with-scope {:scope :local} ...))
 
-(lambda setlocal+ [name val]
-  "Append a value to string-style local options.
-  Almost equivalent to `:setlocal {option}+={value}` in Vim script.
-  ```fennel
-  (setlocal+ name val)
-  ```"
-  (option/modify {:scope :local} name val "+"))
-
-(lambda setlocal^ [name val]
-  "Prepend a value to string-style local options.
-  Almost equivalent to `:setlocal {option}^={value}` in Vim script.
-  ```fennel
-  (setlocal^ name val)
-  ```"
-  (option/modify {:scope :local} name val "^"))
-
-(lambda setlocal- [name val]
-  "Remove a value from string-style local options.
-  Almost equivalent to `:setlocal {option}-={value}` in Vim script.
-  ```fennel
-  (setlocal- name val)
-  ```"
-  (option/modify {:scope :local} name val "-"))
-
-(lambda setglobal! [name-?flag ?val]
+(lambda setglobal! [...]
   "Set global value to the option.
   Almost equivalent to `:setglobal` in Vim script.
   ```fennel
   (setglobal! name-?flag ?val)
   ```
   See `set!` for the details."
-  (option/set {:scope :global} name-?flag ?val))
-
-(lambda setglobal+ [name val]
-  "Append a value to string-style global options.
-  Almost equivalent to `:setglobal {option}+={value}` in Vim script.
-  ```fennel
-  (setglobal+ name val)
-  ```
-  - name: (string) Option name.
-  - val: (string) Additional option value."
-  (option/modify {:scope :global} name val "+"))
-
-(lambda setglobal^ [name val]
-  "Prepend a value from string-style global options.
-  Almost equivalent to `:setglobal {option}^={value}` in Vim script.
-  ```fennel
-  (setglobal^ name val)
-  ```"
-  (option/modify {:scope :global} name val "^"))
-
-(lambda setglobal- [name val]
-  "Remove a value from string-style global options.
-  Almost equivalent to `:setglobal {option}-={value}` in Vim script.
-  ```fennel
-  (setglobal- name val)
-  ```"
-  (option/modify {:scope :global} name val "-"))
+  (option/set-with-scope {:scope :global} ...))
 
 (lambda bo! [name|?id val|name ...]
   "Set a buffer option value.
@@ -1018,6 +955,86 @@
 
 ;; Deprecated ///1
 
+(lambda set+ [name val]
+  "(Deprecated) Append a value to string-style options.
+  Almost equivalent to `:set {option}+={value}` in Vim script.
+  ```fennel
+  (set+ name val)
+  ```"
+  (deprecate :set+ "set! with '+ flag" :v0.7.0 (set! name `+ val)))
+
+(lambda set^ [name val]
+  "(Deprecated) Prepend a value to string-style options.
+  Almost equivalent to `:set {option}^={value}` in Vim script.
+  ```fennel
+  (set^ name val)
+  ```"
+  (deprecate :set^ "set! with '^ flag" :v0.7.0 (set! name `^ val)))
+
+(lambda set- [name val]
+  "(Deprecated) Remove a value from string-style options.
+  Almost equivalent to `:set {option}-={value}` in Vim script.
+  ```fennel
+  (set- name val)
+  ```"
+  (deprecate :set- "set! with '- flag" :v0.7.0 (set! name `- val)))
+
+(lambda setlocal+ [name val]
+  "(Deprecated) Append a value to string-style local options.
+  Almost equivalent to `:setlocal {option}+={value}` in Vim script.
+  ```fennel
+  (setlocal+ name val)
+  ```"
+  (deprecate :setlocal+ "setlocal! with '+ flag" :v0.7.0
+             (setlocal! name `+ val)))
+
+(lambda setlocal^ [name val]
+  "(Deprecated) Prepend a value to string-style local options.
+  Almost equivalent to `:setlocal {option}^={value}` in Vim script.
+  ```fennel
+  (setlocal^ name val)
+  ```"
+  (deprecate :setlocal+ "setlocal! with '^ flag" :v0.7.0
+             (setlocal! name `^ val)))
+
+(lambda setlocal- [name val]
+  "(Deprecated) Remove a value from string-style local options.
+  Almost equivalent to `:setlocal {option}-={value}` in Vim script.
+  ```fennel
+  (setlocal- name val)
+  ```"
+  (deprecate :setlocal- "setlocal! with '- flag" :v0.7.0
+             (setlocal! name `- val)))
+
+(lambda setglobal+ [name val]
+  "(Deprecated) Append a value to string-style global options.
+  Almost equivalent to `:setglobal {option}+={value}` in Vim script.
+  ```fennel
+  (setglobal+ name val)
+  ```
+  - name: (string) Option name.
+  `- val: (string) Additional option value."
+  (deprecate :setglobal+ "setglobal! with '+ flag" :v0.7.0
+             (setglobal! name `+ val)))
+
+(lambda setglobal^ [name val]
+  "(Deprecated) Prepend a value from string-style global options.
+  Almost equivalent to `:setglobal {option}^={value}` in Vim script.
+  ```fennel
+  (setglobal^ name val)
+  ```"
+  (deprecate :setglobal^ "setglobal! with '^ flag" :v0.7.0
+             (setglobal! name `^ val)))
+
+(lambda setglobal- [name val]
+  "(Deprecated) Remove a value from string-style global options.
+  Almost equivalent to `:setglobal {option}-={value}` in Vim script.
+  ```fennel
+  (setglobal- name val)
+  ```"
+  (deprecate :setglobal- "setglobal! with '- flag" :v0.7.0
+             (setglobal! name `- val)))
+
 ;; Export ///1
 
 {: map!
@@ -1028,21 +1045,9 @@
  : autocmd!
  :au! autocmd!
  : set!
- : set+
- : set^
- : set-
  : setlocal!
- : setlocal+
- : setlocal^
- : setlocal-
  : setglobal!
- : setglobal+
- : setglobal^
- : setglobal-
  :go! setglobal!
- :go+ setglobal+
- :go^ setglobal^
- :go- setglobal-
  : bo!
  : wo!
  : g!
@@ -1054,6 +1059,18 @@
  : command!
  : feedkeys!
  : highlight!
- :hi! highlight!}
+ :hi! highlight!
+ : set+
+ : set^
+ : set-
+ : setlocal+
+ : setlocal^
+ : setlocal-
+ : setglobal+
+ : setglobal^
+ : setglobal-
+ :go+ setglobal+
+ :go^ setglobal^
+ :go- setglobal-}
 
 ;; vim:fdm=marker:foldmarker=///,""""
