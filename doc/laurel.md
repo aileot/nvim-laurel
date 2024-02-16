@@ -914,7 +914,7 @@ runtime.
 
 ##### Steps to update deprecated features before breaking changes
 
-0. Make sure you can update your vimrcs on stable enviromnent: launch multiple
+0. Make sure you can update your vimrcs on stable environment: launch multiple
    instances of Neovim which have already loaded your stable config, i.e.,
    detached from the unstable vimrcs about to undergoing changes.
 
@@ -933,7 +933,7 @@ runtime.
 
    Here is a basic example to rename deprecated macro `old-macro` to new
    compatible macro `new-macro`. Please adjust commands yourself as necessary.
-   You don't have to do it in the smartest way, of cource. Slow and steady
+   You don't have to do it in the smartest way, of course. Slow and steady
    wins the race.
 
    ```vim
