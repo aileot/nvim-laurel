@@ -754,8 +754,8 @@
       (error* (.. "Invalid vim option modifier: " (view ?flag))))))
 
 (lambda option/extract-flag [name-?flag]
-  (let [?flag (: name-?flag :match "[^a-zA-Z]")
-        name (if ?flag (: name-?flag :match "[a-zA-Z]+") name-?flag)]
+  (let [?flag (name-?flag:match "[^a-zA-Z]")
+        name (if ?flag (name-?flag:match "[a-zA-Z]+") name-?flag)]
     (values name ?flag)))
 
 (fn option/set-with-scope [scope ...]
