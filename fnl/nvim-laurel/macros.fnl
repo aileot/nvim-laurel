@@ -1,3 +1,4 @@
+;; fennel-ls: macro-file
 ;; General Macros ///1
 
 (macro ++ [num]
