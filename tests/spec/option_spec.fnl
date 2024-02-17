@@ -322,12 +322,15 @@
         (reset-context)
         (setglobal! :listchars {:eol :a :tab :abc :space :a})
         (assert.is_same vals (get-o-lo-go :listchars))))
-    (it "can update some option value with nil"
-      (set vim.opt_global.foldlevel nil)
-      (let [vals (get-o-lo-go :foldlevel)]
-        (reset-context)
-        (setglobal! :foldlevel nil)
-        (assert.is_same vals (get-o-lo-go :foldlevel))))
+    (if (= 1 (vim.fn.has :nvim-0.10.0-dev))
+        (it "throws an error with nil assigned"
+          (assert.error #(set vim.opt_global.foldlevel nil)))
+        (it "can update some option value with nil"
+          (set vim.opt_global.foldlevel nil)
+          (let [vals (get-o-lo-go :foldlevel)]
+            (reset-context)
+            (setglobal! :foldlevel nil)
+            (assert.is_same vals (get-o-lo-go :foldlevel)))))
     (it "can update some option value with symbol"
       (let [new-val 2]
         (set vim.opt_global.foldlevel new-val)
