@@ -1,3 +1,4 @@
+;; fennel-ls: macro-file
 (fn inject-fn [name ...]
   `((. (require :busted) ,name (fn []
                                  ,...))))

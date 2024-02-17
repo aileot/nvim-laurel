@@ -1,3 +1,4 @@
+;; fennel-ls: macro-file
 (local {: augroup! : set! : map!} (require :nvim-laurel.macros))
 
 (fn augroup+ [name ...]
