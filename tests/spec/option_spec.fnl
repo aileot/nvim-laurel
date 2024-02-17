@@ -145,19 +145,19 @@
         (set! :path - [:/tmp :/var])
         (assert.is_same vals (get-o-lo-go :path))))
     (it "can append option value of kv-table"
-      (: vim.opt.listchars :append {:lead :a :trail :b :extends :c})
+      (vim.opt.listchars:append {:lead :a :trail :b :extends :c})
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (set! :listchars + {:lead :a :trail :b :extends :c})
         (assert.is_same vals (get-o-lo-go :listchars))))
     (it "can prepend option value of kv-table"
-      (: vim.opt.listchars :prepend {:lead :a :trail :b :extends :c})
+      (vim.opt.listchars:prepend {:lead :a :trail :b :extends :c})
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (set! :listchars ^ {:lead :a :trail :b :extends :c})
         (assert.is_same vals (get-o-lo-go :listchars))))
     (it "can remove option value of kv-table"
-      (: vim.opt.listchars :remove [:eol :tab])
+      (vim.opt.listchars:remove [:eol :tab])
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (set! :listchars - [:eol :tab])
@@ -226,37 +226,37 @@
           (setlocal! :foldlevel (return-val))
           (assert.is_same vals (get-o-lo-go :foldlevel)))))
     (it "can append option value of sequence"
-      (: vim.opt_local.path :append [:/foo :/bar :/baz])
+      (vim.opt_local.path:append [:/foo :/bar :/baz])
       (let [vals (get-o-lo-go :path)]
         (reset-context)
         (setlocal! :path + [:/foo :/bar :/baz])
         (assert.is_same vals (get-o-lo-go :path))))
     (it "can prepend option value of sequence"
-      (: vim.opt_local.path :prepend [:/foo :/bar :/baz])
+      (vim.opt_local.path:prepend [:/foo :/bar :/baz])
       (let [vals (get-o-lo-go :path)]
         (reset-context)
         (setlocal! :path ^ [:/foo :/bar :/baz])
         (assert.is_same vals (get-o-lo-go :path))))
     (it "can remove option value of sequence"
-      (: vim.opt_local.path :remove [:/tmp :/var])
+      (vim.opt_local.path:remove [:/tmp :/var])
       (let [vals (get-o-lo-go :path)]
         (reset-context)
         (setlocal! :path - [:/tmp :/var])
         (assert.is_same vals (get-o-lo-go :path))))
     (it "can append option value of kv-table"
-      (: vim.opt_local.listchars :append {:lead :a :trail :b :extends :c})
+      (vim.opt_local.listchars:append {:lead :a :trail :b :extends :c})
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (setlocal! :listchars + {:lead :a :trail :b :extends :c})
         (assert.is_same vals (get-o-lo-go :listchars))))
     (it "can prepend option value of kv-table"
-      (: vim.opt_local.listchars :prepend {:lead :a :trail :b :extends :c})
+      (vim.opt_local.listchars:prepend {:lead :a :trail :b :extends :c})
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (setlocal! :listchars ^ {:lead :a :trail :b :extends :c})
         (assert.is_same vals (get-o-lo-go :listchars))))
     (it "can remove option value of kv-table"
-      (: vim.opt_local.listchars :remove [:eol :tab])
+      (vim.opt_local.listchars:remove [:eol :tab])
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (setlocal! :listchars - [:eol :tab])
@@ -346,37 +346,37 @@
           (setglobal! :foldlevel (return-val))
           (assert.is_same vals (get-o-lo-go :foldlevel)))))
     (it "can append option value of sequence"
-      (: vim.opt_global.path :append [:/foo :/bar :/baz])
+      (vim.opt_global.path:append [:/foo :/bar :/baz])
       (let [vals (get-o-lo-go :path)]
         (reset-context)
         (setglobal! :path + [:/foo :/bar :/baz])
         (assert.is_same vals (get-o-lo-go :path))))
     (it "can prepend option value of sequence"
-      (: vim.opt_global.path :prepend [:/foo :/bar :/baz])
+      (vim.opt_global.path:prepend [:/foo :/bar :/baz])
       (let [vals (get-o-lo-go :path)]
         (reset-context)
         (setglobal! :path ^ [:/foo :/bar :/baz])
         (assert.is_same vals (get-o-lo-go :path))))
     (it "can remove option value of sequence"
-      (: vim.opt_global.path :remove [:/tmp :/var])
+      (vim.opt_global.path:remove [:/tmp :/var])
       (let [vals (get-o-lo-go :path)]
         (reset-context)
         (setglobal! :path - [:/tmp :/var])
         (assert.is_same vals (get-o-lo-go :path))))
     (it "can append option value of kv-table"
-      (: vim.opt_global.listchars :append {:lead :a :trail :b :extends :c})
+      (vim.opt_global.listchars:append {:lead :a :trail :b :extends :c})
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (setglobal! :listchars + {:lead :a :trail :b :extends :c})
         (assert.is_same vals (get-o-lo-go :listchars))))
     (it "can prepend option value of kv-table"
-      (: vim.opt_global.listchars :prepend {:lead :a :trail :b :extends :c})
+      (vim.opt_global.listchars:prepend {:lead :a :trail :b :extends :c})
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (setglobal! :listchars ^ {:lead :a :trail :b :extends :c})
         (assert.is_same vals (get-o-lo-go :listchars))))
     (it "can remove option value of kv-table"
-      (: vim.opt_global.listchars :remove [:eol :tab])
+      (vim.opt_global.listchars:remove [:eol :tab])
       (let [vals (get-o-lo-go :listchars)]
         (reset-context)
         (setglobal! :listchars - [:eol :tab])
