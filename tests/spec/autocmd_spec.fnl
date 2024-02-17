@@ -85,7 +85,7 @@
                                        default-callback)))
     (it "can add autocmds to an existing augroup within `augroup+`"
       (augroup+ default-augroup
-                (au! default-event [:pat1 :pat2] default-callback))
+        (au! default-event [:pat1 :pat2] default-callback))
       (let [[autocmd] (get-autocmds)]
         (assert.is.same default-callback autocmd.callback)))
     (it "sets vim.fn.Test to callback in string"
