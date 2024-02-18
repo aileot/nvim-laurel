@@ -21,6 +21,7 @@ jobs:
           version: "Neovim >= 0.8.0"
           demojify: true
           treesitter: true
+          dedupsubheadings: false # Add heading to subheading anchor links to ensure that subheadings are unique
       - name: PR new vimdoc
         uses: peter-evans/create-pull-request@v6
         with:
