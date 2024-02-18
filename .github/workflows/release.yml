@@ -22,6 +22,7 @@ jobs:
           demojify: true
           treesitter: true
           dedupsubheadings: false # Add heading to subheading anchor links to ensure that subheadings are unique
+          docmapping: true # Use h4 headers as mapping docs
       - name: PR new vimdoc
         uses: peter-evans/create-pull-request@v6
         with:
