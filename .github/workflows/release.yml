@@ -22,7 +22,7 @@ jobs:
           demojify: true
           treesitter: true
       - name: PR new vimdoc
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v6
         with:
           branch: create-pull-request--branches--main--vimdoc
           title: "docs(vimdoc): auto-generate"
