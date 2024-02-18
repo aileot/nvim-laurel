@@ -221,8 +221,8 @@ An alias of [`autocmd!`](#autocmd).
 
 - [map!](#map): A replacement of `vim.keymap.set`
 - [unmap!](#unmap): A replacement of `vim.keymap.del`
-- [<Cmd>](#Cmd)
-- [<C-u>](#C-u)
+- [`<Cmd>`](#Cmd)
+- [`<C-u>`](#C-u)
 
 #### `map!`
 
