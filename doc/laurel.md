@@ -99,7 +99,7 @@ the following features:
 - [autocmd!](#autocmd)
 - [au!](#au)
 
-#### augroup!
+#### `augroup!`
 
 Create or get an augroup, or override an existing augroup.
 
@@ -197,7 +197,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 c.f. [`autocmd!`](#autocmd)
 
-#### autocmd!
+#### `autocmd!`
 
 Create an autocmd.
 
@@ -213,7 +213,7 @@ Create an autocmd.
 
 See [`augroup!`](#augroup) for the rest.
 
-#### au!
+#### `au!`
 
 An alias of [`autocmd!`](#autocmd).
 
@@ -224,7 +224,7 @@ An alias of [`autocmd!`](#autocmd).
 - [<Cmd>](#Cmd)
 - [<C-u>](#C-u)
 
-#### map!
+#### `map!`
 
 Map `lhs` to `rhs` in `modes`, non-recursively by default.
 
@@ -317,7 +317,7 @@ end, {
 })
 ```
 
-#### unmap!
+#### `unmap!`
 
 Delete keymap.
 
@@ -349,7 +349,7 @@ vim.api.nvim_buf_del_keymap(0, "o", "bar")
 vim.api.nvim_buf_del_keymap(10, "x", "baz")
 ```
 
-#### <Cmd>
+#### `<Cmd>`
 
 Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
@@ -359,7 +359,7 @@ Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 - `text`: (string)
 
-#### <C-u>
+#### `<C-u>`
 
 Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
@@ -378,7 +378,7 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 - [v!](#v)
 - [env!](#env)
 
-#### g!
+#### `g!`
 
 Set global (`g:`) editor variable.
 
@@ -389,7 +389,7 @@ Set global (`g:`) editor variable.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### b!
+#### `b!`
 
 Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
 an integer to access variables for specific buffer.
@@ -422,7 +422,7 @@ let b:foo = 'bar'
 call setbufvar(8, 'baz', 'qux')
 ```
 
-#### w!
+#### `w!`
 
 Set window-scoped (`w:`) variable for the current window. Can be indexed with
 an integer to access variables for specific window.
@@ -435,7 +435,7 @@ an integer to access variables for specific window.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### t!
+#### `t!`
 
 Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
 with an integer to access variables for specific tabpage.
@@ -448,7 +448,7 @@ with an integer to access variables for specific tabpage.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### v!
+#### `v!`
 
 Set `v:` variable if not readonly.
 
@@ -459,7 +459,7 @@ Set `v:` variable if not readonly.
 - `name`: (string) Variable name.
 - `val`: (any) Variable value.
 
-#### env!
+#### `env!`
 
 Set environment variable in the editor session.
 
@@ -506,7 +506,7 @@ let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 - [`bo!`](#bo)
 - [`wo!`](#wo)
 
-#### set!
+#### `set!`
 
 Set, append, prepend, or remove, value to the option. Almost equivalent to
 `:set` in Vim script.
@@ -585,7 +585,7 @@ vim.opt[opt] = false
 Note: There is no plan to support option prefix either `no` or `inv`; instead,
 set `false` or `(not vim.go.foo)` respectively.
 
-#### setglobal!
+#### `setglobal!`
 
 Set, append, prepend, or remove, global value to the option. Almost equivalent
 to `:setglobal` in Vim script.
@@ -596,7 +596,7 @@ to `:setglobal` in Vim script.
 
 See [`set!`](#set) for the details.
 
-#### setlocal!
+#### `setlocal!`
 
 Set, append, prepend, or remove, local value to the option. Almost equivalent
 to `:setlocal` in Vim script.
@@ -607,7 +607,7 @@ to `:setlocal` in Vim script.
 
 See [`set!`](#set) for the details.
 
-#### go!
+#### `go!`
 
 Alias of [`setglobal!`](#setglobal).
 
@@ -615,7 +615,7 @@ Alias of [`setglobal!`](#setglobal).
 (go! name value)
 ```
 
-#### bo!
+#### `bo!`
 
 Set a buffer option value. `:h nvim_buf_set_option()`.
 
@@ -647,7 +647,7 @@ call setbufvar(0, '&filetype', 'fennel')
 call setbufvar(10, '&buftype', 'nofile')
 ```
 
-#### wo!
+#### `wo!`
 
 Set a window option value. `:h nvim_win_set_option()`.
 
@@ -686,7 +686,7 @@ call setwinvar(10, '&signcolumn', 'no')
 - [highlight!](#highlight)
 - [hi!](#hi)
 
-#### command!
+#### `command!`
 
 Create a user command.
 
@@ -735,7 +735,7 @@ vim.api.nvim_buf_create_user_command(0, "Salute", function()
                             })
 ```
 
-#### feedkeys!
+#### `feedkeys!`
 
 `:h feedkeys()`
 
@@ -760,7 +760,7 @@ vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<CR>", true, true, true
 vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true) "ni", false)
 ```
 
-#### highlight!
+#### `highlight!`
 
 Set a highlight group.
 
@@ -800,7 +800,7 @@ nvim_set_nl(0, "Foo", {
 })
 ```
 
-#### hi!
+#### `hi!`
 
 An alias of [`highlight!`](#highlight).
 
@@ -903,7 +903,7 @@ launching nvim itself. In this case, you have two choices:
 - Update your vimrcs anyway apart from your vimrc with the [-u] flag, e.g.,
   run `nvim -u NONE` in your terminal.
 
-#### g:laurel_deprecated
+#### `g:laurel_deprecated`
 
 This variable is designed to help you update your codes with [Quickfix]. It
 will collect lines where deprecated features are detected.

@@ -12,17 +12,19 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ github.ref == 'refs/heads/main' && github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Generate vimdoc
-        uses: kdheepak/panvimdoc@main
+        uses: kdheepak/panvimdoc@v4.0.0
         with:
           vimdoc: laurel
           pandoc: doc/laurel.md
           version: "Neovim >= 0.8.0"
           demojify: true
           treesitter: true
+          dedupsubheadings: false # Add heading to subheading anchor links to ensure that subheadings are unique
+          docmapping: true # Use h4 headers as mapping docs
       - name: PR new vimdoc
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v6
         with:
           branch: create-pull-request--branches--main--vimdoc
           title: "docs(vimdoc): auto-generate"
@@ -38,9 +40,8 @@ jobs:
     needs: vimdoc
     runs-on: ubuntu-22.04
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: google-github-actions/release-please-action@v4
         with:
-          release-type: simple
-          package-name: nvim-laurel
-          bump-minor-pre-major: true
-          bump-patch-for-minor-pre-major: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: .github/release-please/config.json
+          manifest-file: .github/release-please/manifest.json
