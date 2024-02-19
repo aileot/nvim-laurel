@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/aileot/nvim-laurel-private/compare/v0.6.0...v0.6.1) (2024-02-19)
+
+
+### Features
+
+* **option:** detect infix flag in symbol to append, prepend, ...; deprecate `:foo+`, ..., format and `set+`, ..., macros ([#233](https://github.com/aileot/nvim-laurel-private/issues/233)) ([669bdf4](https://github.com/aileot/nvim-laurel-private/commit/669bdf4ed5d4503f3eb40f28024f2ebbaa4547df))
+
 ## [0.6.0](https://github.com/aileot/nvim-laurel/compare/v0.5.6...v0.6.0) (2023-02-11)
 
 
