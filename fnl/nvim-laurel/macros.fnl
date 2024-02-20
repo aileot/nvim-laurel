@@ -117,6 +117,27 @@
     (fcollect [i first last]
       (. xs i))))
 
+(fn tbl/copy [from ?to]
+  "Return a shallow copy of table `from`.
+  @param from table
+  @param ?to table
+  @return table"
+  (collect [k v (pairs (or from [])) &into (or ?to {})]
+    (values k v)))
+
+(fn tbl/merge [...]
+  "Merge tables. Values in the right table overrides in the left. `nil` is
+  ignored.
+  @param ... table|nil
+  @return table"
+  (let [new-tbl {}]
+    (each [_ t (ipairs [...])]
+      (when t
+        (assert-compile (tbl? t) "Expected table or nil" ...)
+        (each [k v (pairs t)]
+          (tset new-tbl k v))))
+    new-tbl))
+
 ;; Additional predicates ///2
 
 (fn quoted? [x]
