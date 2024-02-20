@@ -42,6 +42,10 @@
     (it "can create augroup with `au!` macro and sequence without `au!` macro mixed"
       (assert.has_no.errors #(augroup! default-augroup
                                [default-event default-callback]
+                               (au! :FileType [:foo :bar] #:foobar)
+                               [default-event default-callback]
+                               (au! :FileType [:foo :bar] #:foobar)
+                               [default-event default-callback]
                                (au! :FileType [:foo :bar] #:foobar)))))
   (describe :au!/autocmd!
     (it "should set callback via macro"
