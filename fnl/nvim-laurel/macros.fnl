@@ -260,27 +260,23 @@
         pat-vim-fn "^vim%.fn%.(%S+)$"]
     (name:match pat-vim-fn)))
 
-(lambda amp->str [amp]
-  "Convert `'&foo` into `:foo`.
-  @param amp quoted-symbol
-  @return string"
-  (-> (->str (->unquoted amp))
-      (: :sub 2)))
-
-(lambda extract-amps [seq amps]
-  "Extract `'&foo`s from `seq` and return the rest.
+(lambda extract-symbols [seq sym-names]
+  "Extract symbols from `seq`, and return a copy of the rest and the 1-indexed
+  positions of given `sym-names.`
+  (extract-symbols ['&foo :bar '&foo '&foo :baz] ['&foo]) ;; => {:&foo [1 3 4]}
   @param seq sequence
-  @param amps quoted-symbol[]
-  @return sequence"
+  @param sym-names quoted-symbol[]
+  @return sequence, table<string,table[number]>"
   (let [new-seq [] ;
-        ;; e.g., [(quote &foo)] -> {:foo nil}
-        extracted (collect [_ v (ipairs amps)]
-                    (amp->str v))]
-    (each [_ v (ipairs seq)]
-      (if (contains? amps v)
-          (tset extracted (amp->str v) true)
-          (table.insert new-seq v)))
-    (values new-seq extracted)))
+        symbol-positions {}]
+    (each [i v (ipairs seq)]
+      (if-not (contains? sym-names v)
+        (table.insert new-seq v)
+        (let [sym-name (->str v)]
+          (if (. symbol-positions sym-name)
+              (table.insert (. symbol-positions sym-name) i)
+              (tset symbol-positions sym-name [i])))))
+    (values new-seq symbol-positions)))
 
 ;;; Deprecation Utils ///1
 
@@ -373,7 +369,8 @@
       ;; args are provided.
       (let [[events api-opts] [...]]
         `(vim.api.nvim_create_autocmd ,events ,api-opts))
-      (let [([?id events & rest] {:vim vim?}) (extract-amps [...] [`&vim])
+      (let [([?id events & rest] {:&vim ?vim-sym-indice}) ;
+            (extract-symbols [...] [`&vim])
             [?pattern ?extra-opts callback ?api-opts] ;
             (match rest
               [cb nil nil nil] [nil nil cb nil]
@@ -381,9 +378,11 @@
               [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
                                [nil nil a b]
                                (contains? autocmd/extra-opt-keys (first a))
-                               [nil a b ?c] ;
+                               [nil a b ?c]
                                [a nil b ?c])
-              _ (error* (printf "unexpected args:\n%s" (view [...]))))
+              _ (error* (printf "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
+                                (view [...]) (view ?id) (view events)
+                                (view rest))))
             extra-opts (if (nil? ?extra-opts) {}
                            (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
             ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
@@ -396,7 +395,7 @@
           ;; Note: `*` is the default pattern and redundant.
           (when-not (and (str? pattern) (= "*" pattern))
             (set extra-opts.pattern pattern)))
-        (if (or vim? (str? callback) (vim-callback-format? callback))
+        (if (or ?vim-sym-indice (str? callback) (vim-callback-format? callback))
             (set extra-opts.command callback)
             ;; Note: Ignore the possibility to set Vimscript function to
             ;; callback in string; however, convert `vim.fn.foobar` into
@@ -417,7 +416,7 @@
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
 (lambda define-augroup! [name api-opts autocmds]
-  "Define autocmds in an augroup.
+  "Define an augroup.
   ```fennel
   (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
   (define-augroup! name api-opts (au! events ?pattern ?extra-opts callback ?api-opts))
@@ -511,7 +510,8 @@
   @return lhs string
   @return rhs string|function
   @return ?api-opts kv-table"
-  (let [([a1 a2 ?a3 ?a4] {:vim vim?}) (extract-amps [...] [`&vim])]
+  (let [([a1 a2 ?a3 ?a4] {:&vim ?vim-sym-indice}) (extract-symbols [...]
+                                                                   [`&vim])]
     (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
         (let [?seq-extra-opts (if (sequence? a1) a1
                                   (sequence? a2) a2)
@@ -523,7 +523,8 @@
                                                    (sequence? a1)
                                                    [?extra-opts a2 ?a3 ?a4]
                                                    [?extra-opts a1 ?a3 ?a4])
-              rhs (if (or vim? (str? raw-rhs) (vim-callback-format? raw-rhs))
+              rhs (if (or ?vim-sym-indice (str? raw-rhs)
+                          (vim-callback-format? raw-rhs))
                       raw-rhs
                       (do
                         (set extra-opts.callback raw-rhs)
