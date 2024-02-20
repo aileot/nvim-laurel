@@ -328,6 +328,38 @@
         (vim.schedule #,deprecation)
         ,compatible))))
 
+;;; Default API Options ///1
+
+(local default/api-opts {})
+
+(fn default/extract-opts! [...]
+  "Extract symbols `&default-opts` and the following `kv-table`s from varargs;
+  no other type of args is supposed to precede them. The rightmost has priority.
+  @param ... any
+  @return kv-table"
+  (let [vargs [...]
+        (args {:&default-opts ?indice}) (extract-symbols vargs [`&default-opts])]
+    (if (nil? ?indice) args ;
+        (each [i v (ipairs vargs)]
+          (when (= `&default-opts v)
+            (let [?next-tbl (. vargs (inc i))]
+              (assert-compile (kv-table? ?next-tbl) "expected kv-table"
+                              ?next-tbl)
+              (tbl/merge default/api-opts ?next-tbl)))
+          args))))
+
+(fn default/release-opts! []
+  "Return saved default opts defined by user, and reset them.
+  This operation can run without stack because macro expansion only runs sequentially.
+  @param ... table
+  @return table"
+  ;; Note: This function is required to accept multiple &default-opts instead
+  ;; of clearing default/api-opts on each default/extract-opts! call.
+  (let [opts (tbl/copy default/api-opts)]
+    (each [k _ (pairs default/api-opts)]
+      (tset default/api-opts k nil))
+    opts))
+
 ;; Autocmd ///1
 
 (local autocmd/extra-opt-keys [:group
