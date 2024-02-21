@@ -3,6 +3,7 @@
 
 (fn augroup+ [name ...]
   (augroup! name
+    `&default-opts
     {:clear false}
     ...))
 
