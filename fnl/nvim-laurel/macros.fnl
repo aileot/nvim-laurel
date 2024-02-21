@@ -505,7 +505,7 @@
   ;; Note: "clear" value in api-opts is true by default.
   (let [[api-opts autocmds] (if (nil? ?api-opts|?autocmd) [{} []]
                                 (or (sequence? ?api-opts|?autocmd)
-                                    (autocmd? ?api-opts|?autocmd)) ;
+                                    (autocmd? ?api-opts|?autocmd))
                                 [{} [?api-opts|?autocmd ...]]
                                 [?api-opts|?autocmd [...]])]
     (define-augroup! name api-opts autocmds)))
