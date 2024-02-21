@@ -487,7 +487,7 @@
 
 ;; Export ///2
 
-(lambda augroup! [name ?api-opts|?autocmd ...]
+(lambda augroup! [...]
   "Create, or override, an augroup, and add `autocmd` to the augroup.
   ```fennel
   (augroup! name ?api-opts
@@ -503,12 +503,14 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
   ;; Note: "clear" value in api-opts is true by default.
-  (let [(api-opts autocmds) (if (nil? ?api-opts|?autocmd) (values {} [])
+  (let [[name ?api-opts|?autocmd & rest] (default/extract-opts! ...)
+        (api-opts autocmds) (if (nil? ?api-opts|?autocmd) (values {} [])
                                 (or (sequence? ?api-opts|?autocmd)
                                     (autocmd? ?api-opts|?autocmd))
-                                (values {} [?api-opts|?autocmd ...])
-                                (values ?api-opts|?autocmd [...]))]
-    (define-augroup! name api-opts autocmds)))
+                                (values {} [?api-opts|?autocmd (unpack rest)])
+                                (values ?api-opts|?autocmd rest))
+         api-opts* (tbl/merge (default/release-opts!) api-opts)]
+    (define-augroup! name api-opts* autocmds)))
 
 (fn autocmd! [...]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
