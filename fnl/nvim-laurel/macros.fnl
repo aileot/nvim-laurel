@@ -345,7 +345,7 @@
 (local default/api-opts {})
 
 (fn default/extract-opts! [...]
-  "Extract symbols `&default-opts` and the following `kv-table`s from varargs;
+  "Extract symbols `&default-opts` and the following `kv-table`s from varg;
   no other type of args is supposed to precede them. The rightmost has priority.
   @param ... any
   @return kv-table"
@@ -542,11 +542,11 @@
   (set opts.literal nil)
   opts)
 
-(lambda keymap/parse-varargs [...]
-  "Parse varargs.
+(lambda keymap/parse-args [args]
+  "Parse map! macro args in sequence.
   ```fennel
-  (keymap/parse-varargs ?extra-opts lhs rhs ?api-opts)
-  (keymap/parse-varargs lhs ?extra-opts rhs ?api-opts)
+  (keymap/parse-args ?extra-opts lhs rhs ?api-opts)
+  (keymap/parse-args lhs ?extra-opts rhs ?api-opts)
   ```
   @param ?extra-opts sequence|kv-table
   @param lhs string
@@ -556,8 +556,8 @@
   @return lhs string
   @return rhs string|function
   @return ?api-opts kv-table"
-  (let [([a1 a2 ?a3 ?a4] {:&vim ?vim-sym-indice}) (extract-symbols [...]
-                                                                   [`&vim])]
+  (let [([modes a1 a2 ?a3 ?a4] {:&vim ?vim-sym-indice}) ;
+        (extract-symbols args [`&vim])]
     (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
         (let [?seq-extra-opts (if (sequence? a1) a1
                                   (sequence? a2) a2)
@@ -577,7 +577,7 @@
                         ""))
               ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
           (set extra-opts.buffer ?bufnr)
-          (values extra-opts lhs rhs ?api-opts)))))
+          (values modes extra-opts lhs rhs ?api-opts)))))
 
 (lambda keymap/del-maps! [...]
   "Delete keymap.
@@ -644,7 +644,7 @@
 
 ;; Export ///2
 
-(lambda map! [modes ...]
+(lambda map! [...]
   "Map `lhs` to `rhs` in `modes` recursively.
   ```fennel
   (map! modes ?extra-opts lhs rhs ?api-opts)
@@ -656,9 +656,12 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (let [default-opts {:noremap true}
-        (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-    (merge-default-kv-table! default-opts extra-opts)
-    (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
+        args (default/extract-opts! ...)
+        (modes extra-opts lhs rhs ?api-opts) (keymap/parse-args args)
+        extra-opts* (tbl/merge default-opts ;
+                               (default/release-opts!) ;
+                               extra-opts)]
+    (keymap/set-maps! modes extra-opts* lhs rhs ?api-opts)))
 
 (lambda unmap! [...]
   "Delete keymap.
