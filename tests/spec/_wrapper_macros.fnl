@@ -1,11 +1,18 @@
 ;; fennel-ls: macro-file
-(local {: augroup! : set! : map!} (require :nvim-laurel.macros))
+(local {: augroup! : autocmd! : set! : map!} (require :nvim-laurel.macros))
 
 (fn augroup+ [name ...]
   (augroup! name
     `&default-opts
     {:clear false}
     ...))
+
+(fn buf-autocmd!/with-no-default-bufnr [buffer ...]
+  (augroup! :buf-local-augroup
+    (autocmd! `&default-opts {: buffer} ...)))
+
+(fn buf-autocmd!/with-buffer=0 [...]
+  (autocmd! `&default-opts {:buffer 0} ...))
 
 (fn set+ [name ...]
   (set! name `+ ...))
@@ -28,15 +35,13 @@
 (fn buf-map!/with-buffer=0 [...]
   (map! `&default-opts {:buffer 0} ...))
 
-(fn buf-map!/with-<buffer>=true [...]
-  (map! `&default-opts {:<buffer> true} ...))
-
 {: augroup+
+ : buf-autocmd!/with-no-default-bufnr
+ : buf-autocmd!/with-buffer=0
  : set+
  : set-
  : set^
  : nmap!
  : omni-map!
  : remap!
- : buf-map!/with-buffer=0
- : buf-map!/with-<buffer>=true}
+ : buf-map!/with-buffer=0}
