@@ -1,9 +1,15 @@
 ;; fennel-ls: macro-file
-(fn inject-fn [name ...]
+
+(local fmt string.format)
+
+(lambda inject-fn [name ...]
+  (assert (< 0 (select "#" ...)) (fmt "expected one or more args for %s" name))
   `((. (require :busted) ,name (fn []
                                  ,...))))
 
-(fn inject-desc-fn [name desc ...]
+(lambda inject-desc-fn [name desc ...]
+  (assert (< 0 (select "#" ...))
+          (fmt "expected one or more args for %s(\"%s\")" name desc))
   `((. (require :busted) ,name) ,desc
                                 (fn []
                                   ,...)))
