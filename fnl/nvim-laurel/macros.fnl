@@ -503,11 +503,11 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
   ;; Note: "clear" value in api-opts is true by default.
-  (let [[api-opts autocmds] (if (nil? ?api-opts|?autocmd) [{} []]
+  (let [(api-opts autocmds) (if (nil? ?api-opts|?autocmd) (values {} [])
                                 (or (sequence? ?api-opts|?autocmd)
                                     (autocmd? ?api-opts|?autocmd))
-                                [{} [?api-opts|?autocmd ...]]
-                                [?api-opts|?autocmd [...]])]
+                                (values {} [?api-opts|?autocmd ...])
+                                (values ?api-opts|?autocmd [...]))]
     (define-augroup! name api-opts autocmds)))
 
 (fn autocmd! [...]
