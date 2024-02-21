@@ -357,8 +357,8 @@
             (let [?next-tbl (. vargs (inc i))]
               (assert-compile (kv-table? ?next-tbl) "expected kv-table"
                               ?next-tbl)
-              (tbl/merge default/api-opts ?next-tbl)))
-          args))))
+              (tbl/merge default/api-opts ?next-tbl)))))
+    args))
 
 (fn default/release-opts! []
   "Return saved default opts defined by user, and reset them.
@@ -509,7 +509,7 @@
                                     (autocmd? ?api-opts|?autocmd))
                                 (values {} [?api-opts|?autocmd (unpack rest)])
                                 (values ?api-opts|?autocmd rest))
-         api-opts* (tbl/merge (default/release-opts!) api-opts)]
+        api-opts* (tbl/merge (default/release-opts!) api-opts)]
     (define-augroup! name api-opts* autocmds)))
 
 (fn autocmd! [...]
