@@ -22,4 +22,21 @@
 (fn omni-map! [...]
   (map! ["" "!" :l :t] ...))
 
-{: augroup+ : set+ : set- : set^ : nmap! : omni-map!}
+(fn remap! [...]
+  (map! `&default-opts {:noremap false} ...))
+
+(fn buf-map!/with-buffer=0 [...]
+  (map! `&default-opts {:buffer 0} ...))
+
+(fn buf-map!/with-<buffer>=true [...]
+  (map! `&default-opts {:<buffer> true} ...))
+
+{: augroup+
+ : set+
+ : set-
+ : set^
+ : nmap!
+ : omni-map!
+ : remap!
+ : buf-map!/with-buffer=0
+ : buf-map!/with-<buffer>=true}
