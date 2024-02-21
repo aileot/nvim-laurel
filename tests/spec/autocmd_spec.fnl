@@ -1,6 +1,6 @@
 (import-macros {: describe : it} :_busted_macros)
-(import-macros {: augroup+} :_wrapper_macros)
 (import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
+(import-macros {: augroup+} :_wrapper_macros)
 
 (macro macro-callback []
   `#:macro-callback)
