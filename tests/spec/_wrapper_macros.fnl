@@ -1,9 +1,8 @@
 ;; fennel-ls: macro-file
 (local {: augroup! : autocmd! : set! : map!} (require :nvim-laurel.macros))
 
-(fn augroup+ [name ...]
-  (augroup! name
-    `&default-opts
+(fn augroup+ [...]
+  (augroup! `&default-opts
     {:clear false}
     ...))
 
