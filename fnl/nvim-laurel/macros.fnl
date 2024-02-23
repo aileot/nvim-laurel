@@ -560,7 +560,7 @@
   @return lhs string
   @return rhs string|function
   @return ?api-opts kv-table"
-  (let [([modes a1 a2 ?a3 ?a4] {:&vim ?vim-sym-indice}) ;
+  (let [([modes a1 a2 ?a3 ?a4] {:&vim ?vim-indice}) ;
         (extract-symbols args [`&vim])]
     (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
         (let [?seq-extra-opts (if (sequence? a1) a1
@@ -573,7 +573,7 @@
                                                    (sequence? a1)
                                                    [?extra-opts a2 ?a3 ?a4]
                                                    [?extra-opts a1 ?a3 ?a4])
-              rhs (if (or ?vim-sym-indice (str? raw-rhs)
+              rhs (if (or ?vim-indice (str? raw-rhs)
                           (vim-callback-format? raw-rhs))
                       raw-rhs
                       (do
