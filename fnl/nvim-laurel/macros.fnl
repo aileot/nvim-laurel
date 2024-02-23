@@ -410,59 +410,55 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
-  (let [args (default/extract-opts! [...])]
-    (if (< (length args) 3)
-        ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
-        ;; args are provided.
-        (let [[events api-opts] args
-              api-opts* (tbl/merge (default/release-opts!) api-opts)]
-          `(vim.api.nvim_create_autocmd ,events ,api-opts*))
-        (let [([?id events & rest] {:&vim ?vim-sym-indice}) ;
-              (extract-symbols args [`&vim])
-              (?pattern ?extra-opts callback ?api-opts) ;
-              (match rest
-                [cb nil nil nil] (values nil nil cb nil)
-                (where [a ex-opts c ?d] (sequence? ex-opts)) (values a ex-opts
-                                                                     c ?d)
-                [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
-                                 (values nil nil a b)
-                                 (contains? autocmd/extra-opt-keys (first a))
-                                 (values nil a b ?c)
-                                 (values a nil b ?c))
-                _ (error* (printf "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
-                                  (view args) (view ?id) (view events)
-                                  (view rest))))
-              extra-opts (if (nil? ?extra-opts) {}
-                             (seq->kv-table ?extra-opts
-                                            [:once :nested :<buffer>]))
-              ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-              ?pat (or extra-opts.pattern ?pattern)]
-          (set extra-opts.group ?id)
-          (set extra-opts.buffer ?bufnr)
-          (let [pattern (if (and (sequence? ?pat) (= 1 (length ?pat)))
-                            (first ?pat)
-                            ?pat)]
-            ;; Note: `*` is the default pattern and redundant.
-            (when-not (and (str? pattern) (= "*" pattern))
-              (set extra-opts.pattern pattern)))
-          (if (or ?vim-sym-indice (str? callback)
-                  (vim-callback-format? callback))
-              (set extra-opts.command callback)
-              ;; Note: Ignore the possibility to set Vimscript function to
-              ;; callback in string; however, convert `vim.fn.foobar` into
-              ;; "foobar" to set to "callback" key because functions written in
-              ;; Vim script are rarely supposed to expect the table from
-              ;; `nvim_create_autocmd` for its first arg.
-              (let [cb (or (extract-?vim-fn-name callback) ;
-                           callback)]
-                (set extra-opts.callback cb)))
-          (assert-compile (nand extra-opts.pattern extra-opts.buffer)
-                          "cannot set both pattern and buffer for the same autocmd"
-                          extra-opts)
-          (let [extra-opts* (tbl/merge (default/release-opts!) extra-opts)
-                api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts*)
-                                         ?api-opts)]
-            `(vim.api.nvim_create_autocmd ,events ,api-opts))))))
+  (case (default/extract-opts! [...])
+    ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
+    ;; args are provided.
+    [events api-opts nil nil]
+    (let [api-opts* (tbl/merge (default/release-opts!) api-opts)]
+      `(vim.api.nvim_create_autocmd ,events ,api-opts*))
+    args
+    (let [([?id events & rest] {:&vim ?vim-sym-indice}) ;
+          (extract-symbols args [`&vim])
+          (?pattern ?extra-opts callback ?api-opts) ;
+          (match rest
+            [cb nil nil nil] (values nil nil cb nil)
+            (where [a ex-opts c ?d] (sequence? ex-opts)) (values a ex-opts c ?d)
+            [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
+                             (values nil nil a b)
+                             (contains? autocmd/extra-opt-keys (first a))
+                             (values nil a b ?c)
+                             (values a nil b ?c))
+            _ (error* (printf "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
+                              (view args) (view ?id) (view events) (view rest))))
+          extra-opts (if (nil? ?extra-opts) {}
+                         (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
+          ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
+          ?pat (or extra-opts.pattern ?pattern)]
+      (set extra-opts.group ?id)
+      (set extra-opts.buffer ?bufnr)
+      (let [pattern (if (and (sequence? ?pat) (= 1 (length ?pat)))
+                        (first ?pat)
+                        ?pat)]
+        ;; Note: `*` is the default pattern and redundant.
+        (when-not (and (str? pattern) (= "*" pattern))
+          (set extra-opts.pattern pattern)))
+      (if (or ?vim-sym-indice (str? callback) (vim-callback-format? callback))
+          (set extra-opts.command callback)
+          ;; Note: Ignore the possibility to set Vimscript function to
+          ;; callback in string; however, convert `vim.fn.foobar` into
+          ;; "foobar" to set to "callback" key because functions written in
+          ;; Vim script are rarely supposed to expect the table from
+          ;; `nvim_create_autocmd` for its first arg.
+          (let [cb (or (extract-?vim-fn-name callback) ;
+                       callback)]
+            (set extra-opts.callback cb)))
+      (assert-compile (nand extra-opts.pattern extra-opts.buffer)
+                      "cannot set both pattern and buffer for the same autocmd"
+                      extra-opts)
+      (let [extra-opts* (tbl/merge (default/release-opts!) extra-opts)
+            api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts*)
+                                     ?api-opts)]
+        `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
