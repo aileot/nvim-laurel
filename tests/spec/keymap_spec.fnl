@@ -1,5 +1,5 @@
 (import-macros {: describe : it} :_busted_macros)
-(import-macros {: nmap! : omni-map!} :_wrapper_macros)
+(import-macros {: remap! : nmap! : omni-map!} :_wrapper_macros)
 (import-macros {: map! : unmap! : <C-u> : <Cmd>} :nvim-laurel.macros)
 
 (macro macro-callback []
@@ -177,6 +177,34 @@
       (assert.has_no.errors #(map! :n [:<buffer>] :lhs (<C-u> "Do something")))
       (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
   (describe "(wrapper)"
+    (describe :remap!
+      (it "creates recursive mapping by default"
+        (let [mode :x
+              modes [:n :o :t]]
+          (remap! mode :lhs :rhs)
+          (remap! modes :lhs :rhs)
+          (let [{: noremap} (get-mapargs mode :lhs)]
+            (assert.is.same 0 noremap))
+          (each [_ m (ipairs modes)]
+            (let [{: noremap} (get-mapargs m :lhs)]
+              (assert.is.same 0 noremap)))))
+      (it "can create non-recursive mappings by overriding option"
+        (let [mode :x
+              modes [:n :o :t]]
+          (map! mode [:noremap] :lhs :rhs)
+          (map! modes [:noremap] :lhs :rhs)
+          (let [{: noremap} (get-mapargs mode :lhs)]
+            (assert.is.same 1 noremap))
+          (each [_ m (ipairs modes)]
+            (let [{: noremap} (get-mapargs m :lhs)]
+              (assert.is.same 1 noremap))))))
+    ;; TODO
+    ;; (describe "buf-map! with {:buffer 0} in its default-opts"
+    ;;   (it "creates current buffer-local mapping by default")
+    ;;   (it "can create another buffer-local mapping by overriding option"))
+    ;; (describe "buf-map! with {:<buffer> true} in its default-opts"
+    ;;   (it "creates current buffer-local mapping by default")
+    ;;   (it "can create another buffer-local mapping by overriding option"))
     (describe :omni-map!
       (it "should map to lhs in any mode"
         (each [_ mode (ipairs [:n :v :x :s :o :i :l :c :t])]
