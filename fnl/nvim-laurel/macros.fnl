@@ -357,7 +357,7 @@
             (let [?next-tbl (. vargs (inc i))]
               (assert-compile (kv-table? ?next-tbl) "expected kv-table"
                               ?next-tbl)
-              (tbl/merge default/api-opts ?next-tbl)))))
+              (tbl/merge! default/api-opts ?next-tbl)))))
     args))
 
 (fn default/release-opts! []
