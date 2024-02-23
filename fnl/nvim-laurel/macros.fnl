@@ -419,15 +419,16 @@
           `(vim.api.nvim_create_autocmd ,events ,api-opts*))
         (let [([?id events & rest] {:&vim ?vim-sym-indice}) ;
               (extract-symbols args [`&vim])
-              [?pattern ?extra-opts callback ?api-opts] ;
+              (?pattern ?extra-opts callback ?api-opts) ;
               (match rest
-                [cb nil nil nil] [nil nil cb nil]
-                (where [a ex-opts c ?d] (sequence? ex-opts)) [a ex-opts c ?d]
+                [cb nil nil nil] (values nil nil cb nil)
+                (where [a ex-opts c ?d] (sequence? ex-opts)) (values a ex-opts
+                                                                     c ?d)
                 [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
-                                 [nil nil a b]
+                                 (values nil nil a b)
                                  (contains? autocmd/extra-opt-keys (first a))
-                                 [nil a b ?c]
-                                 [a nil b ?c])
+                                 (values nil a b ?c)
+                                 (values a nil b ?c))
                 _ (error* (printf "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
                                   (view args) (view ?id) (view events)
                                   (view rest))))
