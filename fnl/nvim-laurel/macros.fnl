@@ -66,6 +66,13 @@
   @return boolean"
   (or (sym? x) (list? x) (varg? x)))
 
+(fn seq? [x]
+  "Check if `x` is sequence.
+  @param x
+  @return boolean"
+  (or (sequence? x) ;; Note: sequence? does not consider [...] as sequence.
+      (and (table? x) (not= nil (. x 1)))))
+
 (fn kv-table? [x]
   "Check if the value of `x` is kv-table.
   @param x any
@@ -95,15 +102,17 @@
   (- x 1))
 
 (lambda first [xs]
-  "Return the first value in `xs`
+  "Return the first value in `xs`.
   @param xs sequence
-  @return undefined"
+  @return any"
+  (assert-compile (seq? xs) "expected sequence" xs)
   (. xs 1))
 
 (lambda second [xs]
-  "Return the second value in `xs`
+  "Return the second value in `xs`.
   @param xs sequence
-  @return undefined"
+  @return any"
+  (assert-compile (seq? xs) "expected sequence" xs)
   (. xs 2))
 
 (lambda slice [xs ?start ?end]
