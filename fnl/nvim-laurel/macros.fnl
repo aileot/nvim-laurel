@@ -350,8 +350,8 @@
   @param ... any
   @return kv-table"
   (let [vargs [...]
-        (args {:&default-opts ?indice}) (extract-symbols vargs [`&default-opts])]
-    (if (nil? ?indice) args ;
+        (args _) (extract-symbols vargs [`&default-opts])]
+    (if (= (length args) (length vargs)) vargs
         (each [i v (ipairs vargs)]
           (when (= `&default-opts v)
             (let [?next-tbl (. vargs (inc i))]
