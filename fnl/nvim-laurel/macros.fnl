@@ -417,8 +417,8 @@
     (let [api-opts* (tbl/merge (default/release-opts!) api-opts)]
       `(vim.api.nvim_create_autocmd ,events ,api-opts*))
     args
-    (let [([?id events & rest] {:&vim ?vim-sym-indice}) ;
-          (extract-symbols args [`&vim])
+    (let [([?id events & rest] {:&vim ?vim-indice}) (extract-symbols args
+                                                                     [`&vim])
           (?pattern ?extra-opts callback ?api-opts) ;
           (match rest
             [cb nil nil nil] (values nil nil cb nil)
@@ -442,7 +442,7 @@
         ;; Note: `*` is the default pattern and redundant.
         (when-not (and (str? pattern) (= "*" pattern))
           (set extra-opts.pattern pattern)))
-      (if (or ?vim-sym-indice (str? callback) (vim-callback-format? callback))
+      (if (or ?vim-indice (str? callback) (vim-callback-format? callback))
           (set extra-opts.command callback)
           ;; Note: Ignore the possibility to set Vimscript function to
           ;; callback in string; however, convert `vim.fn.foobar` into
