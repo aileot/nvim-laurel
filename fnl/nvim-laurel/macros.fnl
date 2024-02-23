@@ -67,11 +67,12 @@
   (or (sym? x) (list? x) (varg? x)))
 
 (fn seq? [x]
-  "Check if `x` is sequence.
+  "Check if `x` is sequence or list.
   @param x
   @return boolean"
   (or (sequence? x) ;; Note: sequence? does not consider [...] as sequence.
-      (and (table? x) (not= nil (. x 1)))))
+      (list? x) ;
+      (and (table? x) (= 1 (next x)))))
 
 (fn kv-table? [x]
   "Check if the value of `x` is kv-table.
@@ -80,6 +81,12 @@
   (and (table? x) (not (sequence? x))))
 
 ;; Misc ///2
+
+(fn assert-seq [x]
+  "Assert `x` is either sequence or list, or not.
+  @param x any
+  @return boolean"
+  (assert (seq? x) (.. "expected sequence or list, got" (view x))))
 
 (fn ->str [x]
   "Convert `x` to a string, or get the name if `x` is a symbol.
@@ -103,17 +110,24 @@
 
 (lambda first [xs]
   "Return the first value in `xs`.
-  @param xs sequence
+  @param xs sequence|list
   @return any"
-  (assert-compile (seq? xs) "expected sequence" xs)
+  (assert-seq xs)
   (. xs 1))
 
 (lambda second [xs]
   "Return the second value in `xs`.
-  @param xs sequence
+  @param xs sequence|list
   @return any"
-  (assert-compile (seq? xs) "expected sequence" xs)
+  (assert-seq xs)
   (. xs 2))
+
+(fn last [xs]
+  "Return the last value in `xs`.
+  @param xs sequence|list
+  @return any"
+  (assert-seq xs)
+  (. xs (length xs)))
 
 (lambda slice [xs ?start ?end]
   "Return sequence from `?start` to `?end`.
