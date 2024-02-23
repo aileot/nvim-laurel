@@ -126,7 +126,7 @@
     (values k v)))
 
 (fn tbl/merge [...]
-  "Merge tables. Values in the right table overrides in the left. `nil` is
+  "Return a new merged tables. The rightmost map has priority. `nil` is
   ignored.
   @param ... table|nil
   @return table"
@@ -137,6 +137,18 @@
         (each [k v (pairs t)]
           (tset new-tbl k v))))
     new-tbl))
+
+(fn tbl/merge! [tbl1 ...]
+  "Merge tables into the first table `tbl1`. The rightmost map has
+  priority. `nil` is ignored.
+  @param ... table|nil
+  @return table"
+  (each [_ t (ipairs [...])]
+    (when t
+      (assert-compile (tbl? t) "Expected table or nil" ...)
+      (each [k v (pairs t)]
+        (tset tbl1 k v))))
+  tbl1)
 
 ;; Additional predicates ///2
 
