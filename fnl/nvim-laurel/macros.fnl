@@ -442,6 +442,9 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
+  (assert-compile (contains-varg? ...)
+                  "varg is incompatible. Please consider to embed it into macro instead of function."
+                  ...)
   (case (default/extract-opts! [...])
     ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
     ;; args are provided.
