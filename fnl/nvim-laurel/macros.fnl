@@ -276,9 +276,10 @@
   "Extract symbols from `seq`, and return a copy of the rest and the 1-indexed
   positions of given `sym-names.`
   (extract-symbols ['&foo :bar '&foo '&foo :baz] ['&foo]) ;; => {:&foo [1 3 4]}
+  @alias match-counts table[number]
   @param seq sequence
   @param sym-names quoted-symbol[]
-  @return sequence, table<string,table[number]>"
+  @return sequence, table<string,match-counts>"
   (let [new-seq [] ;
         symbol-positions {}]
     (each [i v (ipairs seq)]
