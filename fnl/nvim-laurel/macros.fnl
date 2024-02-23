@@ -404,7 +404,10 @@
 ;; Export ///2
 
 (lambda augroup! [name ?api-opts|?autocmd ...]
-  "Create, or override, an augroup, and add `autocmd` to the augroup.
+  "Create, or override, an augroup, and optionally create `autocmd`s in the
+  augroup. It returns the augroup id if no set of sequences or `autocmd` lists
+  is provided; otherwise, it should return the last defined `autocmd` id
+  instead.
   ```fennel
   (augroup! name ?api-opts
     ?[events ?pattern ?extra-opts callback ?api-opts]
