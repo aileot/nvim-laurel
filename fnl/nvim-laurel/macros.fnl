@@ -344,27 +344,29 @@
 
 (local default/api-opts {})
 
-(fn default/extract-opts! [...]
+(lambda default/extract-opts! [seq]
   "Extract symbols `&default-opts` and the following `kv-table`s from varg;
   no other type of args is supposed to precede them. The rightmost has priority.
-  @param ... any
-  @return kv-table"
-  (let [vargs [...]
-        (args _) (extract-symbols vargs [`&default-opts])]
-    (if (= (length args) (length vargs)) vargs
-        (each [i v (ipairs vargs)]
-          (when (= `&default-opts v)
-            (let [?next-tbl (. vargs (inc i))]
-              (assert-compile (kv-table? ?next-tbl) "expected kv-table"
-                              ?next-tbl)
-              (tbl/merge! default/api-opts ?next-tbl)))))
-    args))
+  @param seq sequence
+  @return sequence"
+  (let [new-seq []
+        removed-items []]
+    (each [i v (ipairs seq)]
+      (if (= `&default-opts v)
+          (let [next-idx (inc i)
+                ?next-tbl (. seq next-idx)]
+            (assert-compile (kv-table? ?next-tbl) "expected kv-table" ?next-tbl)
+            (tbl/merge! default/api-opts ?next-tbl)
+            (tset removed-items i v)
+            (tset removed-items next-idx ?next-tbl))
+          (nil? (?. removed-items i))
+          (table.insert new-seq v)))
+    new-seq))
 
-(fn default/release-opts! []
+(lambda default/release-opts! []
   "Return saved default opts defined by user, and reset them.
   This operation can run without stack because macro expansion only runs sequentially.
-  @param ... table
-  @return table"
+  @return kv-table"
   ;; Note: This function is required to accept multiple &default-opts instead
   ;; of clearing default/api-opts on each default/extract-opts! call.
   (let [opts (tbl/copy default/api-opts)]
@@ -408,7 +410,7 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
-  (let [args (default/extract-opts! ...)]
+  (let [args (default/extract-opts! [...])]
     (if (< (length args) 3)
         ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
         ;; args are provided.
@@ -508,7 +510,7 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
   ;; Note: "clear" value in api-opts is true by default.
-  (let [[name ?api-opts|?autocmd & rest] (default/extract-opts! ...)
+  (let [[name ?api-opts|?autocmd & rest] (default/extract-opts! [...])
         (api-opts autocmds) (if (nil? ?api-opts|?autocmd) (values {} [])
                                 (or (sequence? ?api-opts|?autocmd)
                                     (autocmd? ?api-opts|?autocmd))
@@ -661,7 +663,7 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (let [default-opts {:noremap true}
-        args (default/extract-opts! ...)
+        args (default/extract-opts! [...])
         (modes extra-opts lhs rhs ?api-opts) (keymap/parse-args args)
         extra-opts* (tbl/merge default-opts ;
                                (default/release-opts!) ;
