@@ -87,11 +87,6 @@
     (it "can add autocmd with no patterns for macro"
       (assert.has_no.errors #(autocmd! default-augroup default-event
                                        default-callback)))
-    (it "can add autocmds to an existing augroup within `augroup+`"
-      (augroup+ default-augroup
-        (au! default-event [:pat1 :pat2] default-callback))
-      (let [[autocmd] (get-autocmds)]
-        (assert.is.same default-callback autocmd.callback)))
     (it "sets vim.fn.Test to callback in string"
       (assert.has_no.errors #(autocmd! default-augroup default-event
                                        vim.fn.Test))
@@ -179,4 +174,9 @@
     (describe :augroup+
       (it "gets an existing augroup id"
         (let [id (augroup! default-augroup)]
-          (assert.is.same id (augroup+ default-augroup)))))))
+          (assert.is.same id (augroup+ default-augroup))))
+      (it "can add autocmds to an existing augroup within `augroup+`"
+        (augroup+ default-augroup
+          (au! default-event [:pat1 :pat2] default-callback))
+        (let [[autocmd] (get-autocmds)]
+          (assert.is.same default-callback autocmd.callback))))))
