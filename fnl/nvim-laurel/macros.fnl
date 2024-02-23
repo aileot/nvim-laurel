@@ -64,7 +64,7 @@
   "Check if the value of `x` is hidden in compile time.
   @param x any
   @return boolean"
-  (or (sym? x) (list? x)))
+  (or (sym? x) (list? x) (varg? x)))
 
 (fn kv-table? [x]
   "Check if the value of `x` is kv-table.
