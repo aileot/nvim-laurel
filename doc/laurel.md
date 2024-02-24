@@ -85,6 +85,14 @@ the following features:
   or use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
+### &default-opts
+
+A symbol to set default values of `api-opts` field. It indicates that the bare
+kv-table next to `&default-opts` contains default values for `api-opts`, but
+it also accept the same keys as `extra-opts`. To set boolean option, it
+requires to set to either `true` or `false` in spite of the syntax of
+`extra-opts` itself.
+
 ## Macros
 
 - [Autocmd](#Autocmd)
