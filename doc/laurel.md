@@ -103,9 +103,9 @@ requires to set to either `true` or `false` in spite of the syntax of
 
 ### Autocmd
 
-- [augroup!](#augroup)
-- [autocmd!](#autocmd)
-- [au!](#au)
+- [`augroup!`](#augroup)
+- [`autocmd!`](#autocmd)
+- [`au!`](#au)
 
 #### `augroup!`
 
@@ -227,8 +227,8 @@ An alias of [`autocmd!`](#autocmd).
 
 ### Keymap
 
-- [map!](#map): A replacement of `vim.keymap.set`
-- [unmap!](#unmap): A replacement of `vim.keymap.del`
+- [`map!`](#map): A replacement of `vim.keymap.set`
+- [`unmap!`](#unmap): A replacement of `vim.keymap.del`
 - [`<Cmd>`](#Cmd)
 - [`<C-u>`](#C-u)
 
@@ -379,12 +379,12 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 ### Variable
 
-- [g!](#g)
-- [b!](#b)
-- [w!](#w)
-- [t!](#t)
-- [v!](#v)
-- [env!](#env)
+- [`g!`](#g)
+- [`b!`](#b)
+- [`w!`](#w)
+- [`t!`](#t)
+- [`v!`](#v)
+- [`env!`](#env)
 
 #### `g!`
 
@@ -689,10 +689,10 @@ call setwinvar(10, '&signcolumn', 'no')
 
 ### Others
 
-- [command!](#command)
-- [feedkeys!](#feedkeys)
-- [highlight!](#highlight)
-- [hi!](#hi)
+- [`command!`](#command)
+- [`feedkeys!`](#feedkeys)
+- [`highlight!`](#highlight)
+- [`hi!`](#hi)
 
 #### `command!`
 
@@ -814,7 +814,7 @@ An alias of [`highlight!`](#highlight).
 
 ## Anti-Patterns
 
-### [autocmd!](#autocmd)
+### [`autocmd!`](#autocmd)
 
 #### pcall in the end of callback
 
