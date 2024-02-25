@@ -557,7 +557,7 @@
 ;; Export ///2
 
 (lambda map! [modes ...]
-  "Map `lhs` to `rhs` in `modes` recursively.
+  "Map `lhs` to `rhs` in `modes`, non-recursively by default.
   ```fennel
   (map! modes ?extra-opts lhs rhs ?api-opts)
   (map! modes lhs ?extra-opts rhs ?api-opts)
