@@ -1,5 +1,5 @@
 ;; fennel-ls: macro-file
-(local {: augroup! : autocmd! : set! : map! : highlight!}
+(local {: augroup! : autocmd! : set! : map! : command! : highlight!}
        (require :nvim-laurel.macros))
 
 (fn augroup+ [...]
@@ -35,6 +35,9 @@
 (fn buf-map!/with-buffer=0 [...]
   (map! `&default-opts {:buffer 0} ...))
 
+(fn buf-command!/as-api-alias [bufnr ...]
+  (command! `&default-opts {:buffer bufnr} ...))
+
 (fn bold-highlight! [...]
   (highlight! `&default-opts {:bold true} ...))
 
@@ -54,5 +57,6 @@
  : omni-map!
  : remap!
  : buf-map!/with-buffer=0
+ : buf-command!/as-api-alias
  : bold-highlight!
  : hi!-link-by-default}
