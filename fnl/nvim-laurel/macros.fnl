@@ -398,6 +398,14 @@
       (tset default/api-opts k nil))
     opts))
 
+(lambda default/merge-opts! [api-opts]
+  "Return the merge result of `api-opts` and `default/api-opts` saved by
+  `default/extract-opts!`. The values of `api-opts` overrides those of
+  `default/api-opts`. The `default/api-opts` gets cleared after the merge.
+  @param api-opts kv-table The options to override `default/api-opts`.
+  @return kv-table"
+  (tbl/merge (default/release-opts!) api-opts))
+
 ;; Autocmd ///1
 
 (local autocmd/extra-opt-keys [:group
