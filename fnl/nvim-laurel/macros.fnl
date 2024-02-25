@@ -446,7 +446,7 @@
     ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
     ;; args are provided.
     [events api-opts nil nil]
-    (let [api-opts* (tbl/merge (default/release-opts!) api-opts)]
+    (let [api-opts* (default/merge-opts! api-opts)]
       `(vim.api.nvim_create_autocmd ,events ,api-opts*))
     args
     (let [([?id events & rest] {:&vim ?vim-indice}) (extract-symbols args
@@ -487,7 +487,7 @@
       (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                       "cannot set both pattern and buffer for the same autocmd"
                       extra-opts)
-      (let [extra-opts* (tbl/merge (default/release-opts!) extra-opts)
+      (let [extra-opts* (default/merge-opts! extra-opts)
             api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts*)
                                      ?api-opts)]
         `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
@@ -545,7 +545,7 @@
                                     (autocmd? ?api-opts|?autocmd))
                                 (values {} [?api-opts|?autocmd (unpack rest)])
                                 (values ?api-opts|?autocmd rest))
-        api-opts* (tbl/merge (default/release-opts!) api-opts)]
+        api-opts* (default/merge-opts! api-opts)]
     (define-augroup! name api-opts* autocmds)))
 
 (fn autocmd! [...]
