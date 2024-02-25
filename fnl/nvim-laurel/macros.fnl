@@ -1053,38 +1053,45 @@
   @return boolean"
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
-(lambda highlight! [ns-id|name name|val ?val]
+(lambda highlight! [...]
   "Set a highlight group.
   ```fennel
-  (highlight! ?ns-id name val)
+  (highlight! ?ns-id name api-opts)
  ```
  @param ?ns-id integer
  @param name string
- @param val kv-table"
-  (let [[?ns-id name val] (if ?val [ns-id|name name|val ?val]
-                              [nil ns-id|name name|val])]
-    (if (?. val :link)
-        (each [k _ (pairs val)]
+ @param api-opts kv-table The same as {val} in `vim.api.nvim_set_hl()`."
+  {:fnl/arglist [ns-id|name name|api-opts ?api-opts]}
+  (let [(?ns-id name api-opts) (case (default/extract-opts! [...])
+                                 [name api-opts nil] (values nil name api-opts)
+                                 [ns-id name api-opts] (values ns-id name
+                                                               api-opts))
+        api-opts* (merge-api-opts (default/release-opts!) api-opts)]
+    (if (?. api-opts* :link)
+        (each [k _ (pairs api-opts*)]
           (assert-compile (= k :link)
-                          (.. "`link` key excludes any other options: " k) val))
+                          (.. "`link` key excludes any other options: " k)
+                          api-opts*))
         (do
-          (when (nil? val.ctermfg)
-            (set val.ctermfg (?. val :cterm :fg))
-            (when val.cterm
-              (set val.cterm.fg nil)))
-          (when (nil? val.ctermbg)
-            (set val.ctermbg (?. val :cterm :bg))
-            (when val.cterm
-              (set val.cterm.bg nil)))
-          (assert-compile (or (cterm-color? val.ctermfg)
-                              (hidden-in-compile-time? val.ctermfg))
+          (when (nil? api-opts*.ctermfg)
+            (set api-opts*.ctermfg (?. api-opts* :cterm :fg))
+            (when api-opts*.cterm
+              (set api-opts*.cterm.fg nil)))
+          (when (nil? api-opts*.ctermbg)
+            (set api-opts*.ctermbg (?. api-opts* :cterm :bg))
+            (when api-opts*.cterm
+              (set api-opts*.cterm.bg nil)))
+          (assert-compile (or (cterm-color? api-opts*.ctermfg)
+                              (hidden-in-compile-time? api-opts*.ctermfg))
                           (.. "ctermfg expects 256 color, got "
-                              (view val.ctermfg)) val)
-          (assert-compile (or (cterm-color? val.ctermbg)
-                              (hidden-in-compile-time? val.ctermbg))
+                              (view api-opts*.ctermfg))
+                          api-opts*)
+          (assert-compile (or (cterm-color? api-opts*.ctermbg)
+                              (hidden-in-compile-time? api-opts*.ctermbg))
                           (.. "ctermbg expects 256 color, got "
-                              (view val.ctermbg)) val)))
-    `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))
+                              (view api-opts*.ctermbg))
+                          api-opts*)))
+    `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,api-opts*)))
 
 ;; Deprecated ///1
 
