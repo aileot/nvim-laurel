@@ -181,5 +181,5 @@
             (it "can remove bold option"
               (bold-highlight! test-hl-name
                                {:ctermfg 0 :ctermbg 255 :bold false})
-              (assert.falsy (-> (get-hl 0 {:name test-hl-name})
-                                (. :bold))))))))))
+              (assert.is_falsy (-> (get-hl 0 {:name test-hl-name})
+                                   (. :bold))))))))))
