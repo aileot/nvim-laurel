@@ -1066,7 +1066,11 @@
                                  [name api-opts nil] (values nil name api-opts)
                                  [ns-id name api-opts] (values ns-id name
                                                                api-opts))
-        api-opts* (merge-api-opts (default/release-opts!) api-opts)]
+        api-opts* (merge-api-opts (default/release-opts!)
+                                  ;; Note: api-opts can be symbol or list, so
+                                  ;; `default/merge-opts!` could not work
+                                  ;; expectedly.
+                                  api-opts)]
     (if (?. api-opts* :link)
         (each [k _ (pairs api-opts*)]
           (assert-compile (= k :link)
