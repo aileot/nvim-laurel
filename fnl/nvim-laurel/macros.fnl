@@ -988,7 +988,7 @@
   (set opts.<buffer> nil)
   opts)
 
-(lambda command! [a1 a2 ?a3 ?a4]
+(lambda command! [...]
   "Define a user command.
   ```fennel
   (command! ?extra-opts name command ?api-opts)
@@ -1003,7 +1003,8 @@
   @param command string|function Replacement command.
   @param ?api-opts kv-table Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
-  (let [?seq-extra-opts (if (sequence? a1) a1
+  (let [[a1 a2 ?a3 ?a4] (default/extract-opts! [...])
+        ?seq-extra-opts (if (sequence? a1) a1
                             (sequence? a2) a2)
         (extra-opts name command ?api-opts) ;
         (case (when ?seq-extra-opts
