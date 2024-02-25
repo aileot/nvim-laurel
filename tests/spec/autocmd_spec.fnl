@@ -8,8 +8,6 @@
 (macro macro-command []
   :macro-command)
 
-(local fmt string.format)
-
 (local default-augroup :default-test-augroup)
 (local default-event :BufRead)
 (local default-callback #:default-callback)
@@ -172,6 +170,14 @@
       (autocmd! default-augroup default-event [:pat] &vim (macro-command))
       (let [au (get-first-autocmd {:pattern :pat})]
         (assert.is_same :macro-command au.command))))
+  ;; (describe "(inline)"
+  ;;   (describe "autocmd with &default-opts"))
+  ;; (describe "helps to create MyVimrc augroup")
+  ;; (describe "buf-autocmd! defined on au-event(s)"
+  ;;   (describe "creates another autocommand")
+  ;;     ;; TODO: (it "in api-opts format")
+  ;;     ;; TODO: (it "in sequential format")))
+  ;; (describe "lets augroup spawn buffer-local autocmds in buffer-local augroup")
   (describe "(wrapper)"
     (describe :augroup+
       (it "gets an existing augroup id"
@@ -187,7 +193,8 @@
         (var foo false)
         (autocmd! default-augroup [:FileType]
                   (fn [au]
-                    (let [buf-local-augroup-name (fmt "buf-local-aug-%d" au.buf)
+                    (let [buf-local-augroup-name (: "buf-local-aug-%d" :format
+                                                    au.buf)
                           buf-local-augroup-id (augroup! buf-local-augroup-name)]
                       (fn buf-au! [bufnr ...]
                         (autocmd! buf-local-augroup-id ;
@@ -202,8 +209,8 @@
                                                                       :filetype)]
                                                       (set foo filetype))
                                                    {:desc "Set `foo` to buffer filetype"})))
-                    (let [buf-local-augroup-name (fmt "another-buf-local-aug-%d"
-                                                      au.buf)
+                    (let [buf-local-augroup-name (: "another-buf-local-aug-%d"
+                                                    :format au.buf)
                           buf-local-augroup-id (augroup! buf-local-augroup-name)]
                       (fn buf-au! [bufnr ...]
                         (autocmd! &default-opts {:buffer bufnr}
