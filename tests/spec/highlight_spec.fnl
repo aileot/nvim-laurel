@@ -7,6 +7,14 @@
 (macro get-hl-of-256-color [name]
   `(vim.api.nvim_get_hl_by_name ,name false))
 
+(local predefined-namespace-id
+       (vim.api.nvim_create_namespace "namespace: test module highlight"))
+
+(macro module-hi! [...]
+  `(highlight! predefined-namespace-id ,...))
+
+(local test-hl-name :HlTest)
+
 (lambda hex->decimal [hex]
   (let [t (type hex)]
     (assert (= t :string) (.. "expected string, got " t))
@@ -140,4 +148,20 @@
         (let [foobar #{:cterm {:fg 0 :bg 255 :bold true}}]
           ;; Note: fg/bg in `cterm` table is invalid; instead, use
           ;; ctermfg/ctermbg respectively.
-          (assert.has_error #(highlight! :FooBar (foobar))))))))
+          (assert.has_error #(highlight! :FooBar (foobar)))))))
+  (describe "(wrapper)"
+    (describe "with predefined-namespace-id"
+      (before_each (fn []
+                     (vim.api.nvim_set_hl predefined-namespace-id test-hl-name
+                                          {})
+                     (assert.is_same (vim.empty_dict)
+                                     (vim.api.nvim_get_hl predefined-namespace-id
+                                                          {:name test-hl-name}))))
+      (it "can be embedded in a macro"
+        (module-hi! test-hl-name {:ctermfg 0 :ctermbg 255})
+        (assert.is_not_same (vim.empty_dict)
+                            (vim.api.nvim_get_hl predefined-namespace-id
+                                                 {:name test-hl-name}))
+        (assert.is_same {:ctermfg 0 :ctermbg 255}
+                        (vim.api.nvim_get_hl predefined-namespace-id
+                                             {:name test-hl-name}))))))
