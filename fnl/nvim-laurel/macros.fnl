@@ -487,9 +487,9 @@
       (assert-compile (nand extra-opts.pattern extra-opts.buffer)
                       "cannot set both pattern and buffer for the same autocmd"
                       extra-opts)
-      (let [extra-opts* (default/merge-opts! extra-opts)
-            api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts*)
-                                     ?api-opts)]
+      (let [api-opts (-> (default/merge-opts! extra-opts)
+                         (autocmd/->compatible-opts!)
+                         (merge-api-opts ?api-opts))]
         `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (fn autocmd? [args]
