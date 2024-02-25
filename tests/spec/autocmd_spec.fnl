@@ -8,6 +8,8 @@
 (macro macro-command []
   :macro-command)
 
+(local fmt string.format)
+
 (local default-augroup :default-test-augroup)
 (local default-event :BufRead)
 (local default-callback #:default-callback)
@@ -179,4 +181,40 @@
         (augroup+ default-augroup
           (au! default-event [:pat1 :pat2] default-callback))
         (let [[autocmd] (get-autocmds)]
-          (assert.is.same default-callback autocmd.callback))))))
+          (assert.is.same default-callback autocmd.callback))))
+    (describe "autocmd! wrapper function at runtime"
+      (it "usually causes errors because compiled into unexpected output."
+        (var foo false)
+        (autocmd! default-augroup [:FileType]
+                  (fn [au]
+                    (let [buf-local-augroup-name (fmt "buf-local-aug-%d" au.buf)
+                          buf-local-augroup-id (augroup! buf-local-augroup-name)]
+                      (fn buf-au! [bufnr ...]
+                        (autocmd! buf-local-augroup-id ;
+                                  &default-opts {:buffer bufnr} ...))
+
+                      (assert.has.errors #(buf-au! [:InsertEnter]
+                                                   [:desc "Set `foo` to true"]
+                                                   #(set foo true)))
+                      (assert.has.errors #(buf-au! [:InsertLeave]
+                                                   #(let [filetype (. vim.b
+                                                                      au.buf
+                                                                      :filetype)]
+                                                      (set foo filetype))
+                                                   {:desc "Set `foo` to buffer filetype"})))
+                    (let [buf-local-augroup-name (fmt "another-buf-local-aug-%d"
+                                                      au.buf)
+                          buf-local-augroup-id (augroup! buf-local-augroup-name)]
+                      (fn buf-au! [bufnr ...]
+                        (autocmd! &default-opts {:buffer bufnr}
+                                  buf-local-augroup-id ...))
+
+                      (assert.has.errors #(buf-au! [:InsertEnter]
+                                                   [:desc "Set `foo` to true"]
+                                                   #(set foo true)))
+                      (assert.has.errors #(buf-au! [:InsertLeave]
+                                                   #(let [filetype (. vim.b
+                                                                      au.buf
+                                                                      :filetype)]
+                                                      (set foo filetype))
+                                                   {:desc "Set `foo` to buffer filetype"})))))))))
