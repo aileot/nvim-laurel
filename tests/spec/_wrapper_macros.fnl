@@ -38,6 +38,12 @@
 (fn bold-highlight! [...]
   (highlight! `&default-opts {:bold true} ...))
 
+(fn hi!-link-by-default [ref ...]
+  ;; WIP: prop "key" should be omitted if any of the other props are set.
+  (case (select "#" ...)
+    1 (highlight! `&default-opts {:link ref} ...)
+    _ (highlight! ...)))
+
 {: augroup+
  : buf-autocmd!/with-no-default-bufnr
  : buf-autocmd!/with-buffer=0
@@ -48,4 +54,5 @@
  : omni-map!
  : remap!
  : buf-map!/with-buffer=0
- : bold-highlight!}
+ : bold-highlight!
+ : hi!-link-by-default}
