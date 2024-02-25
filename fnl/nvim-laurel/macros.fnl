@@ -1005,14 +1005,14 @@
     The same as {opts} for `nvim_create_user_command`."
   (let [?seq-extra-opts (if (sequence? a1) a1
                             (sequence? a2) a2)
-        [extra-opts name command ?api-opts] ;
+        (extra-opts name command ?api-opts) ;
         (case (when ?seq-extra-opts
                 (seq->kv-table ?seq-extra-opts
                                [:bar :bang :<buffer> :register :keepscript]))
-          nil [{} a1 a2 ?a3]
+          nil (values {} a1 a2 ?a3)
           extra-opts (if (sequence? a1)
-                         [extra-opts a2 ?a3 ?a4]
-                         [extra-opts a1 ?a3 ?a4]))
+                         (values extra-opts a2 ?a3 ?a4)
+                         (values extra-opts a1 ?a3 ?a4)))
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
         api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
                                  ?api-opts)]
