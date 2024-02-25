@@ -1015,8 +1015,10 @@
                          (values extra-opts a2 ?a3 ?a4)
                          (values extra-opts a1 ?a3 ?a4)))
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-        api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
-                                 ?api-opts)]
+        api-opts (-> extra-opts
+                     (default/merge-opts!)
+                     (command/->compatible-opts!)
+                     (merge-api-opts ?api-opts))]
     (if ?bufnr
         `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command ,api-opts)
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
