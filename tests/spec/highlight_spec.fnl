@@ -1,5 +1,6 @@
 (import-macros {: describe : it} :_busted_macros)
 (import-macros {: highlight!} :nvim-laurel.macros)
+(import-macros {: bold-highlight!} :_wrapper_macros)
 
 (macro get-hl-of-rgb-color [name]
   `(vim.api.nvim_get_hl_by_name ,name true))
@@ -164,4 +165,15 @@
                                                  {:name test-hl-name}))
         (assert.is_same {:ctermfg 0 :ctermbg 255}
                         (vim.api.nvim_get_hl predefined-namespace-id
-                                             {:name test-hl-name}))))))
+                                             {:name test-hl-name}))))
+    (describe "defined in another file"
+      (describe "with &default-opts"
+        (describe "{: bold true}"
+          (it "creates bold highlight by default"
+            (bold-highlight! test-hl-name {:ctermfg 0 :ctermbg 255})
+            (assert.is_true (-> (vim.api.nvim_get_hl 0 {:name test-hl-name})
+                                (. :bold))))
+          (it "can remove bold option"
+            (bold-highlight! test-hl-name {:ctermfg 0 :ctermbg 255 :bold false})
+            (assert.falsy (-> (vim.api.nvim_get_hl 0 {:name test-hl-name})
+                              (. :bold)))))))))
