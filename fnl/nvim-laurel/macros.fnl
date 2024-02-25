@@ -1015,8 +1015,7 @@
                          (values extra-opts a2 ?a3 ?a4)
                          (values extra-opts a1 ?a3 ?a4)))
         ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-        api-opts (-> extra-opts
-                     (default/merge-opts!)
+        api-opts (-> (default/merge-opts! extra-opts)
                      (command/->compatible-opts!)
                      (merge-api-opts ?api-opts))]
     (if ?bufnr
