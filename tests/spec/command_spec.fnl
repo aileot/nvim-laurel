@@ -7,6 +7,12 @@
 (macro macro-command []
   :macro-command)
 
+(macro buf-command!/as-api-alias [bufnr ...]
+  `(command! &default-opts {:buffer ,bufnr} ,...))
+
+(macro buf-command!/current-buffer-by-default [...]
+  `(command! &default-opts {:buffer 0} ,...))
+
 (local default-callback #:default-callback)
 (local default {:multi {:sym #:default.multi.sym}})
 
