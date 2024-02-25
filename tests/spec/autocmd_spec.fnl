@@ -172,6 +172,14 @@
       (autocmd! default-augroup default-event [:pat] &vim (macro-command))
       (let [au (get-first-autocmd {:pattern :pat})]
         (assert.is_same :macro-command au.command))))
+  ;; (describe "(inline)"
+  ;;   (describe "autocmd with &default-opts"))
+  ;; (describe "helps to create MyVimrc augroup")
+  ;; (describe "buf-autocmd! defined on au-event(s)"
+  ;;   (describe "creates another autocommand")
+  ;;     ;; TODO: (it "in api-opts format")
+  ;;     ;; TODO: (it "in sequential format")))
+  ;; (describe "lets augroup spawn buffer-local autocmds in buffer-local augroup")
   (describe "(wrapper)"
     (describe :augroup+
       (it "gets an existing augroup id"
