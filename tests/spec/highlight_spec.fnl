@@ -16,6 +16,9 @@
 
 (local test-hl-name :HlTest)
 
+(lambda get-hl [ns-id opts]
+  (vim.api.nvim_get_hl ns-id opts))
+
 (lambda hex->decimal [hex]
   (let [t (type hex)]
     (assert (= t :string) (.. "expected string, got " t))
@@ -151,29 +154,32 @@
           ;; ctermfg/ctermbg respectively.
           (assert.has_error #(highlight! :FooBar (foobar)))))))
   (describe "(wrapper)"
-    (describe "with predefined-namespace-id"
-      (before_each (fn []
-                     (vim.api.nvim_set_hl predefined-namespace-id test-hl-name
-                                          {})
-                     (assert.is_same (vim.empty_dict)
-                                     (vim.api.nvim_get_hl predefined-namespace-id
-                                                          {:name test-hl-name}))))
-      (it "can be embedded in a macro"
-        (module-hi! test-hl-name {:ctermfg 0 :ctermbg 255})
-        (assert.is_not_same (vim.empty_dict)
-                            (vim.api.nvim_get_hl predefined-namespace-id
-                                                 {:name test-hl-name}))
-        (assert.is_same {:ctermfg 0 :ctermbg 255}
-                        (vim.api.nvim_get_hl predefined-namespace-id
-                                             {:name test-hl-name}))))
-    (describe "defined in another file"
-      (describe "with &default-opts"
-        (describe "{: bold true}"
-          (it "creates bold highlight by default"
-            (bold-highlight! test-hl-name {:ctermfg 0 :ctermbg 255})
-            (assert.is_true (-> (vim.api.nvim_get_hl 0 {:name test-hl-name})
-                                (. :bold))))
-          (it "can remove bold option"
-            (bold-highlight! test-hl-name {:ctermfg 0 :ctermbg 255 :bold false})
-            (assert.falsy (-> (vim.api.nvim_get_hl 0 {:name test-hl-name})
-                              (. :bold)))))))))
+    ;; TODO: Also test them in the versions < 0.9.0, where `nvim_get_hl` does
+    ;; not exist.
+    (when vim.api.nvim_get_hl
+      (describe "with predefined-namespace-id"
+        (before_each (fn []
+                       (vim.api.nvim_set_hl predefined-namespace-id
+                                            test-hl-name {})
+                       (assert.is_same (vim.empty_dict)
+                                       (get-hl predefined-namespace-id
+                                               {:name test-hl-name}))))
+        (it "can be embedded in a macro"
+          (module-hi! test-hl-name {:ctermfg 0 :ctermbg 255})
+          (assert.is_not_same (vim.empty_dict)
+                              (get-hl predefined-namespace-id
+                                      {:name test-hl-name}))
+          (assert.is_same {:ctermfg 0 :ctermbg 255}
+                          (get-hl predefined-namespace-id {:name test-hl-name}))))
+      (describe "defined in another file"
+        (describe "with &default-opts"
+          (describe "{: bold true}"
+            (it "creates bold highlight by default"
+              (bold-highlight! test-hl-name {:ctermfg 0 :ctermbg 255})
+              (assert.is_true (-> (get-hl 0 {:name test-hl-name})
+                                  (. :bold))))
+            (it "can remove bold option"
+              (bold-highlight! test-hl-name
+                               {:ctermfg 0 :ctermbg 255 :bold false})
+              (assert.falsy (-> (get-hl 0 {:name test-hl-name})
+                                (. :bold))))))))))
