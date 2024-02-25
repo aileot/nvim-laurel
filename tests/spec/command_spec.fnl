@@ -83,4 +83,41 @@
           (assert.is_false cmd-baz.bar)
           (assert.is_true cmd-baz.bang)
           (assert.is_true cmd-qux.bar)
-          (assert.is_false cmd-qux.bang))))))
+          (assert.is_false cmd-qux.bang)))))
+  (describe "(wrapper)"
+    (describe :buf-command!
+      (describe "as an alias of vim.api.nvim_buf_create_user_command()"
+        (it "can be defined as a macro"
+          (vim.cmd.new)
+          (vim.cmd.only)
+          (let [bufnr (vim.api.nvim_get_current_buf)]
+            (assert.is_nil (get-buf-command bufnr :Foo))
+            (assert.has_no_error #(buf-command!/as-api-alias bufnr :Foo :Bar))
+            (assert.is_not_nil (get-buf-command bufnr :Foo))
+            (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr :Foo)))))
+      (describe "which creates command for current buffer by default"
+        (it "can be defined as a macro"
+          (vim.cmd.new)
+          (vim.cmd.only)
+          (let [bufnr (vim.api.nvim_get_current_buf)]
+            (assert.is_nil (get-buf-command bufnr :Foo))
+            (assert.has_no_error #(buf-command!/current-buffer-by-default :Foo
+                                                                          :Bar))
+            (assert.is_not_nil (get-buf-command bufnr :Foo))
+            (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr :Foo))))
+        (it "can overwrite target buffer"
+          (let [buf1 (vim.api.nvim_get_current_buf)]
+            (vim.cmd.new)
+            (vim.cmd.only)
+            (let [buf2 (vim.api.nvim_get_current_buf)]
+              (assert.is_nil (get-buf-command buf1 :Foo))
+              (assert.is_nil (get-buf-command buf2 :Foo))
+              (assert.has_no_error #(buf-command!/current-buffer-by-default [:buffer
+                                                                             buf1]
+                                                                            :Foo
+                                                                            :Bar))
+              (assert.is_not_nil (get-buf-command buf1 :Foo))
+              (assert.is_nil (get-buf-command buf2 :Foo))
+              (assert.has_no_error #(vim.api.nvim_buf_del_user_command buf1
+                                                                       :Foo))
+              (assert.has_error #(vim.api.nvim_buf_del_user_command buf2 :Foo)))))))))
