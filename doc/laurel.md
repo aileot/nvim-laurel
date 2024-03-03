@@ -89,9 +89,44 @@ the following features:
 
 A symbol to set default values of `api-opts` field. It indicates that the bare
 kv-table next to `&default-opts` contains default values for `api-opts`, but
-it also accept the same keys as `extra-opts`. To set boolean option, it
-requires to set to either `true` or `false` in spite of the syntax of
-`extra-opts` itself.
+it also accepts the additional keys available in `extra-opts`. To set boolean
+option, it requires to set to either `true` or `false` in spite of the syntax
+of `extra-opts` itself.
+
+Note that quote parts depend on where the wrapper macros are defined:
+
+- To define a wrapper **macro** to be expanded in the **same** file, quote the
+  entire `list` of the imported macro (and unquote as you need). For example,
+
+  ```fennel
+  ;; in foobar.fnl
+  (import-macros {: map!} :nvim-laurel)
+
+  (macro buf-map! [...]
+    `(map! &default-opts {:buffer 0} ,...))
+
+  (buf-map! :lhs :rhs)
+  ```
+
+- To define a wrapper **function** to be imported as a macro in **another**
+  file, just quote `&default-opts`. For example,
+
+  ```fennel
+  ;; in my/macros.fnl
+  (local {: map!} (require :nvim-laurel))
+
+  (fn buf-map! [...]
+    (map! `&default-opts {:buffer 0} ...))
+
+  {: buf-map!}
+  ```
+
+  ```fennel
+  ;; in foobar.fnl (another file)
+  (import-macros {: buf-map!} :my.macros)
+
+  (buf-map! :lhs :rhs)
+  ```
 
 ## Macros
 
