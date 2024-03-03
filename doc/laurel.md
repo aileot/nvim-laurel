@@ -142,6 +142,7 @@ Create or get an augroup, or override an existing augroup.
   Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
   argument from `nvim_create_autocmd()`; on the other hand, set
   `#(vim.fn.foobar $)` to call `foobar` with the table argument.
+
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
@@ -260,6 +261,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - Set it in bare-string.
   - Insert `&vim` symbol just before the callback.
   - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
+
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
@@ -929,6 +931,7 @@ runtime.
 1. Update deprecated features
 
    This is a list of useful commands:
+
    - With [`:cdo`] or [`:cfdo`],
      - [`:norm`][`:normal`] or [`:normal`]
      - [`:g`][`:global`] or [`:global`]
