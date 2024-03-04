@@ -7,6 +7,11 @@
     {:clear false}
     ...))
 
+(fn buf-augroup! [name ...]
+  "Create an buffer-local augroup. Only expected to be defined in ***hashfn***
+  in an autocmd."
+  (augroup! (: "%s-%d" :format name `$.buf) ...))
+
 (fn buf-autocmd!/with-no-default-bufnr [buffer ...]
   (augroup! :buf-local-augroup
     (autocmd! `&default-opts {: buffer} ...)))
@@ -51,6 +56,7 @@
     _ (highlight! ...)))
 
 {: augroup+
+ : buf-augroup!
  : buf-autocmd!/with-no-default-bufnr
  : buf-autocmd!/with-buffer=0
  : set+
