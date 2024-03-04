@@ -35,6 +35,9 @@
 (fn buf-map!/with-buffer=0 [...]
   (map! `&default-opts {:buffer 0} ...))
 
+(fn buf-map!/with-<buffer>=true [...]
+  (map! `&default-opts {:<buffer> true} ...))
+
 (fn buf-command!/as-api-alias [bufnr ...]
   (command! `&default-opts {:buffer bufnr} ...))
 
@@ -57,6 +60,7 @@
  : omni-map!
  : remap!
  : buf-map!/with-buffer=0
+ : buf-map!/with-<buffer>=true
  : buf-command!/as-api-alias
  : bold-highlight!
  : hi!-link-by-default}
