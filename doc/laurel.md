@@ -91,7 +91,7 @@ A symbol to set default values of `api-opts` field. It indicates that the bare
 kv-table next to `&default-opts` contains default values for `api-opts`, but
 it also accepts the additional keys available in `extra-opts`. To set boolean
 option, it requires to set to either `true` or `false` in spite of the syntax
-of `extra-opts` itself.
+of `extra-opts` itself. See also its [Anti-Patterns][WIP].
 
 Note that quote parts depend on where the wrapper macros are defined:
 
@@ -850,6 +850,64 @@ nvim_set_nl(0, "Foo", {
 An alias of [`highlight!`](#highlight).
 
 ## Anti-Patterns
+
+### [`&default-opts`](#default-opts)
+
+#### Define macro wrappers
+
+To create wrapper of nvim-laurel macro, it is unrecommended to wrap them in
+runtime function; instead, wrap them in macro.
+Fennel macros cannot parse the contents of `varargs` (`...`) which is only
+determined at runtime.
+
+See also [`&default-opts`][default-opts].
+
+##### Anti-Pattern
+
+```fennel
+(autocmd! group [:FileType]
+  #(let [buf-au! (fn [...]
+                   (autocmd! &default-opts {:buffer 0} ...))]
+     (buf-au! [:InsertEnter] (do :something))
+     (buf-au! [:BufWritePre] (do :other))))
+```
+
+##### Pattern
+
+```fennel
+(import-macros {: autocmd!} :nvim-laurel)
+
+(macro buf-au! [...]
+  `(autocmd! &default-opts {:buffer 0} ,...))
+
+(autocmd! group [:FileType]
+  #(do
+     (buf-au! [:InsertEnter] (do :something))
+     (buf-au! [:BufWritePre] (do :other))))
+```
+
+or
+
+```fennel
+;; in my/macros.fnl
+(local {: atocmd!} (require :nvim-laurel))
+
+(fn buf-au! [...]
+  (autocmd! `&default-opts {:buffer 0} ...))
+
+{: buf-au!}
+```
+
+```fennel
+;; in foobar.fnl (another file)
+(import-macros {: autocmd!} :nvim-laurel)
+(import-macros {: buf-au!} :my.macros)
+
+(autocmd! group [:FileType]
+  #(do
+     (buf-au! [:InsertEnter] (do :something))
+     (buf-au! [:BufWritePre] (do :other))))
+```
 
 ### [`autocmd!`](#autocmd)
 
