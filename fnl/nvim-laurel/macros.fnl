@@ -583,7 +583,7 @@
   (set opts.literal nil)
   opts)
 
-(lambda keymap/parse-args [args]
+(lambda keymap/parse-args [...]
   "Parse map! macro args in sequence.
   ```fennel
   (keymap/parse-args ?extra-opts lhs rhs ?api-opts)
@@ -597,7 +597,8 @@
   @return lhs string
   @return rhs string|function
   @return ?api-opts kv-table"
-  (let [([modes a1 a2 ?a3 ?a4] {:&vim ?vim-indice}) ;
+  (let [args (default/extract-opts! [...])
+        ([modes a1 a2 ?a3 ?a4] {:&vim ?vim-indice}) ;
         (extract-symbols args [`&vim])]
     (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
         (let [?seq-extra-opts (if (sequence? a1) a1
@@ -610,15 +611,16 @@
                                                    (sequence? a1)
                                                    [?extra-opts a2 ?a3 ?a4]
                                                    [?extra-opts a1 ?a3 ?a4])
+              extra-opts* (default/merge-opts! extra-opts)
               rhs (if (or ?vim-indice (str? raw-rhs)
                           (vim-callback-format? raw-rhs))
                       raw-rhs
                       (do
-                        (set extra-opts.callback raw-rhs)
+                        (set extra-opts*.callback raw-rhs)
                         ""))
-              ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
-          (set extra-opts.buffer ?bufnr)
-          (values modes extra-opts lhs rhs ?api-opts)))))
+              ?bufnr (if extra-opts*.<buffer> 0 extra-opts*.buffer)]
+          (set extra-opts*.buffer ?bufnr)
+          (values modes extra-opts* lhs rhs ?api-opts)))))
 
 (lambda keymap/del-maps! [...]
   "Delete keymap.
@@ -697,11 +699,8 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (let [default-opts {:noremap true}
-        args (default/extract-opts! [...])
-        (modes extra-opts lhs rhs ?api-opts) (keymap/parse-args args)
-        extra-opts* (tbl/merge default-opts ;
-                               (default/release-opts!) ;
-                               extra-opts)]
+        (modes extra-opts lhs rhs ?api-opts) (keymap/parse-args ...)
+        extra-opts* (tbl/merge default-opts extra-opts)]
     (keymap/set-maps! modes extra-opts* lhs rhs ?api-opts)))
 
 (lambda unmap! [...]
