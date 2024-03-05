@@ -14,9 +14,11 @@
     ...))
 
 (fn buf-augroup! [name ...]
-  "Create an buffer-local augroup. Only expected to be defined in ***hashfn***
-  in an autocmd."
-  (augroup! (: "%s-%d" :format name `$.buf) ...))
+  "Create an buffer-local augroup. This macro is supposed to be expanded in
+  another parent augroup or in ftplugin."
+  (let [augroup-name `(: "%s%d" :format ,name (vim.api.nvim_get_current_buf))]
+    (augroup! augroup-name
+      ...)))
 
 (fn buf-autocmd!/with-no-default-bufnr [buffer ...]
   (augroup! :buf-local-augroup
