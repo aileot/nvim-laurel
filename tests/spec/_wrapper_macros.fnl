@@ -2,6 +2,12 @@
 (local {: augroup! : autocmd! : set! : map! : command! : highlight!}
        (require :nvim-laurel.macros))
 
+(fn my-autocmd! [...]
+  "Create an autocmd in predefined augroup, but the augroup MUST be defined
+  outside of macro definition file. It requires the carefully conflicted
+  variable assigned an augroup in global-scope."
+  (autocmd! `_G.my-augroup-id ...))
+
 (fn augroup+ [...]
   (augroup! `&default-opts
     {:clear false}
@@ -55,7 +61,8 @@
     1 (highlight! `&default-opts {:link ref} ...)
     _ (highlight! ...)))
 
-{: augroup+
+{: my-autocmd!
+ : augroup+
  : buf-augroup!
  : buf-autocmd!/with-no-default-bufnr
  : buf-autocmd!/with-buffer=0
