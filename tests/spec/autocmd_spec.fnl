@@ -1,6 +1,8 @@
 (import-macros {: describe : it} :_busted_macros)
 (import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
-(import-macros {: augroup+} :_wrapper_macros)
+(import-macros {: my-autocmd! : augroup+ : buf-augroup!} :_wrapper_macros)
+
+(set _G.my-augroup-id (augroup! :MyAugroup))
 
 (macro macro-callback []
   `#:macro-callback)
@@ -189,7 +191,12 @@
             (augroup+ default-augroup
               (au! default-event [:pat1 :pat2] default-callback))
             (let [[autocmd] (get-autocmds)]
-              (assert.is.same default-callback autocmd.callback)))))
+              (assert.is.same default-callback autocmd.callback))))
+        (it "can create autocmd in predefined augroup in global-scope"
+          (assert.has_no_error #(my-autocmd! [:FileType] [:foo] default-command))
+          (let [[au &as aus] (get-autocmds {:group _G.my-augroup-id})]
+            (assert.is_same 1 (length aus))
+            (assert.is_same :foo au.pattern))))
       (describe "local macro"
         (describe "carefully binding variables without gensym"
           (it "can define buffer-local autocmd wrapper"
