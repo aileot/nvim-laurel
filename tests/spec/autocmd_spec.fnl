@@ -23,6 +23,10 @@
   (let [opts (collect [k v (pairs (or ?opts {})) ;
                        &into {:group default-augroup}]
                (values k v))]
+    ;; Note: `vim.api.nvim_get_autocmds` would includes the autocmds defined
+    ;; in running nvim when the tests are run in a local nvim instance.
+    (when (= false opts.group)
+      (set opts.group nil))
     (vim.api.nvim_get_autocmds opts)))
 
 (lambda get-first-autocmd [?opts]
@@ -36,6 +40,8 @@
   (before_each (fn []
                  (augroup! default-augroup)
                  (let [aus (get-autocmds)]
+                   ;; TODO: Automate to clear any autocmds.
+                   ;; (let [aus (get-autocmds {:group false})])
                    (assert.is.same {} aus))))
   (describe :augroup!
     (it "returns augroup id without autocmds insides"
