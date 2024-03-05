@@ -199,7 +199,8 @@
             (let [[autocmd] (get-autocmds)]
               (assert.is.same default-callback autocmd.callback))))
         (it "can create autocmd in predefined augroup in global-scope"
-          (assert.has_no_error #(my-autocmd! [:FileType] [:foo] default-command))
+          (assert.has_no_error #(my-autocmd! [:FileType] [:foo]
+                                             default-callback))
           (let [[au &as aus] (get-autocmds {:group _G.my-augroup-id})]
             (assert.is_same 1 (length aus))
             (assert.is_same :foo au.pattern))))
