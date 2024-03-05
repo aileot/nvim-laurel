@@ -182,112 +182,113 @@
       (assert.has_no.errors #(map! :n [:<buffer>] :lhs (<C-u> "Do something")))
       (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
   (describe "(wrapper)"
-    (describe "macro defined in another file"
-      (describe :remap!
-        (it "creates recursive mapping by default"
-          (let [mode :x
-                modes [:n :o :t]]
-            (remap! mode :lhs :rhs)
-            (remap! modes :lhs :rhs)
-            (let [{: noremap} (get-mapargs mode :lhs)]
-              (assert.is.same 0 noremap))
-            (each [_ m (ipairs modes)]
-              (let [{: noremap} (get-mapargs m :lhs)]
-                (assert.is.same 0 noremap)))))
-        (it "can create non-recursive mappings by overriding option"
-          (let [mode :x
-                modes [:n :o :t]]
-            (map! mode [:noremap] :lhs :rhs)
-            (map! modes [:noremap] :lhs :rhs)
-            (let [{: noremap} (get-mapargs mode :lhs)]
-              (assert.is.same 1 noremap))
-            (each [_ m (ipairs modes)]
-              (let [{: noremap} (get-mapargs m :lhs)]
-                (assert.is.same 1 noremap))))))
-      (describe "buf-map! with {:buffer 0} in its default-opts"
-        (before_each (fn []
-                       (refresh-buffer)))
-        (it "creates current buffer-local mapping by default"
-          (let [mode :x
-                bufnr (vim.api.nvim_get_current_buf)]
-            (assert.is_nil (get-rhs mode :lhs))
-            (assert.is_nil (buf-get-rhs 0 mode :lhs))
-            (buf-map!/with-buffer=0 mode :lhs :rhs)
-            (assert.is_nil (get-rhs mode :lhs))
-            (assert.is_same :rhs (buf-get-rhs 0 mode :lhs))
-            (refresh-buffer)
-            (assert.is_nil (buf-get-rhs 0 mode :lhs))
-            (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs)))))
-      (it "can create another buffer-local mapping by overriding option"
-        (let [mode :x
-              bufnr (vim.api.nvim_get_current_buf)]
+    (describe :omni-map!
+      (it "should map to lhs in any mode"
+        (each [_ mode (ipairs [:n :v :x :s :o :i :l :c :t])]
+          (assert.is_nil (get-rhs mode :lhs)))
+        (omni-map! :lhs :rhs)
+        (each [_ mode (ipairs [:n :v :x :s :o :i :l :c :t])]
+          (assert.is_same :rhs (get-rhs mode :lhs)))))
+    (describe :nmap!
+      (it "can include extra-opts in either first or second arg"
+        (assert.has_no.errors #(nmap! [:nowait] :lhs :rhs))
+        (assert.has_no.errors #(nmap! :lhs [:nowait] :rhs)))
+      (it "maps to current buffer with `<buffer>`"
+        (nmap! [:<buffer>] :lhs :rhs)
+        (assert.is.same :rhs (buf-get-rhs 0 :n :lhs)))
+      (it "maps to specific buffer with `buffer`"
+        (let [bufnr (vim.api.nvim_get_current_buf)]
           (refresh-buffer)
-          (assert.is_nil (get-rhs mode :lhs))
-          (assert.is_nil (buf-get-rhs 0 mode :lhs))
-          (buf-map!/with-buffer=0 mode [:buffer bufnr] :lhs :rhs)
-          (assert.is_nil (get-rhs mode :lhs))
-          (assert.is_nil (buf-get-rhs 0 mode :lhs))
-          (refresh-buffer)
-          (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs))))
-      (describe "buf-map! with {:<buffer> true} in its default-opts"
-        (it "creates current buffer-local mapping by default"
-          (let [bufnr (vim.api.nvim_get_current_buf)]
-            (assert.is_nil (get-rhs :x :lhs))
-            (assert.is_nil (buf-get-rhs 0 :x :lhs))
-            (buf-map!/with-<buffer>=true :x :lhs :rhs)
-            (assert.is_nil (get-rhs :x :lhs))
-            (assert.is_same :rhs (buf-get-rhs 0 :x :lhs))
-            (refresh-buffer)
-            (assert.is_nil (buf-get-rhs 0 :x :lhs))
-            (assert.is_same :rhs (buf-get-rhs bufnr :x :lhs))))
+          (nmap! [:buffer bufnr] :lhs :rhs)
+          (assert.is_nil (buf-get-rhs 0 :n :lhs))
+          (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))))
+      (it "set a list which will result in string without callback"
+        (nmap! :lhs &vim (.. :r :h :s))
+        (nmap! :lhs1 &vim (.. (<Cmd> :foobar) :<Esc>))
+        (assert.is.same :rhs (get-rhs :n :lhs))
+        (assert.is.same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1)))
+      (it "enables `replace_keycodes` when `expr` is set in `extra-opts`"
+        (nmap! :lhs [:expr] :rhs)
+        (nmap! :lhs1 :rhs {:expr true})
+        (let [opt {:expr true}]
+          (nmap! :lhs2 :rhs opt))
+        (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+          (assert.is.same 1 replace_keycodes))
+        (let [{: replace_keycodes} (get-mapargs :n :lhs1)]
+          (assert.is_nil replace_keycodes))
+        (let [{: replace_keycodes} (get-mapargs :n :lhs2)]
+          (assert.is_nil replace_keycodes)))
+      (it "disables `replace_keycodes` when `literal` is set in `extra-opts`"
+        (nmap! :lhs [:expr :literal] :rhs)
+        (let [{: replace_keycodes} (get-mapargs :n :lhs)]
+          (assert.is_nil replace_keycodes))))
+    (describe "with `&default-opts`"
+      (describe "macro defined in another file"
+        (describe :remap!
+          (it "creates recursive mapping by default"
+            (let [mode :x
+                  modes [:n :o :t]]
+              (remap! mode :lhs :rhs)
+              (remap! modes :lhs :rhs)
+              (let [{: noremap} (get-mapargs mode :lhs)]
+                (assert.is.same 0 noremap))
+              (each [_ m (ipairs modes)]
+                (let [{: noremap} (get-mapargs m :lhs)]
+                  (assert.is.same 0 noremap)))))
+          (it "can create non-recursive mappings by overriding option"
+            (let [mode :x
+                  modes [:n :o :t]]
+              (map! mode [:noremap] :lhs :rhs)
+              (map! modes [:noremap] :lhs :rhs)
+              (let [{: noremap} (get-mapargs mode :lhs)]
+                (assert.is.same 1 noremap))
+              (each [_ m (ipairs modes)]
+                (let [{: noremap} (get-mapargs m :lhs)]
+                  (assert.is.same 1 noremap))))))
+        (describe "buf-map! with {:buffer 0} in its default-opts"
+          (before_each (fn []
+                         (refresh-buffer)))
+          (it "creates current buffer-local mapping by default"
+            (let [mode :x
+                  bufnr (vim.api.nvim_get_current_buf)]
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_nil (buf-get-rhs 0 mode :lhs))
+              (buf-map!/with-buffer=0 mode :lhs :rhs)
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_same :rhs (buf-get-rhs 0 mode :lhs))
+              (refresh-buffer)
+              (assert.is_nil (buf-get-rhs 0 mode :lhs))
+              (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs)))))
         (it "can create another buffer-local mapping by overriding option"
           (let [mode :x
                 bufnr (vim.api.nvim_get_current_buf)]
+            (refresh-buffer)
             (assert.is_nil (get-rhs mode :lhs))
             (assert.is_nil (buf-get-rhs 0 mode :lhs))
-            (buf-map!/with-<buffer>=true mode [:buffer bufnr] :lhs :rhs)
+            (buf-map!/with-buffer=0 mode [:buffer bufnr] :lhs :rhs)
             (assert.is_nil (get-rhs mode :lhs))
-            (assert.is_same :rhs (buf-get-rhs 0 mode :lhs))
+            (assert.is_nil (buf-get-rhs 0 mode :lhs))
             (refresh-buffer)
-            (assert.is_nil (buf-get-rhs 0 :x :lhs))
-            (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs)))))
-      (describe :omni-map!
-        (it "should map to lhs in any mode"
-          (each [_ mode (ipairs [:n :v :x :s :o :i :l :c :t])]
-            (assert.is_nil (get-rhs mode :lhs)))
-          (omni-map! :lhs :rhs)
-          (each [_ mode (ipairs [:n :v :x :s :o :i :l :c :t])]
-            (assert.is_same :rhs (get-rhs mode :lhs)))))
-      (describe :nmap!
-        (it "can include extra-opts in either first or second arg"
-          (assert.has_no.errors #(nmap! [:nowait] :lhs :rhs))
-          (assert.has_no.errors #(nmap! :lhs [:nowait] :rhs)))
-        (it "maps to current buffer with `<buffer>`"
-          (nmap! [:<buffer>] :lhs :rhs)
-          (assert.is.same :rhs (buf-get-rhs 0 :n :lhs)))
-        (it "maps to specific buffer with `buffer`"
-          (let [bufnr (vim.api.nvim_get_current_buf)]
-            (refresh-buffer)
-            (nmap! [:buffer bufnr] :lhs :rhs)
-            (assert.is_nil (buf-get-rhs 0 :n :lhs))
-            (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))))
-        (it "set a list which will result in string without callback"
-          (nmap! :lhs &vim (.. :r :h :s))
-          (nmap! :lhs1 &vim (.. (<Cmd> :foobar) :<Esc>))
-          (assert.is.same :rhs (get-rhs :n :lhs))
-          (assert.is.same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1)))
-        (it "enables `replace_keycodes` when `expr` is set in `extra-opts`"
-          (nmap! :lhs [:expr] :rhs)
-          (nmap! :lhs1 :rhs {:expr true})
-          (let [opt {:expr true}]
-            (nmap! :lhs2 :rhs opt))
-          (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-            (assert.is.same 1 replace_keycodes))
-          (let [{: replace_keycodes} (get-mapargs :n :lhs1)]
-            (assert.is_nil replace_keycodes))
-          (let [{: replace_keycodes} (get-mapargs :n :lhs2)]
-            (assert.is_nil replace_keycodes)))
-        (it "disables `replace_keycodes` when `literal` is set in `extra-opts`"
-          (nmap! :lhs [:expr :literal] :rhs)
-          (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-            (assert.is_nil replace_keycodes)))))))
+            (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs))))
+        (describe "buf-map! with {:<buffer> true} in its default-opts"
+          (it "creates current buffer-local mapping by default"
+            (let [bufnr (vim.api.nvim_get_current_buf)]
+              (assert.is_nil (get-rhs :x :lhs))
+              (assert.is_nil (buf-get-rhs 0 :x :lhs))
+              (buf-map!/with-<buffer>=true :x :lhs :rhs)
+              (assert.is_nil (get-rhs :x :lhs))
+              (assert.is_same :rhs (buf-get-rhs 0 :x :lhs))
+              (refresh-buffer)
+              (assert.is_nil (buf-get-rhs 0 :x :lhs))
+              (assert.is_same :rhs (buf-get-rhs bufnr :x :lhs))))
+          (it "can create another buffer-local mapping by overriding option"
+            (let [mode :x
+                  bufnr (vim.api.nvim_get_current_buf)]
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_nil (buf-get-rhs 0 mode :lhs))
+              (buf-map!/with-<buffer>=true mode [:buffer bufnr] :lhs :rhs)
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_same :rhs (buf-get-rhs 0 mode :lhs))
+              (refresh-buffer)
+              (assert.is_nil (buf-get-rhs 0 :x :lhs))
+              (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs)))))))))
