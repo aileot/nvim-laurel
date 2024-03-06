@@ -245,7 +245,7 @@
                 `(autocmd! id &default-opts {:buffer undefined-var.buf} ,...))
               (assert.is_false foo)
               (assert.has_no_error #(autocmd! id [:FileType] [:foobar]
-                                              (fn [a]
+                                              (fn [_a]
                                                 (buf-au! [:InsertEnter]
                                                          #(set foo true)))))
               (assert.has_error #(set vim.bo.filetype :foobar))))))
