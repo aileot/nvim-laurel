@@ -34,6 +34,8 @@
 (lambda get-first-autocmd [?opts]
   (. (get-autocmds ?opts) 1))
 
+;; Note: `(vim.cmd "normal! i")` does not trigger event InsertEnter in the
+;; nvim nightly v0.10; use `(vim.fn.feedkeys :i :ni)` instead.
 (describe :autocmd
   (setup (fn []
            (vim.cmd "function g:Test() abort\nendfunction")))
@@ -220,7 +222,7 @@
               (assert.is_false foo)
               (set vim.bo.filetype :foobar)
               (assert.is_false foo)
-              (vim.cmd.normal {:args [:i] :bang true})
+              (vim.fn.feedkeys :i :ni)
               (assert.is_true foo)
               (let [bufnr (vim.api.nvim_get_current_buf)
                     [au1 au2 &as aus] (get-autocmds {:group id})]
