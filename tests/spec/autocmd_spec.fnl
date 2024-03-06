@@ -232,8 +232,8 @@
                 (assert.is_same :FileType au.event))
               (set vim.bo.filetype :foo)
               (let [bufnr (vim.api.nvim_get_current_buf)
-                    [au &as aus] (get-autocmds {:group (.. local-group-prefix
-                                                           bufnr)})]
+                    macro-gen-group-name (.. local-group-prefix bufnr)
+                    [au &as aus] (get-autocmds {:group macro-gen-group-name})]
                 (assert.is_same 1 (length aus))
                 (assert.is_same au.event :InsertEnter))))
           (pending "can spawn buffer-local autocmd from a spawned buffer-local augroup"))
