@@ -212,7 +212,9 @@
             (assert.is_same 1 (length aus))
             (assert.is_same :foo au.pattern))))
       (describe "local macro"
-        (describe "carefully binding variables without gensym"
+        (describe "carefully binding variables without gensym in order to get conflicted with existing variable"
+          ;; Note: Another spec, carelessly bound to undefined variable,
+          ;; throws error too earlier in nvim >= 0.10.
           (it "can define buffer-local autocmd wrapper"
             (var foo false)
             (let [id (augroup! default-augroup)]
@@ -275,19 +277,7 @@
                   [au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name})]
               (assert.is_same 2 (length aus))
               (assert.is_same {:InsertEnter true :BufWritePre true}
-                              {au1.event true au2.event true}))))
-        (describe "**carelessly** binding variables without gensym"
-          (it "throws error on wrapped autocmd triggered"
-            (var foo false)
-            (let [id (augroup! default-augroup)]
-              (macro buf-au! [...]
-                `(autocmd! id &default-opts {:buffer undefined-var.buf} ,...))
-              (assert.is_false foo)
-              (assert.has_no_error #(autocmd! id [:FileType] [:foobar]
-                                              (fn [_a]
-                                                (buf-au! [:InsertEnter]
-                                                         #(set foo true)))))
-              (assert.has_error #(set vim.bo.filetype :foobar))))))
+                              {au1.event true au2.event true})))))
       (describe "wrapper function at runtime"
         (it "usually causes errors because compiled into unexpected output."
           (autocmd! default-augroup [:FileType]
