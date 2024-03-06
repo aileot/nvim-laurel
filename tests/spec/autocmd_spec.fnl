@@ -258,7 +258,7 @@
             (augroup! group-name
               (au! [:FileType]
                    #(buf-augroup! local-group-prefix
-                      (au! [:InsertEnter] [:<buffer> :desc "spawned autocmd"]
+                      (au! [:InsertEnter] [:buffer 0 :desc "spawned autocmd"]
                            (fn [a]
                              (buf-autocmd!/with-buffer=0 a.group [:BufWritePre]
                                                          default-callback
@@ -268,17 +268,15 @@
               (assert.is_same :FileType au.event))
             (set vim.bo.filetype :foo)
             (let [bufnr (vim.api.nvim_get_current_buf)
-                  macro-gen-group-name (.. local-group-prefix bufnr)
-                  [au &as aus] (get-autocmds {:group macro-gen-group-name})]
-              (assert.is_same 1 (length aus))
-              (assert.is_same :InsertEnter au.event))
-            (vim.fn.feedkeys :i :ni)
-            (let [bufnr (vim.api.nvim_get_current_buf)
-                  macro-gen-group-name (.. local-group-prefix bufnr)
-                  [au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name})]
-              (assert.is_same 2 (length aus))
-              (assert.is_same {:InsertEnter true :BufWritePre true}
-                              {au1.event true au2.event true})))))
+                  macro-gen-group-name (.. local-group-prefix bufnr)]
+              (let [[au &as aus] (get-autocmds {:group macro-gen-group-name})]
+                (assert.is_same 1 (length aus))
+                (assert.is_same :InsertEnter au.event))
+              (vim.fn.feedkeys :i :ni)
+              (let [[au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name})]
+                (assert.is_same 2 (length aus))
+                (assert.is_same {:InsertEnter true :BufWritePre true}
+                                {au1.event true au2.event true}))))))
       (describe "wrapper function at runtime"
         (it "usually causes errors because compiled into unexpected output."
           (autocmd! default-augroup [:FileType]
