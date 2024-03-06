@@ -259,9 +259,10 @@
               (au! [:FileType]
                    #(buf-augroup! local-group-prefix
                       (au! [:InsertEnter] [:<buffer> :desc "spawned autocmd"]
-                           #(buf-autocmd!/with-buffer=0 $.group [:BufWritePre]
-                                                        default-callback
-                                                        {:desc "spawned autocmd, nested"})))))
+                           (fn [a]
+                             (buf-autocmd!/with-buffer=0 a.group [:BufWritePre]
+                                                         default-callback
+                                                         {:desc "spawned autocmd, nested"}))))))
             (let [[au &as aus] (get-autocmds {:group group-name})]
               (assert.is_same 1 (length aus))
               (assert.is_same :FileType au.event))
