@@ -219,7 +219,14 @@
               (set vim.bo.filetype :foobar)
               (assert.is_false foo)
               (vim.cmd.normal {:args [:i] :bang true})
-              (assert.is_true foo)))
+              (assert.is_true foo)
+              (let [bufnr (vim.api.nvim_get_current_buf)
+                    [au1 au2 &as aus] (get-autocmds {:group id})]
+                (assert.is_same 2 (length aus))
+                (assert.is_same :FileType au1.event)
+                (assert.is_same :InsertEnter au2.event)
+                (assert.is_nil au1.buffer)
+                (assert.is_same bufnr au2.buffer))))
           (it "can spawn a buffer-local augroup"
             (let [group-name "spawn buffer-local augroup"
                   local-group-prefix :local]
@@ -233,10 +240,9 @@
               (set vim.bo.filetype :foo)
               (let [bufnr (vim.api.nvim_get_current_buf)
                     macro-gen-group-name (.. local-group-prefix bufnr)
-                    [au &as aus] (get-autocmds {:group macro-gen-group-name})]
+                    [au1 &as aus] (get-autocmds {:group macro-gen-group-name})]
                 (assert.is_same 1 (length aus))
-                (assert.is_same au.event :InsertEnter))))
-          (pending "can spawn buffer-local autocmd from a spawned buffer-local augroup"))
+                (assert.is_same :InsertEnter au1.event)))))
         (describe "**carelessly** binding variables without gensym"
           (it "throws error on wrapped autocmd triggered"
             (var foo false)
