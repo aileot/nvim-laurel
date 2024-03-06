@@ -231,11 +231,11 @@
                 (assert.is_same 1 (length aus))
                 (assert.is_same :FileType au.event))
               (set vim.bo.filetype :foo)
-              (pending #(let [bufnr (vim.api.nvim_get_current_buf)
-                              [au &as aus] (get-autocmds {:event :InsertEnter})]
-                          (assert.is_same 1 (length aus))
-                          (assert.is_same au.group
-                                          (.. local-group-prefix bufnr))))))
+              (let [bufnr (vim.api.nvim_get_current_buf)
+                    [au &as aus] (get-autocmds {:group (.. local-group-prefix
+                                                           bufnr)})]
+                (assert.is_same 1 (length aus))
+                (assert.is_same au.event :InsertEnter))))
           (pending "can spawn buffer-local autocmd from a spawned buffer-local augroup"))
         (describe "**carelessly** binding variables without gensym"
           (it "throws error on wrapped autocmd triggered"
