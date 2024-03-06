@@ -37,8 +37,8 @@
 (lambda get-first-autocmd [?opts]
   (. (get-autocmds ?opts) 1))
 
-;; Note: `(vim.cmd "normal! i")` does not trigger event InsertEnter in the
-;; nvim nightly v0.10; use `(vim.fn.feedkeys :i :ni)` instead.
+;; Note: `(vim.cmd "normal! i")` does not trigger event `InsertEnter` in the
+;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe :autocmd
   (setup (fn []
            (vim.cmd "function g:Test() abort\nendfunction")))
@@ -225,17 +225,17 @@
                         (fn [a]
                           (buf-au! [:InsertEnter] #(set foo true))))
               (assert.is_false foo)
-              (set vim.bo.filetype :foobar)
-              (assert.is_false foo)
-              (vim.fn.feedkeys :i :ni)
-              (assert.is_true foo)
-              (let [bufnr (vim.api.nvim_get_current_buf)
-                    [au1 au2 &as aus] (get-autocmds {:group id})]
-                (assert.is_same 2 (length aus))
-                (assert.is_same :FileType au1.event)
-                (assert.is_same :InsertEnter au2.event)
-                (assert.is_nil au1.buffer)
-                (assert.is_same bufnr au2.buffer))))
+              (let [bufnr (vim.api.nvim_get_current_buf)]
+                (set vim.bo.filetype :foobar)
+                (assert.is_false foo)
+                (vim.api.nvim_exec_autocmds :InsertEnter {:buffer bufnr})
+                (assert.is_true foo)
+                (let [[au1 au2 &as aus] (get-autocmds {:group id})]
+                  (assert.is_same 2 (length aus))
+                  (assert.is_same :FileType au1.event)
+                  (assert.is_same :InsertEnter au2.event)
+                  (assert.is_nil au1.buffer)
+                  (assert.is_same bufnr au2.buffer)))))
           (it "can spawn a buffer-local augroup"
             (let [group-name "spawn buffer-local augroup"
                   local-group-prefix :local]
@@ -272,7 +272,7 @@
               (let [[au &as aus] (get-autocmds {:group macro-gen-group-name})]
                 (assert.is_same 1 (length aus))
                 (assert.is_same :InsertEnter au.event))
-              (vim.fn.feedkeys :i :ni)
+              (vim.api.nvim_exec_autocmds :InsertEnter {:buffer bufnr})
               (let [[au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name})]
                 (assert.is_same 2 (length aus))
                 (assert.is_same {:InsertEnter true :BufWritePre true}
