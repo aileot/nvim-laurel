@@ -27,6 +27,8 @@
     ;; in running nvim when the tests are run in a local nvim instance.
     (when (= false opts.group)
       (set opts.group nil))
+    ;; Note: The order of the result list is not always in the order of
+    ;; definitions.
     (vim.api.nvim_get_autocmds opts)))
 
 (lambda get-first-autocmd [?opts]
