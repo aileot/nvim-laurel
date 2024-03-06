@@ -1,6 +1,9 @@
 (import-macros {: describe : it} :_busted_macros)
 (import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
-(import-macros {: my-autocmd! : augroup+ : buf-augroup!} :_wrapper_macros)
+(import-macros {: my-autocmd!
+                : augroup+
+                : buf-augroup!
+                : buf-autocmd!/with-buffer=0} :_wrapper_macros)
 
 (set _G.my-augroup-id (augroup! :MyAugroup))
 
@@ -247,6 +250,32 @@
                     [au1 &as aus] (get-autocmds {:group macro-gen-group-name})]
                 (assert.is_same 1 (length aus))
                 (assert.is_same :InsertEnter au1.event)))))
+        (it "can spawn buffer-local autocmd from a spawned buffer-local augroup"
+          (let [group-name "spawn buffer-local augroup"
+                local-group-prefix :local]
+            (augroup! group-name
+              (au! [:FileType]
+                   #(buf-augroup! local-group-prefix
+                      (au! [:InsertEnter] [:<buffer> :desc "spawned autocmd"]
+                           #(buf-autocmd!/with-buffer=0 $.group [:BufWritePre]
+                                                        default-callback
+                                                        {:desc "spawned autocmd, nested"})))))
+            (let [[au &as aus] (get-autocmds {:group group-name})]
+              (assert.is_same 1 (length aus))
+              (assert.is_same :FileType au.event))
+            (set vim.bo.filetype :foo)
+            (let [bufnr (vim.api.nvim_get_current_buf)
+                  macro-gen-group-name (.. local-group-prefix bufnr)
+                  [au &as aus] (get-autocmds {:group macro-gen-group-name})]
+              (assert.is_same 1 (length aus))
+              (assert.is_same :InsertEnter au.event))
+            (vim.fn.feedkeys :i :ni)
+            (let [bufnr (vim.api.nvim_get_current_buf)
+                  macro-gen-group-name (.. local-group-prefix bufnr)
+                  [au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name})]
+              (assert.is_same 2 (length aus))
+              (assert.is_same {:InsertEnter true :BufWritePre true}
+                              {au1.event true au2.event true}))))
         (describe "**carelessly** binding variables without gensym"
           (it "throws error on wrapped autocmd triggered"
             (var foo false)
