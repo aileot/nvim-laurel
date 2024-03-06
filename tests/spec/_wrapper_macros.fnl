@@ -21,8 +21,7 @@
       ...)))
 
 (fn buf-autocmd!/with-no-default-bufnr [buffer ...]
-  (augroup! :buf-local-augroup
-    (autocmd! `&default-opts {: buffer} ...)))
+  (autocmd! `&default-opts {: buffer} ...))
 
 (fn buf-autocmd!/with-buffer=0 [...]
   (autocmd! `&default-opts {:buffer 0} ...))
