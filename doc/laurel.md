@@ -91,7 +91,7 @@ A symbol to set default values of `api-opts` field. It indicates that the bare
 kv-table next to `&default-opts` contains default values for `api-opts`, but
 it also accepts the additional keys available in `extra-opts`. To set boolean
 option, it requires to set to either `true` or `false` in spite of the syntax
-of `extra-opts` itself. See also its [Anti-Patterns][WIP].
+of `extra-opts` itself. See also its [Anti-Patterns](#default-opts-1).
 
 Note that quote parts depend on where the wrapper macros are defined:
 
@@ -859,8 +859,6 @@ To create wrapper of nvim-laurel macro, it is unrecommended to wrap them in
 runtime function; instead, wrap them in macro.
 Fennel macros cannot parse the contents of `varargs` (`...`) which is only
 determined at runtime.
-
-See also [`&default-opts`][default-opts].
 
 ##### Anti-Pattern
 
