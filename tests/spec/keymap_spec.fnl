@@ -222,8 +222,8 @@
         (nmap! :lhs [:expr :literal] :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_nil replace_keycodes))))
-    (describe "with `&default-opts`"
-      (describe "macro defined in another file"
+    (describe "with `&default-opts`,"
+      (describe "imported macro"
         (describe :remap!
           (it "creates recursive mapping by default"
             (let [mode :x
