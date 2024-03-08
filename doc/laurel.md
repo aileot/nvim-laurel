@@ -863,6 +863,7 @@ determined at runtime.
 ##### Anti-Pattern
 
 ```fennel
+;; bad
 (autocmd! group [:FileType]
   #(let [buf-au! (fn [...]
                    (autocmd! &default-opts {:buffer 0} ...))]
@@ -873,6 +874,7 @@ determined at runtime.
 ##### Pattern
 
 ```fennel
+;; good
 (import-macros {: autocmd!} :nvim-laurel)
 
 (macro buf-au! [...]
@@ -887,6 +889,7 @@ determined at runtime.
 or
 
 ```fennel
+;; good
 ;; in my/macros.fnl
 (local {: atocmd!} (require :nvim-laurel))
 
@@ -922,6 +925,7 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 ##### Anti-Pattern
 
 ```fennel
+;; bad
 (autocmd! group events #(pcall foobar))
 (autocmd! group events (fn []
                          ;; Do something else
@@ -931,6 +935,7 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 ##### Pattern
 
 ```fennel
+;; good
 (macro ->nil [...]
   "Make sure to return `nil`."
   `(do
@@ -954,6 +959,7 @@ in another anonymous function is meaningless in many cases.
 ##### Anti-Pattern
 
 ```fennel
+;; bad
 (autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
 (autocmd! group events (fn []
                          (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
@@ -962,6 +968,7 @@ in another anonymous function is meaningless in many cases.
 ##### Pattern
 
 ```fennel
+;; good
 (autocmd! group events #(vim.schedule (fn []
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
