@@ -29,7 +29,7 @@
  :it (partial inject-desc-fn :it)
  :setup (partial inject-fn :setup)
  :teardown (partial inject-fn :teardown)
- :pending (fn [...]
-            (if (= :string (type (select 1 ...)))
-                (inject-desc-fn :pending ...)
-                (inject-fn :pending ...)))}
+ :pending (fn [desc ...]
+            (if (varg? desc)
+                (inject-desc-fn :pending desc ...)
+                (inject-fn :pending desc ...)))}
