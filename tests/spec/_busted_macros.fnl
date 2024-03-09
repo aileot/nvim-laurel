@@ -14,9 +14,9 @@
          (where (or :fn :hashfn :lambda :partial)) true)))
 
 (fn ->fn [...]
-  (if (function? ...)
-      `(do
-         ,...)
+  (if (or (sym? ...) (function? ...))
+      (do
+        ...)
       `#(do
           ,...)))
 
