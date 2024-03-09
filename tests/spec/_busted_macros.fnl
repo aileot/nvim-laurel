@@ -22,10 +22,10 @@
 
 {:after_each (partial inject-fn :after_each)
  :before_each (partial inject-fn :before_each)
+ :describe (partial inject-desc-fn :describe)
  :expose (partial inject-desc-fn :expose)
  :insulate (partial inject-desc-fn :insulate)
  :it (partial inject-desc-fn :it)
  :pending (partial inject-fn :pending)
  :setup (partial inject-fn :setup)
- :teardown (partial inject-fn :teardown)
- :describe (partial inject-desc-fn :describe)}
+ :teardown (partial inject-fn :teardown)}
