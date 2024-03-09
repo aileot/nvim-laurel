@@ -125,6 +125,9 @@
                    (s)
                    (autocmd! a.group [:BufWritePre] [:buffer 0]
                              default-callback {:desc "spawned autocmd, nested"}))))
+          (let [[au1 &as aus] (get-autocmds {:group default-augroup})]
+            (assert.is_same {:InsertEnter true} {au1.event true})
+            (assert.is_same 1 (length aus)))
           (assert-spy s :was_not_called)
           (exec-autocmds :InsertEnter {:group default-augroup})
           (assert-spy s :was_called)
