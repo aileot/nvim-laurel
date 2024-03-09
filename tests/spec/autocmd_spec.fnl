@@ -119,6 +119,58 @@
             (assert.is_same 2 (length aus)))))
       (it "callback arg value at `group` is same as the parent group id even inside `augroup!` macro."
         (let [s (spy.new)]
+          (set another-augroup-name :foobar)
+          (augroup! another-augroup-name
+            (au! [:VimEnter] (do
+                               :dummy)))
+          (augroup! default-augroup
+            (au! [:BufReadPost] (do
+                                  :dummy))
+            (au! [:InsertEnter] [:desc "spawned autocmd"]
+                 (fn [a]
+                   (assert.is_same default-augroup-id a.group)
+                   (s)
+                   (autocmd! a.group [:BufWritePre] default-callback
+                             {:desc "spawned autocmd, nested"})
+                   (autocmd! a.group [:CmdlineEnter] default-callback
+                             {:desc "spawned autocmd, nested"})
+                   (autocmd! a.group [:TextChangedI] default-callback
+                             {:desc "spawned autocmd, nested"}))))
+          (let [[au1 au2 &as aus] (get-autocmds {:group default-augroup})]
+            (assert.is_same {:InsertEnter true :BufReadPost true}
+                            {au1.event true au2.event true})
+            (assert.is_same 2 (length aus)))
+          (assert-spy s :was_not_called)
+          (exec-autocmds :InsertEnter {:group default-augroup})
+          (assert-spy s :was_called)
+          (pending #(let [[au1 au2 au3 au4 au5 au6 &as aus] (get-autocmds {})]
+                      (assert.is_same {:InsertEnter true
+                                       :BufReadPost true
+                                       :VimEnter true
+                                       :BufWritePre true
+                                       :CmdlineEnter true
+                                       :TextChangedI true}
+                                      {au1.event true
+                                       au2.event true
+                                       au3.event true
+                                       au4.event true
+                                       au5.event true
+                                       au6.event true})
+                      (assert.is_same 6 (length aus))))
+          (pending #(let [[au1 au2 au3 au4 au5 &as aus] (get-autocmds {:group default-augroup})]
+                      (assert.is_same {:InsertEnter true
+                                       :BufReadPost true
+                                       :BufWritePre true
+                                       :CmdlineEnter true
+                                       :TextChangedI true}
+                                      {au1.event true
+                                       au2.event true
+                                       au3.event true
+                                       au4.event true
+                                       au5.event true})
+                      (assert.is_same 5 (length aus))))))
+      (it "callback arg value at `group` is same as the parent group id even inside `augroup!` macro with 'buffer' key assigned."
+        (let [s (spy.new)]
           (augroup! default-augroup
             (au! [:InsertEnter] [:buffer 0 :desc "spawned autocmd"]
                  (fn [a]
