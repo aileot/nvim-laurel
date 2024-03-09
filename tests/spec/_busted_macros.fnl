@@ -21,15 +21,27 @@
                                 (fn []
                                   ,...)))
 
-{:after_each (partial inject-fn :after_each)
- :before_each (partial inject-fn :before_each)
- :describe (partial inject-desc-fn :describe)
- :expose (partial inject-desc-fn :expose)
- :insulate (partial inject-desc-fn :insulate)
- :it (partial inject-desc-fn :it)
- :setup (partial inject-fn :setup)
- :teardown (partial inject-fn :teardown)
- :pending (fn [desc ...]
-            (if (varg? desc)
-                (inject-desc-fn :pending desc ...)
-                (inject-fn :pending desc ...)))}
+(local after_each (partial inject-fn :after_each))
+(local before_each (partial inject-fn :before_each))
+(local describe (partial inject-desc-fn :describe))
+(local expose (partial inject-desc-fn :expose))
+(local insulate (partial inject-desc-fn :insulate))
+(local it (partial inject-desc-fn :it))
+(local setup (partial inject-fn :setup))
+(local teardown (partial inject-fn :teardown))
+
+(fn pending [desc ...]
+  ;; WIP
+  (if (varg? desc)
+      (inject-desc-fn :pending desc ...)
+      (inject-fn :pending desc ...)))
+
+{: after_each
+ : before_each
+ : describe
+ : expose
+ : insulate
+ : it
+ : pending
+ : setup
+ : teardown}
