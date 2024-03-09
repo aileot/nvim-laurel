@@ -174,6 +174,7 @@
           (augroup! default-augroup
             (au! [:InsertEnter] [:buffer 0 :desc "spawned autocmd"]
                  (fn [a]
+                   (assert.is_same default-augroup-id a.group)
                    (s)
                    (autocmd! a.group [:BufWritePre] [:buffer 0]
                              default-callback {:desc "spawned autocmd, nested"}))))
