@@ -45,7 +45,9 @@
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe :autocmd
   (setup (fn []
-           (let [nvim-builtin-augroups [:nvim_cmdwin :nvim_terminal]]
+           (let [nvim-builtin-augroups [:nvim_cmdwin
+                                        :nvim_terminal
+                                        :nvim_swapfile]]
              (each [_ group (ipairs nvim-builtin-augroups)]
                (augroup! group)))
            (vim.cmd "function g:Test() abort\nendfunction")))
