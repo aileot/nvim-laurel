@@ -230,12 +230,10 @@
                 (assert.is_false foo)
                 (vim.api.nvim_exec_autocmds :InsertEnter {:buffer bufnr})
                 (assert.is_true foo)
-                (let [[au1 au2 &as aus] (get-autocmds {:group id})]
-                  (pending #(assert.is_same 2 (length aus)))
-                  (pending #(assert.is_same :FileType au1.event))
-                  (pending #(assert.is_same :InsertEnter au2.event))
-                  (pending #(assert.is_nil au1.buffer))
-                  (pending #(assert.is_same bufnr au2.buffer))))))
+                (let [[au1 &as aus] (get-autocmds {:group id :buffer bufnr})]
+                  (assert.is_same 1 (length aus))
+                  (assert.is_same :InsertEnter au1.event)
+                  (assert.is_same bufnr au1.buffer)))))
           (it "can spawn a buffer-local augroup"
             (let [group-name "spawn buffer-local augroup"
                   local-group-prefix :local]
@@ -267,16 +265,17 @@
               (assert.is_same 1 (length aus))
               (assert.is_same :FileType au.event))
             (set vim.bo.filetype :foo)
-            (let [bufnr (vim.api.nvim_get_current_buf)
-                  macro-gen-group-name (.. local-group-prefix bufnr)]
+            (let [buffer (vim.api.nvim_get_current_buf)
+                  macro-gen-group-name (.. local-group-prefix buffer)]
               (let [[au &as aus] (get-autocmds {:group macro-gen-group-name})]
                 (assert.is_same 1 (length aus))
-                (assert.is_same :InsertEnter au.event))))))
-      (vim.api.nvim_exec_autocmds :InsertEnter {:buffer bufnr})
-      (let [[au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name})]
-        (pending #(assert.is_same 2 (length aus)))
-        (pending #(assert.is_same {:InsertEnter true :BufWritePre true}
-                                  {au1.event true au2.event true})))
+                (assert.is_same :InsertEnter au.event))
+              (vim.api.nvim_exec_autocmds :InsertEnter {: buffer})
+              (let [[au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name
+                                                     : buffer})]
+                (assert.is_same 2 (length aus))
+                (assert.is_same {:InsertEnter true :BufWritePre true}
+                                {au1.event true au2.event true}))))))
       (describe "wrapper function at runtime"
         (it "usually causes errors because compiled into unexpected output."
           (autocmd! default-augroup [:FileType]
