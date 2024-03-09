@@ -85,6 +85,51 @@ the following features:
   or use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
+### &default-opts
+
+(Since v0.6.1)
+
+A symbol to set default values of `api-opts` field. It indicates that the bare
+kv-table next to `&default-opts` contains default values for `api-opts`, but
+it also accepts the additional keys available in `extra-opts`. To set boolean
+option, it requires to set to either `true` or `false` in spite of the syntax
+of `extra-opts` itself. See also its [Anti-Patterns](#default-opts-1).
+
+Note that quote parts depend on where the wrapper macros are defined:
+
+- To define a wrapper **macro** to be expanded in the **same** file, quote the
+  entire `list` of the imported macro (and unquote as you need). For example,
+
+  ```fennel
+  ;; in foobar.fnl
+  (import-macros {: map!} :nvim-laurel)
+
+  (macro buf-map! [...]
+    `(map! &default-opts {:buffer 0} ,...))
+
+  (buf-map! :lhs :rhs)
+  ```
+
+- To define a wrapper **function** to be imported as a macro in **another**
+  file, just quote `&default-opts`. For example,
+
+  ```fennel
+  ;; in my/macros.fnl
+  (local {: map!} (require :nvim-laurel))
+
+  (fn buf-map! [...]
+    (map! `&default-opts {:buffer 0} ...))
+
+  {: buf-map!}
+  ```
+
+  ```fennel
+  ;; in foobar.fnl (another file)
+  (import-macros {: buf-map!} :my.macros)
+
+  (buf-map! :lhs :rhs)
+  ```
+
 ## Macros
 
 - [Autocmd](#Autocmd)
@@ -95,9 +140,9 @@ the following features:
 
 ### Autocmd
 
-- [augroup!](#augroup)
-- [autocmd!](#autocmd)
-- [au!](#au)
+- [`augroup!`](#augroup)
+- [`autocmd!`](#autocmd)
+- [`au!`](#au)
 
 #### `augroup!`
 
@@ -134,6 +179,7 @@ Create or get an augroup, or override an existing augroup.
   Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
   argument from `nvim_create_autocmd()`; on the other hand, set
   `#(vim.fn.foobar $)` to call `foobar` with the table argument.
+
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
@@ -219,10 +265,10 @@ An alias of [`autocmd!`](#autocmd).
 
 ### Keymap
 
-- [map!](#map): A replacement of `vim.keymap.set`
-- [unmap!](#unmap): A replacement of `vim.keymap.del`
-- [<Cmd>](#Cmd)
-- [<C-u>](#C-u)
+- [`map!`](#map): A replacement of `vim.keymap.set`
+- [`unmap!`](#unmap): A replacement of `vim.keymap.del`
+- [`<Cmd>`](#Cmd)
+- [`<C-u>`](#C-u)
 
 #### `map!`
 
@@ -252,6 +298,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - Set it in bare-string.
   - Insert `&vim` symbol just before the callback.
   - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
+
 - [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
@@ -371,12 +418,12 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 ### Variable
 
-- [g!](#g)
-- [b!](#b)
-- [w!](#w)
-- [t!](#t)
-- [v!](#v)
-- [env!](#env)
+- [`g!`](#g)
+- [`b!`](#b)
+- [`w!`](#w)
+- [`t!`](#t)
+- [`v!`](#v)
+- [`env!`](#env)
 
 #### `g!`
 
@@ -681,10 +728,10 @@ call setwinvar(10, '&signcolumn', 'no')
 
 ### Others
 
-- [command!](#command)
-- [feedkeys!](#feedkeys)
-- [highlight!](#highlight)
-- [hi!](#hi)
+- [`command!`](#command)
+- [`feedkeys!`](#feedkeys)
+- [`highlight!`](#highlight)
+- [`hi!`](#hi)
 
 #### `command!`
 
@@ -765,19 +812,19 @@ vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, t
 Set a highlight group.
 
 ```fennel
-(highlight! ?ns-id name val)
+(highlight! ?ns-id name api-opts)
 ```
 
 - `?ns-id`: (number) Namespace id for this highlight
   `nvim_create_namespace()`.
 - `name`: (string) Highlight group name, e.g., "ErrorMsg".
-- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as
+- `api-opts`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as
   the keys are bare-strings, `cterm` attribute map can contain `fg`/`bg`
   instead of `ctermfg`/`ctermbg` key.
 
 ```fennel
 (highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic true}})
-;; or (as long as `val` keys are bare-strings)
+;; or (as long as `api-opts` keys are bare-strings)
 (highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :cterm {:fg 103 :bold true :italic true}})
 ```
 
@@ -806,7 +853,67 @@ An alias of [`highlight!`](#highlight).
 
 ## Anti-Patterns
 
-### [autocmd!](#autocmd)
+### [`&default-opts`](#default-opts)
+
+#### Define macro wrappers
+
+To create wrapper of nvim-laurel macro, it is unrecommended to wrap them in
+runtime function; instead, wrap them in macro.
+Fennel macros cannot parse the contents of `varargs` (`...`) which is only
+determined at runtime.
+
+##### Anti-Pattern
+
+```fennel
+;; bad
+(autocmd! group [:FileType]
+  (fn []
+    (let [buf-au! (fn [...]
+                   (autocmd! &default-opts {:buffer 0} ...))]
+      (buf-au! [:InsertEnter] #(do :something))
+      (buf-au! [:BufWritePre] #(do :other))))
+```
+
+##### Pattern
+
+```fennel
+;; good
+(import-macros {: autocmd!} :nvim-laurel)
+
+(macro buf-au! [...]
+  `(autocmd! &default-opts {:buffer 0} ,...))
+
+(autocmd! group [:FileType]
+  (fn []
+     (buf-au! [:InsertEnter] #(do :something))
+     (buf-au! [:BufWritePre] #(do :other))))
+```
+
+or
+
+```fennel
+;; good
+;; in my/macros.fnl
+(local {: atocmd!} (require :nvim-laurel))
+
+(fn buf-au! [...]
+  (autocmd! `&default-opts {:buffer 0} ...))
+
+{: buf-au!}
+```
+
+```fennel
+;; in foobar.fnl (another file)
+(import-macros {: autocmd!} :nvim-laurel)
+(import-macros {: buf-au!} :my.macros)
+
+(autocmd! group [:FileType]
+  #(do
+     (buf-au! [:InsertEnter] (do :something))
+     (buf-au! [:BufWritePre] (do :other))))
+```
+
+### [`autocmd!`](#autocmd)
 
 #### pcall in the end of callback
 
@@ -821,6 +928,7 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 ##### Anti-Pattern
 
 ```fennel
+;; bad
 (autocmd! group events #(pcall foobar))
 (autocmd! group events (fn []
                          ;; Do something else
@@ -830,6 +938,7 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 ##### Pattern
 
 ```fennel
+;; good
 (macro ->nil [...]
   "Make sure to return `nil`."
   `(do
@@ -853,6 +962,7 @@ in another anonymous function is meaningless in many cases.
 ##### Anti-Pattern
 
 ```fennel
+;; bad
 (autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
 (autocmd! group events (fn []
                          (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
@@ -861,6 +971,7 @@ in another anonymous function is meaningless in many cases.
 ##### Pattern
 
 ```fennel
+;; good
 (autocmd! group events #(vim.schedule (fn []
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
@@ -921,6 +1032,7 @@ runtime.
 1. Update deprecated features
 
    This is a list of useful commands:
+
    - With [`:cdo`] or [`:cfdo`],
      - [`:norm`][`:normal`] or [`:normal`]
      - [`:g`][`:global`] or [`:global`]

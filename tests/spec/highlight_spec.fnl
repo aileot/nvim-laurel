@@ -1,11 +1,23 @@
 (import-macros {: describe : it} :_busted_macros)
 (import-macros {: highlight!} :nvim-laurel.macros)
+(import-macros {: bold-highlight!} :_wrapper_macros)
 
 (macro get-hl-of-rgb-color [name]
   `(vim.api.nvim_get_hl_by_name ,name true))
 
 (macro get-hl-of-256-color [name]
   `(vim.api.nvim_get_hl_by_name ,name false))
+
+(local predefined-namespace-id
+       (vim.api.nvim_create_namespace "namespace: test module highlight"))
+
+(macro module-hi! [...]
+  `(highlight! predefined-namespace-id ,...))
+
+(local test-hl-name :HlTest)
+
+(lambda get-hl [ns-id opts]
+  (vim.api.nvim_get_hl ns-id opts))
 
 (lambda hex->decimal [hex]
   (let [t (type hex)]
@@ -140,4 +152,34 @@
         (let [foobar #{:cterm {:fg 0 :bg 255 :bold true}}]
           ;; Note: fg/bg in `cterm` table is invalid; instead, use
           ;; ctermfg/ctermbg respectively.
-          (assert.has_error #(highlight! :FooBar (foobar))))))))
+          (assert.has_error #(highlight! :FooBar (foobar)))))))
+  (describe "(wrapper)"
+    ;; TODO: Also test them in the versions < 0.9.0, where `nvim_get_hl` does
+    ;; not exist.
+    (when vim.api.nvim_get_hl
+      (describe "with predefined-namespace-id"
+        (before_each (fn []
+                       (vim.api.nvim_set_hl predefined-namespace-id
+                                            test-hl-name {})
+                       (assert.is_same (vim.empty_dict)
+                                       (get-hl predefined-namespace-id
+                                               {:name test-hl-name}))))
+        (it "can be embedded in a macro"
+          (module-hi! test-hl-name {:ctermfg 0 :ctermbg 255})
+          (assert.is_not_same (vim.empty_dict)
+                              (get-hl predefined-namespace-id
+                                      {:name test-hl-name}))
+          (assert.is_same {:ctermfg 0 :ctermbg 255}
+                          (get-hl predefined-namespace-id {:name test-hl-name}))))
+      (describe "defined in another file"
+        (describe "with &default-opts"
+          (describe "{: bold true}"
+            (it "creates bold highlight by default"
+              (bold-highlight! test-hl-name {:ctermfg 0 :ctermbg 255})
+              (assert.is_true (-> (get-hl 0 {:name test-hl-name})
+                                  (. :bold))))
+            (it "can remove bold option"
+              (bold-highlight! test-hl-name
+                               {:ctermfg 0 :ctermbg 255 :bold false})
+              (assert.is_falsy (-> (get-hl 0 {:name test-hl-name})
+                                   (. :bold))))))))))

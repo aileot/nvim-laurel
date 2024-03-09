@@ -48,6 +48,12 @@
   @return boolean"
   (= :string (type x)))
 
+(fn tbl? [x]
+  "Check if `x` is `table`.
+  @param x any
+  @return boolean"
+  (= :table (type x)))
+
 (fn num? [x]
   "Check if `x` is `number`.
   @param x any
@@ -58,7 +64,15 @@
   "Check if the value of `x` is hidden in compile time.
   @param x any
   @return boolean"
-  (or (sym? x) (list? x)))
+  (or (sym? x) (list? x) (varg? x)))
+
+(fn seq? [x]
+  "Check if `x` is sequence or list.
+  @param x
+  @return boolean"
+  (or (sequence? x) ;; Note: sequence? does not consider [...] as sequence.
+      (list? x) ;
+      (and (table? x) (= 1 (next x)))))
 
 (fn kv-table? [x]
   "Check if the value of `x` is kv-table.
@@ -68,23 +82,52 @@
 
 ;; Misc ///2
 
+(fn assert-seq [x]
+  "Assert `x` is either sequence or list, or not.
+  @param x any
+  @return boolean"
+  (assert (seq? x) (.. "expected sequence or list, got" (view x))))
+
 (fn ->str [x]
   "Convert `x` to a string, or get the name if `x` is a symbol.
   @param x any
   @return string"
   (tostring x))
 
+(fn inc [x]
+  "Increment number `x`.
+  @param x number
+  @return number"
+  (assert-compile (num? x) "Expected number" x)
+  (+ x 1))
+
+(fn dec [x]
+  "Decrement number `x`.
+  @param x number
+  @return number"
+  (assert-compile (num? x) "Expected number" x)
+  (- x 1))
+
 (lambda first [xs]
-  "Return the first value in `xs`
-  @param xs sequence
-  @return undefined"
+  "Return the first value in `xs`.
+  @param xs sequence|list
+  @return any"
+  (assert-seq xs)
   (. xs 1))
 
 (lambda second [xs]
-  "Return the second value in `xs`
-  @param xs sequence
-  @return undefined"
+  "Return the second value in `xs`.
+  @param xs sequence|list
+  @return any"
+  (assert-seq xs)
   (. xs 2))
+
+(fn last [xs]
+  "Return the last value in `xs`.
+  @param xs sequence|list
+  @return any"
+  (assert-seq xs)
+  (. xs (length xs)))
 
 (lambda slice [xs ?start ?end]
   "Return sequence from `?start` to `?end`.
@@ -96,6 +139,39 @@
         last (or ?end (length xs))]
     (fcollect [i first last]
       (. xs i))))
+
+(fn tbl/copy [from ?to]
+  "Return a shallow copy of table `from`.
+  @param from table
+  @param ?to table
+  @return table"
+  (collect [k v (pairs (or from [])) &into (or ?to {})]
+    (values k v)))
+
+(fn tbl/merge [...]
+  "Return a new merged tables. The rightmost map has priority. `nil` is
+  ignored.
+  @param ... table|nil
+  @return table"
+  (let [new-tbl {}]
+    (each [_ t (ipairs [...])]
+      (when t
+        (assert-compile (tbl? t) "Expected table or nil" ...)
+        (each [k v (pairs t)]
+          (tset new-tbl k v))))
+    new-tbl))
+
+(fn tbl/merge! [tbl1 ...]
+  "Merge tables into the first table `tbl1`. The rightmost map has
+  priority. `nil` is ignored.
+  @param ... table|nil
+  @return table"
+  (each [_ t (ipairs [...])]
+    (when t
+      (assert-compile (tbl? t) "Expected table or nil" ...)
+      (each [k v (pairs t)]
+        (tset tbl1 k v))))
+  tbl1)
 
 ;; Additional predicates ///2
 
@@ -192,7 +268,7 @@
 
 (lambda merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
-  @param ?extra-opts table Not a sequence.
+  @param ?extra-opts kv-table|nil
   @param ?api-opts table
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
@@ -219,27 +295,24 @@
         pat-vim-fn "^vim%.fn%.(%S+)$"]
     (name:match pat-vim-fn)))
 
-(lambda amp->str [amp]
-  "Convert `'&foo` into `:foo`.
-  @param amp quoted-symbol
-  @return string"
-  (-> (->str (->unquoted amp))
-      (: :sub 2)))
-
-(lambda extract-amps [seq amps]
-  "Extract `'&foo`s from `seq` and return the rest.
+(lambda extract-symbols [seq sym-names]
+  "Extract symbols from `seq`, and return a copy of the rest and the 1-indexed
+  positions of given `sym-names.`
+  (extract-symbols ['&foo :bar '&foo '&foo :baz] ['&foo]) ;; => {:&foo [1 3 4]}
+  @alias match-counts table[number]
   @param seq sequence
-  @param amps quoted-symbol[]
-  @return sequence"
+  @param sym-names quoted-symbol[]
+  @return sequence, table<string,match-counts>"
   (let [new-seq [] ;
-        ;; e.g., [(quote &foo)] -> {:foo nil}
-        extracted (collect [_ v (ipairs amps)]
-                    (amp->str v))]
-    (each [_ v (ipairs seq)]
-      (if (contains? amps v)
-          (tset extracted (amp->str v) true)
-          (table.insert new-seq v)))
-    (values new-seq extracted)))
+        symbol-positions {}]
+    (each [i v (ipairs seq)]
+      (if-not (contains? sym-names v)
+        (table.insert new-seq v)
+        (let [sym-name (->str v)]
+          (if (. symbol-positions sym-name)
+              (table.insert (. symbol-positions sym-name) i)
+              (tset symbol-positions sym-name [i])))))
+    (values new-seq symbol-positions)))
 
 ;;; Deprecation Utils ///1
 
@@ -291,6 +364,48 @@
         (vim.schedule #,deprecation)
         ,compatible))))
 
+;;; Default API Options ///1
+
+(local default/api-opts {})
+
+(lambda default/extract-opts! [seq]
+  "Extract symbols `&default-opts` and the following `kv-table`s from varg;
+  no other type of args is supposed to precede them. The rightmost has priority.
+  @param seq sequence
+  @return sequence"
+  (let [new-seq []
+        removed-items []]
+    (each [i v (ipairs seq)]
+      (if (= `&default-opts v)
+          (let [next-idx (inc i)
+                ?next-tbl (. seq next-idx)]
+            (assert-compile (kv-table? ?next-tbl) "expected kv-table" ?next-tbl)
+            (tbl/merge! default/api-opts ?next-tbl)
+            (tset removed-items i v)
+            (tset removed-items next-idx ?next-tbl))
+          (nil? (?. removed-items i))
+          (table.insert new-seq v)))
+    new-seq))
+
+(lambda default/release-opts! []
+  "Return saved default opts defined by user, and reset them.
+  This operation can run without stack because macro expansion only runs sequentially.
+  @return kv-table"
+  ;; Note: This function is required to accept multiple &default-opts instead
+  ;; of clearing default/api-opts on each default/extract-opts! call.
+  (let [opts (tbl/copy default/api-opts)]
+    (each [k _ (pairs default/api-opts)]
+      (tset default/api-opts k nil))
+    opts))
+
+(lambda default/merge-opts! [api-opts]
+  "Return the merge result of `api-opts` and `default/api-opts` saved by
+  `default/extract-opts!`. The values of `api-opts` overrides those of
+  `default/api-opts`. The `default/api-opts` gets cleared after the merge.
+  @param api-opts kv-table The options to override `default/api-opts`.
+  @return kv-table"
+  (tbl/merge (default/release-opts!) api-opts))
+
 ;; Autocmd ///1
 
 (local autocmd/extra-opt-keys [:group
@@ -327,50 +442,55 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
-  (if (< (select "#" ...) 3)
-      ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
-      ;; args are provided.
-      (let [[events api-opts] [...]]
-        `(vim.api.nvim_create_autocmd ,events ,api-opts))
-      (let [([?id events & rest] {:vim vim?}) (extract-amps [...] [`&vim])
-            [?pattern ?extra-opts callback ?api-opts] ;
-            (match rest
-              [cb nil nil nil] [nil nil cb nil]
-              (where [a ex-opts c ?d] (sequence? ex-opts)) [a ex-opts c ?d]
-              [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
-                               [nil nil a b]
-                               (contains? autocmd/extra-opt-keys (first a))
-                               [nil a b ?c] ;
-                               [a nil b ?c])
-              _ (error* (printf "unexpected args:\n%s" (view [...]))))
-            extra-opts (if (nil? ?extra-opts) {}
-                           (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
-            ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-            ?pat (or extra-opts.pattern ?pattern)]
-        (set extra-opts.group ?id)
-        (set extra-opts.buffer ?bufnr)
-        (let [pattern (if (and (sequence? ?pat) (= 1 (length ?pat)))
-                          (first ?pat)
-                          ?pat)]
-          ;; Note: `*` is the default pattern and redundant.
-          (when-not (and (str? pattern) (= "*" pattern))
-            (set extra-opts.pattern pattern)))
-        (if (or vim? (str? callback) (vim-callback-format? callback))
-            (set extra-opts.command callback)
-            ;; Note: Ignore the possibility to set Vimscript function to
-            ;; callback in string; however, convert `vim.fn.foobar` into
-            ;; "foobar" to set to "callback" key because functions written in
-            ;; Vim script are rarely supposed to expect the table from
-            ;; `nvim_create_autocmd` for its first arg.
-            (let [cb (or (extract-?vim-fn-name callback) ;
-                         callback)]
-              (set extra-opts.callback cb)))
-        (assert-compile (nand extra-opts.pattern extra-opts.buffer)
-                        "cannot set both pattern and buffer for the same autocmd"
-                        extra-opts)
-        (let [api-opts (merge-api-opts (autocmd/->compatible-opts! extra-opts)
-                                       ?api-opts)]
-          `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
+  (case (default/extract-opts! [...])
+    ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
+    ;; args are provided.
+    [events api-opts nil nil]
+    (let [api-opts* (default/merge-opts! api-opts)]
+      `(vim.api.nvim_create_autocmd ,events ,api-opts*))
+    args
+    (let [([?id events & rest] {:&vim ?vim-indice}) (extract-symbols args
+                                                                     [`&vim])
+          (?pattern ?extra-opts callback ?api-opts) ;
+          (match rest
+            [cb nil nil nil] (values nil nil cb nil)
+            (where [a ex-opts c ?d] (sequence? ex-opts)) (values a ex-opts c ?d)
+            [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
+                             (values nil nil a b)
+                             (contains? autocmd/extra-opt-keys (first a))
+                             (values nil a b ?c)
+                             (values a nil b ?c))
+            _ (error* (printf "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
+                              (view args) (view ?id) (view events) (view rest))))
+          extra-opts (if (nil? ?extra-opts) {}
+                         (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
+          ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
+          ?pat (or extra-opts.pattern ?pattern)]
+      (set extra-opts.group ?id)
+      (set extra-opts.buffer ?bufnr)
+      (let [pattern (if (and (sequence? ?pat) (= 1 (length ?pat)))
+                        (first ?pat)
+                        ?pat)]
+        ;; Note: `*` is the default pattern and redundant.
+        (when-not (and (str? pattern) (= "*" pattern))
+          (set extra-opts.pattern pattern)))
+      (if (or ?vim-indice (str? callback) (vim-callback-format? callback))
+          (set extra-opts.command callback)
+          ;; Note: Ignore the possibility to set Vimscript function to
+          ;; callback in string; however, convert `vim.fn.foobar` into
+          ;; "foobar" to set to "callback" key because functions written in
+          ;; Vim script are rarely supposed to expect the table from
+          ;; `nvim_create_autocmd` for its first arg.
+          (let [cb (or (extract-?vim-fn-name callback) ;
+                       callback)]
+            (set extra-opts.callback cb)))
+      (assert-compile (nand extra-opts.pattern extra-opts.buffer)
+                      "cannot set both pattern and buffer for the same autocmd"
+                      extra-opts)
+      (let [api-opts (-> (default/merge-opts! extra-opts)
+                         (autocmd/->compatible-opts!)
+                         (merge-api-opts ?api-opts))]
+        `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
 
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
@@ -403,7 +523,7 @@
 
 ;; Export ///2
 
-(lambda augroup! [name ?api-opts|?autocmd ...]
+(lambda augroup! [...]
   "Create, or override, an augroup, and add `autocmd` to the augroup.
   ```fennel
   (augroup! name ?api-opts
@@ -419,12 +539,14 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
   ;; Note: "clear" value in api-opts is true by default.
-  (let [[api-opts autocmds] (if (nil? ?api-opts|?autocmd) [{} []]
+  (let [[name ?api-opts|?autocmd & rest] (default/extract-opts! [...])
+        (api-opts autocmds) (if (nil? ?api-opts|?autocmd) (values {} [])
                                 (or (sequence? ?api-opts|?autocmd)
-                                    (autocmd? ?api-opts|?autocmd)) ;
-                                [{} [?api-opts|?autocmd ...]]
-                                [?api-opts|?autocmd [...]])]
-    (define-augroup! name api-opts autocmds)))
+                                    (autocmd? ?api-opts|?autocmd))
+                                (values {} [?api-opts|?autocmd (unpack rest)])
+                                (values ?api-opts|?autocmd rest))
+        api-opts* (default/merge-opts! api-opts)]
+    (define-augroup! name api-opts* autocmds)))
 
 (fn autocmd! [...]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
@@ -445,6 +567,11 @@
       instead to set a Vimscript function.
   @param ?api-opts kv-table Optional autocmd attributes.
   @return undefined The return value of `nvim_create_autocmd`"
+  ;; TODO: Detect if it were embedded in a runtime function with varg.
+  ;;  (let [varg-size (select "#" ...)
+  ;;        last-arg (select varg-size ...)]
+  ;;    (assert (varg? last-arg) (.. "varg is incompatible. Please consider to embed it into macro instead of function:
+  ;;" (view [...]))))
   (define-autocmd! ...))
 
 ;; Keymap ///1
@@ -456,11 +583,11 @@
   (set opts.literal nil)
   opts)
 
-(lambda keymap/parse-varargs [...]
-  "Parse varargs.
+(lambda keymap/parse-args [...]
+  "Parse map! macro args in sequence.
   ```fennel
-  (keymap/parse-varargs ?extra-opts lhs rhs ?api-opts)
-  (keymap/parse-varargs lhs ?extra-opts rhs ?api-opts)
+  (keymap/parse-args ?extra-opts lhs rhs ?api-opts)
+  (keymap/parse-args lhs ?extra-opts rhs ?api-opts)
   ```
   @param ?extra-opts sequence|kv-table
   @param lhs string
@@ -470,7 +597,9 @@
   @return lhs string
   @return rhs string|function
   @return ?api-opts kv-table"
-  (let [([a1 a2 ?a3 ?a4] {:vim vim?}) (extract-amps [...] [`&vim])]
+  (let [args (default/extract-opts! [...])
+        ([modes a1 a2 ?a3 ?a4] {:&vim ?vim-indice}) ;
+        (extract-symbols args [`&vim])]
     (if (kv-table? a1) (values a1 a2 ?a3 ?a4)
         (let [?seq-extra-opts (if (sequence? a1) a1
                                   (sequence? a2) a2)
@@ -482,14 +611,16 @@
                                                    (sequence? a1)
                                                    [?extra-opts a2 ?a3 ?a4]
                                                    [?extra-opts a1 ?a3 ?a4])
-              rhs (if (or vim? (str? raw-rhs) (vim-callback-format? raw-rhs))
+              extra-opts* (default/merge-opts! extra-opts)
+              rhs (if (or ?vim-indice (str? raw-rhs)
+                          (vim-callback-format? raw-rhs))
                       raw-rhs
                       (do
-                        (set extra-opts.callback raw-rhs)
+                        (set extra-opts*.callback raw-rhs)
                         ""))
-              ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)]
-          (set extra-opts.buffer ?bufnr)
-          (values extra-opts lhs rhs ?api-opts)))))
+              ?bufnr (if extra-opts*.<buffer> 0 extra-opts*.buffer)]
+          (set extra-opts*.buffer ?bufnr)
+          (values modes extra-opts* lhs rhs ?api-opts)))))
 
 (lambda keymap/del-maps! [...]
   "Delete keymap.
@@ -556,7 +687,7 @@
 
 ;; Export ///2
 
-(lambda map! [modes ...]
+(lambda map! [...]
   "Map `lhs` to `rhs` in `modes`, non-recursively by default.
   ```fennel
   (map! modes ?extra-opts lhs rhs ?api-opts)
@@ -568,9 +699,9 @@
   @param rhs string|function
   @param ?api-opts kv-table"
   (let [default-opts {:noremap true}
-        (extra-opts lhs rhs ?api-opts) (keymap/parse-varargs ...)]
-    (merge-default-kv-table! default-opts extra-opts)
-    (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)))
+        (modes extra-opts lhs rhs ?api-opts) (keymap/parse-args ...)
+        extra-opts* (tbl/merge default-opts extra-opts)]
+    (keymap/set-maps! modes extra-opts* lhs rhs ?api-opts)))
 
 (lambda unmap! [...]
   "Delete keymap.
@@ -856,7 +987,7 @@
   (set opts.<buffer> nil)
   opts)
 
-(lambda command! [a1 a2 ?a3 ?a4]
+(lambda command! [...]
   "Define a user command.
   ```fennel
   (command! ?extra-opts name command ?api-opts)
@@ -871,23 +1002,21 @@
   @param command string|function Replacement command.
   @param ?api-opts kv-table Optional command attributes.
     The same as {opts} for `nvim_create_user_command`."
-  (let [?seq-extra-opts (if (sequence? a1) a1
+  (let [[a1 a2 ?a3 ?a4] (default/extract-opts! [...])
+        ?seq-extra-opts (if (sequence? a1) a1
                             (sequence? a2) a2)
-        ?extra-opts (when ?seq-extra-opts
-                      (seq->kv-table ?seq-extra-opts
-                                     [:bar
-                                      :bang
-                                      :<buffer>
-                                      :register
-                                      :keepscript]))
-        [extra-opts name command ?api-opts] (if-not ?extra-opts
-                                              [{} a1 a2 ?a3]
-                                              (sequence? a1)
-                                              [?extra-opts a2 ?a3 ?a4]
-                                              [?extra-opts a1 ?a3 ?a4])
-        ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
-        api-opts (merge-api-opts (command/->compatible-opts! extra-opts)
-                                 ?api-opts)]
+        (extra-opts name command ?api-opts) ;
+        (case (when ?seq-extra-opts
+                (seq->kv-table ?seq-extra-opts
+                               [:bar :bang :<buffer> :register :keepscript]))
+          nil (values {} a1 a2 ?a3)
+          extra-opts (if (sequence? a1)
+                         (values extra-opts a2 ?a3 ?a4)
+                         (values extra-opts a1 ?a3 ?a4)))
+        extra-opts* (default/merge-opts! extra-opts)
+        ?bufnr (if extra-opts*.<buffer> 0 extra-opts*.buffer)
+        api-opts (-> (command/->compatible-opts! extra-opts*)
+                     (merge-api-opts ?api-opts))]
     (if ?bufnr
         `(vim.api.nvim_buf_create_user_command ,?bufnr ,name ,command ,api-opts)
         `(vim.api.nvim_create_user_command ,name ,command ,api-opts))))
@@ -921,38 +1050,49 @@
   @return boolean"
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
-(lambda highlight! [ns-id|name name|val ?val]
+(lambda highlight! [...]
   "Set a highlight group.
   ```fennel
-  (highlight! ?ns-id name val)
+  (highlight! ?ns-id name api-opts)
  ```
  @param ?ns-id integer
  @param name string
- @param val kv-table"
-  (let [[?ns-id name val] (if ?val [ns-id|name name|val ?val]
-                              [nil ns-id|name name|val])]
-    (if (?. val :link)
-        (each [k _ (pairs val)]
+ @param api-opts kv-table The same as {val} in `vim.api.nvim_set_hl()`."
+  {:fnl/arglist [ns-id|name name|api-opts ?api-opts]}
+  (let [(?ns-id name api-opts) (case (default/extract-opts! [...])
+                                 [name api-opts nil] (values nil name api-opts)
+                                 [ns-id name api-opts] (values ns-id name
+                                                               api-opts))
+        api-opts* (merge-api-opts (default/release-opts!)
+                                  ;; Note: api-opts can be symbol or list, so
+                                  ;; `default/merge-opts!` could not work
+                                  ;; expectedly.
+                                  api-opts)]
+    (if (?. api-opts* :link)
+        (each [k _ (pairs api-opts*)]
           (assert-compile (= k :link)
-                          (.. "`link` key excludes any other options: " k) val))
+                          (.. "`link` key excludes any other options: " k)
+                          api-opts*))
         (do
-          (when (nil? val.ctermfg)
-            (set val.ctermfg (?. val :cterm :fg))
-            (when val.cterm
-              (set val.cterm.fg nil)))
-          (when (nil? val.ctermbg)
-            (set val.ctermbg (?. val :cterm :bg))
-            (when val.cterm
-              (set val.cterm.bg nil)))
-          (assert-compile (or (cterm-color? val.ctermfg)
-                              (hidden-in-compile-time? val.ctermfg))
+          (when (nil? api-opts*.ctermfg)
+            (set api-opts*.ctermfg (?. api-opts* :cterm :fg))
+            (when api-opts*.cterm
+              (set api-opts*.cterm.fg nil)))
+          (when (nil? api-opts*.ctermbg)
+            (set api-opts*.ctermbg (?. api-opts* :cterm :bg))
+            (when api-opts*.cterm
+              (set api-opts*.cterm.bg nil)))
+          (assert-compile (or (cterm-color? api-opts*.ctermfg)
+                              (hidden-in-compile-time? api-opts*.ctermfg))
                           (.. "ctermfg expects 256 color, got "
-                              (view val.ctermfg)) val)
-          (assert-compile (or (cterm-color? val.ctermbg)
-                              (hidden-in-compile-time? val.ctermbg))
+                              (view api-opts*.ctermfg))
+                          api-opts*)
+          (assert-compile (or (cterm-color? api-opts*.ctermbg)
+                              (hidden-in-compile-time? api-opts*.ctermbg))
                           (.. "ctermbg expects 256 color, got "
-                              (view val.ctermbg)) val)))
-    `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,val)))
+                              (view api-opts*.ctermbg))
+                          api-opts*)))
+    `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,api-opts*)))
 
 ;; Deprecated ///1
 
