@@ -43,6 +43,8 @@
 (lambda get-first-autocmd [?opts]
   (. (get-autocmds ?opts) 1))
 
+(var default-augroup-id nil)
+
 (var au-id1 nil)
 (var au-id2 nil)
 (var au-id3 nil)
@@ -58,7 +60,7 @@
   (teardown (fn []
               (vim.cmd "delfunction g:Test")))
   (before_each (fn []
-                 (augroup! default-augroup)
+                 (set default-augroup-id (augroup! default-augroup))
                  (let [aus (get-autocmds {})]
                    (assert.is_nil (next aus)))))
   (after_each (fn []
