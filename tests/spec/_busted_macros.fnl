@@ -27,6 +27,9 @@
  :expose (partial inject-desc-fn :expose)
  :insulate (partial inject-desc-fn :insulate)
  :it (partial inject-desc-fn :it)
- :pending (partial inject-fn :pending)
  :setup (partial inject-fn :setup)
- :teardown (partial inject-fn :teardown)}
+ :teardown (partial inject-fn :teardown)
+ :pending (fn [...]
+            (if (= :string (type (select 1 ...)))
+                (inject-desc-fn :pending ...)
+                (inject-fn :pending ...)))}
