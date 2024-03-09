@@ -7,9 +7,10 @@
 (lambda inject-fn [name ...]
   (assert (< 0 (select "#" ...)) (: "expected one or more args for %s" :format
                                     name))
-  `((. (require :busted) ,name ;; (fn []
+  `((. (require :busted) ,name
        ;; TODO: Uncomment `(fn []` and remove `fn` lists in the specs if
        ;; a formatter makes reasonable indentations in the future.
+       ;; (fn []
        ,...)))
 
 (lambda inject-desc-fn [name desc ...]
