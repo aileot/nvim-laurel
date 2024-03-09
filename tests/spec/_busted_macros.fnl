@@ -20,13 +20,16 @@
       `#(do
           ,...)))
 
+(lambda busted [name]
+  `(. (require :busted) ,name))
+
 (lambda inject-fn [name ...]
   "Construct busted wrapper.
  @param name string busted method name
  @param ... list a function, or any number of list to be wrapped into a function."
   (assert (< 0 (select "#" ...)) (: "expected one or more args for %s" :format
                                     name))
-  `((. (require :busted) ,name) ,(->fn ...)))
+  `(,(busted name) ,(->fn ...)))
 
 (lambda inject-desc-fn [name desc ...]
   "Construct busted wrapper.
@@ -36,9 +39,7 @@
   (when-not (varg? desc)
     (assert (< 0 (select "#" ...))
             (: "expected one or more args for %s(\"%s\")" :format name desc)))
-  `((. (require :busted) ,name) ,desc
-                                (fn []
-                                  ,...)))
+  `(,(busted name) ,desc ,(->fn ...)))
 
 (local after_each (partial inject-fn :after_each))
 (local before_each (partial inject-fn :before_each))
