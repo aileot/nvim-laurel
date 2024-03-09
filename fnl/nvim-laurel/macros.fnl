@@ -151,7 +151,7 @@
 (fn tbl/merge [...]
   "Return a new merged tables. The rightmost map has priority. `nil` is
   ignored.
-  @param ... table|nil
+  @param ... kv-table|nil symbol or list are unexpected.
   @return table"
   (let [new-tbl {}]
     (each [_ t (ipairs [...])]
@@ -164,7 +164,7 @@
 (fn tbl/merge! [tbl1 ...]
   "Merge tables into the first table `tbl1`. The rightmost map has
   priority. `nil` is ignored.
-  @param ... table|nil
+  @param ... kv-table|nil symbol or list are unexpected.
   @return table"
   (each [_ t (ipairs [...])]
     (when t
@@ -261,7 +261,7 @@
 (lambda merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
   @param ?extra-opts kv-table|nil
-  @param ?api-opts table
+  @param ?api-opts kv-table|symbol|list
   @return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
