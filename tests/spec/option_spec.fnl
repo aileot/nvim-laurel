@@ -67,7 +67,8 @@
     (assert.is_same val (. vim.o name))))
 
 (describe :options
-  (before_each reset-context)
+  (before_each (do
+                 (reset-context)))
   (describe :set!
     (it "is case-insensitive at option name"
       (vim.cmd "set foldlevel=2")
