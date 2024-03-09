@@ -108,14 +108,14 @@
       (let [[autocmd] (get-autocmds)]
         (assert.is.same "<vim function: Test>" autocmd.callback)))
     (it "creates buffer-local autocmd with `buffer` key"
-      (let [bufnr (vim.api.nvim_get_current_buf)
-            au1 (au! default-augroup default-event [:buffer bufnr]
+      (let [buffer (vim.api.nvim_get_current_buf)
+            au1 (au! default-augroup default-event [:buffer buffer]
                      default-callback)]
         (vim.cmd.new)
         (vim.cmd.only)
         (let [au2 (au! default-augroup default-event [:<buffer>]
                        default-callback)
-              [autocmd1] (get-autocmds {:buffer bufnr})
+              [autocmd1] (get-autocmds {: buffer})
               [autocmd2] ;
               (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
           (assert.is.same au1 autocmd1.id)
@@ -225,15 +225,15 @@
                         (fn [a]
                           (buf-au! [:InsertEnter] #(set foo true))))
               (assert.is_false foo)
-              (let [bufnr (vim.api.nvim_get_current_buf)]
+              (let [buffer (vim.api.nvim_get_current_buf)]
                 (set vim.bo.filetype :foobar)
                 (assert.is_false foo)
-                (vim.api.nvim_exec_autocmds :InsertEnter {:buffer bufnr})
+                (vim.api.nvim_exec_autocmds :InsertEnter {: buffer})
                 (assert.is_true foo)
-                (let [[au1 &as aus] (get-autocmds {:group id :buffer bufnr})]
+                (let [[au1 &as aus] (get-autocmds {:group id : buffer})]
                   (assert.is_same 1 (length aus))
                   (assert.is_same :InsertEnter au1.event)
-                  (assert.is_same bufnr au1.buffer)))))
+                  (assert.is_same buffer au1.buffer)))))
           (it "can spawn a buffer-local augroup"
             (let [group-name "spawn buffer-local augroup"
                   local-group-prefix :local]
@@ -283,17 +283,17 @@
                       (let [buf-local-augroup-name (: "buf-local-aug-%d"
                                                       :format au.buf)
                             buf-local-augroup-id (augroup! buf-local-augroup-name)]
-                        (fn buf-au! [bufnr ...]
+                        (fn buf-au! [buffer ...]
                           (autocmd! buf-local-augroup-id ;
-                                    &default-opts {:buffer bufnr} ...))
+                                    &default-opts {: buffer} ...))
 
                         (assert.has.errors #(buf-au! [:InsertEnter]
                                                      default-callback)))
                       (let [buf-local-augroup-name (: "another-buf-local-aug-%d"
                                                       :format au.buf)
                             buf-local-augroup-id (augroup! buf-local-augroup-name)
-                            buf-au! (fn [bufnr ...]
-                                      (autocmd! &default-opts {:buffer bufnr}
+                            buf-au! (fn [buffer ...]
+                                      (autocmd! &default-opts {: buffer}
                                                 buf-local-augroup-id ...))]
                         (assert.has.errors #(buf-au! [:InsertEnter]
                                                      default-callback))))))))))
