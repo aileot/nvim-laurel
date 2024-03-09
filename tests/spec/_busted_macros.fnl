@@ -4,14 +4,23 @@
   `(when (not ,pred)
      ,...))
 
+(fn function? [x]
+  "(Compile time) Check if `x` is anonymous function defined by builtin
+  constructor.
+  @param x any
+  @return boolean"
+  (and (list? x) ;
+       (case (. x 1 1)
+         (where (or :fn :hashfn :lambda :partial)) true)))
+
 (lambda inject-fn [name ...]
   (assert (< 0 (select "#" ...)) (: "expected one or more args for %s" :format
                                     name))
-  `((. (require :busted) ,name
-       ;; TODO: Uncomment `(fn []` and remove `fn` lists in the specs if
-       ;; a formatter makes reasonable indentations in the future.
-       ;; (fn []
-       ,...)))
+  `((. (require :busted) ,name) ,(if (function? ...)
+                                     `(do
+                                        ,...)
+                                     `#(do
+                                         ,...))))
 
 (lambda inject-desc-fn [name desc ...]
   (when-not (varg? desc)
