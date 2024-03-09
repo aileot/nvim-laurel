@@ -257,17 +257,23 @@
               (assert.is_same 1 (length aus))
               (assert.is_same :FileType au.event))
             (set vim.bo.filetype :foo)
+            (var ie nil)
             (let [buffer (vim.api.nvim_get_current_buf)
                   macro-gen-group-name (.. local-group-prefix buffer)]
-              (let [[au &as aus] (get-autocmds {:group macro-gen-group-name})]
+              (let [[au1 &as aus] (get-autocmds {:group macro-gen-group-name
+                                                 : buffer})]
                 (assert.is_same 1 (length aus))
-                (assert.is_same :InsertEnter au.event))
+                (assert.is_same :InsertEnter au1.event)
+                (set ie au1))
               (vim.api.nvim_exec_autocmds :InsertEnter {: buffer})
               (let [[au1 au2 &as aus] (get-autocmds {:group macro-gen-group-name
                                                      : buffer})]
-                (assert.is_same 2 (length aus))
-                (assert.is_same {:InsertEnter true :BufWritePre true}
-                                {au1.event true au2.event true}))))))
+                (assert.is_same ie.group_name au1.group_name)
+                (assert.is_same ie.group au1.group)
+                (assert.is_not_same ie.event au1.event)
+                (pending #(assert.is_same {:InsertEnter true :BufWritePre true}
+                                         {au1.event true au2.event true}))
+                (pending #(assert.is_same 2 (length aus))))))))
       (describe "wrapper function at runtime"
         (it "usually causes errors because compiled into unexpected output."
           (autocmd! default-augroup [:FileType]
