@@ -1,17 +1,21 @@
 ;; fennel-ls: macro-file
 
-(local fmt string.format)
+(macro when-not [pred ...]
+  `(when (not ,pred)
+     ,...))
 
 (lambda inject-fn [name ...]
-  (assert (< 0 (select "#" ...)) (fmt "expected one or more args for %s" name))
+  (assert (< 0 (select "#" ...)) (: "expected one or more args for %s" :format
+                                    name))
   `((. (require :busted) ,name ;; (fn []
        ;; TODO: Uncomment `(fn []` and remove `fn` lists in the specs if
        ;; a formatter makes reasonable indentations in the future.
        ,...)))
 
 (lambda inject-desc-fn [name desc ...]
-  (assert (< 0 (select "#" ...))
-          (fmt "expected one or more args for %s(\"%s\")" name desc))
+  (when-not (varg? desc)
+    (assert (< 0 (select "#" ...))
+            (: "expected one or more args for %s(\"%s\")" :format name desc)))
   `((. (require :busted) ,name) ,desc
                                 (fn []
                                   ,...)))
