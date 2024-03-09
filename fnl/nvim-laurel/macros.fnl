@@ -101,12 +101,12 @@
   (assert-compile (num? x) "Expected number" x)
   (+ x 1))
 
-(fn dec [x]
-  "Decrement number `x`.
-  @param x number
-  @return number"
-  (assert-compile (num? x) "Expected number" x)
-  (- x 1))
+;; (fn dec [x]
+;;   "Decrement number `x`.
+;;   @param x number
+;;   @return number"
+;;   (assert-compile (num? x) "Expected number" x)
+;;   (- x 1))
 
 (lambda first [xs]
   "Return the first value in `xs`.
@@ -115,19 +115,19 @@
   (assert-seq xs)
   (. xs 1))
 
-(lambda second [xs]
-  "Return the second value in `xs`.
-  @param xs sequence|list
-  @return any"
-  (assert-seq xs)
-  (. xs 2))
+;; (lambda second [xs]
+;;   "Return the second value in `xs`.
+;;   @param xs sequence|list
+;;   @return any"
+;;   (assert-seq xs)
+;;   (. xs 2))
 
-(fn last [xs]
-  "Return the last value in `xs`.
-  @param xs sequence|list
-  @return any"
-  (assert-seq xs)
-  (. xs (length xs)))
+;; (fn last [xs]
+;;   "Return the last value in `xs`.
+;;   @param xs sequence|list
+;;   @return any"
+;;   (assert-seq xs)
+;;   (. xs (length xs)))
 
 (lambda slice [xs ?start ?end]
   "Return sequence from `?start` to `?end`.
@@ -175,19 +175,19 @@
 
 ;; Additional predicates ///2
 
-(fn quoted? [x]
-  "Check if `x` is a list which begins with `quote`.
-  @param x any
-  @return boolean"
-  (and (list? x) ;
-       (= `quote (first x))))
+;; (fn quoted? [x]
+;;   "Check if `x` is a list which begins with `quote`.
+;;   @param x any
+;;   @return boolean"
+;;   (and (list? x) ;
+;;        (= `quote (first x))))
 
-(fn anonymous-function? [x]
-  "(Compile time) Check if type of `x` is anonymous function.
-  @param x any
-  @return boolean"
-  (and (list? x) ;
-       (contains? [`fn `hashfn `lambda `partial] (first x))))
+;; (fn anonymous-function? [x]
+;;   "(Compile time) Check if type of `x` is anonymous function.
+;;   @param x any
+;;   @return boolean"
+;;   (and (list? x) ;
+;;        (contains? [`fn `hashfn `lambda `partial] (first x))))
 
 (fn vim-callback-format? [callback]
   "Tell if `callback` is to be interpreted in Vim script just by the
@@ -271,13 +271,13 @@
       (collect [k v (pairs ?api-opts) &into ?extra-opts]
         (values k v))))
 
-(fn ->unquoted [x]
-  "If quoted, return unquoted `x`; otherwise, just return `x` itself.
-  @param x any but nil
-  @return any"
-  (if (quoted? x)
-      (second x)
-      x))
+;; (fn ->unquoted [x]
+;;   "If quoted, return unquoted `x`; otherwise, just return `x` itself.
+;;   @param x any but nil
+;;   @return any"
+;;   (if (quoted? x)
+;;       (second x)
+;;       x))
 
 (lambda extract-?vim-fn-name [x]
   "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`.
