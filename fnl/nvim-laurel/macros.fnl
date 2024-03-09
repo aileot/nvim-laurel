@@ -220,14 +220,6 @@
       _ (error* (msg-template/expected-actual "2 or 3 args"
                                               (+ 2 (select "#" ...)))))))
 
-(lambda merge-default-kv-table! [default another]
-  "Fill key-value table with default values.
-  @param default kv-table
-  @param another kv-table"
-  (each [k v (pairs default)]
-    (when (nil? (. another k))
-      (tset another k v))))
-
 (lambda seq->kv-table [xs ?trues]
   "Convert `xs` into a kv-table as follows:
   - The values for `x` listed in `?trues` are set to `true`.
