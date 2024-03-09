@@ -13,17 +13,20 @@
        (case (. x 1 1)
          (where (or :fn :hashfn :lambda :partial)) true)))
 
+(fn ->fn [...]
+  (if (function? ...)
+      `(do
+         ,...)
+      `#(do
+          ,...)))
+
 (lambda inject-fn [name ...]
   "Construct busted wrapper.
  @param name string busted method name
  @param ... list a function, or any number of list to be wrapped into a function."
   (assert (< 0 (select "#" ...)) (: "expected one or more args for %s" :format
                                     name))
-  `((. (require :busted) ,name) ,(if (function? ...)
-                                     `(do
-                                        ,...)
-                                     `#(do
-                                         ,...))))
+  `((. (require :busted) ,name) ,(->fn ...)))
 
 (lambda inject-desc-fn [name desc ...]
   "Construct busted wrapper.
