@@ -90,13 +90,13 @@
                            (autocmd! a.group [:BufWritePre] [:buffer 0]
                                      default-callback)))))
           (assert-spy s :was_not_called)
-          (let [aus (vim.api.nvim_get_autocmds {:event :InsertEnter})]
+          (let [aus (get-autocmds {:event :InsertEnter})]
             (assert.is_same 1 (length aus)))
           (vim.api.nvim_exec_autocmds :InsertEnter {:buffer 0})
           (assert-spy s :was_called)
-          (let [aus (vim.api.nvim_get_autocmds {:event :InsertEnter})]
+          (let [aus (get-autocmds {:event :InsertEnter})]
             (assert.is_same 1 (length aus)))
-          (let [aus (vim.api.nvim_get_autocmds {:event [:BufWritePre]})]
+          (let [aus (get-autocmds {:event [:BufWritePre]})]
             (assert.is_same 1 (length aus)))))
       (it "callback arg value at `group` is same as the parent group id."
         (let [s (spy.new)]
@@ -128,7 +128,7 @@
           (assert-spy s :was_not_called)
           (exec-autocmds :InsertEnter {:group default-augroup})
           (assert-spy s :was_called)
-          (pending #(let [[au1 au2 &as aus] (vim.api.nvim_get_autocmds {:group default-augroup})]
+          (pending #(let [[au1 au2 &as aus] (get-autocmds {:group default-augroup})]
                       (assert.is_same {:InsertEnter true :BufWritePre true}
                                       {au1.event true au2.event true})
                       (assert.is_same 2 (length aus)))))))
