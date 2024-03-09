@@ -87,6 +87,8 @@ the following features:
 
 ### &default-opts
 
+(Since v0.6.1)
+
 A symbol to set default values of `api-opts` field. It indicates that the bare
 kv-table next to `&default-opts` contains default values for `api-opts`, but
 it also accepts the additional keys available in `extra-opts`. To set boolean
