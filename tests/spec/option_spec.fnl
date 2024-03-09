@@ -1,4 +1,4 @@
-(import-macros {: describe : it} :_busted_macros)
+(import-macros {: before_each : describe : it} :_busted_macros)
 (import-macros {: set+ : set- : set^} :_wrapper_macros)
 (import-macros {: set!
                 : setglobal!
@@ -67,7 +67,8 @@
     (assert.is_same val (. vim.o name))))
 
 (describe :options
-  (before_each reset-context)
+  (before_each (do
+                 (reset-context)))
   (describe :set!
     (it "is case-insensitive at option name"
       (vim.cmd "set foldlevel=2")
