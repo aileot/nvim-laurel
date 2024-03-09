@@ -867,10 +867,11 @@ determined at runtime.
 ```fennel
 ;; bad
 (autocmd! group [:FileType]
-  #(let [buf-au! (fn [...]
+  (fn []
+    (let [buf-au! (fn [...]
                    (autocmd! &default-opts {:buffer 0} ...))]
-     (buf-au! [:InsertEnter] (do :something))
-     (buf-au! [:BufWritePre] (do :other))))
+      (buf-au! [:InsertEnter] #(do :something))
+      (buf-au! [:BufWritePre] #(do :other))))
 ```
 
 ##### Pattern
@@ -883,9 +884,9 @@ determined at runtime.
   `(autocmd! &default-opts {:buffer 0} ,...))
 
 (autocmd! group [:FileType]
-  #(do
-     (buf-au! [:InsertEnter] (do :something))
-     (buf-au! [:BufWritePre] (do :other))))
+  (fn []
+     (buf-au! [:InsertEnter] #(do :something))
+     (buf-au! [:BufWritePre] #(do :other))))
 ```
 
 or
