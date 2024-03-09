@@ -51,15 +51,16 @@
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe :autocmd
   (setup (fn []
+           (let [nvim-builtin-augroups [:nvim_cmdwin :nvim_terminal]]
+             (each [_ group (ipairs nvim-builtin-augroups)]
+               (augroup! group)))
            (vim.cmd "function g:Test() abort\nendfunction")))
   (teardown (fn []
               (vim.cmd "delfunction g:Test")))
   (before_each (fn []
                  (augroup! default-augroup)
-                 (let [aus (get-autocmds)]
-                   ;; TODO: Automate to clear any autocmds.
-                   ;; (let [aus (get-autocmds {:group false})])
-                   (assert.is.same {} aus))))
+                 (let [aus (get-autocmds {})]
+                   (assert.is_nil (next aus)))))
   (after_each (fn []
                 (pcall del-autocmd au-id1)
                 (pcall del-autocmd au-id2)
