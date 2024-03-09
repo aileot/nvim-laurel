@@ -14,6 +14,9 @@
          (where (or :fn :hashfn :lambda :partial)) true)))
 
 (lambda inject-fn [name ...]
+  "Construct busted wrapper.
+ @param name string busted method name
+ @param ... list a function, or any number of list to be wrapped into a function."
   (assert (< 0 (select "#" ...)) (: "expected one or more args for %s" :format
                                     name))
   `((. (require :busted) ,name) ,(if (function? ...)
@@ -23,6 +26,10 @@
                                          ,...))))
 
 (lambda inject-desc-fn [name desc ...]
+  "Construct busted wrapper.
+  @param name string busted method name
+  @param desc string spec description
+  @param ... list a function, or any number of list to be wrapped into a function"
   (when-not (varg? desc)
     (assert (< 0 (select "#" ...))
             (: "expected one or more args for %s(\"%s\")" :format name desc)))
