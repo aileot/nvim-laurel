@@ -242,6 +242,7 @@ See [CHANGELOG.md](./CHANGELOG.md).
 - [aniseed](https://github.com/Olical/aniseed)
 - [hibiscus.nvim](https://github.com/udayvir-singh/hibiscus.nvim)
 - [katcros-fnl](https://github.com/katawful/katcros-fnl)
+- [nvim-anisole-macros](https://github.com/katawful/nvim-anisole-macros)
 - [nyoom.nvim](https://github.com/shaunsingh/nyoom.nvim)
 - [themis.nvim](https://github.com/datwaft/themis.nvim)
 - [zest.nvim](https://github.com/tsbohc/zest.nvim)
