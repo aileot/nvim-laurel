@@ -20,9 +20,6 @@
 (macro nand [...]
   `(not (and ,...)))
 
-(macro printf [str ...]
-  `(string.format ,str ,...))
-
 ;; General Utils ///1
 ;; Predicates ///2
 
@@ -213,7 +210,7 @@
   @param expected string text to be inserted in \"expected %s\"
   @param actual string
   @param dump string"
-  (let [msg (printf "expected %s, got %s" expected actual)]
+  (let [msg (: "expected %s, got %s" :format expected actual)]
     (match (select "#" ...)
       0 msg
       1 (.. msg "\ndump:\n" (select 1 ...))
@@ -320,13 +317,13 @@
   @param compatible any Anything to keep the compatibility
   @return list"
   (let [gcc-error-format "%s:%d: %s"
-        deprecation `(vim.deprecate ,(printf "[nvim-laurel] %s" deprecated)
+        deprecation `(vim.deprecate ,(: "[nvim-laurel] %s" :format deprecated)
                                     ,alternative
-                                    ,(printf "%s. `:cexpr g:laurel_deprecated` would help you update it. See `:h g:laurel_deprecated` for the details."
-                                             version)
+                                    ,(: "%s. `:cexpr g:laurel_deprecated` would help you update it. See `:h g:laurel_deprecated` for the details."
+                                        :format version)
                                     :nvim-laurel false)
-        msg (printf "nvim-laurel: %s is deprecated. Please update it with %s."
-                    deprecated alternative)]
+        msg (: "nvim-laurel: %s is deprecated. Please update it with %s."
+               :format deprecated alternative)]
     `((fn []
         (when (= nil _G.__laurel_has_fnl_dir)
           (tset _G :__laurel_has_fnl_dir
@@ -452,8 +449,9 @@
                              (contains? autocmd/extra-opt-keys (first a))
                              (values nil a b ?c)
                              (values a nil b ?c))
-            _ (error* (printf "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
-                              (view args) (view ?id) (view events) (view rest))))
+            _ (error* (: "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
+                         :format (view args) (view ?id) (view events)
+                         (view rest))))
           extra-opts (if (nil? ?extra-opts) {}
                          (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
           ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
