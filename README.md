@@ -142,7 +142,26 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
    recommended to specify a version range to avoid unexpected breaking
    changes.
 
-   With [lazy.nvim](https://github.com/folke/lazy.nvim)
+   With [lazy.nvim](https://github.com/folke/lazy.nvim),
+
+   ```lua
+   require("lazy.nvim").setup({
+     {
+       "aileot/nvim-laurel", {
+       -- v0.6.0 <= {version} < v0.7.0
+       version = "~v0.6.0",
+       build = function(opts)
+         -- Tip: Otherwise, lazy.nvim could miss to generate
+         -- help file probably because nvim-laurel does not
+         -- handle either Lua or Vim script.
+         vim.cmd.helptags(opts.dir .. "/doc")
+       end,
+     },
+     ... -- and other plugins
+   }, {defaults = {lazy = true}})
+   ```
+
+   or, if you are confident in writing plugin specs in Fennel,
 
    ```fennel
    (local lazy (require :lazy))
