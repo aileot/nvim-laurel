@@ -9,8 +9,8 @@ FENNEL ?= fennel
 VUSTED ?= vusted
 
 REPO_ROOT:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-TEST_ROOT:=$(REPO_ROOT)/tests
-SPEC_ROOT:=$(TEST_ROOT)/spec
+TEST_ROOT:=$(REPO_ROOT)/test
+SPEC_ROOT:=$(TEST_ROOT)
 
 TEST_DEPS:=$(TEST_ROOT)/.test-deps
 
@@ -50,4 +50,4 @@ test: clean $(LUA_SPECS) ## Run test
 	@$(VUSTED) \
 		--shuffle \
 		--output=utfTerminal \
-		./tests
+		$(TEST_ROOT)

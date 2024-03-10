@@ -1,10 +1,10 @@
 (import-macros {: setup* : teardown* : before-each : describe* : it*}
-               :_busted_macros)
+               :test._busted_macros)
 (import-macros {: nmap!
                 : omni-map!
                 : remap!
                 : buf-map!/with-buffer=0
-                : buf-map!/with-<buffer>=true} :_wrapper_macros)
+                : buf-map!/with-<buffer>=true} :test._wrapper_macros)
 
 (import-macros {: map! : unmap! : <C-u> : <Cmd>} :nvim-laurel.macros)
 
