@@ -148,8 +148,15 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
    (local lazy (require :lazy))
    (lazy.setup [{1 :aileot/nvim-laurel
                  ;; v0.6.0 <= {version} < v0.7.0
-                 :version "~v0.6.0"}
-                ...]
+                 :version "~v0.6.0"
+                 :build (fn [opts]
+                          ;; Tip: Otherwise, lazy.nvim could miss to generate
+                          ;; help file probably because nvim-laurel does not
+                          ;; handle either Lua or Vim script.
+                          (vim.cmd.helptags (.. opts.dir :/doc)))
+                 ;; or with hashfn
+                 :build #(vim.cmd.helptags (.. $.dir :/doc)))}
+                ...] ;; and other plugins
                {:defaults {:lazy true}})
    ```
 
