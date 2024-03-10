@@ -45,11 +45,11 @@
 (local setup* (partial inject-fn `setup))
 (local teardown* (partial inject-fn `teardown))
 
-(fn pending* [desc ...]
-  ;; WIP
-  (if (= :string (type desc))
-      (inject-desc-fn `pending desc ...)
-      (inject-fn `pending desc ...)))
+;; (fn pending* [desc ...]
+;;   ;; WIP
+;;   (if (= :string (type desc))
+;;       (inject-desc-fn `pending desc ...)
+;;       (inject-fn `pending desc ...)))
 
 {: after_each*
  : before_each*
