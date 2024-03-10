@@ -1,18 +1,18 @@
-(import-macros {: describe : it} :_busted_macros)
+(import-macros {: before-each : describe* : it*} :_busted_macros)
 (import-macros {: b! : env!} :nvim-laurel.macros)
 
-(describe :b!
-  (before_each (fn []
+(describe* :b!
+  (before-each (fn []
                  (set vim.b.foo nil)
                  (set vim.b.bar nil)
                  (set vim.env.FOO nil)
                  (set vim.env.BAR nil)))
-  (it "sets environment variable in the editor session"
+  (it* "sets environment variable in the editor session"
     (env! :FOO :foo)
     (env! :$BAR :bar)
     (assert.is.same :foo vim.env.FOO)
     (assert.is.same :bar vim.env.BAR))
-  (it "sets buffer-local variable"
+  (it* "sets buffer-local variable"
     (let [buf (vim.api.nvim_get_current_buf)]
       (vim.cmd.new)
       (vim.cmd.only)
