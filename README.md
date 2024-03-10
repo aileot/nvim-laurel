@@ -179,7 +179,7 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
                {:defaults {:lazy true}})
    ```
 
-   With [dein.vim](https://github.com/Shougo/dein.vim) in toml
+   With [dein.vim](https://github.com/Shougo/dein.vim) in toml,
 
    ```toml
    [[plugins]]
