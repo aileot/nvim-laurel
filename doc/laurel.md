@@ -95,6 +95,14 @@ it also accepts the additional keys available in `extra-opts`. To set boolean
 option, it requires to set to either `true` or `false` in spite of the syntax
 of `extra-opts` itself. See also its [Anti-Patterns](#default-opts-1).
 
+List of macros in which `&default-opts` is available:
+
+- [`augroup!`][]
+- [`autocmd!`][], [`au!`][]
+- [`map!`][]
+- [`command!`][]
+- [`highlight!`][], [`hi!`][]
+
 Note that quote parts depend on where the wrapper macros are defined:
 
 - To define a wrapper **macro** to be expanded in the **same** file, quote the
