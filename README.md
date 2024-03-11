@@ -30,7 +30,7 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
   replaces `(vim.api.nvim_create_augroup :name {})`.
 - **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set
   in sequential table instead of key-value table. In this format, options are
-  likely to be `format`ted into the same line as nvim-laurel macro starts
+  likely to be `format`ted into the same line where nvim-laurel macro starts
   from.
 
 ## Requirements
