@@ -94,9 +94,9 @@ the following features:
 (Since v0.6.1)
 
 A reserved symbol to set default values of `api-opts` fields.  
-It indicates that the bare `kv-table` next to `&default-opts` contains default
-values for `api-opts`, but it also understands the additional keys available
-in `extra-opts`.
+It indicates that the bare `kv-table` next to the symbol `&default-opts`
+contains default values for `api-opts`, but it also interprets the additional
+keys available in `extra-opts`.
 To set boolean option, it requires to set to either `true` or
 `false` in spite of the syntax of `extra-opts` itself.
 See also its [Anti-Patterns](#default-opts-1).
