@@ -157,6 +157,7 @@ Note that quote parts depend on where the wrapper macros are defined:
 #### `augroup!`
 
 Create or get an augroup, or override an existing augroup.
+(`&default-opts` is available.)
 
 ```fennel
 (augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
@@ -256,6 +257,7 @@ c.f. [`autocmd!`](#autocmd)
 #### `autocmd!`
 
 Create an autocmd.
+(`&default-opts` is available.)
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd()`.
@@ -272,6 +274,7 @@ See [`augroup!`](#augroup) for the rest.
 #### `au!`
 
 An alias of [`autocmd!`](#autocmd).
+(`&default-opts` is available.)
 
 ### Keymap
 
@@ -283,6 +286,7 @@ An alias of [`autocmd!`](#autocmd).
 #### `map!`
 
 Map `lhs` to `rhs` in `modes`, non-recursively by default.
+(`&default-opts` is available.)
 
 ```fennel
 (map! modes ?extra-opts lhs rhs ?api-opts)
@@ -746,6 +750,7 @@ call setwinvar(10, '&signcolumn', 'no')
 #### `command!`
 
 Create a user command.
+(`&default-opts` is available.)
 
 ```fennel
 (command! ?extra-opts name command ?api-opts)
@@ -820,6 +825,7 @@ vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, t
 #### `highlight!`
 
 Set a highlight group.
+(`&default-opts` is available.)
 
 ```fennel
 (highlight! ?ns-id name api-opts)
@@ -860,6 +866,7 @@ nvim_set_nl(0, "Foo", {
 #### `hi!`
 
 An alias of [`highlight!`](#highlight).
+(`&default-opts` is available.)
 
 ## Anti-Patterns
 
