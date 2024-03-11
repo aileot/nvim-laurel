@@ -1065,6 +1065,13 @@ runtime.
    :!git commit -m 'refactor(laurel): update macros'
    ```
 
+[`augroup!`]: #augroup
+[`autocmd!`]: #autocmd
+[`au!`]: #au
+[`map!`]: #map
+[`command!`]: #command
+[`highlight!`]: #highlight
+[`hi!`]: #hi
 [-u]: https://neovim.io/doc/user/starting.html#-u
 [Quickfix]: https://neovim.io/doc/user/quickfix.html
 [`:cdo`]: https://neovim.io/doc/user/quickfix.html#%3Acdo
