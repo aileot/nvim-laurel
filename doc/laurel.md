@@ -20,30 +20,32 @@ usages are subject to change without notifications.
 
 ## Terminology
 
-### lhs
+### For Convenience Sake
+
+#### lhs
 
 An abbreviation of left-hand-side.
 
-### rhs
+#### rhs
 
 An abbreviation of right-hand-side.
 
-### #({expr})
+#### #({expr})
 
 Hash function, where `$1` through `$9` and `$...` are available as the
 argument. `$` is an alias for `$1`. See the
 [reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
 for the detail.
 
-### sequence
+#### sequence
 
 An alias of sequential table `[]`.
 
-### kv-table
+#### kv-table
 
 An alias of key/value table `{}`.
 
-### bare-{type}
+#### bare-{type}
 
 It describes the `{type}` value must be neither symbol nor list in compile
 time. For example,
@@ -56,11 +58,11 @@ time. For example,
 - `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence`
   nor `bare-string[]`.
 
-### ?{name}
+#### ?{name}
 
 `{name}` is omittable.
 
-### api-opts
+#### api-opts
 
 It is kv-table `{}` option for the api functions, `vim.api.nvim_foo()`. Unless
 otherwise noted, this option has the following features:
@@ -69,7 +71,7 @@ otherwise noted, this option has the following features:
 - Its values have the highest priority over those set in the other arguments
   if conflicted.
 
-### extra-opts
+#### extra-opts
 
 An alternative form for `api-opts`. Unless otherwise noted, this option has
 the following features:
@@ -85,7 +87,9 @@ the following features:
   or use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
-### &default-opts
+### Reserved Symbol
+
+#### &default-opts
 
 (Since v0.6.1)
 
