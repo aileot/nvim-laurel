@@ -155,8 +155,23 @@ the following features:
 
 ### Reserved Symbol
 
-The symbols are reserved to be used as arguments in `list`s of nvim-laurel
-macros to extend their functionalities.
+#### &vim
+
+(Since v0.5.3)
+
+A reserved symbol to set Vim script callback in symbol or list.  
+Basically, symbol and list are interpreted as Lua callback function in the
+lists of nvim-laurel macros.
+With `&vim` in the list of nvim-laurel macro, they are interpreted as Vim
+script command.
+
+List of macros in which `&vim` makes sense:
+
+- [`autocmd!`][], [`au!`][]
+- [`map!`][]
+- [`command!`][]: only for parity. `&vim` is uncecessary.
+
+#### &default-opts
 
 #### `&vim`
 
