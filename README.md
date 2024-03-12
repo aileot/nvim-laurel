@@ -150,6 +150,10 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
        "aileot/nvim-laurel", {
        -- v0.6.0 <= {version} < v0.7.0
        version = "~v0.6.0",
+       -- if you set `defaults.lazy` to true.
+       lazy = false,
+       -- or some triggers to add nvim-laurel to &rtp.
+       ft = "fennel",
        build = function(opts)
          -- Tip: Otherwise, lazy.nvim could miss to generate
          -- help tags file probably because nvim-laurel does
@@ -158,7 +162,17 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
        end,
      },
      ... -- and other plugins
-   }, {defaults = {lazy = true}})
+   }, {
+       defaults = {
+         lazy = true,
+       },
+       performance = {
+         rtp = {
+           -- recommended not to reset &runtimepath.
+           reset = false,
+         }
+       }
+     })
    ```
 
    or, if you are confident in writing plugin specs in Fennel,
@@ -168,6 +182,8 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
    (lazy.setup [{1 :aileot/nvim-laurel
                  ;; v0.6.0 <= {version} < v0.7.0
                  :version "~v0.6.0"
+                 :lazy false ; if you set `defaults.lazy` to true.
+                 :ft :fennel ; or some triggers to add nvim-laurel to &rtp.
                  :build (fn [opts]
                           ;; Tip: Otherwise, lazy.nvim could miss to generate
                           ;; help tags file probably because nvim-laurel does
@@ -176,7 +192,9 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
                  ;; or with hashfn
                  :build #(vim.cmd.helptags (.. $.dir :/doc)))}
                 ...] ;; and other plugins
-               {:defaults {:lazy true}})
+               {:defaults {:lazy true
+                           ;; recommended not to reset &runtimepath.
+                           :performance {:rtp {:reset false}})
    ```
 
    With [dein.vim](https://github.com/Shougo/dein.vim) in toml,
