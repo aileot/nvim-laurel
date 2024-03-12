@@ -150,10 +150,6 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
        "aileot/nvim-laurel", {
        -- v0.6.0 <= {version} < v0.7.0
        version = "~v0.6.0",
-       -- if you set `defaults.lazy` to true.
-       lazy = false,
-       -- or some triggers to add nvim-laurel to &rtp.
-       ft = "fennel",
      },
      ... -- and other plugins
    }, {
@@ -162,7 +158,7 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
        },
        performance = {
          rtp = {
-           -- recommended not to reset &runtimepath.
+           -- recommended not to remove nvim-laurel from &rtp.
            reset = false,
          }
        }
@@ -176,11 +172,9 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
    (lazy.setup [{1 :aileot/nvim-laurel
                  ;; v0.6.0 <= {version} < v0.7.0
                  :version "~v0.6.0"
-                 :lazy false ; if you set `defaults.lazy` to true.
-                 :ft :fennel ; or some triggers to add nvim-laurel to &rtp.
                 ...] ;; and other plugins
                {:defaults {:lazy true
-                           ;; recommended not to reset &runtimepath.
+                           ;; recommended not to remove nvim-laurel from &rtp.
                            :performance {:rtp {:reset false}})
    ```
 
