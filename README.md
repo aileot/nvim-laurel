@@ -154,12 +154,6 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
        lazy = false,
        -- or some triggers to add nvim-laurel to &rtp.
        ft = "fennel",
-       build = function(opts)
-         -- Tip: Otherwise, lazy.nvim could miss to generate
-         -- help tags file probably because nvim-laurel does
-         -- not handle either Lua or Vim script.
-         vim.cmd.helptags(opts.dir .. "/doc")
-       end,
      },
      ... -- and other plugins
    }, {
@@ -184,13 +178,6 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
                  :version "~v0.6.0"
                  :lazy false ; if you set `defaults.lazy` to true.
                  :ft :fennel ; or some triggers to add nvim-laurel to &rtp.
-                 :build (fn [opts]
-                          ;; Tip: Otherwise, lazy.nvim could miss to generate
-                          ;; help tags file probably because nvim-laurel does
-                          ;; not handle either Lua or Vim script.
-                          (vim.cmd.helptags (.. opts.dir :/doc)))
-                 ;; or with hashfn
-                 :build #(vim.cmd.helptags (.. $.dir :/doc)))}
                 ...] ;; and other plugins
                {:defaults {:lazy true
                            ;; recommended not to reset &runtimepath.
