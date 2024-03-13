@@ -155,7 +155,7 @@ the following features:
 
 ### Reserved Symbol
 
-#### &vim
+#### `&vim`
 
 (Since v0.5.3)
 
@@ -171,7 +171,7 @@ List of macros in which `&vim` makes sense:
 - [`map!`][]
 - [`command!`][]: only for parity. `&vim` is uncecessary.
 
-#### &default-opts
+#### `&default-opts`
 
 #### `&vim`
 
