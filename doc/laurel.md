@@ -197,7 +197,7 @@ Create or get an augroup, or override an existing augroup.
 - `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
   symbol or list, set it in either `extra-opts` or `api-opts` instead. The
   first pattern in string cannot be any of the keys used in `?extra-opts`.
-- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+- `?extra-opts`: (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
 - `callback`: (string|function) Set either callback function or Ex command. A
   callback is interpreted as Lua function by default. To set Ex command, you
@@ -211,7 +211,7 @@ Create or get an augroup, or override an existing augroup.
   argument from `nvim_create_autocmd()`; on the other hand, set
   `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
+- `?api-opts`: (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
 (augroup! :sample-augroup
@@ -317,7 +317,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   "v", "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
   bare-string, multi modes can be set in a string like `:nox` instead of
   `[:n :o :x]`.
-- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+- `?extra-opts`: (bare-sequence) Additional option:
   - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
     option from `nvim_set_keymap()`.
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
@@ -333,7 +333,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - Insert `&vim` symbol just before the callback.
   - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
 
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
+- `?api-opts`: (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
 (map! :i :jk :<Esc>)
@@ -777,14 +777,14 @@ Create a user command.
 (command! name ?extra-opts command ?api-opts)
 ```
 
-- [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
+- `?extra-opts`: (bare-sequence) Optional command attributes.
   Additional attributes:
   - `<buffer>`: Create command in current buffer by itself.
   - `buffer`: Create command in the buffer of the next value.
 - `name`: (string) Name of the new user command. It must begin with an
   uppercase letter.
 - `command`: (string|function) Replacement command.
-- [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same
+- `?api-opts`: (kv-table) Optional command attributes. The same
   as `opts` for `nvim_create_user_command()`.
 
 ```fennel
