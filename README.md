@@ -158,7 +158,11 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
        },
        performance = {
          rtp = {
-           -- recommended not to remove nvim-laurel from &rtp.
+           -- Note: Not to remove nvim-laurel from &rtp,
+           -- and not to encounter any other potential issues,
+           -- it's UNRECOMMENDED to reset &rtp unless you
+           -- don't mind the extra cost to maintain the
+           -- "paths" properly.
            reset = false,
          }
        }
@@ -174,8 +178,12 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
                  :version "~v0.6.0"
                 ...] ;; and other plugins
                {:defaults {:lazy true
-                           ;; recommended not to remove nvim-laurel from &rtp.
-                           :performance {:rtp {:reset false}})
+                           ;; Note: Not to remove nvim-laurel from &rtp,
+                           ;; and not to encounter any other potential issues,
+                           ;; it's UNRECOMMENDED to reset &rtp unless you
+                           ;; don't mind the extra cost to maintain the
+                           ;; "paths" properly.
+                           :performance {:rtp {:reset false}}}})
    ```
 
    With [dein.vim](https://github.com/Shougo/dein.vim) in toml,
