@@ -155,6 +155,9 @@ the following features:
 
 ### Reserved Symbol
 
+The symbols are reserved to be used as arguments in `list`s of nvim-laurel
+macros to extend their functionalities.
+
 #### `&vim`
 
 (Since v0.5.3)
