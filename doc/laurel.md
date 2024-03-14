@@ -20,7 +20,13 @@ usages are subject to change without notifications.
 
 ## Terminology
 
+- [For Convenience Sake](#For-Convenience-Sake)
+- [Reserved Symbol](#Reserved-Symbol)
+
 ### For Convenience Sake
+
+The terminology is introduced to describe the interfaces of nvim-laurel rather
+than a standard one.
 
 #### `lhs`
 
@@ -60,7 +66,8 @@ time. For example,
 
 #### `?{name}`
 
-`{name}` is omittable.
+It represents `{name}` is omittable rather than nilable in nvim-laurel
+contexts.
 
 #### `api-opts`
 
@@ -88,6 +95,9 @@ the following features:
 - It could accept some additional keys which are unavailable in `api-opts`.
 
 ### Reserved Symbol
+
+The symbols are reserved to be used as arguments in `list`s of nvim-laurel
+macros to extend their functionalities.
 
 #### `&vim`
 
