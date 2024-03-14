@@ -931,7 +931,7 @@ or
 ```fennel
 ;; good
 ;; in my/macros.fnl
-(local {: atocmd!} (require :nvim-laurel))
+(local {: autocmd!} (require :nvim-laurel))
 
 (fn buf-au! [...]
   (autocmd! `&default-opts {:buffer 0} ...))
