@@ -85,7 +85,7 @@ the following features:
 
 - It is bare-sequence `[]`, but is interpreted as if kv-table `{}` in the
   following manner:
-  - Items for keys **must** be bare-strings; items for values can be of any
+  - Items for keys must be bare-strings; items for values can be of any
     type.
   - Boolean key/value for `api-opts` is set to `true` by key itself; the other
     keys expects the next items as their values respectively.
@@ -137,7 +137,7 @@ List of macros in which `&default-opts` is available:
 
 Note that quote parts depend on where the wrapper macros are defined:
 
-- To define a wrapper **macro** to be expanded in the **same** file, quote the
+- To define a wrapper `macro` to be expanded _in the same file_, quote the
   entire `list` of the imported macro (and unquote as you need). For example,
 
   ```fennel
@@ -150,8 +150,8 @@ Note that quote parts depend on where the wrapper macros are defined:
   (buf-map! :lhs :rhs)
   ```
 
-- To define a wrapper **function** to be imported as a macro in **another**
-  file, just quote `&default-opts`. For example,
+- To define a wrapper `function` to be imported as a macro _in another
+  file_, just quote `&default-opts`. For example,
 
   ```fennel
   ;; in my/macros.fnl
