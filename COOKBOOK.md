@@ -2,7 +2,9 @@
 
 ## Recipes
 
-In examples below, the codes are supposed to import and export all the
+### Create wrapper macros
+
+The codes in examples below are supposed to import and export all the
 nvim-laurel macros properly.
 
 <details>
