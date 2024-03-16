@@ -82,14 +82,12 @@ favor of `import-macros` in Fennel v0.4.0.)
 
 Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/macros.fnl
 
-### TOC
-
-- [Define autocmds all over my vimrc](#define-autocmds-all-over-my-vimrc)
-
 ### Define autocmds all over my vimrc
 
-Traditionally, we create a `MyVimrc` augroup all over my vimrc just once to
-clear augroup to start up Vim/Neovim faster in Vim script:
+<details>
+<summary>
+_Traditionally, a lot of spartan Vimmers have created a monolithtic augroup "MyVimrc" in Vim script..._
+</summary>
 
 ```vim
 " At first,
@@ -104,6 +102,10 @@ augroup MyVimrc
   au FileType *.fnl setlocal suffixesadd=.fnl,.lua,.vim
 augroup END
 ```
+
+</details>
+
+<br>
 
 With nvim-laurel, it could be implemented in some approaches:
 
