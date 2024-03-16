@@ -101,7 +101,7 @@ macros to extend their functionalities.
 
 #### `&vim`
 
-(Since v0.5.3)
+_(Since v0.5.3)_
 
 A reserved symbol to set Vim script callback in symbol or list.  
 Basically, symbol and list are interpreted as Lua callback function in the
@@ -117,7 +117,7 @@ List of macros in which `&vim` makes sense:
 
 #### `&default-opts`
 
-(Since v0.6.1)
+_(Since v0.6.1)_
 
 A reserved symbol to set default values of `api-opts` fields.  
 It indicates that the bare `kv-table` next to the symbol `&default-opts`
