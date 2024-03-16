@@ -1116,11 +1116,11 @@ runtime.
 
 <!-- panvimdoc-ignore-start -->
 
-See [CHANGELOG.md](./CHANGELOG.md), including the previous breaking changes.
+See [CHANGELOG.md](../CHANGELOG.md), including the previous breaking changes.
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
-See [CHANGELOG.md](./CHANGELOG.md),
+See [CHANGELOG.md](../CHANGELOG.md),
 or https://github.com/aileot/nvim-laurel/blob/main/CHANGELOG.md
 -->
 
