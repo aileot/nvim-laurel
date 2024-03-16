@@ -798,7 +798,7 @@ Create a user command.
   as `opts` for `nvim_create_user_command()`.
 
 ```fennel
-(command! :SayHello [:bang] "echo 'Hello world!'" {:desc "Say Hello!"})
+(command! :SayHello "echo 'Hello world!'")
 (command! :Salute [:bar :<buffer> :desc "Salute!"] #(print "Hello world!"))
 ```
 
