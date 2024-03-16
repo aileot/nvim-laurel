@@ -10,11 +10,12 @@ nvim-laurel macros properly.
 <details>
 
 <summary>
-Sample code to import and export nvim-laurel macros
+An example to import and export nvim-laurel macros
 </summary>
 
+In a macro definition file, say my-macros.fnl,
+
 ```fennel
-;; In a macro definition file, say my-macros.fnl,
 (local {: set!
         : setlocal!
         : setglobal!
@@ -38,10 +39,12 @@ Sample code to import and export nvim-laurel macros
         : feedkeys!
         : highlight!} (require :nvim-laurel.macros))
 
-;; Define other macros including wrappers.
-...
+```
 
-;; And export them, too.
+And export them at the bottom of the file:
+
+```fennel
+
 {: set!
  : setlocal!
  : setglobal!
@@ -63,9 +66,7 @@ Sample code to import and export nvim-laurel macros
  : au!
  : autocmd!
  : feedkeys!
- : highlight!
- ;; And the other wrapper macros
- ...}
+ : highlight!}
 ```
 
 Then, at the top of example codes,
@@ -77,6 +78,7 @@ favor of `import-macros` in Fennel v0.4.0.)
 ```
 
 </details>
+<br>
 
 Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/macros.fnl
 
