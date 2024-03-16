@@ -135,7 +135,7 @@ List of macros in which `&default-opts` is available:
 - [`command!`][]
 - [`highlight!`][], [`hi!`][]
 
-Note that quote parts depend on where the wrapper macros are defined:
+Note that quote position depends on where the wrapper macros are defined:
 
 - To define a wrapper `macro` to be expanded _in the same file_, quote the
   entire `list` of the imported macro (and unquote as you need). For example,
