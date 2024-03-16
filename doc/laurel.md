@@ -805,15 +805,12 @@ Create a user command.
 is equivalent to
 
 ```vim
-command! -bang SayHello echo 'Hello world!'
+command! SayHello echo 'Hello world!'
 command! -bar -buffer Salute echo 'Hello world!'
 ```
 
 ```lua
-vim.api.nvim_create_user_command("SayHello", "echo 'Hello world!'", {
-  bang = true,
-  desc = "Say Hello!",
-})
+vim.api.nvim_create_user_command("SayHello", "echo 'Hello world!'", {})
 vim.api.nvim_buf_create_user_command(0, "Salute", function()
   print("Hello world!")
 end, {
