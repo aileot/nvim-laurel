@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.7.0](https://github.com/aileot/nvim-laurel/compare/v0.6.1...v0.7.0) (2024-03-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* `command!` drops support to resolve unnecessary quote on callback
+
+### Features
+
+* add option `&default-opts` ([#227](https://github.com/aileot/nvim-laurel/issues/227)) ([bc019ed](https://github.com/aileot/nvim-laurel/commit/bc019edcf3bf69339ced1214ed0a43c4b9219ff1))
+* **autocmd:** deprecate `^&lt;.+&gt;` pattern in sym/list to set Lua callback ([#197](https://github.com/aileot/nvim-laurel/issues/197)) ([5b970cf](https://github.com/aileot/nvim-laurel/commit/5b970cfa2c380e61268eaefd99349116aae8e549))
+* **autocmd:** deprecate list to set Ex command ([#203](https://github.com/aileot/nvim-laurel/issues/203)) ([c1d7bbf](https://github.com/aileot/nvim-laurel/commit/c1d7bbf60d69435e51d1705a77f66682e0908836))
+* **autocmd:** deprecate quoted callback format ([#202](https://github.com/aileot/nvim-laurel/issues/202)) ([fd0ba7c](https://github.com/aileot/nvim-laurel/commit/fd0ba7c582d52e23b3a9e00f7c4309d60464b705)), closes [#190](https://github.com/aileot/nvim-laurel/issues/190)
+* **autocmd:** deprecate special opts &lt;command&gt;, ex, <callback>, and cb ([#200](https://github.com/aileot/nvim-laurel/issues/200)) ([cea9d45](https://github.com/aileot/nvim-laurel/commit/cea9d459b4083053b1ba0d259ff84928c2d36d57)), closes [#188](https://github.com/aileot/nvim-laurel/issues/188)
+* **command:** deprecate quoted callback format ([#207](https://github.com/aileot/nvim-laurel/issues/207)) ([70f253b](https://github.com/aileot/nvim-laurel/commit/70f253b10e04e7efbaf6f3ee1c04415c23e02031)), closes [#205](https://github.com/aileot/nvim-laurel/issues/205)
+* **keymap:** deprecate `^&lt;.+&gt;` pattern in sym/list to set Lua callback ([#199](https://github.com/aileot/nvim-laurel/issues/199)) ([69b3cef](https://github.com/aileot/nvim-laurel/commit/69b3cefa126a4366b04dee39f33888dfa7dd9d9a))
+* **keymap:** deprecate list for key sequence ([#204](https://github.com/aileot/nvim-laurel/issues/204)) ([39eb8dc](https://github.com/aileot/nvim-laurel/commit/39eb8dc05b487634124309239a02f2324a66e908))
+* **keymap:** deprecate quoted callback format ([#206](https://github.com/aileot/nvim-laurel/issues/206)) ([2a2a57a](https://github.com/aileot/nvim-laurel/commit/2a2a57a45ac5895c37e2dcf7a117ff31bcf25494)), closes [#191](https://github.com/aileot/nvim-laurel/issues/191)
+* **keymap:** deprecate special opts &lt;command&gt;, ex, <callback> and cb ([#201](https://github.com/aileot/nvim-laurel/issues/201)) ([8a005ed](https://github.com/aileot/nvim-laurel/commit/8a005edf32938f4e296584f87cf76115ab5c4107)), closes [#189](https://github.com/aileot/nvim-laurel/issues/189)
+* **option:** detect infix flag in symbol to append, prepend, ...; deprecate `:foo+`, ..., format and `set+`, ..., macros ([#233](https://github.com/aileot/nvim-laurel/issues/233)) ([669bdf4](https://github.com/aileot/nvim-laurel/commit/669bdf4ed5d4503f3eb40f28024f2ebbaa4547df))
+
+
+### Bug Fixes
+
+* **autocmd:** filter non-deprecated format `^&lt;.+&gt;` not to deprecate ([#217](https://github.com/aileot/nvim-laurel/issues/217)) ([3a4b048](https://github.com/aileot/nvim-laurel/commit/3a4b048431973eee207072c3ad98d20184710903))
+* **keymap:** correct docstring of `map!` macro ([#244](https://github.com/aileot/nvim-laurel/issues/244)) ([b982180](https://github.com/aileot/nvim-laurel/commit/b982180a285b001fd5324c739b6be7b72e28988a))
+* **keymap:** filter non-deprecated format `^&lt;.+&gt;` not to deprecate ([#214](https://github.com/aileot/nvim-laurel/issues/214)) ([2812d82](https://github.com/aileot/nvim-laurel/commit/2812d82abc2a58201c67e3a7007dd9417faa6274))
+* **option:** detect sym/list in table not to concat at compile time ([#212](https://github.com/aileot/nvim-laurel/issues/212)) ([cf4dccc](https://github.com/aileot/nvim-laurel/commit/cf4dcccfdbdd885b0348b901964da528e3215ecd))
+* **option:** optimize values for short forms: `fo` and `shm` ([#223](https://github.com/aileot/nvim-laurel/issues/223)) ([1d3046b](https://github.com/aileot/nvim-laurel/commit/1d3046b3ec4d127febe289f9495ee9853566be65))
+
+
+### Code Refactoring
+
+* remove support for deprecated features ([#210](https://github.com/aileot/nvim-laurel/issues/210)) ([c7f4069](https://github.com/aileot/nvim-laurel/commit/c7f4069faed58d7021c0a3533c219ba22d7cb9d7))
+
 ## [0.6.1](https://github.com/aileot/nvim-laurel/compare/v0.6.0...v0.6.1) (2024-03-16)
 
 
