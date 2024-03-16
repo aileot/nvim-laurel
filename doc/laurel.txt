@@ -1,4 +1,4 @@
-*laurel.txt*         For Neovim >= 0.8.0         Last change: 2023 February 18
+*laurel.txt*           For Neovim >= 0.8.0          Last change: 2024 March 16
 
 ==============================================================================
 Table of Contents                                   *laurel-table-of-contents*
@@ -9,48 +9,65 @@ Table of Contents                                   *laurel-table-of-contents*
   - Macros                                                     |laurel-macros|
   - Anti-Patterns                                       |laurel-anti-patterns|
   - Deprecated Features                           |laurel-deprecated-features|
+  - Changelog                                               |laurel-changelog|
 
 ==============================================================================
 1. nvim-laurel                                            *laurel-nvim-laurel*
 
 nvim-laurel provides a set of macros for Neovim config, inspired by the builtin
-Nvim Lua standard library and by good old Vim script.
+Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
+
 
 CAUTION                                                       *laurel-caution*
 
 Each macro might be more flexible than documented, but of course, undocumented
 usages are subject to change without notifications.
 
+
 TERMINOLOGY                                               *laurel-terminology*
 
-LHS ~
+- |laurel-for-convenience-sake|
+- |laurel-reserved-symbol|
+
+
+FOR CONVENIENCE SAKE ~
+
+The terminology is introduced to describe the interfaces of nvim-laurel rather
+than a standard one.
+
+
+lhs                                                               *laurel-lhs*
 
 An abbreviation of left-hand-side.
 
-RHS ~
+
+rhs                                                               *laurel-rhs*
 
 An abbreviation of right-hand-side.
 
-({EXPR}) ~
+
+#({expr})                                                         *laurel-#()*
 
 Hash function, where `$1` through `$9` and `$...` are available as the
-argument. `$` is an alias for `$1`. See the reference
+argument. `$` is an alias for `$1`. Read the official Fennel reference
 <https://fennel-lang.org/reference#hash-function-literal-shorthand> for the
 detail.
 
-SEQUENCE ~
+
+sequence                                                     *laurel-sequence*
 
 An alias of sequential table `[]`.
 
-KV-TABLE ~
+
+kv-table                                                     *laurel-kv-table*
 
 An alias of key/value table `{}`.
 
-BARE-{TYPE} ~
+
+bare-{type}                                                     *laurel-bare-*
 
 It describes the `{type}` value must be neither symbol nor list in compile
 time. For example,
-
 
 - `:foobar` is a `bare-string`.
 - `(.. :foo :bar)` is not a `bare-string`.
@@ -61,30 +78,30 @@ time. For example,
     nor `bare-string[]`.
 
 
-?{NAME} ~
+?{name}                                                             *laurel-?*
 
-`{name}` is omittable.
+It represents `{name}` is omittable rather than nilable in nvim-laurel
+contexts.
 
-API-OPTS ~
+
+api-opts                                                     *laurel-api-opts*
 
 It is kv-table `{}` option for the api functions, `vim.api.nvim_foo()`. Unless
 otherwise noted, this option has the following features:
-
 
 - It only accepts the same key/value described in `api.txt`.
 - Its values have the highest priority over those set in the other arguments
     if conflicted.
 
 
-EXTRA-OPTS ~
+extra-opts                                                 *laurel-extra-opts*
 
 An alternative form for `api-opts`. Unless otherwise noted, this option has the
 following features:
 
-
 - It is bare-sequence `[]`, but is interpreted as if kv-table `{}` in the
     following manner:
-    - Items for keys **must** be bare-strings; items for values can be of any
+    - Items for keys must be bare-strings; items for values can be of any
         type.
     - Boolean key/value for `api-opts` is set to `true` by key itself; the other
         keys expects the next items as their values respectively.
@@ -94,8 +111,80 @@ following features:
 - It could accept some additional keys which are unavailable in `api-opts`.
 
 
-MACROS                                                         *laurel-macros*
+RESERVED SYMBOL ~
 
+The symbols are reserved to be used as arguments in `list`s of nvim-laurel
+macros to extend their functionalities.
+
+
+&vim                                                             *laurel-&vim*
+
+_(Since v0.5.3)_
+
+A reserved symbol to set Vim script callback in symbol or list. Basically,
+symbol and list are interpreted as Lua callback function in the lists of
+nvim-laurel macros. With `&vim` in the list of nvim-laurel macro, they are
+interpreted as Vim script command.
+
+List of macros in which `&vim` makes sense:
+
+- |laurel-`autocmd!`|, |laurel-`au!`|
+- |laurel-`map!`|
+- |laurel-`command!`|only for parity. `&vim` is uncecessary.
+
+
+&default-opts                                           *laurel-&default-opts*
+
+_(Since v0.6.1)_
+
+A reserved symbol to set default values of `api-opts` fields. It indicates that
+the bare `kv-table` next to the symbol `&default-opts` contains default values
+for `api-opts`, but it also interprets the additional keys available in
+`extra-opts`. To set boolean option, it requires to set to either `true` or
+`false` in spite of the syntax of `extra-opts` itself. See also its
+|laurel-anti-patterns|.
+
+List of macros in which `&default-opts` is available:
+
+- |laurel-`augroup!`|
+- |laurel-`autocmd!`|, |laurel-`au!`|
+- |laurel-`map!`|
+- |laurel-`command!`|
+- |laurel-`highlight!`|, |laurel-`hi!`|
+
+Note that quote position depends on where the wrapper macros are defined:
+
+- To define a wrapper `macro` to be expanded _in the same file_, quote the entire
+    `list` of the imported macro (and unquote as you need). For example,
+    >fennel
+        ;; in foobar.fnl
+        (import-macros {: map!} :nvim-laurel)
+        
+        (macro buf-map! [...]
+          `(map! &default-opts {:buffer 0} ,...))
+        
+        (buf-map! :lhs :rhs)
+    <
+- To define a wrapper `function` to be imported as a macro _in another file_,
+    just quote `&default-opts`. For example,
+    >fennel
+        ;; in my/macros.fnl
+        (local {: map!} (require :nvim-laurel))
+        
+        (fn buf-map! [...]
+          (map! `&default-opts {:buffer 0} ...))
+        
+        {: buf-map!}
+    <
+    >fennel
+        ;; in foobar.fnl (another file)
+        (import-macros {: buf-map!} :my.macros)
+        
+        (buf-map! :lhs :rhs)
+    <
+
+
+MACROS                                                         *laurel-macros*
 
 - |laurel-autocmd|
 - |laurel-keymap|
@@ -106,17 +195,15 @@ MACROS                                                         *laurel-macros*
 
 AUTOCMD ~
 
+- |laurel-`augroup!`|
+- |laurel-`autocmd!`|
+- |laurel-`au!`|
 
-- |laurel-augroup!|
-- |laurel-autocmd!|
-- |laurel-au!|
 
+augroup!                                                     *laurel-augroup!*
 
-                                                             *laurel-augroup!*
-
-augroup!                               Create or get an augroup, or override an
-                                       existing augroup.
-
+Create or get an augroup, or override an existing augroup. (`&default-opts` is
+available.)
 
 >fennel
     (augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
@@ -129,54 +216,49 @@ augroup!                               Create or get an augroup, or override an
       ...)
 <
 
-
-
-- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`. You cannot use
+- `?api-opts-for-augroup`(kv-table) |nvim_create_augroup()|. You cannot use
     macro/function named `au!` or `autocmd!` here.
-- `name`: (string) The name of autocmd group.
-- `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
-    symbol or list, set it in either `extra-opts` or `api-opts` instead. The first
-    pattern in string cannot be any of the keys used in `?extra-opts`.
-- |laurel-`?extra-opts`|: (bare-sequence) Additional option:
-    - `<buffer>`: Create autocmd to current buffer by itself.
-- `callback`: (string|function) Set either callback function or Ex command. A
+- `name`(string) The name of autocmd group.
+- `events`(string|string[]) The event or events to register this autocmd.
+- `?pattern`(bare-sequence) Patterns to match against. To set `pattern` in symbol
+    or list, set it in either `extra-opts` or `api-opts` instead. The first pattern
+    in string cannot be any of the keys used in `?extra-opts`.
+- `?extra-opts`(bare-sequence) Additional option:
+    - `<buffer>`Create autocmd to current buffer by itself.
+- `callback`(string|function) Set either callback function or Ex command. A
     callback is interpreted as Lua function by default. To set Ex command, you have
     three options:
     - Set it in bare-string.
     - Insert `&vim` symbol just before the callback.
     - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
     Note: Set `vim.fn.foobar` to call Vim script function `foobar` without table
-    argument from `nvim_create_autocmd()`; on the other hand, set `(vim.fn.foobar
+    argument from `nvim_create_autocmd()`; on the other hand, set `#(vim.fn.foobar
     $)` to call `foobar` with the table argument.
-- |laurel-`?api-opts`|: (kv-table) `:h nvim_create_autocmd()`.
-
+- `?api-opts`(kv-table) |nvim_create_autocmd()|.
 
 >fennel
     (augroup! :sample-augroup
-      [:TextYankPost (vim.highlight.on_yank {:timeout 450 :on_visual false})]
+      [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
       (autocmd! [:InsertEnter :InsertLeave]
-          [:<buffer> :desc "call foobar() without any args"] vim.fn.foobar)
-      (autocmd! :VimEnter [:once :nested :desc "call bazqux() with <amatch>"]
-          (vim.fn.bazqux $.match)))
+          [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
+      (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
+          #(vim.fn.baz#qux $.match)))
       (autocmd! :LspAttach
-          (au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
+          #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
 <
-
 
 is equivalent to
 
 >vim
     augroup sample-augroup
       autocmd!
-      autocmd TextYankPost  lua vim.highlight.on_yank {timeout=450, on_visual=false}
-      autocmd InsertEnter,InsertLeave <buffer> call foobar()
-      autocmd VimEnter  ++once ++nested call bazqux(expand('<amatch>'))
-      autocmd LspAttach  au sample-augroup CursorHold <buffer>
+      autocmd TextYankPost * lua vim.highlight.on_yank {timeout=450, on_visual=false}
+      autocmd InsertEnter,InsertLeave <buffer> call foo#bar()
+      autocmd VimEnter * ++once ++nested call baz#qux(expand('<amatch>'))
+      autocmd LspAttach * au sample-augroup CursorHold <buffer>
       \ lua vim.lsp.buf.document_highlight()
     augroup END
 <
-
 
 >lua
     local id = vim.api.nvim_create_augroup("sample-augroup", {})
@@ -189,16 +271,16 @@ is equivalent to
     vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
       group = id,
       buffer = 0,
-      desc = "call foobar() without any args",
-      callback = "foobar",
+      desc = "call foo#bar() without any args",
+      callback = "foo#bar",
     })
     vim.api.nvim_create_autocmd("VimEnter", {
       group = id,
       once = true,
       nested = true,
-      desc = "call bazqux() with <amatch>",
+      desc = "call baz#qux() with <amatch>",
       callback = function(args)
-        vim.fn["bazqux"](args.match)
+        vim.fn["baz#qux"](args.match)
       end,
     })
     vim.api.nvim_create_autocmd("LspAttach", {
@@ -213,103 +295,93 @@ is equivalent to
     })
 <
 
-
 c.f. |laurel-`autocmd!`|
 
-                                                             *laurel-autocmd!*
 
-autocmd!                               Create an autocmd.
+autocmd!                                                     *laurel-autocmd!*
 
+Create an autocmd. (`&default-opts` is available.)
 
 >fennel
     (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd()`.
     (autocmd! name-or-id events ?pattern ?extra-opts callback ?api-opts)
 <
 
-
-
-- `name-or-id`: (string|integer|nil) The autocmd group name or id to match
+- `name-or-id`(string|integer|nil) The autocmd group name or id to match
     against. It is necessary unlike `nvim_create_autocmd()` unless this
     `autocmd!` macro is within either `augroup!`. Set it to `nil` to define
     `autocmd`s affiliated with no augroup.
 
-
 See |laurel-`augroup!`| for the rest.
 
-                                                                  *laurel-au!*
 
-au!                                    An alias of |laurel-`autocmd!`|.
+au!                                                               *laurel-au!*
+
+An alias of |laurel-`autocmd!`|. (`&default-opts` is available.)
 
 
 KEYMAP ~
 
+- |laurel-`map!`|A replacement of `vim.keymap.set`
+- |laurel-`unmap!`|A replacement of `vim.keymap.del`
+- |laurel-`<cmd>`|
+- |laurel-`<c-u>`|
 
-- |laurel-map!|: A replacement of `vim.keymap.set`
-- |laurel-unmap!|: A replacement of `vim.keymap.del`
-- |laurel-<cmd>|
-- |laurel-<c-u>|
 
+map!                                                             *laurel-map!*
 
-                                                                 *laurel-map!*
-
-map!                                   Map `lhs` to `rhs` in `modes`,
-                                       non-recursively by default.
-
+Map `lhs` to `rhs` in `modes`, non-recursively by default. (`&default-opts` is
+available.)
 
 >fennel
     (map! modes ?extra-opts lhs rhs ?api-opts)
     (map! modes lhs ?extra-opts rhs ?api-opts)
 <
 
-
-
-- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i", "v",
+- `modes`(string|string[]) Mode short-name (map command prefix: "n", "i", "v",
     "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
     bare-string, multi modes can be set in a string like `:nox` instead of `[:n :o
     :x]`.
-- |laurel-`?extra-opts`|: (bare-sequence) Additional option:
-    - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
+- `?extra-opts`(bare-sequence) Additional option:
+    - `remap`Make the mapping recursive. This is the inverse of the "noremap"
         option from `nvim_set_keymap()`.
-    - `literal`: Disable `replace_keycodes`, which is automatically enabled when
+    - `literal`Disable `replace_keycodes`, which is automatically enabled when
         `expr` is set in `extra-opts`.
-    - `<buffer>`: Map `lhs` in current buffer by itself.
-    - `buffer`: Map `lhs` to a buffer of the next value.
-- `lhs`: (string) Left-hand-side of the mapping.
-- `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
+    - `<buffer>`Map `lhs` in current buffer by itself.
+    - `buffer`Map `lhs` to a buffer of the next value.
+- `lhs`(string) Left-hand-side of the mapping.
+- `rhs`(string|function) Right-hand-side of the mapping. Set either callback
     function or Key sequence. A callback is interpreted as Lua function by default.
     To set Ex command, you have three options:
     - Set it in bare-string.
     - Insert `&vim` symbol just before the callback.
     - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
-- |laurel-`?api-opts`|: (kv-table) `:h nvim_set_keymap()`.
-
+- `?api-opts`(kv-table) |nvim_set_keymap()|.
 
 >fennel
     (map! :i :jk :<Esc>)
-    (map! :n :lhs [:desc "call foobar()"] (vim.fn.foobar))
+    (map! :n :lhs [:desc "call foo#bar()"] #(vim.fn.foo#bar))
     (map! [:n :x] [:remap :expr :literal] :d "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'")
-    (map! [:n :x] [:remap :expr] :u (if vim.bo.readonly
+    (map! [:n :x] [:remap :expr] :u #(if vim.bo.readonly
                                          "<Plug>(readonly-u)"
                                          "<Plug>(noreadonly-u)"))
 <
-
 
 is equivalent to
 
 >vim
     inoremap jk <Esc>
-    nnoremap lhs <Cmd>call foobar()<CR>
+    nnoremap lhs <Cmd>call foo#bar()<CR>
     nmap <expr> d &readonly ? "\<Plug>(readonly-d)" : "\<Plug>(noreadonly-d)"
     xmap <expr> u &readonly ? "\<Plug>(readonly-u)" : "\<Plug>(noreadonly-u)"
 <
 
-
 >lua
     vim.api.nvim_set_keymap("i", "jk", "<Esc>", {})
     vim.api.nvim_set_keymap("n", "lhs", "", {
-      -- callback = vim.fn["foobar"], -- If you don't care autoload.
+      -- callback = vim.fn["foo#bar"], -- If you don't care autoload.
       callback = function()
-        vim.fn["foobar"]()
+        vim.fn["foo#bar"]()
     end})
     vim.api.nvim_set_keymap("n", "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
       expr = true,
@@ -334,7 +406,7 @@ is equivalent to
     -- or with vim.keymap.set wrapper,
     vim.keymap.set("i", "jk", "<Esc>")
     vim.keymap.set("n", "lhs", function()
-      vim.fn["foobar"]()
+      vim.fn["foo#bar"]()
     end)
     vim.keymap.set({ "n", "x" }, "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
       remap = true,
@@ -350,28 +422,23 @@ is equivalent to
 <
 
 
-                                                               *laurel-unmap!*
+unmap!                                                         *laurel-unmap!*
 
-unmap!                                 Delete keymap.
-
+Delete keymap.
 
 >fennel
     (unmap! ?bufnr mode lhs)
 <
 
-
-
-- `?bufnr`: (number) Optional buffer handle, or 0 for current buffer.
-- `mode`: (string) Mode to unmap.
-- `lhs`: (string) Left-hand-side key to unmap.
-
+- `?bufnr`(number) Optional buffer handle, or 0 for current buffer.
+- `mode`(string) Mode to unmap.
+- `lhs`(string) Left-hand-side key to unmap.
 
 >fennel
     (unmap! :n :foo)
     (unmap! 0 :o :bar)
     (unmap! 10 :x :baz)
 <
-
 
 is equivalent to
 
@@ -381,7 +448,6 @@ is equivalent to
     " No simple command to delete keymap in specific buffer.
 <
 
-
 >lua
     vim.api.nvim_del_keymap("n", "foo")
     vim.api.nvim_buf_del_keymap(0, "o", "bar")
@@ -389,86 +455,67 @@ is equivalent to
 <
 
 
-                                                                *laurel-<Cmd>*
+<Cmd>                                                           *laurel-<Cmd>*
 
-<Cmd>                                  Generate `<Cmd>foobar<CR>` in string.
-                                       Useful for `rhs` in keymap macro.
-
+Generate `<Cmd>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 >fennel
     (<Cmd> text)
 <
 
+- `text`(string)
 
 
-- `text`: (string)
+<C-u>                                                           *laurel-<C-u>*
 
-
-                                                                *laurel-<C-u>*
-
-<C-u>                                  Generate `:<C-u>foobar<CR>` in string.
-                                       Useful for `rhs` in keymap macro.
-
+Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 >fennel
     (<C-u> text)
 <
 
-
-
-- `text`: (string)
+- `text`(string)
 
 
 VARIABLE ~
 
+- |laurel-`g!`|
+- |laurel-`b!`|
+- |laurel-`w!`|
+- |laurel-`t!`|
+- |laurel-`v!`|
+- |laurel-`env!`|
 
-- |laurel-g!|
-- |laurel-b!|
-- |laurel-w!|
-- |laurel-t!|
-- |laurel-v!|
-- |laurel-env!|
 
+g!                                                                 *laurel-g!*
 
-                                                                   *laurel-g!*
-
-g!                                     Set global (`g:`) editor variable.
-
+Set global (`g:`) editor variable.
 
 >fennel
     (g! name val)
 <
 
+- `name`(string) Variable name.
+- `val`(any) Variable value.
 
 
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
+b!                                                                 *laurel-b!*
 
-
-                                                                   *laurel-b!*
-
-b!                                     Set buffer-scoped (`b:`) variable for
-                                       the current buffer. Can be indexed with
-                                       an integer to access variables for
-                                       specific buffer.
-
+Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
+an integer to access variables for specific buffer.
 
 >fennel
     (b! ?id name val)
 <
 
-
-
-- `?id`: (integer) Buffer handle, or 0 for current buffer.
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
-
+- `?id`(integer) Buffer handle, or 0 for current buffer.
+- `name`(string) Variable name.
+- `val`(any) Variable value.
 
 >fennel
     (b! :foo :bar)
     (b! 8 :baz :qux)
 <
-
 
 is equivalent to
 
@@ -480,82 +527,63 @@ is equivalent to
     vim.b[8].baz = "qux"
 <
 
-
 >vim
     let b:foo = 'bar'
     call setbufvar(8, 'baz', 'qux')
 <
 
 
-                                                                   *laurel-w!*
+w!                                                                 *laurel-w!*
 
-w!                                     Set window-scoped (`w:`) variable for
-                                       the current window. Can be indexed with
-                                       an integer to access variables for
-                                       specific window.
-
+Set window-scoped (`w:`) variable for the current window. Can be indexed with
+an integer to access variables for specific window.
 
 >fennel
     (w! ?id name val)
 <
 
+- `?id`(integer) Window handle, or 0 for current window.
+- `name`(string) Variable name.
+- `val`(any) Variable value.
 
 
-- `?id`: (integer) Window handle, or 0 for current window.
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
+t!                                                                 *laurel-t!*
 
-
-                                                                   *laurel-t!*
-
-t!                                     Set tabpage-scoped (`t:`) variable for
-                                       the current tabpage. Can be indexed with
-                                       an integer to access variables for
-                                       specific tabpage.
-
+Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed with
+an integer to access variables for specific tabpage.
 
 >fennel
     (t! ?id name val)
 <
 
+- `?id`(integer) Tabpage handle, or 0 for current tabpage.
+- `name`(string) Variable name.
+- `val`(any) Variable value.
 
 
-- `?id`: (integer) Tabpage handle, or 0 for current tabpage.
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
+v!                                                                 *laurel-v!*
 
-
-                                                                   *laurel-v!*
-
-v!                                     Set `v:` variable if not readonly.
-
+Set `v:` variable if not readonly.
 
 >fennel
     (v! name val)
 <
 
+- `name`(string) Variable name.
+- `val`(any) Variable value.
 
 
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
+env!                                                             *laurel-env!*
 
-
-                                                                 *laurel-env!*
-
-env!                                   Set environment variable in the editor
-                                       session.
-
+Set environment variable in the editor session.
 
 >fennel
     (env! name val)
 <
 
-
-
-- `name`: (string) Variable name. A bare-string can starts with `$` (ignored
+- `name`(string) Variable name. A bare-string can starts with `$` (ignored
     internally), which helps `gf` jump to the path.
-- `val`: (any) Variable value.
-
+- `val`(any) Variable value.
 
 >fennel
     (env! :$NVIM_CACHE_HOME (vim.fn.stdpath :cache))
@@ -564,7 +592,6 @@ env!                                   Set environment variable in the editor
     (env! :$NVIM_STATE_HOME (vim.fn.stdpath :state))
     (env! :$PLUGIN_CACHE_HOME (vim.fs.normalize :$NVIM_CACHE_HOME/to/plugin/home))
 <
-
 
 is equivalent to
 
@@ -575,7 +602,6 @@ is equivalent to
     vim.env.NVIM_STATE_HOME = vim.fn.stdpath "state"
     vim.env.PLUGIN_CACHE_HOME vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
 <
-
 
 >vim
     let $NVIM_CACHE_HOME = stdpath('cache')
@@ -588,7 +614,6 @@ is equivalent to
 
 OPTION ~
 
-
 - |laurel-`set!`|
 - |laurel-`setglobal!`|
 - |laurel-`setlocal!`|
@@ -597,28 +622,23 @@ OPTION ~
 - |laurel-`wo!`|
 
 
-                                                                 *laurel-set!*
+set!                                                             *laurel-set!*
 
-set!                                   Set, append, prepend, or remove, value
-                                       to the option. Almost equivalent to
-                                       `:set` in Vim script.
-
+Set, append, prepend, or remove, value to the option. Almost equivalent to
+`:set` in Vim script.
 
 >fennel
     (set! name ?flag ?val)
 <
 
-
-
-- `name`: (string) Option name. As long as the option name is bare-string,
+- `name`(string) Option name. As long as the option name is bare-string,
     option name is case-insensitive; you can improve readability a bit with
-    camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+    camelCase/PascalCase. Since |{option}| is also case-insensitive,
     `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
-- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
+- `?flag`(symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
     prepend, or remove, value to the option.
-- `?val`: (boolean|number|string|table) New option value. If not provided, the
+- `?val`(boolean|number|string|table) New option value. If not provided, the
     value is supposed to be `true` (experimental).
-
 
 >fennel
     (set! :number true)
@@ -634,7 +654,6 @@ set!                                   Set, append, prepend, or remove, value
     (local opt :wrap)
     (set! opt false)
 <
-
 
 is equivalent to
 
@@ -653,7 +672,6 @@ is equivalent to
     let opt = 'wrap'
     execute 'set no'. opt
 <
-
 
 >lua
     vim.api.nvim_set_option_value("number", true)
@@ -680,70 +698,59 @@ is equivalent to
     vim.opt[opt] = false
 <
 
-
 Note: There is no plan to support option prefix either `no` or `inv`; instead,
 set `false` or `(not vim.go.foo)` respectively.
 
-                                                           *laurel-setglobal!*
 
-setglobal!                             Set, append, prepend, or remove, global
-                                       value to the option. Almost equivalent
-                                       to `:setglobal` in Vim script.
+setglobal!                                                 *laurel-setglobal!*
 
+Set, append, prepend, or remove, global value to the option. Almost equivalent
+to `:setglobal` in Vim script.
 
 >fennel
     (setglobal! name ?flag ?val)
 <
 
-
 See |laurel-`set!`| for the details.
 
-                                                            *laurel-setlocal!*
 
-setlocal!                              Set, append, prepend, or remove, local
-                                       value to the option. Almost equivalent
-                                       to `:setlocal` in Vim script.
+setlocal!                                                   *laurel-setlocal!*
 
+Set, append, prepend, or remove, local value to the option. Almost equivalent
+to `:setlocal` in Vim script.
 
 >fennel
     (setlocal! name ?flag ?val)
 <
 
-
 See |laurel-`set!`| for the details.
 
-                                                                  *laurel-go!*
 
-go!                                    Alias of |laurel-`setglobal!`|.
+go!                                                               *laurel-go!*
 
+Alias of |laurel-`setglobal!`|.
 
 >fennel
     (go! name value)
 <
 
 
-                                                                  *laurel-bo!*
+bo!                                                               *laurel-bo!*
 
-bo!                                    Set a buffer option value. `:h
-                                       nvim_buf_set_option()`.
-
+Set a buffer option value. |nvim_buf_set_option()|.
 
 >fennel
     (bo! ?id name value)
 <
 
-
-
-- `?id`: (integer) Buffer handle, or 0 for current buffer.
-- `name`: (string) Option name. Case-insensitive as long as in bare-string.
-- `value`: (any) Option value.
-
+- `?id`(integer) Buffer handle, or 0 for current buffer.
+- `name`(string) Option name. Case-insensitive as long as in bare-string.
+- `value`(any) Option value.
 
 >fennel
     (bo! :fileType :fennel)
     (bo! 10 :bufType :nofile)
 <
-
 
 is equivalent to
 
@@ -755,35 +762,28 @@ is equivalent to
     vim.bo[10].buftype = "nofile"
 <
 
-
 >vim
     call setbufvar(0, '&filetype', 'fennel')
     call setbufvar(10, '&buftype', 'nofile')
 <
 
 
-                                                                  *laurel-wo!*
+wo!                                                               *laurel-wo!*
 
-wo!                                    Set a window option value. `:h
-                                       nvim_win_set_option()`.
-
+Set a window option value. |nvim_win_set_option()|.
 
 >fennel
     (wo! ?id name value)
 <
 
-
-
-- `?id`: (integer) Window handle, or 0 for current window.
-- `name`: (string) Option name. Case-insensitive as long as in bare-string.
-- `value`: (any) Option value.
-
+- `?id`(integer) Window handle, or 0 for current window.
+- `name`(string) Option name. Case-insensitive as long as in bare-string.
+- `value`(any) Option value.
 
 >fennel
     (wo! :number false)
     (wo! 10 :signColumn :no)
 <
-
 
 is equivalent to
 
@@ -795,7 +795,6 @@ is equivalent to
     vim.wo[10].signcolumn = "no"
 <
 
-
 >vim
     call setwinvar(0, '&number', v:false)
     call setwinvar(10, '&signcolumn', 'no')
@@ -804,84 +803,66 @@ is equivalent to
 
 OTHERS ~
 
+- |laurel-`command!`|
+- |laurel-`feedkeys!`|
+- |laurel-`highlight!`|
+- |laurel-`hi!`|
 
-- |laurel-command!|
-- |laurel-feedkeys!|
-- |laurel-highlight!|
-- |laurel-hi!|
 
+command!                                                     *laurel-command!*
 
-                                                             *laurel-command!*
-
-command!                               Create a user command.
-
+Create a user command. (`&default-opts` is available.)
 
 >fennel
     (command! ?extra-opts name command ?api-opts)
     (command! name ?extra-opts command ?api-opts)
 <
 
-
-
-- |laurel-`?extra-opts`|: (bare-sequence) Optional command attributes.
+- `?extra-opts`(bare-sequence) Optional command attributes.
     Additional attributes:
-    - `<buffer>`: Create command in current buffer by itself.
-    - `buffer`: Create command in the buffer of the next value.
-- `name`: (string) Name of the new user command. It must begin with an
+    - `<buffer>`Create command in current buffer by itself.
+    - `buffer`Create command in the buffer of the next value.
+- `name`(string) Name of the new user command. It must begin with an
     uppercase letter.
-- `command`: (string|function) Replacement command.
-- |laurel-`?api-opts`|: (kv-table) Optional command attributes. The same
+- `command`(string|function) Replacement command.
+- `?api-opts`(kv-table) Optional command attributes. The same
     as `opts` for `nvim_create_user_command()`.
 
-
 >fennel
-    (command! :SayHello
-              [:bang]
-              "echo 'Hello world!'"
-              {:desc "Say Hello!"})
-    (command! :Salute
-              [:bar :<buffer> :desc "Salute!"]
-              (print "Hello world!"))
+    (command! :SayHello "echo 'Hello world!'")
+    (command! :Salute [:bar :<buffer> :desc "Salute!"] #(print "Hello world!"))
 <
-
 
 is equivalent to
 
 >vim
-    command! -bang SayHello echo 'Hello world!'
+    command! SayHello echo 'Hello world!'
     command! -bar -buffer Salute echo 'Hello world!'
 <
 
-
 >lua
-    vim.api.nvim_create_user_command("SayHello", "echo 'Hello world!'", {
-                                           bang = true,
-                                           desc = "Say Hello!",
-                                           })
+    vim.api.nvim_create_user_command("SayHello", "echo 'Hello world!'", {})
     vim.api.nvim_buf_create_user_command(0, "Salute", function()
-                                   print("Hello world!")
-                                 end, {
-                                 bar = true,
-                                 desc = "Salute!"
-                                })
+      print("Hello world!")
+    end, {
+      bar = true,
+      desc = "Salute!",
+    })
 <
 
 
-                                                            *laurel-feedkeys!*
+feedkeys!                                                   *laurel-feedkeys!*
 
-feedkeys!                              `:h feedkeys()`
-
+|feedkeys()|
 
 >fennel
     (feedkeys! string ?flags)
 <
 
-
 >fennel
     (feedkeys! :foo<CR> :ni)
     (feedkeys! :foo<lt>CR> :ni)
 <
-
 
 is equivalent to
 
@@ -890,49 +871,42 @@ is equivalent to
     call feedkeys('foo<CR>', 'ni')
 <
 
-
 >lua
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<CR>", true, true, true) "ni", false)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true) "ni", false)
 <
 
 
-                                                           *laurel-highlight!*
+highlight!                                                 *laurel-highlight!*
 
-highlight!                             Set a highlight group.
-
+Set a highlight group. (`&default-opts` is available.)
 
 >fennel
-    (highlight! ?ns-id name val)
+    (highlight! ?ns-id name api-opts)
 <
 
-
-
-- `?ns-id`: (number) Namespace id for this highlight
+- `?ns-id`(number) Namespace id for this highlight
     `nvim_create_namespace()`.
-- `name`: (string) Highlight group name, e.g., "ErrorMsg".
-- `val`: (kv-table) Highlight definition map. `:h nvim_set_hl()`. As long as
+- `name`(string) Highlight group name, e.g., "ErrorMsg".
+- `api-opts`(kv-table) Highlight definition map. |nvim_set_hl()|. As long as
     the keys are bare-strings, `cterm` attribute map can contain `fg`/`bg`
     instead of `ctermfg`/`ctermbg` key.
 
-
 >fennel
-    (highlight! :Foo {:fg "8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic true}})
-    ;; or (as long as `val` keys are bare-strings)
-    (highlight! :Foo {:fg "8d9eb2" :bold true :italic true :cterm {:fg 103 :bold true :italic true}})
+    (highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic true}})
+    ;; or (as long as `api-opts` keys are bare-strings)
+    (highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :cterm {:fg 103 :bold true :italic true}})
 <
-
 
 is equivalent to
 
 >vim
-    highlight! Foo guifg=8d9eb2 gui=bold,italic ctermfg=103 cterm=bold,italic
+    highlight! Foo guifg=#8d9eb2 gui=bold,italic ctermfg=103 cterm=bold,italic
 <
-
 
 >lua
     nvim_set_nl(0, "Foo", {
-      fg = "8d9eb2",
+      fg = "#8d9eb2",
       ctermfg = 103,
       bold = true,
       italic = true,
@@ -944,23 +918,84 @@ is equivalent to
 <
 
 
-                                                                  *laurel-hi!*
+hi!                                                               *laurel-hi!*
 
-hi!                                    An alias of |laurel-`highlight!`|.
+An alias of |laurel-`highlight!`|. (`&default-opts` is available.)
 
 
 ANTI-PATTERNS                                           *laurel-anti-patterns*
 
-|LAUREL-AUTOCMD!| ~
 
-                                         *laurel-pcall-in-the-end-of-callback*
-
-pcall in the end of callback           It could be an unexpected behavior that
-                                       `autocmd` whose callback ends with
-                                       `pcall` is executed only once because of
-                                       the combination:
+&DEFAULT-OPTS ~
 
 
+Define macro wrappers                           *laurel-Define-macro-wrappers*
+
+To create wrapper of nvim-laurel macro, it is unrecommended to wrap them in
+runtime function; instead, wrap them in macro. Fennel macros cannot parse the
+contents of `varargs` (`...`) which is only determined at runtime.
+
+
+ANTI-PATTERN
+
+>fennel
+    ;; bad
+    (autocmd! group [:FileType]
+      (fn []
+        (let [buf-au! (fn [...]
+                        (autocmd! &default-opts {:buffer 0} ...))]
+          (buf-au! [:InsertEnter] #(do :something))
+          (buf-au! [:BufWritePre] #(do :other))))
+<
+
+
+PATTERN
+
+>fennel
+    ;; good
+    (import-macros {: autocmd!} :nvim-laurel)
+    
+    (macro buf-au! [...]
+      `(autocmd! &default-opts {:buffer 0} ,...))
+    
+    (autocmd! group [:FileType]
+      (fn []
+         (buf-au! [:InsertEnter] #(do :something))
+         (buf-au! [:BufWritePre] #(do :other))))
+<
+
+or
+
+>fennel
+    ;; good
+    ;; in my/macros.fnl
+    (local {: autocmd!} (require :nvim-laurel))
+    
+    (fn buf-au! [...]
+      (autocmd! `&default-opts {:buffer 0} ...))
+    
+    {: buf-au!}
+<
+
+>fennel
+    ;; in foobar.fnl (another file)
+    (import-macros {: autocmd!} :nvim-laurel)
+    (import-macros {: buf-au!} :my.macros)
+    
+    (autocmd! group [:FileType]
+      #(do
+         (buf-au! [:InsertEnter] (do :something))
+         (buf-au! [:BufWritePre] (do :other))))
+<
+
+
+AUTOCMD! ~
+
+
+pcall in the end of callback             *laurel-pcall-in-the-end-of-callback*
+
+It could be an unexpected behavior that `autocmd` whose callback ends with
+`pcall` is executed only once because of the combination:
 
 - Fennel `list` returns the last value.
 - `pcall` returns `true` when the call succeeds without errors.
@@ -971,7 +1006,8 @@ pcall in the end of callback           It could be an unexpected behavior that
 ANTI-PATTERN
 
 >fennel
-    (autocmd! group events (pcall foobar))
+    ;; bad
+    (autocmd! group events #(pcall foobar))
     (autocmd! group events (fn []
                              ;; Do something else
                              (pcall foobar)))
@@ -981,13 +1017,14 @@ ANTI-PATTERN
 PATTERN
 
 >fennel
+    ;; good
     (macro ->nil [...]
       "Make sure to return `nil`."
       `(do
          ,...
          nil))
     
-    (autocmd! group events (->nil (pcall foobar)))
+    (autocmd! group events #(->nil (pcall foobar)))
     (autocmd! group events (fn []
                              ;; Do something else
                              (pcall foobar)
@@ -996,34 +1033,34 @@ PATTERN
 <
 
 
-                                *laurel-Nested-anonymous-function-in-callback*
+Nested anonymous function in callback*laurel-Nested-anonymous-function-in-callback*
 
-Nested anonymous function in callback  `$` in the outermost hash function
-                                       represents the single table argument
-                                       from `nvim_create_autocmd()`; on the
-                                       other hand, `$` in any hash functions
-                                       included in another anonymous function
-                                       is meaningless in many cases.
+`$` in the outermost hash function represents the single table argument from
+`nvim_create_autocmd()`; on the other hand, `$` in any hash functions included
+in another anonymous function is meaningless in many cases.
 
 
 ANTI-PATTERN
 
 >fennel
-    (autocmd! group events (vim.schedule (nnoremap [:buffer $.buf] :lhs :rhs)))
+    ;; bad
+    (autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
     (autocmd! group events (fn []
-                             (vim.schedule (nnoremap [:buffer $.buf] :lhs :rhs))))
+                             (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
 <
 
 
 PATTERN
 
 >fennel
-    (autocmd! group events (vim.schedule (fn []
+    ;; good
+    (autocmd! group events #(vim.schedule (fn []
                                             (nnoremap [:buffer $.buf] :lhs :rhs))))
 <
 
 
 DEPRECATED FEATURES                               *laurel-deprecated-features*
+
 
 SEMANTIC VERSIONING ~
 
@@ -1031,6 +1068,7 @@ This project nvim-laurel follows Semantic Versioning 2.0.0
 <https://semver.org/spec/v2.0.0.html>. It should issue at least one version
 prior to a version where deprecated features are removed, i.e., before any
 breaking changes.
+
 
 DEPRECATED FEATURE HANDLING ~
 
@@ -1043,20 +1081,14 @@ It’s strongly recommended to manage your vimrc by version control system like
 where you could not launch nvim with any part of your vimrc until you resolve
 them.
 
-                                                      *laurel-The-Last-Resort*
 
-The Last Resort                        Before introducing how to avoid breaking
-                                       changes, it is necessary to describe how
-                                       to resolve the dead end, where you have
-                                       few or none of Lua files because you
-                                       have unexpectedly recompiled all the
-                                       Fennel files that includes some features
-                                       removed from nvim-laurel. Breaking
-                                       Changes could prevent you from launching
-                                       nvim itself. In this case, you have two
-                                       choices:
+The Last Resort                                       *laurel-The-Last-Resort*
 
-
+Before introducing how to avoid breaking changes, it is necessary to describe
+how to resolve the dead end, where you have few or none of Lua files because
+you have unexpectedly recompiled all the Fennel files that includes some
+features removed from nvim-laurel. Breaking Changes could prevent you from
+launching nvim itself. In this case, you have two choices:
 
 - Downgrade nvim-laurel according to Semantic Versioning 2.0.0
     <https://semver.org/spec/v2.0.0.html>; then, update your vimrc with deprecation
@@ -1069,27 +1101,25 @@ The Last Resort                        Before introducing how to avoid breaking
     `nvim -u NONE` in your terminal.
 
 
-                                                  *laurel-g:laurel_deprecated*
+g:laurel_deprecated                               *laurel-g:laurel_deprecated*
 
-g:laurel_deprecated                    This variable is designed to help you
-                                       update your codes with |Quickfix|. It
-                                       will collect lines where deprecated
-                                       features are detected.
-
+This variable is designed to help you update your codes with |Quickfix|. It
+will collect lines where deprecated features are detected.
 
 Note: It’s strongly recommended to compile your Fennel codes with
 `--correlate` flag because the detection runs on compiled Lua codes at runtime.
 
+
 STEPS TO UPDATE DEPRECATED FEATURES BEFORE BREAKING CHANGES
 
-
-1. Make sure you can update your vimrcs on stable enviromnent: launch multiple
+1. Make sure you can update your vimrcs on stable environment: launch multiple
 instances of Neovim which have already loaded your stable config, i.e.,
 detached from the unstable vimrcs about to undergoing changes.
+
+
 2. Update deprecated features
 
 This is a list of useful commands:
-
 
 - With |`:cdo`| or |`:cfdo`|,
     - |`:norm`| or |`:normal`|
@@ -1101,10 +1131,9 @@ This is a list of useful commands:
     3. |`:cnext`|
     4. |`@`| or |`Q`| to repeat keys in register
 
-
 Here is a basic example to rename deprecated macro `old-macro` to new
 compatible macro `new-macro`. Please adjust commands yourself as necessary. You
-don’t have to do it in the smartest way, of cource. Slow and steady wins the
+don’t have to do it in the smartest way, of course. Slow and steady wins the
 race.
 
 >vim
@@ -1114,6 +1143,7 @@ race.
     :cfdo! %s/(old-macro /(new-macro /gec " Roughly update macro names.
     :cfdo update
 <
+
 
 3. Nowadays, your vimrcs are supposed to be under git control…
 
@@ -1125,6 +1155,12 @@ race.
 <
 
 
+
+
+CHANGELOG                                                   *laurel-changelog*
+
+See CHANGELOG.md <../CHANGELOG.md>, or
+https://github.com/aileot/nvim-laurel/blob/main/CHANGELOG.md
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
