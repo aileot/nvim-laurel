@@ -158,11 +158,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
        },
        performance = {
          rtp = {
-           -- Note: Not to remove nvim-laurel from &rtp,
-           -- and not to encounter any other potential issues,
-           -- it's UNRECOMMENDED to reset &rtp unless you
-           -- don't mind the extra cost to maintain the
-           -- "paths" properly.
+           -- Note: Not to remove nvim-laurel from &rtp, and not to encounter any
+           -- other potential issues, it's UNRECOMMENDED to reset &rtp unless you
+           -- don't mind the extra cost to maintain the "paths" properly.
            reset = false,
          }
        }
@@ -178,11 +176,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
                  :version "~v0.6.0"
                 ...] ;; and other plugins
                {:defaults {:lazy true
-                           ;; Note: Not to remove nvim-laurel from &rtp,
-                           ;; and not to encounter any other potential issues,
-                           ;; it's UNRECOMMENDED to reset &rtp unless you
-                           ;; don't mind the extra cost to maintain the
-                           ;; "paths" properly.
+                           ;; Note: Not to remove nvim-laurel from &rtp, and not to encounter any
+                           ;; other potential issues, it's UNRECOMMENDED to reset &rtp unless you
+                           ;; don't mind the extra cost to maintain the "paths" properly.
                            :performance {:rtp {:reset false}}}})
    ```
 
