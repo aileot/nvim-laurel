@@ -1,15 +1,73 @@
 # nvim-laurel
 
 nvim-laurel provides a set of macros for Neovim config, inspired by the
-builtin Nvim Lua standard library and by good old Vim script.
+builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
 
 <!-- panvimdoc-ignore-start -->
 
-- [CAUTION](#CAUTION)
-- [Terminology](#Terminology)
-- [Macros](#Macros)
-- [Anti-Patterns](#Anti-Patterns)
-- [Deprecated Features](#Deprecated-Features)
+- [CAUTION](#caution)
+- [Terminology](#terminology)
+  - [For Convenience Sake](#for-convenience-sake)
+    - [`lhs`](#lhs)
+    - [`rhs`](#rhs)
+    - [`#({expr})`](#expr)
+    - [`sequence`](#sequence)
+    - [`kv-table`](#kv-table)
+    - [`bare-{type}`](#bare-type)
+    - [`?{name}`](#name)
+    - [`api-opts`](#api-opts)
+    - [`extra-opts`](#extra-opts)
+  - [Reserved Symbol](#reserved-symbol)
+    - [`&vim`](#vim)
+    - [`&default-opts`](#default-opts)
+- [Macros](#macros)
+  - [Autocmd](#autocmd)
+    - [`augroup!`](#augroup)
+    - [`autocmd!`](#autocmd-1)
+    - [`au!`](#au)
+  - [Keymap](#keymap)
+    - [`map!`](#map)
+    - [`unmap!`](#unmap)
+    - [`<Cmd>`](#cmd)
+    - [`<C-u>`](#c-u)
+  - [Variable](#variable)
+    - [`g!`](#g)
+    - [`b!`](#b)
+    - [`w!`](#w)
+    - [`t!`](#t)
+    - [`v!`](#v)
+    - [`env!`](#env)
+  - [Option](#option)
+    - [`set!`](#set)
+    - [`setglobal!`](#setglobal)
+    - [`setlocal!`](#setlocal)
+    - [`go!`](#go)
+    - [`bo!`](#bo)
+    - [`wo!`](#wo)
+  - [Others](#others)
+    - [`command!`](#command)
+    - [`feedkeys!`](#feedkeys)
+    - [`highlight!`](#highlight)
+    - [`hi!`](#hi)
+- [Anti-Patterns](#anti-patterns)
+  - [`&default-opts`](#default-opts-1)
+    - [Define macro wrappers](#define-macro-wrappers)
+      - [Anti-Pattern](#anti-pattern)
+      - [Pattern](#pattern)
+  - [`autocmd!`](#autocmd-2)
+    - [pcall in the end of callback](#pcall-in-the-end-of-callback)
+      - [Anti-Pattern](#anti-pattern-1)
+      - [Pattern](#pattern-1)
+    - [Nested anonymous function in callback](#nested-anonymous-function-in-callback)
+      - [Anti-Pattern](#anti-pattern-2)
+      - [Pattern](#pattern-2)
+- [Deprecated Features](#deprecated-features)
+  - [Semantic Versioning](#semantic-versioning)
+  - [Deprecated Feature Handling](#deprecated-feature-handling)
+    - [The Last Resort](#the-last-resort)
+    - [`g:laurel_deprecated`](#glaurel_deprecated)
+      - [Steps to update deprecated features before breaking changes](#steps-to-update-deprecated-features-before-breaking-changes)
+- [Changelog](#changelog)
 
 <!-- panvimdoc-ignore-end -->
 
@@ -20,30 +78,38 @@ usages are subject to change without notifications.
 
 ## Terminology
 
-### lhs
+- [For Convenience Sake](#For-Convenience-Sake)
+- [Reserved Symbol](#Reserved-Symbol)
+
+### For Convenience Sake
+
+The terminology is introduced to describe the interfaces of nvim-laurel rather
+than a standard one.
+
+#### `lhs`
 
 An abbreviation of left-hand-side.
 
-### rhs
+#### `rhs`
 
 An abbreviation of right-hand-side.
 
-### #({expr})
+#### `#({expr})`
 
 Hash function, where `$1` through `$9` and `$...` are available as the
-argument. `$` is an alias for `$1`. See the
-[reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
+argument. `$` is an alias for `$1`. Read the official
+[Fennel reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
 for the detail.
 
-### sequence
+#### `sequence`
 
 An alias of sequential table `[]`.
 
-### kv-table
+#### `kv-table`
 
 An alias of key/value table `{}`.
 
-### bare-{type}
+#### `bare-{type}`
 
 It describes the `{type}` value must be neither symbol nor list in compile
 time. For example,
@@ -56,11 +122,12 @@ time. For example,
 - `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence`
   nor `bare-string[]`.
 
-### ?{name}
+#### `?{name}`
 
-`{name}` is omittable.
+It represents `{name}` is omittable rather than nilable in nvim-laurel
+contexts.
 
-### api-opts
+#### `api-opts`
 
 It is kv-table `{}` option for the api functions, `vim.api.nvim_foo()`. Unless
 otherwise noted, this option has the following features:
@@ -69,14 +136,14 @@ otherwise noted, this option has the following features:
 - Its values have the highest priority over those set in the other arguments
   if conflicted.
 
-### extra-opts
+#### `extra-opts`
 
 An alternative form for `api-opts`. Unless otherwise noted, this option has
 the following features:
 
 - It is bare-sequence `[]`, but is interpreted as if kv-table `{}` in the
   following manner:
-  - Items for keys **must** be bare-strings; items for values can be of any
+  - Items for keys must be bare-strings; items for values can be of any
     type.
   - Boolean key/value for `api-opts` is set to `true` by key itself; the other
     keys expects the next items as their values respectively.
@@ -85,19 +152,50 @@ the following features:
   or use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
 
-### &default-opts
+### Reserved Symbol
 
-(Since v0.6.1)
+The symbols are reserved to be used as arguments in `list`s of nvim-laurel
+macros to extend their functionalities.
 
-A symbol to set default values of `api-opts` field. It indicates that the bare
-kv-table next to `&default-opts` contains default values for `api-opts`, but
-it also accepts the additional keys available in `extra-opts`. To set boolean
-option, it requires to set to either `true` or `false` in spite of the syntax
-of `extra-opts` itself. See also its [Anti-Patterns](#default-opts-1).
+#### `&vim`
 
-Note that quote parts depend on where the wrapper macros are defined:
+_(Since v0.5.3)_
 
-- To define a wrapper **macro** to be expanded in the **same** file, quote the
+A reserved symbol to set Vim script callback in symbol or list.  
+Basically, symbol and list are interpreted as Lua callback function in the
+lists of nvim-laurel macros.
+With `&vim` in the list of nvim-laurel macro, they are interpreted as Vim
+script command.
+
+List of macros in which `&vim` makes sense:
+
+- [`autocmd!`][], [`au!`][]
+- [`map!`][]
+- [`command!`][]: only for parity. `&vim` is uncecessary.
+
+#### `&default-opts`
+
+_(Since v0.6.1)_
+
+A reserved symbol to set default values of `api-opts` fields.  
+It indicates that the bare `kv-table` next to the symbol `&default-opts`
+contains default values for `api-opts`, but it also interprets the additional
+keys available in `extra-opts`.
+To set boolean option, it requires to set to either `true` or
+`false` in spite of the syntax of `extra-opts` itself.
+See also its [Anti-Patterns](#default-opts-1).
+
+List of macros in which `&default-opts` is available:
+
+- [`augroup!`][]
+- [`autocmd!`][], [`au!`][]
+- [`map!`][]
+- [`command!`][]
+- [`highlight!`][], [`hi!`][]
+
+Note that quote position depends on where the wrapper macros are defined:
+
+- To define a wrapper `macro` to be expanded _in the same file_, quote the
   entire `list` of the imported macro (and unquote as you need). For example,
 
   ```fennel
@@ -110,8 +208,8 @@ Note that quote parts depend on where the wrapper macros are defined:
   (buf-map! :lhs :rhs)
   ```
 
-- To define a wrapper **function** to be imported as a macro in **another**
-  file, just quote `&default-opts`. For example,
+- To define a wrapper `function` to be imported as a macro _in another
+  file_, just quote `&default-opts`. For example,
 
   ```fennel
   ;; in my/macros.fnl
@@ -147,6 +245,7 @@ Note that quote parts depend on where the wrapper macros are defined:
 #### `augroup!`
 
 Create or get an augroup, or override an existing augroup.
+(`&default-opts` is available.)
 
 ```fennel
 (augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
@@ -166,7 +265,7 @@ Create or get an augroup, or override an existing augroup.
 - `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
   symbol or list, set it in either `extra-opts` or `api-opts` instead. The
   first pattern in string cannot be any of the keys used in `?extra-opts`.
-- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+- `?extra-opts`: (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
 - `callback`: (string|function) Set either callback function or Ex command. A
   callback is interpreted as Lua function by default. To set Ex command, you
@@ -180,7 +279,7 @@ Create or get an augroup, or override an existing augroup.
   argument from `nvim_create_autocmd()`; on the other hand, set
   `#(vim.fn.foobar $)` to call `foobar` with the table argument.
 
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_create_autocmd()`.
+- `?api-opts`: (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
 (augroup! :sample-augroup
@@ -246,6 +345,7 @@ c.f. [`autocmd!`](#autocmd)
 #### `autocmd!`
 
 Create an autocmd.
+(`&default-opts` is available.)
 
 ```fennel
 (autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd()`.
@@ -262,6 +362,7 @@ See [`augroup!`](#augroup) for the rest.
 #### `au!`
 
 An alias of [`autocmd!`](#autocmd).
+(`&default-opts` is available.)
 
 ### Keymap
 
@@ -273,6 +374,7 @@ An alias of [`autocmd!`](#autocmd).
 #### `map!`
 
 Map `lhs` to `rhs` in `modes`, non-recursively by default.
+(`&default-opts` is available.)
 
 ```fennel
 (map! modes ?extra-opts lhs rhs ?api-opts)
@@ -283,7 +385,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   "v", "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
   bare-string, multi modes can be set in a string like `:nox` instead of
   `[:n :o :x]`.
-- [`?extra-opts`](#extra-opts): (bare-sequence) Additional option:
+- `?extra-opts`: (bare-sequence) Additional option:
   - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
     option from `nvim_set_keymap()`.
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
@@ -299,7 +401,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - Insert `&vim` symbol just before the callback.
   - Name the first symbol for the callback to match `^<.+>` in Lua pattern.
 
-- [`?api-opts`](#api-opts): (kv-table) `:h nvim_set_keymap()`.
+- `?api-opts`: (kv-table) `:h nvim_set_keymap()`.
 
 ```fennel
 (map! :i :jk :<Esc>)
@@ -736,50 +838,43 @@ call setwinvar(10, '&signcolumn', 'no')
 #### `command!`
 
 Create a user command.
+(`&default-opts` is available.)
 
 ```fennel
 (command! ?extra-opts name command ?api-opts)
 (command! name ?extra-opts command ?api-opts)
 ```
 
-- [`?extra-opts`](#extra-opts): (bare-sequence) Optional command attributes.
+- `?extra-opts`: (bare-sequence) Optional command attributes.
   Additional attributes:
   - `<buffer>`: Create command in current buffer by itself.
   - `buffer`: Create command in the buffer of the next value.
 - `name`: (string) Name of the new user command. It must begin with an
   uppercase letter.
 - `command`: (string|function) Replacement command.
-- [`?api-opts`](#api-opts): (kv-table) Optional command attributes. The same
+- `?api-opts`: (kv-table) Optional command attributes. The same
   as `opts` for `nvim_create_user_command()`.
 
 ```fennel
-(command! :SayHello
-          [:bang]
-          "echo 'Hello world!'"
-          {:desc "Say Hello!"})
-(command! :Salute
-          [:bar :<buffer> :desc "Salute!"]
-          #(print "Hello world!"))
+(command! :SayHello "echo 'Hello world!'")
+(command! :Salute [:bar :<buffer> :desc "Salute!"] #(print "Hello world!"))
 ```
 
 is equivalent to
 
 ```vim
-command! -bang SayHello echo 'Hello world!'
+command! SayHello echo 'Hello world!'
 command! -bar -buffer Salute echo 'Hello world!'
 ```
 
 ```lua
-vim.api.nvim_create_user_command("SayHello", "echo 'Hello world!'", {
-                                       bang = true,
-                                       desc = "Say Hello!",
-                                       })
+vim.api.nvim_create_user_command("SayHello", "echo 'Hello world!'", {})
 vim.api.nvim_buf_create_user_command(0, "Salute", function()
-                               print("Hello world!")
-                             end, {
-                             bar = true,
-                             desc = "Salute!"
-                            })
+  print("Hello world!")
+end, {
+  bar = true,
+  desc = "Salute!",
+})
 ```
 
 #### `feedkeys!`
@@ -810,6 +905,7 @@ vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, t
 #### `highlight!`
 
 Set a highlight group.
+(`&default-opts` is available.)
 
 ```fennel
 (highlight! ?ns-id name api-opts)
@@ -850,6 +946,7 @@ nvim_set_nl(0, "Foo", {
 #### `hi!`
 
 An alias of [`highlight!`](#highlight).
+(`&default-opts` is available.)
 
 ## Anti-Patterns
 
@@ -869,7 +966,7 @@ determined at runtime.
 (autocmd! group [:FileType]
   (fn []
     (let [buf-au! (fn [...]
-                   (autocmd! &default-opts {:buffer 0} ...))]
+                    (autocmd! &default-opts {:buffer 0} ...))]
       (buf-au! [:InsertEnter] #(do :something))
       (buf-au! [:BufWritePre] #(do :other))))
 ```
@@ -894,7 +991,7 @@ or
 ```fennel
 ;; good
 ;; in my/macros.fnl
-(local {: atocmd!} (require :nvim-laurel))
+(local {: autocmd!} (require :nvim-laurel))
 
 (fn buf-au! [...]
   (autocmd! `&default-opts {:buffer 0} ...))
@@ -1065,6 +1162,25 @@ runtime.
    :!git commit -m 'refactor(laurel): update macros'
    ```
 
+## Changelog
+
+<!-- panvimdoc-ignore-start -->
+
+See [CHANGELOG.md](../CHANGELOG.md), including the previous breaking changes.
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+See [CHANGELOG.md](../CHANGELOG.md),
+or https://github.com/aileot/nvim-laurel/blob/main/CHANGELOG.md
+-->
+
+[`augroup!`]: #augroup
+[`autocmd!`]: #autocmd
+[`au!`]: #au
+[`map!`]: #map
+[`command!`]: #command
+[`highlight!`]: #highlight
+[`hi!`]: #hi
 [-u]: https://neovim.io/doc/user/starting.html#-u
 [Quickfix]: https://neovim.io/doc/user/quickfix.html
 [`:cdo`]: https://neovim.io/doc/user/quickfix.html#%3Acdo

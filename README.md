@@ -6,7 +6,7 @@
 [![badge/test](https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square)][workflow/test]
 [![badge/semver](https://img.shields.io/github/release/aileot/nvim-laurel?display_name=tag&sort=semver&label=Release)][path/to/semver]\
 _A set of macros for Neovim config_\
-_inspired by the builtin Nvim Lua standard library and by good old Vim script_
+_inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script_
 
 ![image/nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
 
@@ -30,7 +30,7 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
   replaces `(vim.api.nvim_create_augroup :name {})`.
 - **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set
   in sequential table instead of key-value table. In this format, options are
-  likely to be `format`ted into the same line as nvim-laurel macro starts
+  likely to be `format`ted into the same line where nvim-laurel macro starts
   from.
 
 ## Requirements
@@ -142,18 +142,47 @@ _inspired by the builtin Nvim Lua standard library and by good old Vim script_
    recommended to specify a version range to avoid unexpected breaking
    changes.
 
-   With [lazy.nvim](https://github.com/folke/lazy.nvim)
+   With [lazy.nvim](https://github.com/folke/lazy.nvim),
+
+   ```lua
+   require("lazy.nvim").setup({
+     {
+       "aileot/nvim-laurel", {
+       -- v0.6.0 <= {version} < v0.7.0
+       version = "~v0.6.0",
+     },
+     ... -- and other plugins
+   }, {
+       defaults = {
+         lazy = true,
+       },
+       performance = {
+         rtp = {
+           -- Note: Not to remove nvim-laurel from &rtp, and not to encounter any
+           -- other potential issues, it's UNRECOMMENDED to reset &rtp unless you
+           -- don't mind the extra cost to maintain the "paths" properly.
+           reset = false,
+         }
+       }
+     })
+   ```
+
+   or, if you are confident in writing plugin specs in Fennel,
 
    ```fennel
    (local lazy (require :lazy))
    (lazy.setup [{1 :aileot/nvim-laurel
                  ;; v0.6.0 <= {version} < v0.7.0
-                 :version "~v0.6.0"}
-                ...]
-               {:defaults {:lazy true}})
+                 :version "~v0.6.0"
+                ...] ;; and other plugins
+               {:defaults {:lazy true
+                           ;; Note: Not to remove nvim-laurel from &rtp, and not to encounter any
+                           ;; other potential issues, it's UNRECOMMENDED to reset &rtp unless you
+                           ;; don't mind the extra cost to maintain the "paths" properly.
+                           :performance {:rtp {:reset false}}}})
    ```
 
-   With [dein.vim](https://github.com/Shougo/dein.vim) in toml
+   With [dein.vim](https://github.com/Shougo/dein.vim) in toml,
 
    ```toml
    [[plugins]]
@@ -242,6 +271,7 @@ See [CHANGELOG.md](./CHANGELOG.md).
 - [aniseed](https://github.com/Olical/aniseed)
 - [hibiscus.nvim](https://github.com/udayvir-singh/hibiscus.nvim)
 - [katcros-fnl](https://github.com/katawful/katcros-fnl)
+- [nvim-anisole-macros](https://github.com/katawful/nvim-anisole-macros)
 - [nyoom.nvim](https://github.com/shaunsingh/nyoom.nvim)
 - [themis.nvim](https://github.com/datwaft/themis.nvim)
 - [zest.nvim](https://github.com/tsbohc/zest.nvim)
