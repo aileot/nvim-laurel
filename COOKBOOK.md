@@ -210,3 +210,23 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
 ```
 
 ### Treesitter Highlight
+
+_To begin with, do not forget `;; extends` at the top
+of your `after/queries/fennel/highlights.scm`
+if you don't intend to override those defined by other plugins!_
+
+```query
+;; extends
+```
+
+#### Distinguish keys in table
+
+WIP
+
+<!-- TODO: Paste Screenshot -->
+
+```query
+;; In after/queries/fennel/highlight.scm
+(table_pair
+  key: (string) @variable.member)
+```
