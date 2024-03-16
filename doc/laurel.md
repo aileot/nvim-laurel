@@ -916,7 +916,7 @@ determined at runtime.
 (autocmd! group [:FileType]
   (fn []
     (let [buf-au! (fn [...]
-                   (autocmd! &default-opts {:buffer 0} ...))]
+                    (autocmd! &default-opts {:buffer 0} ...))]
       (buf-au! [:InsertEnter] #(do :something))
       (buf-au! [:BufWritePre] #(do :other))))
 ```
