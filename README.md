@@ -6,7 +6,7 @@
 [![badge/test](https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square)][workflow/test]
 [![badge/semver](https://img.shields.io/github/release/aileot/nvim-laurel?display_name=tag&sort=semver&label=Release)][path/to/semver]\
 _A set of macros for Neovim config_\
-_inspired by the builtin Nvim Lua standard library and by good old Vim script_
+_inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script_
 
 ![image/nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
 

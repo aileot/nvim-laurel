@@ -1,7 +1,7 @@
 # nvim-laurel
 
 nvim-laurel provides a set of macros for Neovim config, inspired by the
-builtin Nvim Lua standard library and by good old Vim script.
+builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
 
 <!-- panvimdoc-ignore-start -->
 
