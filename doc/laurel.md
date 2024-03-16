@@ -39,8 +39,8 @@ An abbreviation of right-hand-side.
 #### `#({expr})`
 
 Hash function, where `$1` through `$9` and `$...` are available as the
-argument. `$` is an alias for `$1`. See the
-[reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
+argument. `$` is an alias for `$1`. Read the official
+[Fennel reference](https://fennel-lang.org/reference#hash-function-literal-shorthand)
 for the detail.
 
 #### `sequence`
