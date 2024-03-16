@@ -816,15 +816,15 @@ command! -bar -buffer Salute echo 'Hello world!'
 
 ```lua
 vim.api.nvim_create_user_command("SayHello", "echo 'Hello world!'", {
-                                       bang = true,
-                                       desc = "Say Hello!",
-                                       })
+  bang = true,
+  desc = "Say Hello!",
+})
 vim.api.nvim_buf_create_user_command(0, "Salute", function()
-                               print("Hello world!")
-                             end, {
-                             bar = true,
-                             desc = "Salute!"
-                            })
+  print("Hello world!")
+end, {
+  bar = true,
+  desc = "Salute!",
+})
 ```
 
 #### `feedkeys!`
