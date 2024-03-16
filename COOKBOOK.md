@@ -177,7 +177,8 @@ This is an example to get a support from
 [fennel-ls](https://git.sr.ht/~xerool/fennel-ls)
 with
 [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig).
-In summary, add all the Fennel files under `fnl/` in `&runtimepath`.
+The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
+`&runtimepath`.
 
 ```fennel
 (let [globals [:vim]
