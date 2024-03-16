@@ -137,6 +137,20 @@
     (fcollect [i first last]
       (. xs i))))
 
+(fn tbl->keys [tbl]
+  "Return keys of `tbl`.
+  @param tbl table
+  @return sequence"
+  (icollect [k _ (pairs tbl)]
+    k))
+
+;; (fn tbl->values [tbl]
+;;   "Return values of `tbl`.
+;;   @param tbl table
+;;   @return sequence"
+;;   (icollect [_ v (pairs tbl)]
+;;     v))
+
 (fn tbl/copy [from ?to]
   "Return a shallow copy of table `from`.
   @param from table
