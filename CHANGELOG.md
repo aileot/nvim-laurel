@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.1](https://github.com/aileot/nvim-laurel/compare/v0.6.0...v0.6.1) (2024-03-16)
+
+
+### Features
+
+* add option `&default-opts` ([#227](https://github.com/aileot/nvim-laurel/issues/227)) ([bc019ed](https://github.com/aileot/nvim-laurel/commit/bc019edcf3bf69339ced1214ed0a43c4b9219ff1))
+* **option:** detect infix flag in symbol to append, prepend, ...; deprecate `:foo+`, ..., format and `set+`, ..., macros ([#233](https://github.com/aileot/nvim-laurel/issues/233)) ([669bdf4](https://github.com/aileot/nvim-laurel/commit/669bdf4ed5d4503f3eb40f28024f2ebbaa4547df))
+
+
+### Bug Fixes
+
+* **keymap:** correct docstring of `map!` macro ([#244](https://github.com/aileot/nvim-laurel/issues/244)) ([b982180](https://github.com/aileot/nvim-laurel/commit/b982180a285b001fd5324c739b6be7b72e28988a))
+
 ## [0.6.0](https://github.com/aileot/nvim-laurel/compare/v0.5.6...v0.6.0) (2023-02-11)
 
 
