@@ -245,20 +245,29 @@
     (while (<= i max)
       (let [key (. xs i)
             val (case (. option-types key)
-                  :boolean true
-                  [&as valid-types] (let [next-val (. xs (++ i))]
-                                      (when-not (hidden-in-compile-time? next-val)
-                                        (let [val-type (type next-val)]
-                                          (assert (contains? valid-types
-                                                             val-type)
-                                                  (: "%s expects %s, got %s"
-                                                     :format key
-                                                     (table.concat valid-types
-                                                                   "/")
-                                                     val-type))))
-                                      next-val)
-                  ?invalid (error (: "\"%s\" key expected sequence value, got %s"
-                                     :format key (type ?invalid))))]
+                  :boolean
+                  true
+                  ;; Note: Validation at compile time might be not so helpful
+                  ;; but just problematic for nvim config, which only prevents
+                  ;; fennel from compiling the file and the rest config files
+                  ;; up to user's automation way. Another consideration is
+                  ;; required.
+                  ;; [&as valid-types] (let [next-val (. xs (++ i))]
+                  ;;                     (when-not (hidden-in-compile-time? next-val)
+                  ;;                       (let [val-type (type next-val)]
+                  ;;                         (assert (contains? valid-types
+                  ;;                                            val-type)
+                  ;;                                 (: "%s expects %s, got %s"
+                  ;;                                    :format key
+                  ;;                                    (table.concat valid-types
+                  ;;                                                  "/")
+                  ;;                                    val-type))))
+                  ;;                     next-val)
+                  ;; ?invalid (error (: "\"%s\" key expected sequence value, got %s"
+                  ;;                    :format key (type ?invalid)))
+                  _
+                  (let [next-val (. xs (++ i))]
+                    next-val))]
         (assert (not= nil val) "nil is unexpected")
         (tset kv-table key val))
       (++ i))
