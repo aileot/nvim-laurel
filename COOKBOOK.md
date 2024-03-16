@@ -168,3 +168,44 @@ With nvim-laurel, it could be implemented in some approaches:
 (augroup+ _G.my-augroup
   (au! :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
 ```
+
+## Appendix
+
+### Get LSP support on fennel-ls
+
+This is an example to get a support from
+[fennel-ls](https://git.sr.ht/~xerool/fennel-ls)
+with
+[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig).
+In summary, add all the Fennel files under `fnl/` in `&runtimepath`.
+
+```fennel
+(let [globals [:vim]
+      extra-globals (table.concat globals " ")
+      runtime-fnl-roots (vim.api.nvim_get_runtime_file :fnl true)
+      pat-project-root "."
+      _ (table.insert runtime-fnl-roots pat-project-root)
+      ;; Note: Share the suffix patterns with fennel-path and macro-path since
+      ;; I don't need the pattern `?/init-macros.fnl` for macros so far.
+      suffix-patterns [:/?.fnl :/?/init.fnl]
+      default-patterns (table.concat [:?.fnl
+                                      :?/init.fnl
+                                      :src/?.fnl
+                                      :src/?/init.fnl]
+                                     ";")
+      fnl-patterns (accumulate [patterns default-patterns ;
+                                _ root (ipairs runtime-fnl-roots)]
+                     (do
+                       (each [_ suffix (ipairs suffix-patterns)]
+                         (set patterns (.. patterns ";" root "/" suffix)))
+                       patterns))
+      fennel-path fnl-patterns
+      macro-path fnl-patterns
+      config {:settings {:fennel-ls {: extra-globals
+                                     : fennel-path
+                                     : macro-path}}}]
+      lspconfig (require :lspconfig)
+ (lspconfig.setup config)
+```
+
+### Treesitter Highlight
