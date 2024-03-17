@@ -423,7 +423,7 @@
       this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
       Set it to `nil` to define `autocmd`s affiliated with no augroup.
   @param events string|string[] The event or events to register this autocmd.
-  @param ?pattern bare-sequence
+  @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
   @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
       available to set `autocmd` to current buffer.
   @param callback string|function Set either vim Ex command, or function. Any
@@ -550,7 +550,7 @@
       this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
       Set it to `nil` to define `autocmd`s affiliated with no augroup.
   @param events string|string[] The event or events to register this autocmd.
-  @param ?pattern bare-sequence
+  @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
   @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
       available to set `autocmd` to current buffer.
   @param callback string|function Set either vim Ex command, or function. Any
