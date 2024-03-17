@@ -539,8 +539,8 @@
     ?...)
   ```
   @param name string Augroup name.
-  @param ?api-opts|?autocmd table|nil Omittable.
-  @param ... sequence|list
+  @param ?api-opts table|nil Omittable.
+  @param ... sequence|list List of `autocmd`s which will belong to the `augroup`.
   @return undefined Without `...`, the return value of `nvim_create_augroup`;
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
