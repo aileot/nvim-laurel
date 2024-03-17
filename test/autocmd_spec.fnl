@@ -23,6 +23,13 @@
 (macro macro-command []
   :macro-command)
 
+(macro ->trues [seq]
+  "Convert sequence into a kv-table `seq` items as keys and `true` as values.
+  @param seq sequence
+  @return kv-table"
+  (collect [_ v (ipairs seq)]
+    (values v true)))
+
 (local get-autocmds vim.api.nvim_get_autocmds)
 (local del-autocmd vim.api.nvim_del_autocmd)
 (local exec-autocmds vim.api.nvim_exec_autocmds)
