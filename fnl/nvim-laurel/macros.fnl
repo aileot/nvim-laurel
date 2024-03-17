@@ -990,7 +990,9 @@
   @param name string Variable name.
   @param val any Variable value."
   (if (hidden-in-compile-time? scope)
-      `(tset vim ,scope ,...)
+      (if (= 1 (select "#" ...))
+          `(tset vim ,scope ,... true)
+          `(tset vim ,scope ,...))
       (case (case scope
               :g (values 2 `vim.api.nvim_set_var)
               :b (values 3 `vim.api.nvim_buf_set_var)
@@ -1002,7 +1004,10 @@
                                                  3 ...
                                                  2 (case max-args
                                                      2 (values nil ...)
-                                                     3 (values 0 ...)))]
+                                                     3 (values 0 ...))
+                                                 1 (case max-args
+                                                     2 (values nil ... true)
+                                                     3 (values 0 ... true)))]
                             (case max-args
                               2 `(,setter ,name ,val)
                               3 `(,setter ,?id ,name ,val)))
