@@ -969,6 +969,32 @@
         ?vim-val (option/->?vim-value val)]
     (option/modify {:win id} name (or ?vim-val val))))
 
+(lambda let! [scope ...]
+  "Set editor variable in `scope`.
+  ```fennel
+  (let! scope name val)
+  (let! scope id name val)
+  ```
+  @param scope string One of the scopes [:g :b :w :t :v :env]
+  @param name string Variable name.
+  @param val any Variable value."
+  ;; TODO: Extend to :go, :bo, :opt, :opt_global, etc.
+  (let [(max-args setter) (case scope
+                            :g (values 2 `vim.api.nvim_set_var)
+                            :b (values 3 `vim.api.nvim_buf_set_var)
+                            :w (values 3 `vim.api.nvim_win_set_var)
+                            :t (values 3 `vim.api.nvim_tabpage_set_var)
+                            :v (values 3 `vim.api.nvim_set_vvar)
+                            :env (values 2 `vim.fn.setenv))
+        (?id name val) (case (select "#" ...)
+                         3 ...
+                         2 (case max-args
+                             2 (values nil ...)
+                             3 (values 0 ...)))]
+    (case max-args
+      2 `(,setter ,name ,val)
+      3 `(,setter ,?id ,name ,val))))
+
 ;; Command ///1
 
 (lambda command/->compatible-opts! [opts]
@@ -1191,6 +1217,7 @@
  : feedkeys!
  : highlight!
  :hi! highlight!
+ : let!
  : set+
  : set^
  : set-
