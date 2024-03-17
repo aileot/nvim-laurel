@@ -67,9 +67,17 @@
   (each [name val (pairs default-opt-map)]
     (assert.is_same val (. vim.o name))))
 
+;; TODO: Also test `:v`. What variable is not readonly?
+(local scope-list [:g :b :w :t :env])
+
 (describe* :options
   (before-each (do
                  (reset-context)))
+  (describe* :let!
+    (it* "can set vim option value in any scope even in symbol."
+      (each [_ scope (ipairs scope-list)]
+        (let! scope :foo :bar)
+        (assert.is_same :bar (. vim scope :foo)))))
   (describe* :set!
     (it* "is case-insensitive at option name"
       (vim.cmd "set foldlevel=2")
