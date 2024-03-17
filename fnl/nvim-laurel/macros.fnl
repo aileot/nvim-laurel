@@ -485,6 +485,22 @@
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
+(fn augroup/parse-args [...]
+  "Parse `augroup!` macro args.
+  @param ... string|kv-table|`&default-opts`|sequence args of `augroup!` macro
+  @return string `augroup` name
+  @return kv-table api-opts
+  @return sequence|list `autocmd` list
+  "
+  (let [[name ?api-opts|?autocmd & rest] (default/extract-opts! [...])
+        (api-opts autocmds) (if (nil? ?api-opts|?autocmd) (values {} [])
+                                (or (sequence? ?api-opts|?autocmd)
+                                    (autocmd? ?api-opts|?autocmd))
+                                (values {} [?api-opts|?autocmd (unpack rest)])
+                                (values ?api-opts|?autocmd rest))
+        api-opts* (default/merge-opts! api-opts)]
+    (values name api-opts* autocmds)))
+
 (lambda define-augroup! [name api-opts autocmds]
   "Define an augroup.
   ```fennel
@@ -529,14 +545,8 @@
       otherwise, undefined (currently a sequence of `autocmd`s defined in the)
       augroup."
   ;; Note: "clear" value in api-opts is true by default.
-  (let [[name ?api-opts|?autocmd & rest] (default/extract-opts! [...])
-        (api-opts autocmds) (if (nil? ?api-opts|?autocmd) (values {} [])
-                                (or (sequence? ?api-opts|?autocmd)
-                                    (autocmd? ?api-opts|?autocmd))
-                                (values {} [?api-opts|?autocmd (unpack rest)])
-                                (values ?api-opts|?autocmd rest))
-        api-opts* (default/merge-opts! api-opts)]
-    (define-augroup! name api-opts* autocmds)))
+  (let [(name api-opts autocmds) (augroup/parse-args ...)]
+    (define-augroup! name api-opts autocmds)))
 
 (fn autocmd! [...]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
