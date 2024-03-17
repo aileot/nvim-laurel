@@ -168,7 +168,46 @@
             (let! scope :foo nil)
             (assert.is_nil (. vim scope :foo))))))
     (describe* "with Vim script `option` scope in symbol (o, go, bo, wo, opt, opt_global, opt_local)"
-      (pending "with scope in symbol")
+      (describe* "with scope in symbol"
+        (describe* "can set vim buf-local option"
+          (it* "in boolean"
+            (each [_ scope (ipairs buf-local-scope-list)]
+              (let! scope :expandtab false)
+              (assert.is_false (get-lo :expandtab))))
+          (it* "in number"
+            (each [_ scope (ipairs buf-local-scope-list)]
+              (let! scope :tabstop 2)
+              (assert.is_same 2 (get-lo :tabstop))))
+          (it* "in string"
+            (each [_ scope (ipairs buf-local-scope-list)]
+              (let! scope :omnifunc :abc)
+              (assert.is_same :abc (get-lo :omnifunc))))
+          (it* "in sequence (except :bo)"
+            (each [_ scope (ipairs [:opt :opt_local])]
+              (let! scope :path [:/foo :/bar :/baz])
+              (assert.is_same [:/foo :/bar :/baz] (get-lo :path))))))
+      (describe* "with scope in symbol"
+        (describe* "can set vim win-local option"
+          (it* "in boolean"
+            (each [_ scope (ipairs win-local-scope-list)]
+              (let! scope :wrap false)
+              (assert.is_false (get-lo :wrap))))
+          (it* "in number"
+            (each [_ scope (ipairs win-local-scope-list)]
+              (let! scope :foldlevel 2)
+              (assert.is_same 2 (get-lo :foldlevel))))
+          (it* "in string"
+            (each [_ scope (ipairs win-local-scope-list)]
+              (let! scope :signcolumn :no)
+              (assert.is_same :no (get-lo :signcolumn))))
+          (it* "in sequence (except :wo)"
+            (each [_ scope (ipairs [:opt :opt_local])]
+              (let! scope :colorcolumn [:80 :81 :+1])
+              (assert.is_same [:80 :81 :+1] (get-lo :colorcolumn)))))
+        (it* "in kv-table (except :wo)"
+          (each [_ scope (ipairs [:opt :opt_local])]
+            (let! scope :listchars {:eol :a :tab :abc :space :a})
+            (assert.is_same {:eol :a :tab :abc :space :a} (get-lo :listchars)))))
       (describe* "in `:opt` scope"
         (it* "is case-insensitive at option name"
           (vim.cmd "set foldlevel=2")
