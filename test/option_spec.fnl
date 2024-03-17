@@ -69,6 +69,8 @@
 
 ;; TODO: Also test `:v`. What variable is not readonly?
 (local scope-list [:g :b :w :t :env])
+(local buf-local-scope-list [:o :bo :opt :opt_local])
+(local win-local-scope-list [:o :wo :opt :opt_local])
 
 (describe* :options
   (before-each (do
