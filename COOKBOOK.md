@@ -82,6 +82,53 @@ favor of `import-macros` in Fennel v0.4.0.)
 
 Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/macros.fnl
 
+<!-- panvimdoc-ignore-start -->
+
+#### augroup+: Create augroup macro without clearing itself by default
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+                                                          *laurel-augroup+*
+-->
+
+```fennel
+(fn augroup+ [...]
+  "Define augroup without clearing it."
+  (augroup! `&default-opts {:clear false}
+    ...))
+```
+
+<!-- panvimdoc-ignore-start -->
+
+#### set+, set-, set^, ...: Create dedicated macros to append, remove, prepend Vim options
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+                                                          *laurel-set+*
+                                                          *laurel-set-*
+                                                          *laurel-set^*
+                                                          *laurel-setlocal+*
+                                                          *laurel-setlocal-*
+                                                          *laurel-setlocal^*
+                                                          *laurel-setglobal+*
+                                                          *laurel-setglobal-*
+                                                          *laurel-setglobal^*
+                                                          *laurel-go+*
+                                                          *laurel-go-*
+                                                          *laurel-go^*
+-->
+
+```fennel
+(lambda set+ [name val]
+  (set! name `+ val)))
+(lambda set- [name val]
+  (set! name `- val)))
+(lambda set^ [name val]
+  (set! name `^ val)))
+```
+
+Replace "set", as you need, with "setlocal", "setglobal", etc.
+
 ### Define autocmds all over my vimrc
 
 <details>
