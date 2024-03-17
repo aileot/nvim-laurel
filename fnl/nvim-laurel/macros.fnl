@@ -462,7 +462,8 @@
                         (first ?pat)
                         ?pat)]
         ;; Note: `*` is the default pattern and redundant.
-        (when-not (and (str? pattern) (= "*" pattern))
+        (when-not (and (str? pattern) (= "*" pattern) (= `* pattern)
+                       (= [`*] pattern))
           (set extra-opts.pattern pattern)))
       (if (or ?vim-indice (str? callback) (vim-callback-format? callback))
           (set extra-opts.command callback)
