@@ -1012,7 +1012,8 @@
                   (where (or :o :opt)) {}
                   :opt_local {:scope :local}
                   (where (or :go :opt_global)) {:scope :global}
-                  (where (or (:bo _ _ nil) (:wo _ _ nil))) {}
+                  (:bo _ _ nil) {:buf 0}
+                  (:wo _ _ nil) {:win 0}
                   (:bo id _ _) {:buf id}
                   (:wo id _ _) {:win id})
             ;; Note: Scope for vim.opt, vim.opt_local, and vim.opt_global
