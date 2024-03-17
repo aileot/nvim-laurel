@@ -1196,7 +1196,7 @@
             (reset-context)
             (set- name assigned-val)
             (assert.is_same expected-vals (get-o-lo-go name)))))))
-  (describe* "(deprecated, v0.7.0 will not support it*)"
+  (describe* "(deprecated, v0.7.0 will not support this spec.)"
     (describe* :set+
       (it* "appends option value of sequence"
         (let [name :path
