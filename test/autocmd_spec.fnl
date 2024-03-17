@@ -8,7 +8,7 @@
 (import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
 (import-macros {: my-autocmd!
                 : augroup+
-                : buf-augroup!
+                : bufnr-suffixed-augroup!
                 : buf-autocmd!/with-buffer=0}
                :test._wrapper_macros)
 
@@ -364,8 +364,10 @@
                     bufnr (vim.api.nvim_get_current_buf)]
                 (augroup! default-augroup
                   (au! [:FileType]
-                       #(buf-augroup! local-group-prefix
-                          (au! [:InsertEnter] [:<buffer>] default-callback))))
+                       #(bufnr-suffixed-augroup! local-group-prefix
+                                                 (au! [:InsertEnter]
+                                                      [:<buffer>]
+                                                      default-callback))))
                 (let [[au &as aus] (get-autocmds {:group default-augroup})]
                   (assert.is_same 1 (length aus))
                   (assert.is_same :FileType au.event))
@@ -378,14 +380,18 @@
             (let [local-group-prefix :local]
               (augroup! default-augroup
                 (au! [:FileType]
-                     #(buf-augroup! local-group-prefix
-                        (au! [:InsertEnter] [:buffer 0 :desc "spawned autocmd"]
-                             (fn [a]
-                               (buf-autocmd!/with-buffer=0 a.group
-                                                           [:BufWritePre]
-                                                           default-callback
-                                                           {:desc "spawned autocmd, nested"})
-                               nil)))))
+                     #(bufnr-suffixed-augroup! local-group-prefix
+                                               (au! [:InsertEnter]
+                                                    [:buffer
+                                                     0
+                                                     :desc
+                                                     "spawned autocmd"]
+                                                    (fn [a]
+                                                      (buf-autocmd!/with-buffer=0 a.group
+                                                                                  [:BufWritePre]
+                                                                                  default-callback
+                                                                                  {:desc "spawned autocmd, nested"})
+                                                      nil)))))
               (let [[au &as aus] (get-autocmds {:group default-augroup})]
                 (assert.is_same 1 (length aus))
                 (assert.is_same :FileType au.event))
