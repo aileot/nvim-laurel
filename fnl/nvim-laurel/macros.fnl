@@ -548,6 +548,30 @@
   (let [(name api-opts autocmds) (augroup/parse-args ...)]
     (define-augroup! name api-opts autocmds)))
 
+(lambda buf-augroup! [...]
+  "Create, or override, an augroup, and add `autocmd` to the augroup.
+  ```fennel
+  (buf-augroup! name ?api-opts
+    ?[events ?pattern ?extra-opts callback ?api-opts]
+    ?(au! events ?pattern ?extra-opts callback ?api-opts)
+    ?(autocmd! events ?pattern ?extra-opts callback ?api-opts)
+    ?...)
+  ```
+  @param name string Augroup name.
+  @param ?api-opts|?autocmd table|nil Omittable.
+  @param ... sequence|list
+  @return undefined Without `...`, the return value of `nvim_create_augroup`;
+      otherwise, undefined (currently a sequence of `autocmd`s defined in the)
+      augroup."
+  ;; Note: "clear" value in api-opts is true by default.
+  (let [(name api-opts autocmds) (augroup/parse-args ...)
+        autocmd-default-opts {:buffer 0}]
+    (each [_ autocmd (ipairs autocmds)]
+      ;; Insert `&default-opts` before `autocmd-default-opts`.
+      (table.insert autocmd `&default-opts)
+      (table.insert autocmd autocmd-default-opts))
+    (define-augroup! name api-opts autocmds)))
+
 (fn autocmd! [...]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
   ```fennel
@@ -1183,6 +1207,7 @@
  : <Cmd>
  : <C-u>
  : augroup!
+ : buf-augroup!
  : autocmd!
  :au! autocmd!
  : set!
