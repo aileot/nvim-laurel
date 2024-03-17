@@ -74,10 +74,28 @@
   (before-each (do
                  (reset-context)))
   (describe* :let!
-    (it* "can set vim option value in any scope even in symbol."
-      (each [_ scope (ipairs scope-list)]
-        (let! scope :foo :bar)
-        (assert.is_same :bar (. vim scope :foo))))
+    (describe* "g, b, w, t, env"
+      (describe* "with variable scope in symbol"
+        (it* "can set vim option value in any scope."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo :bar)
+            (assert.is_same :bar (. vim scope :foo))))
+        (describe* "without either id or value"
+          (it* "sets vim option value to `true`."
+            (each [_ scope (ipairs scope-list)]
+              (let! scope :foo)
+              ;; Note: (. vim scope :foo) does not return `true`, but `v:true`.
+              ;; However, attempt to compare with `"v:true"` only fails
+              ;; because it surprisingly returns `true` then. So, it compares
+              ;; both at a time as a workaround. At least, the compiled result
+              ;; is the intended one.
+              (assert.is_true (or (= true (. vim scope :foo))
+                                  (= "v:true" (. vim scope :foo)))))))
+        (it* "can set to `nil`."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo nil)
+            (assert.is_nil (. vim scope :foo))))))
+    (pending "with vim option scope in symbol")
     (describe* "in `:opt` scope"
       (it* "is case-insensitive at option name"
         (vim.cmd "set foldlevel=2")
