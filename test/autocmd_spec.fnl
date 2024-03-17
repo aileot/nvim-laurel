@@ -4,11 +4,13 @@
                 : after-each
                 : describe*
                 : it*} :test._busted_macros)
+
 (import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
 (import-macros {: my-autocmd!
                 : augroup+
                 : buf-augroup!
-                : buf-autocmd!/with-buffer=0} :test._wrapper_macros)
+                : buf-autocmd!/with-buffer=0}
+               :test._wrapper_macros)
 
 (set _G.my-augroup-id (augroup! :MyAugroup))
 
