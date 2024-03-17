@@ -77,7 +77,114 @@
     (it* "can set vim option value in any scope even in symbol."
       (each [_ scope (ipairs scope-list)]
         (let! scope :foo :bar)
-        (assert.is_same :bar (. vim scope :foo)))))
+        (assert.is_same :bar (. vim scope :foo))))
+    (describe* "in `:opt` scope"
+      (it* "is case-insensitive at option name"
+        (vim.cmd "set foldlevel=2")
+        (let [vals (get-o-lo-go :foldlevel)]
+          (reset-context)
+          (let! :opt :foldLevel 2)
+          (assert.is_same vals (get-o-lo-go :foldlevel))))
+      (it* "can update option value with boolean"
+        (vim.cmd "set nowrap")
+        (let [vals (get-o-lo-go :wrap)]
+          (reset-context)
+          (let! :opt :wrap false)
+          (assert.is_same vals (get-o-lo-go :wrap))))
+      (it* "can update option value with number"
+        (vim.cmd "set foldlevel=2")
+        (let [vals (get-o-lo-go :foldlevel)]
+          (reset-context)
+          (let! :opt :foldlevel 2)
+          (assert.is_same vals (get-o-lo-go :foldlevel))))
+      (it* "can update option value with string"
+        (vim.cmd "set signcolumn=no")
+        (let [vals (get-o-lo-go :signcolumn)]
+          (reset-context)
+          (let! :opt :signcolumn :no)
+          (assert.is_same vals (get-o-lo-go :signcolumn))))
+      (it* "can update option value with sequence"
+        (vim.cmd "set path=/foo,/bar,/baz")
+        (let [vals (get-o-lo-go :path)]
+          (reset-context)
+          (let! :opt :path [:/foo :/bar :/baz])
+          (assert.is_same vals (get-o-lo-go :path))))
+      (it* "can update option value with kv-table"
+        (vim.cmd "set listchars=eol:a,tab:abc,space:a")
+        (let [vals (get-o-lo-go :listchars)]
+          (reset-context)
+          (let! :opt :listchars {:eol :a :tab :abc :space :a})
+          (assert.is_same vals (get-o-lo-go :listchars))))
+      (it* "can update some option value with nil"
+        (set vim.opt.foldlevel nil)
+        (let [vals (get-o-lo-go :foldlevel)]
+          (reset-context)
+          (let! :opt :foldlevel nil)
+          (assert.is_same vals (get-o-lo-go :foldlevel))))
+      (it* "can update some option value with symbol"
+        (let [new-val 2]
+          (set vim.opt.foldlevel new-val)
+          (let [vals (get-o-lo-go :foldlevel)]
+            (reset-context)
+            (let! :opt :foldlevel new-val)
+            (assert.is_same vals (get-o-lo-go :foldlevel)))))
+      (it* "can update some option value with list"
+        (let [return-val #2]
+          (set vim.opt.foldlevel (return-val))
+          (let [vals (get-o-lo-go :foldlevel)]
+            (reset-context)
+            (let! :opt :foldlevel (return-val))
+            (assert.is_same vals (get-o-lo-go :foldlevel))
+            (assert.is_same vals (get-o-lo-go :foldlevel)))))
+      (pending (fn []
+                 (it* "can append option value of sequence"
+                   (vim.cmd "set path+=/foo,/bar,/baz")
+                   (let [vals (get-o-lo-go :path)]
+                     (reset-context)
+                     (let! :opt :path + [:/foo :/bar :/baz])
+                     (assert.is_same vals (get-o-lo-go :path))))
+                 (it* "can prepend option value of sequence"
+                   (vim.cmd "set path^=/foo,/bar,/baz")
+                   (let [vals (get-o-lo-go :path)]
+                     (reset-context)
+                     (let! :opt :path ^ [:/foo :/bar :/baz])
+                     (assert.is_same vals (get-o-lo-go :path))))
+                 (it* "can remove option value of sequence"
+                   (vim.cmd "set path-=/tmp,/var")
+                   (let [vals (get-o-lo-go :path)]
+                     (reset-context)
+                     (let! :opt :path - [:/tmp :/var])
+                     (assert.is_same vals (get-o-lo-go :path))))
+                 (it* "can append option value of kv-table"
+                   (vim.opt.listchars:append {:lead :a :trail :b :extends :c})
+                   (let [vals (get-o-lo-go :listchars)]
+                     (reset-context)
+                     (let! :opt :listchars + {:lead :a :trail :b :extends :c})
+                     (assert.is_same vals (get-o-lo-go :listchars))))
+                 (it* "can prepend option value of kv-table"
+                   (vim.opt.listchars:prepend {:lead :a :trail :b :extends :c})
+                   (let [vals (get-o-lo-go :listchars)]
+                     (reset-context)
+                     (let! :opt :listchars ^ {:lead :a :trail :b :extends :c})
+                     (assert.is_same vals (get-o-lo-go :listchars))))
+                 (it* "can remove option value of kv-table"
+                   (vim.opt.listchars:remove [:eol :tab])
+                   (let [vals (get-o-lo-go :listchars)]
+                     (reset-context)
+                     (let! :opt :listchars - [:eol :tab])
+                     (assert.is_same vals (get-o-lo-go :listchars))))))
+      (describe* "with no value"
+        (it* "updates option value to `true`"
+          (vim.cmd "set nowrap")
+          (assert.is_false (get-o :wrap))
+          (let! :opt :wrap)
+          (assert.is_true (get-o :wrap)))
+        (it* "updates value to `true` even when option name is hidden in compile time"
+          (vim.cmd "set nowrap")
+          (assert.is_false (get-o :wrap))
+          (let [name :wrap]
+            (let! :opt name)
+            (assert.is_true (get-o name)))))))
   (describe* :set!
     (it* "is case-insensitive at option name"
       (vim.cmd "set foldlevel=2")
