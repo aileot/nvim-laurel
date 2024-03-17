@@ -241,7 +241,7 @@
       (assert.has_no.errors #(autocmd! default-augroup default-event
                                        vim.fn.Test))
       (let [[autocmd] (get-autocmds {:group default-augroup})]
-        (assert.is.same "<vim function: Test>" autocmd.callback)))
+        (assert.is_same "<vim function: Test>" autocmd.callback)))
     (it* "creates buffer-local autocmd with `buffer` key"
       (let [buffer (vim.api.nvim_get_current_buf)
             au1 (au! default-augroup default-event [:buffer buffer]
@@ -253,8 +253,8 @@
               [autocmd1] (get-autocmds {: buffer})
               [autocmd2] ;
               (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
-          (assert.is.same au1 autocmd1.id)
-          (assert.is.same au2 autocmd2.id))))
+          (assert.is_same au1 autocmd1.id)
+          (assert.is_same au2 autocmd2.id))))
     (it* "can define autocmd without any augroup"
       (set au-id1 (au! nil default-event default-callback)))
     (it* "gives lowest priority to `pattern` as (< raw seq tbl)"
@@ -264,11 +264,11 @@
         (au! default-augroup default-event [:pattern seq-pat] default-callback)
         (au! default-augroup default-event default-callback {:pattern tbl-pat})
         (let [au (get-first-autocmd {:pattern [:raw-seq-pat]})]
-          (assert.is.same :raw-seq-pat au.pattern))
+          (assert.is_same :raw-seq-pat au.pattern))
         (let [au (get-first-autocmd {:pattern seq-pat})]
-          (assert.is.same seq-pat au.pattern))
+          (assert.is_same seq-pat au.pattern))
         (let [au (get-first-autocmd {:pattern tbl-pat})]
-          (assert.is.same tbl-pat au.pattern))))
+          (assert.is_same tbl-pat au.pattern))))
     (describe* "detects 2 args:"
       (it* "sequence pattern and string callback"
         (autocmd! default-augroup default-event [:pat] :callback))
@@ -424,7 +424,7 @@
                             (autocmd! buf-local-augroup-id ;
                                       &default-opts {: buffer} ...))
 
-                          (assert.has.errors #(buf-au! [:InsertEnter]
+                          (assert.has_errors #(buf-au! [:InsertEnter]
                                                        default-callback)))
                         (let [buf-local-augroup-name (: "another-buf-local-aug-%d"
                                                         :format au.buf)
@@ -432,5 +432,5 @@
                               buf-au! (fn [buffer ...]
                                         (autocmd! &default-opts {: buffer}
                                                   buf-local-augroup-id ...))]
-                          (assert.has.errors #(buf-au! [:InsertEnter]
+                          (assert.has_errors #(buf-au! [:InsertEnter]
                                                        default-callback)))))))))))
