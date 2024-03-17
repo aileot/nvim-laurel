@@ -417,7 +417,102 @@
           (assert.is_false (get-go :wrap))
           (let [name :wrap]
             (let! :opt_global name)
-            (assert.is_true (get-go name)))))))
+            (assert.is_true (get-go name))))))
+    (describe* "in `:bo` scope"
+      (it* "can update option value with boolean"
+        (tset vim.bo :expandtab false)
+        (let [vals (get-o-lo-go :expandtab)]
+          (reset-context)
+          (let! :bo :expandtab false)
+          (assert.is_same vals (get-o-lo-go :expandtab))))
+      (it* "can update option value with number"
+        (tset vim.bo :tabstop 2)
+        (let [vals (get-o-lo-go :tabstop)]
+          (reset-context)
+          (let! :bo :tabstop 2)
+          (assert.is_same vals (get-o-lo-go :tabstop))))
+      (it* "can update option value with string"
+        (tset vim.bo :omnifunc :abc)
+        (let [vals (get-o-lo-go :omnifunc)]
+          (reset-context)
+          (let! :bo :omnifunc :abc)
+          (assert.is_same vals (get-o-lo-go :omnifunc))))
+      (it* "can update option value with sequence"
+        (tset vim.bo :path "/foo,/bar,/baz")
+        (let [vals (get-o-lo-go :path)]
+          (reset-context)
+          (let! :bo :path [:/foo :/bar :/baz])
+          (assert.is_same vals (get-o-lo-go :path))))
+      (it* "can update option value with kv-table"
+        (tset vim.bo :matchpairs "a:A,b:B,c:C")
+        (let [vals (get-o-lo-go :matchpairs)]
+          (reset-context)
+          (let! :bo :matchPairs {:a :A :b :B :c :C})
+          (assert.is_same vals (get-o-lo-go :matchpairs))))
+      (it* "can update some option value with nil"
+        (set vim.bo.tabstop nil)
+        (let [vals (get-o-lo-go :tabstop)]
+          (reset-context)
+          (let! :bo :tabstop nil)
+          (assert.is_same vals (get-o-lo-go :tabstop))))
+      (it* "can update some option value with symbol"
+        (let [new-val 2]
+          (set vim.bo.tabstop new-val)
+          (let [vals (get-o-lo-go :tabstop)]
+            (reset-context)
+            (let! :bo :tabstop new-val)
+            (assert.is_same vals (get-o-lo-go :tabstop)))))
+      (it* "can update some option value with list"
+        (let [return-val #2]
+          (set vim.bo.tabstop (return-val))
+          (let [vals (get-o-lo-go :tabstop)]
+            (reset-context)
+            (let! :bo :tabstop (return-val))
+            (assert.is_same vals (get-o-lo-go :tabstop)))))
+      (describe* "with bufnr"
+        (it* "can update option value with boolean"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (reset-context)
+            (let! :bo buf :expandtab false)
+            (assert.is_false (. vim.bo buf :expandtab))))
+        (it* "can update option value with number"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (reset-context)
+            (let! :bo buf :tabstop 2)
+            (assert.is_same 2 (. vim.bo buf :tabstop))))
+        (it* "can update option value with string"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (reset-context)
+            (let! :bo buf :omnifunc :abc)
+            (assert.is_same :abc (. vim.bo buf :omnifunc))))
+        (it* "can update option value with sequence"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (reset-context)
+            (let! :bo buf :path [:/foo :/bar :/baz])
+            (assert.is_same "/foo,/bar,/baz" (. vim.bo buf :path))))
+        (it* "can update option value with kv-table"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (reset-context)
+            (let! :bo buf :matchPairs {:a :A :b :B :c :C})
+            (assert.is_same "a:A,b:B,c:C" (. vim.bo buf :matchpairs))))
+        (it* "can update some option value with nil"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (reset-context)
+            (let! :bo buf :tabstop nil)
+            (assert.is_same vim.go.tabstop (. vim.bo buf :tabstop))))
+        (it* "can update some option value with symbol"
+          (let [buf (vim.api.nvim_get_current_buf)
+                new-val 2]
+            (reset-context)
+            (let! :bo buf :tabstop new-val)
+            (assert.is_same new-val (. vim.bo buf :tabstop))))
+        (it* "can update some option value with list"
+          (let [buf (vim.api.nvim_get_current_buf)
+                new-val 2
+                return-val #new-val]
+            (reset-context)
+            (let! :bo buf :tabstop (return-val))
+            (assert.is_same new-val (. vim.bo buf :tabstop)))))))
   (describe* :set!
     (it* "is case-insensitive at option name"
       (vim.cmd "set foldlevel=2")
