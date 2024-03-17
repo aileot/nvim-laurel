@@ -38,7 +38,8 @@
         ;; sequence (bo)
         :path "/tmp,/var,/usr"
         ;; kv-table (bo)
-        :matchpairs "x:X,y:Y,z:Z"
+        ;; Note: None of buf-local option can be set in kv-table probably.
+        ;;:matchpairs "x:X,y:Y,z:Z"
         ;;; window-local options
         ;; boolean (wo)
         :wrap true
