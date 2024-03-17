@@ -952,9 +952,8 @@
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])
-        ?vim-val (option/->?vim-value val)]
-    (option/modify {:buf id} name (or ?vim-val val))))
+                          [name|?id val|name ...])]
+    (option/modify {:buf id} name val)))
 
 (lambda wo! [name|?id val|name ...]
   "Set a window option value.
@@ -965,9 +964,8 @@
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])
-        ?vim-val (option/->?vim-value val)]
-    (option/modify {:win id} name (or ?vim-val val))))
+                          [name|?id val|name ...])]
+    (option/modify {:win id} name val)))
 
 (lambda let! [scope ...]
   "(Experimental) Set editor variable in `scope`.
