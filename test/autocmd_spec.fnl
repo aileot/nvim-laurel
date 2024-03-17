@@ -5,7 +5,8 @@
                 : describe*
                 : it*} :test._busted_macros)
 
-(import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
+(import-macros {: augroup! : buf-augroup! : au! : autocmd!} :nvim-laurel.macros)
+
 (import-macros {: my-autocmd!
                 : augroup+
                 : bufnr-suffixed-augroup!
@@ -433,4 +434,16 @@
                                         (autocmd! &default-opts {: buffer}
                                                   buf-local-augroup-id ...))]
                           (assert.has_errors #(buf-au! [:InsertEnter]
-                                                       default-callback)))))))))))
+                                                       default-callback))))))))))
+  (describe* :buf-augroup!
+    (it* "only creates buffer-local autocmds by default"
+      (let [buffer (vim.api.nvim_get_current_buf)]
+        (let [aus (get-autocmds {: buffer})]
+          (assert.is_nil (next aus)))
+        (buf-augroup! :buf-local-autocmd
+          (au! :InsertEnter ["*"] default-callback))
+        (let [[au1] (get-autocmds {: buffer})]
+          (assert.is_same (->trues [au1.event]) (->trues [:InsertEnter])))
+        (let [[au1] (get-autocmds {:group :buf-local-autocmd : buffer})]
+          (assert.is_same (->trues [au1.event]) (->trues [:InsertEnter])))
+        (del-augroup-by-name :buf-local-autocmd)))))
