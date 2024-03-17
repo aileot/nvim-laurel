@@ -996,7 +996,7 @@
               :b (values 3 `vim.api.nvim_buf_set_var)
               :w (values 3 `vim.api.nvim_win_set_var)
               :t (values 3 `vim.api.nvim_tabpage_set_var)
-              :v (values 3 `vim.api.nvim_set_vvar)
+              :v (values 2 `vim.api.nvim_set_vvar)
               :env (values 2 `vim.fn.setenv))
         (max-args setter) (let [(?id name val) (case (select "#" ...)
                                                  3 ...
