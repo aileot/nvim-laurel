@@ -95,7 +95,25 @@
           (it* "can set to `nil`."
             (each [_ scope (ipairs scope-list)]
               (let! scope :foo nil)
-              (assert.is_nil (. vim scope :foo)))))))
+              (assert.is_nil (. vim scope :foo))))))
+      (describe* :g
+        (it* "can set vim option value in any scope."
+          (let! :g :foo :bar)
+          (assert.is_same :bar (. vim :g :foo)))
+        (describe* "without either id or value"
+          (it* "sets vim option value to `true`."
+            (let! :g :foo)
+            ;; Note: (. vim :g :foo) does not return `true`, but `v:true`.
+            ;; However, attempt to compare with `"v:true"` only fails
+            ;; because it surprisingly returns `true` then. So, it compares
+            ;; both at a time as a workaround. At least, the compiled result
+            ;; is the intended one.
+            (assert.is_true (or (= true (. vim :g :foo))
+                                (= "v:true" (. vim :g :foo))))))
+        (it* "can set to `nil`."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo nil)
+            (assert.is_nil (. vim scope :foo))))))
     (pending "with vim option scope in symbol")
     (describe* "in `:opt` scope"
       (it* "is case-insensitive at option name"
