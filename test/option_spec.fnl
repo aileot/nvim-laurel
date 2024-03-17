@@ -128,19 +128,6 @@
           (each [_ scope (ipairs scope-list)]
             (let! scope :foo nil)
             (assert.is_nil (. vim scope :foo)))))
-      (describe* :b
-        (it* "can set vim option value in any scope."
-          (let! :b :foo :bar)
-          (assert.is_same :bar (. vim :b :foo)))
-        (describe* "without either id or value"
-          (it* "sets vim option value to `true`."
-            (let! :b :foo)
-            (assert.is_true (or (= true (. vim :b :foo))
-                                (= "v:true" (. vim :b :foo))))))
-        (it* "can set to `nil`."
-          (each [_ scope (ipairs scope-list)]
-            (let! scope :foo nil)
-            (assert.is_nil (. vim scope :foo)))))
       (describe* :w
         (it* "can set vim option value in any scope."
           (let! :w :foo :bar)
