@@ -1,6 +1,7 @@
 (import-macros {: before-each : describe* : it*} :test._busted_macros)
 (import-macros {: set+ : set- : set^} :test._wrapper_macros)
-(import-macros {: set!
+(import-macros {: let!
+                : set!
                 : setglobal!
                 : setlocal!
                 : bo!
