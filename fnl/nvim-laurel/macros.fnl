@@ -722,7 +722,8 @@
 ;; Variable ///1
 
 (lambda g! [name val]
-  "Set global (`g:`) editor variable.
+  "(Subject to be deprecated in favor of `let!`)
+  Set global (`g:`) editor variable.
   ```fennel
   (g! name val)
   ```
@@ -731,7 +732,8 @@
   `(vim.api.nvim_set_var ,name ,val))
 
 (lambda b! [id|name name|val ?val]
-  "Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
+  "(Subject to be deprecated in favor of `let!`)
+  Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
   with an integer to access variables for specific buffer.
   ```fennel
   (b! ?id name val)
@@ -744,7 +746,8 @@
       `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
 
 (lambda w! [id|name name|val ?val]
-  "Set window-scoped (`w:`) variable for the current window. Can be indexed
+  "(Subject to be deprecated in favor of `let!`)
+  Set window-scoped (`w:`) variable for the current window. Can be indexed
   with an integer to access variables for specific window.
   ```fennel
   (w! ?id name val)
@@ -757,7 +760,8 @@
       `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
 
 (lambda t! [id|name name|val ?val]
-  "Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
+  "(Subject to be deprecated in favor of `let!`)
+  Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
   with an integer to access variables for specific tabpage.
   ```fennel
   (t! ?id name val)
@@ -770,7 +774,8 @@
       `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
 
 (lambda v! [name val]
-  "Set `v:` variable if not readonly.
+  "(Subject to be deprecated in favor of `let!`)
+  Set `v:` variable if not readonly.
   ```fennel
   (v! name val)
   ```
@@ -779,7 +784,8 @@
   `(vim.api.nvim_set_vvar ,name ,val))
 
 (lambda env! [name val]
-  "Set environment variable in the editor session.
+  "(Subject to be deprecated in favor of `let!`)
+  Set environment variable in the editor session.
   ```fennel
   (env! name val)
   ```
