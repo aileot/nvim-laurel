@@ -28,7 +28,7 @@
 (local default-opt-map
        ;; Note: The default option values are supposed to be different from
        ;; Neovim default value.
-       {;; buffer-local options
+       {;;; buffer-local options
         ;; boolean (bo)
         :expandtab true
         ;; number (bo)
@@ -39,7 +39,7 @@
         :path "/tmp,/var,/usr"
         ;; kv-table (bo)
         :matchpairs "x:X,y:Y,z:Z"
-        ;; window-local options
+        ;;; window-local options
         ;; boolean (wo)
         :wrap true
         ;; number (wo)
@@ -49,11 +49,10 @@
         ;; sequence (wo)
         :colorcolumn "+1,+2,+3"
         ;; kv-table (wo)
-        ;; kv-table
         :listchars "eol:x,tab:xy,space:x"
-        ;; shortmess
+        ;; shortmess (should be set both in string or bare-sequence)
         :shortmess :fiw
-        ;; formatoptions
+        ;; formatoptions (should be set both in string or bare-sequence)
         :formatoptions :12b})
 
 (fn reset-context []
