@@ -906,7 +906,8 @@
 ;; Export ///2
 
 (lambda set! [...]
-  "Set value to the option.
+  "(Subject to be deprecated in favor of `let!`)
+  Set value to the option.
   Almost equivalent to `:set` in Vim script.
   ```fennel
   (set! name ?flag ?val)
@@ -932,7 +933,8 @@
   (option/set-with-scope {} ...))
 
 (lambda setlocal! [...]
-  "Set local value to the option.
+  "(Subject to be deprecated in favor of `let!`)
+  Set local value to the option.
   Almost equivalent to `:setlocal` in Vim script.
   ```fennel
   (setlocal! name-?flag ?val)
@@ -941,7 +943,8 @@
   (option/set-with-scope {:scope :local} ...))
 
 (lambda setglobal! [...]
-  "Set global value to the option.
+  "(Subject to be deprecated in favor of `let!`)
+  Set global value to the option.
   Almost equivalent to `:setglobal` in Vim script.
   ```fennel
   (setglobal! name-?flag ?val)
@@ -950,7 +953,8 @@
   (option/set-with-scope {:scope :global} ...))
 
 (lambda bo! [name|?id val|name ...]
-  "Set a buffer option value.
+  "(Subject to be deprecated in favor of `let!`)
+  Set a buffer option value.
   ```fennel
   (bo! ?id name value)
   ```
@@ -962,7 +966,8 @@
     (option/modify {:buf id} name val)))
 
 (lambda wo! [name|?id val|name ...]
-  "Set a window option value.
+  "(Subject to be deprecated in favor of `let!`)
+  Set a window option value.
   ```fennel
   (wo! ?id name value)
   ```
