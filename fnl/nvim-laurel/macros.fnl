@@ -1008,20 +1008,25 @@
                             (case max-args
                               2 `(,setter ,name ,val)
                               3 `(,setter ,?id ,name ,val)))
-        _ (case (case (values scope ...)
-                  (where (or :o :opt)) {}
-                  :opt_local {:scope :local}
-                  (where (or :go :opt_global)) {:scope :global}
-                  (:bo _ _ nil) {:buf 0}
-                  (:wo _ _ nil) {:win 0}
-                  (:bo id _ _) {:buf id}
-                  (:wo id _ _) {:win id})
-            ;; Note: Scope for vim.opt, vim.opt_local, and vim.opt_global
-            ;; max-args would be 2 or 3 regardless of extra symbol `+`, `-`,
-            ;; and so on; however, in order to set option scope later,
-            ;; temporarily set `nil` here.
-            option-scope
-            (option/set-with-scope option-scope ...)))))
+        _ (case (values scope ...)
+            ;; Note: In the `case` body above, the scope for vim.opt,
+            ;; vim.opt_local, and vim.opt_global max-args would be 2 or
+            ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
+            ;;   order to set option scope later, temporarily set `nil` here.
+            (where (or :o :opt))
+            (option/set-with-scope {} ...)
+            :opt_local
+            (option/set-with-scope {:scope :local} ...)
+            (where (or :go :opt_global))
+            (option/set-with-scope {:scope :global} ...)
+            (:bo name val nil)
+            (option/modify {:buf 0} name val)
+            (:wo name val nil)
+            (option/modify {:win 0} name val)
+            (:bo id name val)
+            (option/modify {:buf id} name val)
+            (:wo id name val)
+            (option/modify {:win id} name val)))))
 
 ;; Command ///1
 
