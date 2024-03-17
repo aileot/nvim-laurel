@@ -209,7 +209,7 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
  (lspconfig.setup config)
 ```
 
-### Treesitter Highlight
+### Personalize syntax highlights on Treesitter
 
 _To begin with, do not forget `;; extends` at the top
 of your `after/queries/fennel/highlights.scm`
