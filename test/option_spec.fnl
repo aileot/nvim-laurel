@@ -113,6 +113,71 @@
         (it* "can set to `nil`."
           (each [_ scope (ipairs scope-list)]
             (let! scope :foo nil)
+            (assert.is_nil (. vim scope :foo)))))
+      (describe* :b
+        (it* "can set vim option value in any scope."
+          (let! :b :foo :bar)
+          (assert.is_same :bar (. vim :b :foo)))
+        (describe* "without either id or value"
+          (it* "sets vim option value to `true`."
+            (let! :b :foo)
+            (assert.is_true (or (= true (. vim :b :foo))
+                                (= "v:true" (. vim :b :foo))))))
+        (it* "can set to `nil`."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo nil)
+            (assert.is_nil (. vim scope :foo)))))
+      (describe* :b
+        (it* "can set vim option value in any scope."
+          (let! :b :foo :bar)
+          (assert.is_same :bar (. vim :b :foo)))
+        (describe* "without either id or value"
+          (it* "sets vim option value to `true`."
+            (let! :b :foo)
+            (assert.is_true (or (= true (. vim :b :foo))
+                                (= "v:true" (. vim :b :foo))))))
+        (it* "can set to `nil`."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo nil)
+            (assert.is_nil (. vim scope :foo)))))
+      (describe* :w
+        (it* "can set vim option value in any scope."
+          (let! :w :foo :bar)
+          (assert.is_same :bar (. vim :w :foo)))
+        (describe* "without either id or value"
+          (it* "sets vim option value to `true`."
+            (let! :w :foo)
+            (assert.is_true (or (= true (. vim :w :foo))
+                                (= "v:true" (. vim :w :foo))))))
+        (it* "can set to `nil`."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo nil)
+            (assert.is_nil (. vim scope :foo)))))
+      (describe* :t
+        (it* "can set vim option value in any scope."
+          (let! :t :foo :bar)
+          (assert.is_same :bar (. vim :t :foo)))
+        (describe* "without either id or value"
+          (it* "sets vim option value to `true`."
+            (let! :t :foo)
+            (assert.is_true (or (= true (. vim :t :foo))
+                                (= "v:true" (. vim :t :foo))))))
+        (it* "can set to `nil`."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo nil)
+            (assert.is_nil (. vim scope :foo)))))
+      (describe* :env
+        (it* "can set vim option value in any scope."
+          (let! :env :foo :bar)
+          (assert.is_same :bar (. vim :env :foo)))
+        (describe* "without either id or value"
+          (it* "sets vim option value to `true`."
+            (let! :env :foo)
+            (assert.is_true (or (= true (. vim :env :foo))
+                                (= "v:true" (. vim :env :foo))))))
+        (it* "can set to `nil`."
+          (each [_ scope (ipairs scope-list)]
+            (let! scope :foo nil)
             (assert.is_nil (. vim scope :foo))))))
     (pending "with vim option scope in symbol")
     (describe* "in `:opt` scope"
