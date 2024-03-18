@@ -53,7 +53,6 @@
 
 (var au-id1 nil)
 (var au-id2 nil)
-(var au-id3 nil)
 
 ;; Note: `(vim.cmd "normal! i")` does not trigger event `InsertEnter` in the
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
@@ -76,8 +75,7 @@
                    (assert.is_nil (next aus)))))
   (after-each (fn []
                 (pcall del-autocmd au-id1)
-                (pcall del-autocmd au-id2)
-                (pcall del-autocmd au-id3)))
+                (pcall del-autocmd au-id2)))
   (describe* :augroup!
     (it* "returns augroup id without autocmds insides"
       (let [id (augroup! default-augroup)]
@@ -144,7 +142,7 @@
                  (fn [a]
                    (assert.is_same default-augroup-id a.group)
                    (s)
-                   (let [[au1 au2 au3 au4 au5 &as aus] (get-autocmds {})]
+                   (let [[au1 au2 au3 &as aus] (get-autocmds {})]
                      (assert.is_same (->trues [:InsertEnter
                                                :BufReadPost
                                                :VimEnter])
