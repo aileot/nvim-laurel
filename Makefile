@@ -8,6 +8,12 @@ MAKEFLAGS += --warn-undefined-variables
 FENNEL ?= fennel
 VUSTED ?= vusted
 
+FNL_FLAGS ?= --correlate
+FNL_EXTRA_FLAGS ?=
+
+VUSTED_FLAGS ?= --shuffle --output=utfTerminal
+VUSTED_EXTRA_FLAGS ?=
+
 REPO_ROOT:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 TEST_ROOT:=$(REPO_ROOT)/test
 SPEC_ROOT:=$(TEST_ROOT)
@@ -37,7 +43,8 @@ help: ## Show this help
 
 %_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
 	@$(FENNEL) \
-		--correlate \
+		$(FNL_FLAGS) \
+		$(FNL_EXTRA_FLAGS) \
 		--add-macro-path "$(REPO_MACRO_PATH);$(SPEC_ROOT)/?.fnl" \
 		--compile $< > $@
 
@@ -48,6 +55,6 @@ clean: ## Clean lua test files compiled from fnl
 .PHONY: test
 test: clean $(LUA_SPECS) ## Run test
 	@$(VUSTED) \
-		--shuffle \
-		--output=utfTerminal \
+		$(VUSTED_FLAGS) \
+		$(VUSTED_EXTRA_FLAGS) \
 		$(TEST_ROOT)
