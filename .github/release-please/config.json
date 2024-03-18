@@ -4,8 +4,6 @@
   "bump-patch-for-minor-pre-major": true,
   "release-search-depth": 3,
   "commit-search-depth": 50,
-  "draft": true,
-  "prerelease": true,
   "packages": {
     ".": {
       "release-type": "simple",
