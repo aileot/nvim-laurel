@@ -530,7 +530,7 @@
 ;; Export ///2
 
 (lambda augroup! [...]
-  "Create, or override, an augroup, and add `autocmd` to the augroup.
+  "Create, or override, an `augroup`, and add `autocmd` to the `augroup`.
   ```fennel
   (augroup! name ?api-opts
     ?[events ?pattern ?extra-opts callback ?api-opts]
