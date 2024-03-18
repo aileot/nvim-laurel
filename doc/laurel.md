@@ -23,6 +23,7 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
 - [Macros](#macros)
   - [Autocmd](#autocmd)
     - [`augroup!`](#augroup)
+    - [`buf-augroup!`](#buf-augroup)
     - [`autocmd!`](#autocmd-1)
     - [`au!`](#au)
   - [Keymap](#keymap)
@@ -239,6 +240,7 @@ Note that quote position depends on where the wrapper macros are defined:
 ### Autocmd
 
 - [`augroup!`](#augroup)
+- [`buf-augroup!`](#buf-augroup)
 - [`autocmd!`](#autocmd)
 - [`au!`](#au)
 
@@ -341,6 +343,27 @@ vim.api.nvim_create_autocmd("LspAttach", {
 ```
 
 c.f. [`autocmd!`](#autocmd)
+
+#### `buf-augroup!`
+
+Create, or override, a buffer-local `augroup`, and add buffer-local `autocmd`
+to the `augroup`. Useful to spawn buffer-local `autocmd` from another
+`autocmd`, or from `ftplugin/`.
+(`&default-opts` is available.)
+
+```fennel
+(buf-augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
+(buf-augroup! name ?api-opts-for-augroup
+  [events ?pattern ?extra-opts callback ?api-opts]
+  ...)
+(buf-augroup! name ?api-opts-for-augroup
+  ;; Wrap args in `autocmd!` or `au!` instead of brackets.
+  (autocmd! events ?pattern ?extra-opts callback ?api-opts)
+  ...)
+```
+
+Same as [`augroup!`](#augroup), but `{:buffer 0}` is assigned to each
+`autocmd`s insides by default.
 
 #### `autocmd!`
 
