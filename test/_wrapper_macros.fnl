@@ -13,7 +13,7 @@
     {:clear false}
     ...))
 
-(fn buf-augroup! [name ...]
+(fn bufnr-suffixed-augroup! [name ...]
   "Create an buffer-local augroup. This macro is supposed to be expanded in
   another parent augroup or in ftplugin."
   (let [augroup-name `(: "%s%d" :format ,name (vim.api.nvim_get_current_buf))]
@@ -64,7 +64,7 @@
 
 {: my-autocmd!
  : augroup+
- : buf-augroup!
+ : bufnr-suffixed-augroup!
  : buf-autocmd!/with-no-default-bufnr
  : buf-autocmd!/with-buffer=0
  : set+

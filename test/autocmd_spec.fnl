@@ -4,11 +4,13 @@
                 : after-each
                 : describe*
                 : it*} :test._busted_macros)
+
 (import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
 (import-macros {: my-autocmd!
                 : augroup+
-                : buf-augroup!
-                : buf-autocmd!/with-buffer=0} :test._wrapper_macros)
+                : bufnr-suffixed-augroup!
+                : buf-autocmd!/with-buffer=0}
+               :test._wrapper_macros)
 
 (set _G.my-augroup-id (augroup! :MyAugroup))
 
@@ -20,6 +22,13 @@
 
 (macro macro-command []
   :macro-command)
+
+(macro ->trues [seq]
+  "Convert sequence into a kv-table `seq` items as keys and `true` as values.
+  @param seq sequence
+  @return kv-table"
+  (collect [_ v (ipairs seq)]
+    (values v true)))
 
 (local get-autocmds vim.api.nvim_get_autocmds)
 (local del-autocmd vim.api.nvim_del_autocmd)
@@ -44,7 +53,6 @@
 
 (var au-id1 nil)
 (var au-id2 nil)
-(var au-id3 nil)
 
 ;; Note: `(vim.cmd "normal! i")` does not trigger event `InsertEnter` in the
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
@@ -67,8 +75,7 @@
                    (assert.is_nil (next aus)))))
   (after-each (fn []
                 (pcall del-autocmd au-id1)
-                (pcall del-autocmd au-id2)
-                (pcall del-autocmd au-id3)))
+                (pcall del-autocmd au-id2)))
   (describe* :augroup!
     (it* "returns augroup id without autocmds insides"
       (let [id (augroup! default-augroup)]
@@ -119,8 +126,8 @@
           (exec-autocmds :InsertEnter {:group default-augroup})
           (assert-spy s :was_called)
           (let [[au1 au2 &as aus] (get-autocmds {:group default-augroup})]
-            (assert.is_same {:InsertEnter true :BufWritePre true}
-                            {au1.event true au2.event true})
+            (assert.is_same (->trues [:InsertEnter :BufWritePre])
+                            (->trues [au1.event au2.event]))
             (assert.is_same 2 (length aus)))))
       (it* "callback arg value at `group` is same as the parent group id even inside `augroup!` macro."
         (let [s (spy.new)]
@@ -135,46 +142,41 @@
                  (fn [a]
                    (assert.is_same default-augroup-id a.group)
                    (s)
-                   (let [[au1 au2 au3 au4 au5 &as aus] (get-autocmds {})]
-                     (assert.is_same {:InsertEnter true
-                                      :BufReadPost true
-                                      :VimEnter true}
-                                     {au1.event true
-                                      au2.event true
-                                      au3.event true}))
+                   (let [[au1 au2 au3 &as aus] (get-autocmds {})]
+                     (assert.is_same (->trues [:InsertEnter
+                                               :BufReadPost
+                                               :VimEnter])
+                                     (->trues [au1.event au2.event au3.event])))
                    (autocmd! a.group [:BufWritePre] default-callback
                              {:desc "spawned autocmd, nested"})
                    (autocmd! a.group [:CmdlineEnter] default-callback
                              {:desc "spawned autocmd, nested"})
                    nil)))
           (let [[au1 au2 &as aus] (get-autocmds {:group default-augroup})]
-            (assert.is_same {:InsertEnter true :BufReadPost true}
-                            {au1.event true au2.event true})
+            (assert.is_same (->trues [:InsertEnter :BufReadPost])
+                            (->trues [au1.event au2.event]))
             (assert.is_same 2 (length aus)))
           (assert-spy s :was_not_called)
           (exec-autocmds :InsertEnter {:group default-augroup})
           (assert-spy s :was_called)
           (let [[au1 au2 au3 au4 au5 &as aus] (get-autocmds {})]
-            (assert.is_same {:InsertEnter true
-                             :BufReadPost true
-                             :VimEnter true
-                             :BufWritePre true
-                             :CmdlineEnter true}
-                            {au1.event true
-                             au2.event true
-                             au3.event true
-                             au4.event true
-                             au5.event true})
+            (assert.is_same (->trues [:InsertEnter
+                                      :BufReadPost
+                                      :VimEnter
+                                      :BufWritePre
+                                      :CmdlineEnter])
+                            (->trues [au1.event
+                                      au2.event
+                                      au3.event
+                                      au4.event
+                                      au5.event]))
             (assert.is_same 5 (length aus)))
           (let [[au1 au2 au3 au4 &as aus] (get-autocmds {:group default-augroup})]
-            (assert.is_same {:InsertEnter true
-                             :BufReadPost true
-                             :BufWritePre true
-                             :CmdlineEnter true}
-                            {au1.event true
-                             au2.event true
-                             au3.event true
-                             au4.event true})
+            (assert.is_same (->trues [:InsertEnter
+                                      :BufReadPost
+                                      :BufWritePre
+                                      :CmdlineEnter])
+                            (->trues [au1.event au2.event au3.event au4.event]))
             (assert.is_same 4 (length aus)))))
       (it* "callback arg value at `group` is same as the parent group id even inside `augroup!` macro with 'buffer' key assigned."
         (let [s (spy.new)]
@@ -193,8 +195,8 @@
           (exec-autocmds :InsertEnter {:group default-augroup})
           (assert-spy s :was_called)
           (let [[au1 au2 &as aus] (get-autocmds {:group default-augroup})]
-            (assert.is_same {:InsertEnter true :BufWritePre true}
-                            {au1.event true au2.event true})
+            (assert.is_same (->trues [:InsertEnter :BufWritePre])
+                            (->trues [au1.event au2.event]))
             (assert.is_same 2 (length aus))))))
     (it* "should set callback via macro"
       (let [desc "macro callback"]
@@ -239,7 +241,7 @@
       (assert.has_no.errors #(autocmd! default-augroup default-event
                                        vim.fn.Test))
       (let [[autocmd] (get-autocmds {:group default-augroup})]
-        (assert.is.same "<vim function: Test>" autocmd.callback)))
+        (assert.is_same "<vim function: Test>" autocmd.callback)))
     (it* "creates buffer-local autocmd with `buffer` key"
       (let [buffer (vim.api.nvim_get_current_buf)
             au1 (au! default-augroup default-event [:buffer buffer]
@@ -251,8 +253,8 @@
               [autocmd1] (get-autocmds {: buffer})
               [autocmd2] ;
               (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
-          (assert.is.same au1 autocmd1.id)
-          (assert.is.same au2 autocmd2.id))))
+          (assert.is_same au1 autocmd1.id)
+          (assert.is_same au2 autocmd2.id))))
     (it* "can define autocmd without any augroup"
       (set au-id1 (au! nil default-event default-callback)))
     (it* "gives lowest priority to `pattern` as (< raw seq tbl)"
@@ -262,11 +264,11 @@
         (au! default-augroup default-event [:pattern seq-pat] default-callback)
         (au! default-augroup default-event default-callback {:pattern tbl-pat})
         (let [au (get-first-autocmd {:pattern [:raw-seq-pat]})]
-          (assert.is.same :raw-seq-pat au.pattern))
+          (assert.is_same :raw-seq-pat au.pattern))
         (let [au (get-first-autocmd {:pattern seq-pat})]
-          (assert.is.same seq-pat au.pattern))
+          (assert.is_same seq-pat au.pattern))
         (let [au (get-first-autocmd {:pattern tbl-pat})]
-          (assert.is.same tbl-pat au.pattern))))
+          (assert.is_same tbl-pat au.pattern))))
     (describe* "detects 2 args:"
       (it* "sequence pattern and string callback"
         (autocmd! default-augroup default-event [:pat] :callback))
@@ -362,8 +364,10 @@
                     bufnr (vim.api.nvim_get_current_buf)]
                 (augroup! default-augroup
                   (au! [:FileType]
-                       #(buf-augroup! local-group-prefix
-                          (au! [:InsertEnter] [:<buffer>] default-callback))))
+                       #(bufnr-suffixed-augroup! local-group-prefix
+                                                 (au! [:InsertEnter]
+                                                      [:<buffer>]
+                                                      default-callback))))
                 (let [[au &as aus] (get-autocmds {:group default-augroup})]
                   (assert.is_same 1 (length aus))
                   (assert.is_same :FileType au.event))
@@ -376,14 +380,18 @@
             (let [local-group-prefix :local]
               (augroup! default-augroup
                 (au! [:FileType]
-                     #(buf-augroup! local-group-prefix
-                        (au! [:InsertEnter] [:buffer 0 :desc "spawned autocmd"]
-                             (fn [a]
-                               (buf-autocmd!/with-buffer=0 a.group
-                                                           [:BufWritePre]
-                                                           default-callback
-                                                           {:desc "spawned autocmd, nested"})
-                               nil)))))
+                     #(bufnr-suffixed-augroup! local-group-prefix
+                                               (au! [:InsertEnter]
+                                                    [:buffer
+                                                     0
+                                                     :desc
+                                                     "spawned autocmd"]
+                                                    (fn [a]
+                                                      (buf-autocmd!/with-buffer=0 a.group
+                                                                                  [:BufWritePre]
+                                                                                  default-callback
+                                                                                  {:desc "spawned autocmd, nested"})
+                                                      nil)))))
               (let [[au &as aus] (get-autocmds {:group default-augroup})]
                 (assert.is_same 1 (length aus))
                 (assert.is_same :FileType au.event))
@@ -402,8 +410,8 @@
                   (assert.is_same ie.group_name au1.group_name)
                   (assert.is_same ie.group au1.group)
                   (assert.is_not_same ie.event au1.event)
-                  (assert.is_same {:InsertEnter true :BufWritePre true}
-                                  {au1.event true au2.event true})
+                  (assert.is_same (->trues [:InsertEnter :BufWritePre])
+                                  (->trues [au1.event au2.event]))
                   (assert.is_same 2 (length aus)))))))
         (describe* "wrapper function at runtime"
           (it* "usually causes errors because compiled into unexpected output."
@@ -416,7 +424,7 @@
                             (autocmd! buf-local-augroup-id ;
                                       &default-opts {: buffer} ...))
 
-                          (assert.has.errors #(buf-au! [:InsertEnter]
+                          (assert.has_errors #(buf-au! [:InsertEnter]
                                                        default-callback)))
                         (let [buf-local-augroup-name (: "another-buf-local-aug-%d"
                                                         :format au.buf)
@@ -424,5 +432,5 @@
                               buf-au! (fn [buffer ...]
                                         (autocmd! &default-opts {: buffer}
                                                   buf-local-augroup-id ...))]
-                          (assert.has.errors #(buf-au! [:InsertEnter]
+                          (assert.has_errors #(buf-au! [:InsertEnter]
                                                        default-callback)))))))))))
