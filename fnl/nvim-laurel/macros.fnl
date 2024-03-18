@@ -549,7 +549,9 @@
     (define-augroup! name api-opts autocmds)))
 
 (lambda buf-augroup! [...]
-  "Create, or override, an augroup, and add `autocmd` to the augroup.
+  "Create, or override, a buffer-local `augroup`, and add buffer-local `autocmd`
+  to the `augroup`. Useful to spawn buffer-local `autocmd` from another
+  `autocmd`, or from `ftplugin/`.
   ```fennel
   (buf-augroup! name ?api-opts
     ?[events ?pattern ?extra-opts callback ?api-opts]
