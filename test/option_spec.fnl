@@ -228,13 +228,13 @@
           (vim.cmd "set foldlevel=2")
           (let [vals (get-o-lo-go :foldlevel)]
             (reset-context)
-            (let! :opt :foldlevel 2)
+            (let! :opt :foldLevel 2)
             (assert.is_same vals (get-o-lo-go :foldlevel))))
         (it* "can update option value with string"
           (vim.cmd "set signcolumn=no")
           (let [vals (get-o-lo-go :signcolumn)]
             (reset-context)
-            (let! :opt :signcolumn :no)
+            (let! :opt :signColumn :no)
             (assert.is_same vals (get-o-lo-go :signcolumn))))
         (it* "can update option value with sequence"
           (vim.cmd "set path=/foo,/bar,/baz")
@@ -246,7 +246,7 @@
           (vim.cmd "set listchars=eol:a,tab:abc,space:a")
           (let [vals (get-o-lo-go :listchars)]
             (reset-context)
-            (let! :opt :listchars {:eol :a :tab :abc :space :a})
+            (let! :opt :listChars {:eol :a :tab :abc :space :a})
             (assert.is_same vals (get-o-lo-go :listchars))))
         (it* "can update some option value with nil"
           (set vim.opt.foldlevel nil)
@@ -259,14 +259,14 @@
             (set vim.opt.foldlevel new-val)
             (let [vals (get-o-lo-go :foldlevel)]
               (reset-context)
-              (let! :opt :foldlevel new-val)
+              (let! :opt :foldLevel new-val)
               (assert.is_same vals (get-o-lo-go :foldlevel)))))
         (it* "can update some option value with list"
           (let [return-val #2]
             (set vim.opt.foldlevel (return-val))
             (let [vals (get-o-lo-go :foldlevel)]
               (reset-context)
-              (let! :opt :foldlevel (return-val))
+              (let! :opt :foldLevel (return-val))
               (assert.is_same vals (get-o-lo-go :foldlevel))
               (assert.is_same vals (get-o-lo-go :foldlevel)))))
         (describe* "with infix-flag"
