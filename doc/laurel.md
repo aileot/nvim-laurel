@@ -520,12 +520,43 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 ### Option
 
+- [`let!`](#let)
 - [`set!`](#set)
 - [`setglobal!`](#setglobal)
 - [`setlocal!`](#setlocal)
 - [`go!`](#go)
 - [`bo!`](#bo)
 - [`wo!`](#wo)
+
+#### `let!`
+
+Set value to the Vim `variable` ("g", "b", "w", "t", "v", "env"),
+or `option` ("o", "go", "bo", "wo", "opt", "opt_local", "opt_global")
+It can also append, prepend, or remove, value to the Vim `option`
+in the scopes "opt", "opt_local", "opt_global".
+
+It is a replacement of `vim.o`, `vim.bo`, ...,
+`vim.opt`, `vim.opt_local`, `vim.opt_global`,
+and `vim.g`, `vim.b`, and so on.
+
+```fennel
+(let! scope name ?val)
+(let! scope name ?flag ?val) ; only in the scope: "b", "w", or "t"
+(let! scope ?id name ?flag ?val) ; only in the scope: "opt", "opt_local", or "opt_global"
+```
+
+- `name`: (string) Option name. As long as the option name is bare-string,
+  option name is case-insensitive; you can improve readability a bit with
+  camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+  `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
+- `?id`: (integer) Location handle, or 0 for current location.
+  Only available in the scopes "b", "w", or "t".
+- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
+  prepend, or remove, value to the option.
+  Only available in the scopes "opt", "opt_local", or "opt_global".
+- `?val`: (boolean|number|string|table) New option value. If not provided, the
+  value is supposed to be `true` (experimental). It does not work with `?id`
+  argument.
 
 #### `set!`
 
