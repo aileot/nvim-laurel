@@ -979,8 +979,15 @@
 
 (lambda let! [scope ...]
   "(Experimental) Set editor variable in `scope`.
+  This macro is expanded to a list of `vim.api` in most cases; otherwise,
+  this macro is expanded to `(tset vim.opt name val)` instead.
+  The Exceptions:
+    - `scope` is set in either symbol or list.
+    - `?val` is set in either symbol or list.
   ```fennel
-  (let! scope ?id name val)
+  (let! scope name ?val)
+  (let! scope ?id name ?val) ; only in the scope: `b`, `w`, or `t`
+  (let! scope name ?flag ?val) ; only in the scope: `opt`, `opt_local`, or `opt_global`
   ```
   @param scope \"g\"
   |\"b\"
@@ -996,9 +1003,16 @@
   |\"opt_local\"
   |\"opt_global\"
   One of the scopes
-  @param ?id integer Optional location handle, or 0 for current location (buffer, window, etc.)
+  @param ?id integer Optional location handle, or 0 for current location:
+    buffer, window, or tabpage. Only available in the scopes `b`, `w`, or `t`.
   @param name string Variable name.
-  @param val any Variable value."
+  @param ?flag symbol Omittable flag. Set one of `+`, `^`, or `-` to append,
+    prepend, or remove, value to the option. Only available in the `scope`s:
+    `opt`, `opt_local`, `opt_global`.
+  @param ?val boolean|number|string|table New option value.
+    If not provided, the value is supposed to be `true` (experimental), and
+    not work with `?id`.
+    "
   (if (hidden-in-compile-time? scope)
       (if (= 1 (select "#" ...))
           `(tset vim ,scope ,... true)
