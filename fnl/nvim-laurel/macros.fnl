@@ -888,19 +888,19 @@
 (fn option/set-with-scope [scope ...]
   (assert-compile (table? scope) "Expected kv-table" scope)
   (let [supported-flags [`+ `- `^ `! `& `<]
-        [name ?flag val] ;
+        (name ?flag val) ;
         (match ...
           (name nil)
-          [name nil true]
+          (values name nil true)
           (where (name flag ?val)
                  (and (sym? flag) (contains? supported-flags flag)))
-          [name flag ?val]
+          (values name flag ?val)
           ;; TODO: Remove flag-extraction on v0.7.0.
           (name-?flag val nil)
           (if (str? name-?flag)
               (let [(name ?flag) (option/extract-flag name-?flag)]
-                [name ?flag val])
-              [name-?flag nil val]))]
+                (values name ?flag val))
+              (values name-?flag nil val)))]
     (option/modify scope name val ?flag)))
 
 ;; Export ///2
