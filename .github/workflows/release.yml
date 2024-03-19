@@ -18,7 +18,7 @@ jobs:
         with:
           vimdoc: laurel
           pandoc: doc/laurel.md
-          version: "Neovim >= 0.8.0"
+          version: "Neovim >= 0.9.5"
           demojify: true
           treesitter: true
           dedupsubheadings: false # Add heading to subheading anchor links to ensure that subheadings are unique

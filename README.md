@@ -35,7 +35,7 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 
 ## Requirements
 
-- Neovim 0.8.0+
+- Neovim 0.9.5+
 - A compiler: [Fennel][Fennel], [hotpot.nvim][hotpot.nvim], etc.
 
 ## Installation
