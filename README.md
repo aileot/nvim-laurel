@@ -240,6 +240,7 @@ See [laurel.md](./doc/laurel.md) for each macro usage in details.
 
 - [Option](./doc/laurel.md#Option)
 
+  - [`let!`](./doc/laurel.md#let)
   - [`set!`](./doc/laurel.md#set)
   - [`setglobal!`](./doc/laurel.md#setglobal)
   - [`setlocal!`](./doc/laurel.md#setlocal)
