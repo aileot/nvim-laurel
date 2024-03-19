@@ -203,11 +203,11 @@
           (it* "in sequence (except :wo)"
             (each [_ scope (ipairs [:opt :opt_local])]
               (let! scope :colorcolumn [:80 :81 :+1])
-              (assert.is_same [:80 :81 :+1] (get-lo :colorcolumn)))))
-        (it* "in kv-table (except :wo)"
-          (each [_ scope (ipairs [:opt :opt_local])]
-            (let! scope :listchars {:eol :a :tab :abc :space :a})
-            (assert.is_same {:eol :a :tab :abc :space :a} (get-lo :listchars)))))
+              (assert.is_same [:80 :81 :+1] (get-lo :colorcolumn))))
+          (it* "in kv-table (except :wo)"
+            (each [_ scope (ipairs [:opt :opt_local])]
+              (let! scope :listchars {:eol :a :tab :abc :space :a})
+              (assert.is_same {:eol :a :tab :abc :space :a} (get-lo :listchars))))))
       (describe* "in `:opt` scope"
         (it* "is case-insensitive at option name"
           (vim.cmd "set foldlevel=2")
