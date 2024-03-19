@@ -187,6 +187,9 @@
               (let! scope :path [:/foo :/bar :/baz])
               (assert.is_same [:/foo :/bar :/baz] (get-lo :path))))))
       (describe* "with scope in symbol"
+        (it* "cannot set any options when option name is capitalized and scope is set in symbol or list"
+          (each [_ scope (ipairs win-local-scope-list)]
+            (assert.has_error #(let! scope :foldLevel 2))))
         (describe* "can set vim win-local option"
           (it* "in boolean"
             (each [_ scope (ipairs win-local-scope-list)]
