@@ -30,13 +30,6 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
     - [`unmap!`](#unmap)
     - [`<Cmd>`](#cmd)
     - [`<C-u>`](#c-u)
-  - [Variable](#variable)
-    - [`g!`](#g)
-    - [`b!`](#b)
-    - [`w!`](#w)
-    - [`t!`](#t)
-    - [`v!`](#v)
-    - [`env!`](#env)
   - [Option](#option)
     - [`set!`](#set)
     - [`setglobal!`](#setglobal)
@@ -44,6 +37,13 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
     - [`go!`](#go)
     - [`bo!`](#bo)
     - [`wo!`](#wo)
+  - [Variable](#variable)
+    - [`g!`](#g)
+    - [`b!`](#b)
+    - [`w!`](#w)
+    - [`t!`](#t)
+    - [`v!`](#v)
+    - [`env!`](#env)
   - [Others](#others)
     - [`command!`](#command)
     - [`feedkeys!`](#feedkeys)
@@ -518,134 +518,6 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 - `text`: (string)
 
-### Variable
-
-- [`g!`](#g)
-- [`b!`](#b)
-- [`w!`](#w)
-- [`t!`](#t)
-- [`v!`](#v)
-- [`env!`](#env)
-
-#### `g!`
-
-Set global (`g:`) editor variable.
-
-```fennel
-(g! name val)
-```
-
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
-
-#### `b!`
-
-Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
-an integer to access variables for specific buffer.
-
-```fennel
-(b! ?id name val)
-```
-
-- `?id`: (integer) Buffer handle, or 0 for current buffer.
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
-
-```fennel
-(b! :foo :bar)
-(b! 8 :baz :qux)
-```
-
-is equivalent to
-
-```lua
-vim.api.nvim_buf_set_var(0, "foo", "bar")
-vim.api.nvim_buf_set_var(8, "foo", "bar")
--- Or with `vim.b`,
-vim.b.foo = "bar"
-vim.b[8].baz = "qux"
-```
-
-```vim
-let b:foo = 'bar'
-call setbufvar(8, 'baz', 'qux')
-```
-
-#### `w!`
-
-Set window-scoped (`w:`) variable for the current window. Can be indexed with
-an integer to access variables for specific window.
-
-```fennel
-(w! ?id name val)
-```
-
-- `?id`: (integer) Window handle, or 0 for current window.
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
-
-#### `t!`
-
-Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
-with an integer to access variables for specific tabpage.
-
-```fennel
-(t! ?id name val)
-```
-
-- `?id`: (integer) Tabpage handle, or 0 for current tabpage.
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
-
-#### `v!`
-
-Set `v:` variable if not readonly.
-
-```fennel
-(v! name val)
-```
-
-- `name`: (string) Variable name.
-- `val`: (any) Variable value.
-
-#### `env!`
-
-Set environment variable in the editor session.
-
-```fennel
-(env! name val)
-```
-
-- `name`: (string) Variable name. A bare-string can starts with `$` (ignored
-  internally), which helps `gf` jump to the path.
-- `val`: (any) Variable value.
-
-```fennel
-(env! :$NVIM_CACHE_HOME (vim.fn.stdpath :cache))
-(env! :$NVIM_CONFIG_HOME (vim.fn.stdpath :config))
-(env! :$NVIM_DATA_HOME (vim.fn.stdpath :data))
-(env! :$NVIM_STATE_HOME (vim.fn.stdpath :state))
-(env! :$PLUGIN_CACHE_HOME (vim.fs.normalize :$NVIM_CACHE_HOME/to/plugin/home))
-```
-
-is equivalent to
-
-```lua
-vim.env.NVIM_CACHE_HOME = vim.fn.stdpath "cache"
-vim.env.NVIM_CONFIG_HOME = vim.fn.stdpath "config"
-vim.env.NVIM_DATA_HOME = vim.fn.stdpath "data"
-vim.env.NVIM_STATE_HOME = vim.fn.stdpath "state"
-vim.env.PLUGIN_CACHE_HOME vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
-```
-
-```vim
-let $NVIM_CACHE_HOME = stdpath('cache')
-let $NVIM_CONFIG_HOME = stdpath('config')
-let $NVIM_DATA_HOME = stdpath('data')
-let $NVIM_STATE_HOME = stdpath('state')
-let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
-```
-
 ### Option
 
 - [`set!`](#set)
@@ -826,6 +698,134 @@ vim.wo[10].signcolumn = "no"
 ```vim
 call setwinvar(0, '&number', v:false)
 call setwinvar(10, '&signcolumn', 'no')
+```
+
+### Variable
+
+- [`g!`](#g)
+- [`b!`](#b)
+- [`w!`](#w)
+- [`t!`](#t)
+- [`v!`](#v)
+- [`env!`](#env)
+
+#### `g!`
+
+Set global (`g:`) editor variable.
+
+```fennel
+(g! name val)
+```
+
+- `name`: (string) Variable name.
+- `val`: (any) Variable value.
+
+#### `b!`
+
+Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
+an integer to access variables for specific buffer.
+
+```fennel
+(b! ?id name val)
+```
+
+- `?id`: (integer) Buffer handle, or 0 for current buffer.
+- `name`: (string) Variable name.
+- `val`: (any) Variable value.
+
+```fennel
+(b! :foo :bar)
+(b! 8 :baz :qux)
+```
+
+is equivalent to
+
+```lua
+vim.api.nvim_buf_set_var(0, "foo", "bar")
+vim.api.nvim_buf_set_var(8, "foo", "bar")
+-- Or with `vim.b`,
+vim.b.foo = "bar"
+vim.b[8].baz = "qux"
+```
+
+```vim
+let b:foo = 'bar'
+call setbufvar(8, 'baz', 'qux')
+```
+
+#### `w!`
+
+Set window-scoped (`w:`) variable for the current window. Can be indexed with
+an integer to access variables for specific window.
+
+```fennel
+(w! ?id name val)
+```
+
+- `?id`: (integer) Window handle, or 0 for current window.
+- `name`: (string) Variable name.
+- `val`: (any) Variable value.
+
+#### `t!`
+
+Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
+with an integer to access variables for specific tabpage.
+
+```fennel
+(t! ?id name val)
+```
+
+- `?id`: (integer) Tabpage handle, or 0 for current tabpage.
+- `name`: (string) Variable name.
+- `val`: (any) Variable value.
+
+#### `v!`
+
+Set `v:` variable if not readonly.
+
+```fennel
+(v! name val)
+```
+
+- `name`: (string) Variable name.
+- `val`: (any) Variable value.
+
+#### `env!`
+
+Set environment variable in the editor session.
+
+```fennel
+(env! name val)
+```
+
+- `name`: (string) Variable name. A bare-string can starts with `$` (ignored
+  internally), which helps `gf` jump to the path.
+- `val`: (any) Variable value.
+
+```fennel
+(env! :$NVIM_CACHE_HOME (vim.fn.stdpath :cache))
+(env! :$NVIM_CONFIG_HOME (vim.fn.stdpath :config))
+(env! :$NVIM_DATA_HOME (vim.fn.stdpath :data))
+(env! :$NVIM_STATE_HOME (vim.fn.stdpath :state))
+(env! :$PLUGIN_CACHE_HOME (vim.fs.normalize :$NVIM_CACHE_HOME/to/plugin/home))
+```
+
+is equivalent to
+
+```lua
+vim.env.NVIM_CACHE_HOME = vim.fn.stdpath "cache"
+vim.env.NVIM_CONFIG_HOME = vim.fn.stdpath "config"
+vim.env.NVIM_DATA_HOME = vim.fn.stdpath "data"
+vim.env.NVIM_STATE_HOME = vim.fn.stdpath "state"
+vim.env.PLUGIN_CACHE_HOME vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
+```
+
+```vim
+let $NVIM_CACHE_HOME = stdpath('cache')
+let $NVIM_CONFIG_HOME = stdpath('config')
+let $NVIM_DATA_HOME = stdpath('data')
+let $NVIM_STATE_HOME = stdpath('state')
+let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
 ```
 
 ### Others
