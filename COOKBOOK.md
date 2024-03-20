@@ -237,7 +237,14 @@ With nvim-laurel, it could be implemented in some approaches:
 
 ## Anti-Patterns
 
+<!-- panvimdoc-ignore-start -->
+
 ### [`&default-opts`](#default-opts)
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+                                          *laurel-anti-patterns-&default-opts*
+-->
 
 #### Define macro wrappers
 
@@ -297,7 +304,14 @@ or
      (buf-au! [:BufWritePre] (do :other))))
 ```
 
+<!-- panvimdoc-ignore-start -->
+
 ### [`autocmd!`](#autocmd)
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+                                               *laurel-anti-patterns-autocmd!*
+-->
 
 #### pcall in the end of callback
 
