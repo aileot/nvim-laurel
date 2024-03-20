@@ -1257,41 +1257,54 @@
 
 ;; Export ///1
 
-{: map!
- : unmap!
- : <Cmd>
- : <C-u>
- : augroup!
- : autocmd!
- :au! autocmd!
- : set!
- : setlocal!
- : setglobal!
- :go! setglobal!
- : bo!
- : wo!
- : g!
- : b!
- : w!
- : t!
- : v!
- : env!
- : command!
- : feedkeys!
- : highlight!
- :hi! highlight!
- : let!
- : set+
- : set^
- : set-
- : setlocal+
- : setlocal^
- : setlocal-
- : setglobal+
- : setglobal^
- : setglobal-
- :go+ setglobal+
- :go^ setglobal^
- :go- setglobal-}
+;; Note: Assign to `M` at a place is useful to copy and paste.
+(local M {: map!
+          : unmap!
+          : <Cmd>
+          : <C-u>
+          : augroup!
+          : autocmd!
+          :au! autocmd!
+          : set!
+          : setlocal!
+          : setglobal!
+          :go! setglobal!
+          : bo!
+          : wo!
+          : g!
+          : b!
+          : w!
+          : t!
+          : v!
+          : env!
+          : command!
+          : feedkeys!
+          : highlight!
+          :hi! highlight!
+          : let!
+          : set+
+          : set^
+          : set-
+          : setlocal+
+          : setlocal^
+          : setlocal-
+          : setglobal+
+          : setglobal^
+          : setglobal-
+          :go+ setglobal+
+          :go^ setglobal^
+          :go- setglobal-})
+
+(fn __index [self key]
+  (fn [...]
+    ;; TODO: Recursive __index to imitate vim.bo.foobar, vim.augroup.FileType,
+    ;; etc.
+    ;; TODO: Add spec tests.
+    (let [new-key (.. key "!")
+          laurel (. M new-key)]
+      (tset M new-key laurel)
+      (laurel ...))))
+
+(setmetatable M {: __index})
 
 ;; vim:fdm=marker:foldmarker=///,""""
