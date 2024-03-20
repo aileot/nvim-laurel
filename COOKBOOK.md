@@ -33,7 +33,6 @@ The codes in examples below are supposed to import and export all the
 nvim-laurel macros properly.
 
 <details>
-
 <summary>
 An example to import and export nvim-laurel macros
 </summary>
@@ -101,7 +100,6 @@ favor of `import-macros` in Fennel v0.4.0.)
 ```
 
 </details>
-<br>
 
 <!-- panvimdoc-ignore-start -->
 
