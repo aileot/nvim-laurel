@@ -15,8 +15,8 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
       runtime-fnl-roots (vim.api.nvim_get_runtime_file :fnl true)
       pat-project-root "."
       _ (table.insert runtime-fnl-roots pat-project-root)
-      ;; Note: Share the suffix patterns with fennel-path and macro-path since
-      ;; I don't need the pattern `?/init-macros.fnl` for macros so far.
+      ;; Note: It shares the suffix patterns with fennel-path and macro-path.
+      ;; Another step is required if you need `?/init-macros.fnl`.
       suffix-patterns [:/?.fnl :/?/init.fnl]
       default-patterns (table.concat [:?.fnl
                                       :?/init.fnl
