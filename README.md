@@ -95,6 +95,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
        macros = {
          env = "_COMPILER",
          allowedGlobals = false,
+         -- Comment out below to use `os`, `vim`, etc. at compile time,
+         -- but UNRECOMMENDED with nvim-laurel.
+         -- compilerEnv = _G,
        },
      },
    })
