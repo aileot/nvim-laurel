@@ -2,21 +2,23 @@
 
 - [Recipes](#recipes)
   - [Create wrapper macros](#create-wrapper-macros)
-    - [augroup+](#augroup)
+    - [`augroup+`](#augroup)
       - [Create augroup macro without clearing itself by default](#create-augroup-macro-without-clearing-itself-by-default)
-    - [set+, set-, set^, ...](#set-set--set-)
+    - [`set+`, `set-`, `set^`, ...](#set-set--set-)
       - [Create dedicated macros to append, remove, prepend Vim options](#create-dedicated-macros-to-append-remove-prepend-vim-options)
-  - [Create autocmds on an monolithic augroup all over my vimrc](#create-autocmds-on-an-monolithic-augroup-all-over-my-vimrc)
-    - [The simplest approach](#the-simplest-approach)
-    - [Another approach with `augroup!` wrapper](#another-approach-with-augroup-wrapper)
-    - [(Optional) An idea to define `autocmd`s with `group` in Integer id](#optional-an-idea-to-define-autocmds-with-group-in-integer-id)
+  - [Back to the good and old Vim script era](#back-to-the-good-and-old-vim-script-era)
+    - [A monolithic augroup](#a-monolithic-augroup)
+      - [Create autocmds in a monolithic augroup all over my vimrc](#create-autocmds-in-a-monolithic-augroup-all-over-my-vimrc)
+        - [The simplest approach](#the-simplest-approach)
+        - [Another approach with `augroup!` wrapper](#another-approach-with-augroup-wrapper)
+        - [(Optional) An idea to define `autocmd`s with `group` in Integer id](#optional-an-idea-to-define-autocmds-with-group-in-integer-id)
 - [Anti-Patterns](#anti-patterns)
   - [`&default-opts`](#default-opts)
     - [Define macro wrappers](#define-macro-wrappers)
       - [Anti-Pattern](#anti-pattern)
       - [Pattern](#pattern)
   - [`autocmd!`](#autocmd)
-    - [pcall in the end of callback](#pcall-in-the-end-of-callback)
+    - [`pcall` in the end of callback](#pcall-in-the-end-of-callback)
       - [Anti-Pattern](#anti-pattern-1)
       - [Pattern](#pattern-1)
     - [Nested anonymous function in callback](#nested-anonymous-function-in-callback)
@@ -105,11 +107,11 @@ Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/ma
 
 <!-- panvimdoc-ignore-start -->
 
-#### augroup+
+#### `augroup+`
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
-                                                          *laurel-augroup+*
+augroup+                                                     *laurel-augroup+*
 -->
 
 ##### Create augroup macro without clearing itself by default
@@ -123,25 +125,25 @@ Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/ma
 
 <!-- panvimdoc-ignore-start -->
 
-#### set+, set-, set^, ...
-
-##### Create dedicated macros to append, remove, prepend Vim options
+#### `set+`, `set-`, `set^`, ...
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
-                                                          *laurel-set+*
-                                                          *laurel-set-*
-                                                          *laurel-set^*
-                                                          *laurel-setlocal+*
-                                                          *laurel-setlocal-*
-                                                          *laurel-setlocal^*
-                                                          *laurel-setglobal+*
-                                                          *laurel-setglobal-*
-                                                          *laurel-setglobal^*
-                                                          *laurel-go+*
-                                                          *laurel-go-*
-                                                          *laurel-go^*
+set+                                                             *laurel-set+*
+set-                                                             *laurel-set-*
+set^                                                             *laurel-set^*
+setlocal+                                                   *laurel-setlocal+*
+setlocal-                                                   *laurel-setlocal-*
+setlocal^                                                   *laurel-setlocal^*
+setglobal+                                                 *laurel-setglobal+*
+setglobal-                                                 *laurel-setglobal-*
+setglobal^                                                 *laurel-setglobal^*
+go+                                                               *laurel-go+*
+go-                                                               *laurel-go-*
+go^                                                               *laurel-go^*
 -->
+
+##### Create dedicated macros to append, remove, prepend Vim options
 
 ```fennel
 (lambda set+ [name val]
@@ -154,11 +156,22 @@ Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/ma
 
 Replace "set", as you need, with "setlocal", "setglobal", etc.
 
-### Create autocmds on an monolithic augroup all over my vimrc
+### Back to the good and old Vim script era
+
+<!-- panvimdoc-ignore-start -->
+
+#### A monolithic augroup
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+monolithic-augroup                                 *laurel-monolithic-augroup*
+-->
+
+##### Create autocmds in a monolithic augroup all over my vimrc
 
 <details>
 <summary>
-<i>Traditionally, a lot of spartan Vimmers have created a monolithtic augroup "MyVimrc" in Vim script...</i>
+<i>Traditionally, spartan Vimmers have created a monolithtic augroup in Vim script to reduce startup time...</i>
 </summary>
 
 ```vim
@@ -181,7 +194,7 @@ augroup END
 
 With nvim-laurel, it could be implemented in some approaches:
 
-#### The simplest approach
+###### The simplest approach
 
 1. Define an `augroup` at first in a runtime file.
 
@@ -198,7 +211,7 @@ With nvim-laurel, it could be implemented in some approaches:
   (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim])))
 ```
 
-#### Another approach with `augroup!` wrapper
+###### Another approach with `augroup!` wrapper
 
 1. In a macro definition file, define and export a wrapper macro not to clear
    `augroup` by default.
@@ -223,7 +236,7 @@ With nvim-laurel, it could be implemented in some approaches:
   (au! :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
 ```
 
-#### (Optional) An idea to define `autocmd`s with `group` in Integer id
+###### (Optional) An idea to define `autocmd`s with `group` in Integer id
 
 1. Define an `augroup` in runtime file, but assign its `id` to an global
    variable either `_G` or `vim.g`.
@@ -319,7 +332,7 @@ or
                                                *laurel-anti-patterns-autocmd!*
 -->
 
-#### pcall in the end of callback
+#### `pcall` in the end of callback
 
 It could be an unexpected behavior that `autocmd` whose callback ends with
 `pcall` is executed only once because of the combination:
