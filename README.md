@@ -33,6 +33,19 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
   likely to be `format`ted into the same line where nvim-laurel macro starts
   from.
 
+## Documentations
+
+- The [Reference](./REFERENCE.md) lists out the nvim-laurel interfaces.
+  Note that the interfaces are not limited to Fennel macros.
+- The [Cookbook](./COOKBOOK.md) demonstrates practical codes on the
+  nvim-laurel interfaces.
+- The [Appendix](./APPENDIX.md) shows extra knowledge not limited to
+  nvim-laurel, but useful to write nvim config files in Fennel:
+  LSP, Treesitter, hotpot.nvim, etc. Happy Coding!
+- The [Changelog](./CHANGELOG.md), but the hints to update the features and
+  usages deprecated, or removed, from nvim-laurel are written in the Cookbook
+  instead.
+
 ## Requirements
 
 - Neovim 0.9.5+
