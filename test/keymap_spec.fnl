@@ -1,5 +1,10 @@
-(import-macros {: setup* : teardown* : before-each : describe* : it*}
-               :test._busted_macros)
+(import-macros {: setup*
+                : teardown*
+                : before-each
+                : after-each
+                : describe*
+                : it*} :test._busted_macros)
+
 (import-macros {: nmap!
                 : omni-map!
                 : remap!
@@ -14,6 +19,9 @@
 
 (macro macro-command []
   :macro-command)
+
+(macro buf-map! [...]
+  `(map! &default-opts {:buffer 0 :nowait true} ,...))
 
 (local default-rhs :default-rhs)
 (local default-callback #:default-callback)
@@ -225,6 +233,23 @@
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_nil replace_keycodes))))
     (describe* "with `&default-opts`,"
+      (describe* "local macro"
+        (describe* :buf-map!
+          (before-each (fn []
+                         (refresh-buffer)))
+          (after-each (fn []
+                        (refresh-buffer)))
+          (it* "creates current buffer-local mapping by default"
+            (let [mode :n
+                  bufnr (vim.api.nvim_get_current_buf)]
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_nil (buf-get-rhs 0 mode :lhs))
+              (buf-map! mode :lhs :rhs)
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_same :rhs (buf-get-rhs 0 mode :lhs))
+              (refresh-buffer)
+              (assert.is_nil (buf-get-rhs 0 mode :lhs))
+              (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs))))))
       (describe* "imported macro"
         (describe* :remap!
           (it* "creates recursive mapping by default"
