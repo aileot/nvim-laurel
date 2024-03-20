@@ -864,6 +864,11 @@
       (match (option/->?vim-value ?val)
         vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
         _ `(tset ,interface ,name ,?val))
+      "?"
+      (if (= interface `vim.bo) `(vim.api.nvim_buf_get_option ,name)
+          (= interface `vim.wo) `(vim.api.nvim_win_get_option ,name)
+          (= interface `vim.go) `(vim.api.nvim_get_option ,name)
+          `(: ,opt-obj :get))
       "+"
       `(: ,opt-obj :append ,?val)
       "^"
@@ -887,7 +892,7 @@
 
 (fn option/set-with-scope [scope ...]
   (assert-compile (table? scope) "Expected kv-table" scope)
-  (let [supported-flags [`+ `- `^ `! `& `<]]
+  (let [supported-flags [`+ `- `^ `? `! `& `<]]
     (case (case ...
             (name nil)
             (values name nil true)
