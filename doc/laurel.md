@@ -569,8 +569,8 @@ set `false` or `(not vim.go.foo)` respectively.
 
 ```fennel
 (let! :o :number)
-(let! :bo :formatOptions [:1 :2 :c :B])
 (let! :opt_global :completeOpt [:menu :menuone :noselect])
+(let! :bo :formatOptions [:1 :2 :c :B])
 (let! :wo :listChars {:space :_ :tab: ">~"})
 
 (let! :opt :colorColumn + :+1)
@@ -590,8 +590,8 @@ is equivalent to
 
 ```vim
 set number
-call setbufvar(0, '&formatoptions', '12cB')
 setglobal completeopt=menu,menuone,noselect
+call setbufvar(0, '&formatoptions', '12cB')
 call setwinvar(0, '&listchars', 'space:_,tab:>~')
 
 set colorcolumn+=+1
@@ -605,10 +605,10 @@ execute 'set no'. opt
 
 ```lua
 vim.api.nvim_set_option_value("number", true, {})
-vim.api.nvim_set_option_value("formatoptions", "12cB" { buf = 0 })
 vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect", {
   scope = "global",
 })
+vim.api.nvim_set_option_value("formatoptions", "12cB" { buf = 0 })
 vim.api.nvim_set_option_value("listchars", "space:_,tab:>~", { win = 0 })
 
 local scope = "bo"
@@ -622,8 +622,8 @@ vim.opt.signcolumn = val
 
 -- Or just with Vim-Lua bridge wrapper,
 vim.o.number = true
-vim.bo.formatoptions = "12cB"
 vim.opt_global.completeopt = { "menu", "menuone", "noselect" }
+vim.bo.formatoptions = "12cB"
 vim.wo.listchars = {
   space = "_",
   tab = ">~",
