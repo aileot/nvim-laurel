@@ -547,16 +547,17 @@ set `false` or `(not vim.go.foo)` respectively.
 
 ```fennel
 (let! scope name ?val)
-(let! scope name ?flag ?val) ; only in the scope: "b", "w", or "t"
-(let! scope ?id name ?flag ?val) ; only in the scope: "opt", "opt_local", or "opt_global"
+(let! scope name ?flag ?val) ; only in the scope: "opt", "opt_local", or "opt_global"
+(let! scope ?id name ?flag ?val) ; only in the scope: "b", "w", or "t"
 ```
 
 - `scope`: ("g"|"b"|"w"|"t"|"v"|"env"|"o"|"go"|"bo"|"wo"|"opt"|"opt_local"|"opt_global")
   One of the scopes.
 - `name`: (string) Option name. As long as the option name is bare-string,
-  option name is case-insensitive; you can improve readability a bit with
+  option name is _case-insensitive;_ you can improve readability a bit with
   camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
-  `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
+  `(setlocal! :keywordPrg ":help")` for fennel still makes sense. Type `K`
+  on an option name to open the vim helpfile at the tag.
 - `?id`: (integer) Location handle, or 0 for current location.
   Only available in the scopes "b", "w", or "t".
 - `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
