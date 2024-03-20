@@ -152,7 +152,7 @@ Replace "set", as you need, with "setlocal", "setglobal", etc.
 
 <details>
 <summary>
-_Traditionally, a lot of spartan Vimmers have created a monolithtic augroup "MyVimrc" in Vim script..._
+<i>Traditionally, a lot of spartan Vimmers have created a monolithtic augroup "MyVimrc" in Vim script...</i>
 </summary>
 
 ```vim
