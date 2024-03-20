@@ -31,6 +31,7 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
     - [`<Cmd>`](#cmd)
     - [`<C-u>`](#c-u)
   - [Option](#option)
+    - [`let!`](#let)
     - [`set!`](#set)
     - [`setglobal!`](#setglobal)
     - [`setlocal!`](#setlocal)
