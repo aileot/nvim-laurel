@@ -542,12 +542,17 @@ It is a replacement of `vim.o`, `vim.bo`, ...,
 `vim.opt`, `vim.opt_local`, `vim.opt_global`,
 and `vim.g`, `vim.b`, and so on.
 
+Note: There is no plan to support option prefix either `no` or `inv`; instead,
+set `false` or `(not vim.go.foo)` respectively.
+
 ```fennel
 (let! scope name ?val)
 (let! scope name ?flag ?val) ; only in the scope: "b", "w", or "t"
 (let! scope ?id name ?flag ?val) ; only in the scope: "opt", "opt_local", or "opt_global"
 ```
 
+- `scope`: ("g"|"b"|"w"|"t"|"v"|"env"|"o"|"go"|"bo"|"wo"|"opt"|"opt_local"|"opt_global")
+  One of the scopes.
 - `name`: (string) Option name. As long as the option name is bare-string,
   option name is case-insensitive; you can improve readability a bit with
   camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
@@ -562,28 +567,31 @@ and `vim.g`, `vim.b`, and so on.
   argument.
 
 ```fennel
-(set! :number true)
-(set! :formatOptions [:1 :2 :c :B])
-(set! :completeOpt [:menu :menuone :noselect])
-(set! :listChars {:space :_ :tab: ">~"})
+(let! :o :number)
+(let! :bo :formatOptions [:1 :2 :c :B])
+(let! :opt_global :completeOpt [:menu :menuone :noselect])
+(let! :wo :listChars {:space :_ :tab: ">~"})
 
-(set! :colorColumn + :+1)
-(set! :rtp ^ [:/path/to/another/dir])
+(let! :opt :colorColumn + :+1)
+(let! :opt :rtp ^ [:/path/to/another/dir])
+
+(local scope :bo)
+(let! scope :filetype :fennel)
+
+(local opt :wrap)
+(let! :opt opt false)
 
 (local val :yes)
-(set! :signColumn val)
-(local opt :wrap)
-(set! opt false)
+(let! :opt :signColumn val)
 ```
 
 is equivalent to
 
 ```vim
 set number
-set signcolumn=yes
-set formatoptions=12cB
-set completeopt=menu,menuone,noselect
-set listchars=space:_,tab:>~
+call setbufvar(0, '&formatoptions', '12cB')
+setglobal completeopt=menu,menuone,noselect
+call setwinvar(0, '&listchars', 'space:_,tab:>~')
 
 set colorcolumn+=+1
 set rtp^=/path/to/another/dir
@@ -595,32 +603,43 @@ execute 'set no'. opt
 ```
 
 ```lua
-vim.api.nvim_set_option_value("number", true)
-vim.api.nvim_set_option_value("signcolumn", "yes")
-vim.api.nvim_set_option_value("formatoptions", "12cB")
-vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect")
-vim.api.nvim_set_option_value("listchars", "space:_,tab:>~")
--- Or either with `vim.go` or with `vim.opt_global`,
-vim.go.number = true
-vim.go.signcolumn = "yes"
-vim.go.formatoptions = "12cB"
-vim.go.completeopt = {"menu", "menuone", "noselect"}
-vim.go.listchars = {
+vim.api.nvim_set_option_value("number", true, {})
+vim.api.nvim_set_option_value("formatoptions", "12cB" { buf = 0 })
+vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect", {
+  scope = "global",
+})
+vim.api.nvim_set_option_value("listchars", "space:_,tab:>~", { win = 0 })
+
+local scope = "bo"
+vim[scope].filetype = "fennel"
+
+local opt = "wrap"
+vim.api.nvim_set_option_value(opt, false, {})
+
+local val = "yes"
+vim.opt.signcolumn = val
+
+-- Or just with Vim-Lua bridge wrapper,
+vim.o.number = true
+vim.bo.formatoptions = "12cB"
+vim.opt_global.completeopt = { "menu", "menuone", "noselect" }
+vim.wo.listchars = {
   space = "_",
   tab = ">~",
 }
 
-vim.opt_global.colorcolumn:append("+1")
-vim.opt_global.rtp:prepend("/path/to/another/dir")
+vim.opt.colorcolumn:append("+1")
+vim.opt.rtp:prepend("/path/to/another/dir")
+
+local scope = "bo"
+vim[scope].filetype = "fennel"
+
+local opt = "wrap"
+vim.opt[opt] = false
 
 local val = "yes"
 vim.opt.signcolumn = val
-local opt = "wrap"
-vim.opt[opt] = false
 ```
-
-Note: There is no plan to support option prefix either `no` or `inv`; instead,
-set `false` or `(not vim.go.foo)` respectively.
 
 #### `set!`
 
