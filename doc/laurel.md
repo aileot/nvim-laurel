@@ -531,10 +531,12 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 #### `let!`
 
-Set value to the Vim `variable` ("g", "b", "w", "t", "v", "env"),
-or `option` ("o", "go", "bo", "wo", "opt", "opt_local", "opt_global")
-It can also append, prepend, or remove, value to the Vim `option`
-in the scopes "opt", "opt_local", "opt_global".
+Set value to the Vim `variable`
+(g, b, w, t, v, env),
+or `option`
+(o, go, bo, wo, opt, opt_local, opt_global).
+It can also append, prepend, or remove, value the Vim `option`
+in the scopes: opt, opt_local, opt_global.
 
 It is a replacement of `vim.o`, `vim.bo`, ...,
 `vim.opt`, `vim.opt_local`, `vim.opt_global`,
