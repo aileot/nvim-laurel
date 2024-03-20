@@ -393,6 +393,9 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
     `expr` is set in `extra-opts`.
   - `<buffer>`: Map `lhs` in current buffer by itself.
   - `buffer`: Map `lhs` to a buffer of the next value.
+  - `wait`: Disable `nowait` _in extra-opts;_ will NOT disable `nowait`
+    _in api-opts_. Useful in wrapper macro which set `nowait` with
+    `&default-opts`.
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
   function or Key sequence. A callback is interpreted as Lua function by
