@@ -164,7 +164,11 @@
             (assert.is_same 1 nowait))
           (map! :n [:wait :nowait] :lhs :rhs)
           (let [{: nowait} (get-mapargs :n :lhs)]
-            (assert.is_same 0 nowait)))))
+            (assert.is_same 0 nowait)))
+        (it* "will NOT disable `nowait` _in api-opts_"
+          (map! :n [:wait] :lhs :rhs {:nowait true})
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 1 nowait)))))
     (describe* :<Cmd>pattern
       (it* "symbol will be set to 'command'"
         (map! :n :lhs <default>-command)
