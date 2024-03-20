@@ -722,7 +722,8 @@
 ;; Variable ///1
 
 (lambda g! [name val]
-  "Set global (`g:`) editor variable.
+  "(Subject to be deprecated in favor of `let!`)
+  Set global (`g:`) editor variable.
   ```fennel
   (g! name val)
   ```
@@ -731,7 +732,8 @@
   `(vim.api.nvim_set_var ,name ,val))
 
 (lambda b! [id|name name|val ?val]
-  "Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
+  "(Subject to be deprecated in favor of `let!`)
+  Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
   with an integer to access variables for specific buffer.
   ```fennel
   (b! ?id name val)
@@ -744,7 +746,8 @@
       `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
 
 (lambda w! [id|name name|val ?val]
-  "Set window-scoped (`w:`) variable for the current window. Can be indexed
+  "(Subject to be deprecated in favor of `let!`)
+  Set window-scoped (`w:`) variable for the current window. Can be indexed
   with an integer to access variables for specific window.
   ```fennel
   (w! ?id name val)
@@ -757,7 +760,8 @@
       `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
 
 (lambda t! [id|name name|val ?val]
-  "Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
+  "(Subject to be deprecated in favor of `let!`)
+  Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
   with an integer to access variables for specific tabpage.
   ```fennel
   (t! ?id name val)
@@ -770,7 +774,8 @@
       `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
 
 (lambda v! [name val]
-  "Set `v:` variable if not readonly.
+  "(Subject to be deprecated in favor of `let!`)
+  Set `v:` variable if not readonly.
   ```fennel
   (v! name val)
   ```
@@ -779,7 +784,8 @@
   `(vim.api.nvim_set_vvar ,name ,val))
 
 (lambda env! [name val]
-  "Set environment variable in the editor session.
+  "(Subject to be deprecated in favor of `let!`)
+  Set environment variable in the editor session.
   ```fennel
   (env! name val)
   ```
@@ -881,26 +887,26 @@
 
 (fn option/set-with-scope [scope ...]
   (assert-compile (table? scope) "Expected kv-table" scope)
-  (let [supported-flags [`+ `- `^ `! `& `<]
-        [name ?flag val] ;
-        (match ...
-          (name nil)
-          [name nil true]
-          (where (name flag ?val)
-                 (and (sym? flag) (contains? supported-flags flag)))
-          [name flag ?val]
-          ;; TODO: Remove flag-extraction on v0.7.0.
-          (name-?flag val nil)
-          (if (str? name-?flag)
-              (let [(name ?flag) (option/extract-flag name-?flag)]
-                [name ?flag val])
-              [name-?flag nil val]))]
-    (option/modify scope name val ?flag)))
+  (let [supported-flags [`+ `- `^ `! `& `<]]
+    (case (case ...
+            (name nil)
+            (values name nil true)
+            (where (name flag ?val)
+                   (and (sym? flag) (contains? supported-flags flag)))
+            (values name flag ?val)
+            ;; TODO: Remove flag-extraction on v0.7.0.
+            (name-?flag val nil)
+            (if (str? name-?flag)
+                (let [(name ?flag) (option/extract-flag name-?flag)]
+                  (values name ?flag val))
+                (values name-?flag nil val)))
+      (name ?flag val) (option/modify scope name val ?flag))))
 
 ;; Export ///2
 
 (lambda set! [...]
-  "Set value to the option.
+  "(Subject to be deprecated in favor of `let!`)
+  Set value to the option.
   Almost equivalent to `:set` in Vim script.
   ```fennel
   (set! name ?flag ?val)
@@ -926,7 +932,8 @@
   (option/set-with-scope {} ...))
 
 (lambda setlocal! [...]
-  "Set local value to the option.
+  "(Subject to be deprecated in favor of `let!`)
+  Set local value to the option.
   Almost equivalent to `:setlocal` in Vim script.
   ```fennel
   (setlocal! name-?flag ?val)
@@ -935,7 +942,8 @@
   (option/set-with-scope {:scope :local} ...))
 
 (lambda setglobal! [...]
-  "Set global value to the option.
+  "(Subject to be deprecated in favor of `let!`)
+  Set global value to the option.
   Almost equivalent to `:setglobal` in Vim script.
   ```fennel
   (setglobal! name-?flag ?val)
@@ -944,7 +952,8 @@
   (option/set-with-scope {:scope :global} ...))
 
 (lambda bo! [name|?id val|name ...]
-  "Set a buffer option value.
+  "(Subject to be deprecated in favor of `let!`)
+  Set a buffer option value.
   ```fennel
   (bo! ?id name value)
   ```
@@ -952,12 +961,12 @@
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])
-        ?vim-val (option/->?vim-value val)]
-    (option/modify {:buf id} name (or ?vim-val val))))
+                          [name|?id val|name ...])]
+    (option/modify {:buf id} name val)))
 
 (lambda wo! [name|?id val|name ...]
-  "Set a window option value.
+  "(Subject to be deprecated in favor of `let!`)
+  Set a window option value.
   ```fennel
   (wo! ?id name value)
   ```
@@ -965,9 +974,86 @@
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])
-        ?vim-val (option/->?vim-value val)]
-    (option/modify {:win id} name (or ?vim-val val))))
+                          [name|?id val|name ...])]
+    (option/modify {:win id} name val)))
+
+(lambda let! [scope ...]
+  "(Experimental) Set editor variable in `scope`.
+  This macro is expanded to a list of `vim.api` in most cases; otherwise,
+  this macro is expanded to `(tset vim.opt name val)` instead.
+  The Exceptions:
+    - `scope` is set in either symbol or list.
+    - `?val` is set in either symbol or list.
+  ```fennel
+  (let! scope name ?val)
+  (let! scope name ?flag ?val) ; only in the scope: `opt`, `opt_local`, or `opt_global`
+  (let! scope ?id name ?val) ; only in the scope: `b`, `w`, or `t`
+  ```
+  @param scope \"g\"
+  |\"b\"
+  |\"w\"
+  |\"t\"
+  |\"v\"
+  |\"env\"
+  |\"o\"
+  |\"go\"
+  |\"bo\"
+  |\"wo\"
+  |\"opt\"
+  |\"opt_local\"
+  |\"opt_global\"
+  One of the scopes
+  @param ?id integer Optional location handle, or 0 for current location:
+    buffer, window, or tabpage. Only available in the scopes `b`, `w`, or `t`.
+  @param name string Variable name.
+  @param ?flag symbol Omittable flag. Set one of `+`, `^`, or `-` to append,
+    prepend, or remove, value to the option. Only available in the `scope`s:
+    `opt`, `opt_local`, `opt_global`.
+  @param ?val boolean|number|string|table New option value.
+    If not provided, the value is supposed to be `true` (experimental), and
+    not work with `?id`.
+    "
+  (if (hidden-in-compile-time? scope)
+      (if (= 1 (select "#" ...))
+          `(tset vim ,scope ,... true)
+          `(tset vim ,scope ,...))
+      (case (case scope
+              :g (values 2 `vim.api.nvim_set_var)
+              :b (values 3 `vim.api.nvim_buf_set_var)
+              :w (values 3 `vim.api.nvim_win_set_var)
+              :t (values 3 `vim.api.nvim_tabpage_set_var)
+              :v (values 2 `vim.api.nvim_set_vvar)
+              :env (values 2 `vim.fn.setenv))
+        (max-args setter) (let [(?id name val) (case (select "#" ...)
+                                                 3 ...
+                                                 2 (case max-args
+                                                     2 (values nil ...)
+                                                     3 (values 0 ...))
+                                                 1 (case max-args
+                                                     2 (values nil ... true)
+                                                     3 (values 0 ... true)))]
+                            (case max-args
+                              2 `(,setter ,name ,val)
+                              3 `(,setter ,?id ,name ,val)))
+        _ (case (values scope ...)
+            ;; Note: In the `case` body above, the scope for vim.opt,
+            ;; vim.opt_local, and vim.opt_global max-args would be 2 or
+            ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
+            ;;   order to set option scope later, temporarily set `nil` here.
+            (where (or :o :opt))
+            (option/set-with-scope {} ...)
+            :opt_local
+            (option/set-with-scope {:scope :local} ...)
+            (where (or :go :opt_global))
+            (option/set-with-scope {:scope :global} ...)
+            (:bo name val nil)
+            (option/modify {:buf 0} name val)
+            (:wo name val nil)
+            (option/modify {:win 0} name val)
+            (:bo id name val)
+            (option/modify {:buf id} name val)
+            (:wo id name val)
+            (option/modify {:win id} name val)))))
 
 ;; Command ///1
 
@@ -1191,6 +1277,7 @@
  : feedkeys!
  : highlight!
  :hi! highlight!
+ : let!
  : set+
  : set^
  : set-

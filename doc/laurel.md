@@ -30,6 +30,14 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
     - [`unmap!`](#unmap)
     - [`<Cmd>`](#cmd)
     - [`<C-u>`](#c-u)
+  - [Option](#option)
+    - [`let!`](#let)
+    - [`set!`](#set)
+    - [`setglobal!`](#setglobal)
+    - [`setlocal!`](#setlocal)
+    - [`go!`](#go)
+    - [`bo!`](#bo)
+    - [`wo!`](#wo)
   - [Variable](#variable)
     - [`g!`](#g)
     - [`b!`](#b)
@@ -37,13 +45,6 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
     - [`t!`](#t)
     - [`v!`](#v)
     - [`env!`](#env)
-  - [Option](#option)
-    - [`set!`](#set)
-    - [`setglobal!`](#setglobal)
-    - [`setlocal!`](#setlocal)
-    - [`go!`](#go)
-    - [`bo!`](#bo)
-    - [`wo!`](#wo)
   - [Others](#others)
     - [`command!`](#command)
     - [`feedkeys!`](#feedkeys)
@@ -518,6 +519,247 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 - `text`: (string)
 
+### Option
+
+- [`let!`](#let)
+- [`set!`](#set)
+- [`setglobal!`](#setglobal)
+- [`setlocal!`](#setlocal)
+- [`go!`](#go)
+- [`bo!`](#bo)
+- [`wo!`](#wo)
+
+#### `let!`
+
+Set value to the Vim `variable`
+(g, b, w, t, v, env),
+or `option`
+(o, go, bo, wo, opt, opt_local, opt_global).
+It can also append, prepend, or remove, value the Vim `option`
+in the scopes: opt, opt_local, opt_global.
+
+This is an optimized replacement of `vim.o`, `vim.bo`, ...,
+`vim.opt`, `vim.opt_local`, `vim.opt_global`,
+and `vim.g`, `vim.b`, and so on.
+
+Note: There is no plan to support option prefix either `no` or `inv`; instead,
+set `false` or `(not vim.go.foo)` respectively.
+
+```fennel
+(let! scope name ?val)
+(let! scope name ?flag ?val) ; only in the scope: "opt", "opt_local", or "opt_global"
+(let! scope ?id name ?flag ?val) ; only in the scope: "b", "w", or "t"
+```
+
+- `scope`: ("g"|"b"|"w"|"t"|"v"|"env"|"o"|"go"|"bo"|"wo"|"opt"|"opt_local"|"opt_global")
+  One of the scopes.
+- `?id`: (integer) Location handle, or 0 for current location.
+  Only available in the scopes "b", "w", or "t".
+- `name`: (string) Option name. As long as the option name is bare-string,
+  option name is _case-insensitive;_ you can improve readability a bit with
+  camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+  `(setlocal! :keywordPrg ":help")` for fennel still makes sense. Type `K`
+  on an option name to open the vim helpfile at the tag.
+- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
+  prepend, or remove, value to the option.
+  Only available in the scopes "opt", "opt_local", or "opt_global".
+- `?val`: (boolean|number|string|table) New option value. If not provided, the
+  value is supposed to be `true` (experimental). It does not work with `?id`
+  argument.
+
+```fennel
+(let! :o :number)
+(let! :opt_global :completeOpt [:menu :menuone :noselect])
+(let! :bo :formatOptions [:1 :2 :c :B])
+(let! :wo :listChars {:space :_ :tab: ">~"})
+
+(let! :opt :colorColumn + :+1)
+(let! :opt :rtp ^ [:/path/to/another/dir])
+
+(local scope :bo)
+(let! scope :filetype :fennel)
+
+(local opt :wrap)
+(let! :opt opt false)
+
+(local val :yes)
+(let! :opt :signColumn val)
+```
+
+is equivalent to
+
+```vim
+set number
+setglobal completeopt=menu,menuone,noselect
+call setbufvar(0, '&formatoptions', '12cB')
+call setwinvar(0, '&listchars', 'space:_,tab:>~')
+
+set colorcolumn+=+1
+set rtp^=/path/to/another/dir
+
+let val = 'yes'
+let &signcolumn = val
+let opt = 'wrap'
+execute 'set no'. opt
+```
+
+```lua
+vim.api.nvim_set_option_value("number", true, {})
+vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect", {
+  scope = "global",
+})
+vim.api.nvim_set_option_value("formatoptions", "12cB" { buf = 0 })
+vim.api.nvim_set_option_value("listchars", "space:_,tab:>~", { win = 0 })
+
+local scope = "bo"
+vim[scope].filetype = "fennel"
+
+local opt = "wrap"
+vim.api.nvim_set_option_value(opt, false, {})
+
+local val = "yes"
+vim.opt.signcolumn = val
+
+-- Or just with Vim-Lua bridge wrapper,
+vim.o.number = true
+vim.opt_global.completeopt = { "menu", "menuone", "noselect" }
+vim.bo.formatoptions = "12cB"
+vim.wo.listchars = {
+  space = "_",
+  tab = ">~",
+}
+
+vim.opt.colorcolumn:append("+1")
+vim.opt.rtp:prepend("/path/to/another/dir")
+
+local scope = "bo"
+vim[scope].filetype = "fennel"
+
+local opt = "wrap"
+vim.opt[opt] = false
+
+local val = "yes"
+vim.opt.signcolumn = val
+```
+
+#### `set!`
+
+_(Subject to be deprecated in favor of `let!`)_  
+Set, append, prepend, or remove, value to the option. Almost equivalent to
+`:set` in Vim script.
+
+```fennel
+(set! name ?flag ?val)
+```
+
+- `name`: (string) Option name. As long as the option name is bare-string,
+  option name is case-insensitive; you can improve readability a bit with
+  camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+  `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
+- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
+  prepend, or remove, value to the option.
+- `?val`: (boolean|number|string|table) New option value. If not provided, the
+  value is supposed to be `true` (experimental).
+
+#### `setglobal!`
+
+_(Subject to be deprecated in favor of `let!`)_  
+Set, append, prepend, or remove, global value to the option. Almost equivalent
+to `:setglobal` in Vim script.
+
+```fennel
+(setglobal! name ?flag ?val)
+```
+
+See [`set!`](#set) for the details.
+
+#### `setlocal!`
+
+_(Subject to be deprecated in favor of `let!`)_  
+Set, append, prepend, or remove, local value to the option. Almost equivalent
+to `:setlocal` in Vim script.
+
+```fennel
+(setlocal! name ?flag ?val)
+```
+
+See [`set!`](#set) for the details.
+
+#### `go!`
+
+_(Subject to be deprecated in favor of `let!`)_  
+Alias of [`setglobal!`](#setglobal).
+
+```fennel
+(go! name value)
+```
+
+#### `bo!`
+
+_(Subject to be deprecated in favor of `let!`)_  
+Set a buffer option value. `:h nvim_buf_set_option()`.
+
+```fennel
+(bo! ?id name value)
+```
+
+- `?id`: (integer) Buffer handle, or 0 for current buffer.
+- `name`: (string) Option name. Case-insensitive as long as in bare-string.
+- `value`: (any) Option value.
+
+```fennel
+(bo! :fileType :fennel)
+(bo! 10 :bufType :nofile)
+```
+
+is equivalent to
+
+```lua
+vim.api.nvim_buf_set_option(0, "filetype", "fennel")
+vim.api.nvim_buf_set_option(10, "buftype", "nofile")
+-- Or with `vim.bo`
+vim.bo.filetype = "fennel"
+vim.bo[10].buftype = "nofile"
+```
+
+```vim
+call setbufvar(0, '&filetype', 'fennel')
+call setbufvar(10, '&buftype', 'nofile')
+```
+
+#### `wo!`
+
+_(Subject to be deprecated in favor of `let!`)_  
+Set a window option value. `:h nvim_win_set_option()`.
+
+```fennel
+(wo! ?id name value)
+```
+
+- `?id`: (integer) Window handle, or 0 for current window.
+- `name`: (string) Option name. Case-insensitive as long as in bare-string.
+- `value`: (any) Option value.
+
+```fennel
+(wo! :number false)
+(wo! 10 :signColumn :no)
+```
+
+is equivalent to
+
+```lua
+vim.api.nvim_win_set_option(0, "number", false)
+vim.api.nvim_win_set_option(10, "signcolumn", "no")
+-- Or with `vim.wo`
+vim.wo.number = false
+vim.wo[10].signcolumn = "no"
+```
+
+```vim
+call setwinvar(0, '&number', v:false)
+call setwinvar(10, '&signcolumn', 'no')
+```
+
 ### Variable
 
 - [`g!`](#g)
@@ -529,6 +771,7 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 #### `g!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set global (`g:`) editor variable.
 
 ```fennel
@@ -540,6 +783,7 @@ Set global (`g:`) editor variable.
 
 #### `b!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
 an integer to access variables for specific buffer.
 
@@ -573,6 +817,7 @@ call setbufvar(8, 'baz', 'qux')
 
 #### `w!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set window-scoped (`w:`) variable for the current window. Can be indexed with
 an integer to access variables for specific window.
 
@@ -586,6 +831,7 @@ an integer to access variables for specific window.
 
 #### `t!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
 with an integer to access variables for specific tabpage.
 
@@ -599,6 +845,7 @@ with an integer to access variables for specific tabpage.
 
 #### `v!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set `v:` variable if not readonly.
 
 ```fennel
@@ -610,6 +857,7 @@ Set `v:` variable if not readonly.
 
 #### `env!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set environment variable in the editor session.
 
 ```fennel
@@ -644,188 +892,6 @@ let $NVIM_CONFIG_HOME = stdpath('config')
 let $NVIM_DATA_HOME = stdpath('data')
 let $NVIM_STATE_HOME = stdpath('state')
 let $PLUGIN_CACHE_HOME = expand('$NVIM_CACHE_HOME/to/plugin/home')
-```
-
-### Option
-
-- [`set!`](#set)
-- [`setglobal!`](#setglobal)
-- [`setlocal!`](#setlocal)
-- [`go!`](#go)
-- [`bo!`](#bo)
-- [`wo!`](#wo)
-
-#### `set!`
-
-Set, append, prepend, or remove, value to the option. Almost equivalent to
-`:set` in Vim script.
-
-```fennel
-(set! name ?flag ?val)
-```
-
-- `name`: (string) Option name. As long as the option name is bare-string,
-  option name is case-insensitive; you can improve readability a bit with
-  camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
-  `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
-- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
-  prepend, or remove, value to the option.
-- `?val`: (boolean|number|string|table) New option value. If not provided, the
-  value is supposed to be `true` (experimental).
-
-```fennel
-(set! :number true)
-(set! :formatOptions [:1 :2 :c :B])
-(set! :completeOpt [:menu :menuone :noselect])
-(set! :listChars {:space :_ :tab: ">~"})
-
-(set! :colorColumn + :+1)
-(set! :rtp ^ [:/path/to/another/dir])
-
-(local val :yes)
-(set! :signColumn val)
-(local opt :wrap)
-(set! opt false)
-```
-
-is equivalent to
-
-```vim
-set number
-set signcolumn=yes
-set formatoptions=12cB
-set completeopt=menu,menuone,noselect
-set listchars=space:_,tab:>~
-
-set colorcolumn+=+1
-set rtp^=/path/to/another/dir
-
-let val = 'yes'
-let &signcolumn = val
-let opt = 'wrap'
-execute 'set no'. opt
-```
-
-```lua
-vim.api.nvim_set_option_value("number", true)
-vim.api.nvim_set_option_value("signcolumn", "yes")
-vim.api.nvim_set_option_value("formatoptions", "12cB")
-vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect")
-vim.api.nvim_set_option_value("listchars", "space:_,tab:>~")
--- Or either with `vim.go` or with `vim.opt_global`,
-vim.go.number = true
-vim.go.signcolumn = "yes"
-vim.go.formatoptions = "12cB"
-vim.go.completeopt = {"menu", "menuone", "noselect"}
-vim.go.listchars = {
-  space = "_",
-  tab = ">~",
-}
-
-vim.opt_global.colorcolumn:append("+1")
-vim.opt_global.rtp:prepend("/path/to/another/dir")
-
-local val = "yes"
-vim.opt.signcolumn = val
-local opt = "wrap"
-vim.opt[opt] = false
-```
-
-Note: There is no plan to support option prefix either `no` or `inv`; instead,
-set `false` or `(not vim.go.foo)` respectively.
-
-#### `setglobal!`
-
-Set, append, prepend, or remove, global value to the option. Almost equivalent
-to `:setglobal` in Vim script.
-
-```fennel
-(setglobal! name ?flag ?val)
-```
-
-See [`set!`](#set) for the details.
-
-#### `setlocal!`
-
-Set, append, prepend, or remove, local value to the option. Almost equivalent
-to `:setlocal` in Vim script.
-
-```fennel
-(setlocal! name ?flag ?val)
-```
-
-See [`set!`](#set) for the details.
-
-#### `go!`
-
-Alias of [`setglobal!`](#setglobal).
-
-```fennel
-(go! name value)
-```
-
-#### `bo!`
-
-Set a buffer option value. `:h nvim_buf_set_option()`.
-
-```fennel
-(bo! ?id name value)
-```
-
-- `?id`: (integer) Buffer handle, or 0 for current buffer.
-- `name`: (string) Option name. Case-insensitive as long as in bare-string.
-- `value`: (any) Option value.
-
-```fennel
-(bo! :fileType :fennel)
-(bo! 10 :bufType :nofile)
-```
-
-is equivalent to
-
-```lua
-vim.api.nvim_buf_set_option(0, "filetype", "fennel")
-vim.api.nvim_buf_set_option(10, "buftype", "nofile")
--- Or with `vim.bo`
-vim.bo.filetype = "fennel"
-vim.bo[10].buftype = "nofile"
-```
-
-```vim
-call setbufvar(0, '&filetype', 'fennel')
-call setbufvar(10, '&buftype', 'nofile')
-```
-
-#### `wo!`
-
-Set a window option value. `:h nvim_win_set_option()`.
-
-```fennel
-(wo! ?id name value)
-```
-
-- `?id`: (integer) Window handle, or 0 for current window.
-- `name`: (string) Option name. Case-insensitive as long as in bare-string.
-- `value`: (any) Option value.
-
-```fennel
-(wo! :number false)
-(wo! 10 :signColumn :no)
-```
-
-is equivalent to
-
-```lua
-vim.api.nvim_win_set_option(0, "number", false)
-vim.api.nvim_win_set_option(10, "signcolumn", "no")
--- Or with `vim.wo`
-vim.wo.number = false
-vim.wo[10].signcolumn = "no"
-```
-
-```vim
-call setwinvar(0, '&number', v:false)
-call setwinvar(10, '&signcolumn', 'no')
 ```
 
 ### Others

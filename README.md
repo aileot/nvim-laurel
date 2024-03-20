@@ -238,6 +238,16 @@ See [laurel.md](./doc/laurel.md) for each macro usage in details.
   - [`<Cmd>`](./doc/laurel.md#Cmd)
   - [`<C-u>`](./doc/laurel.md#C-u)
 
+- [Option](./doc/laurel.md#Option)
+
+  - [`let!`](./doc/laurel.md#let)
+  - [`set!`](./doc/laurel.md#set)
+  - [`setglobal!`](./doc/laurel.md#setglobal)
+  - [`setlocal!`](./doc/laurel.md#setlocal)
+  - [`go!`](./doc/laurel.md#go)
+  - [`bo!`](./doc/laurel.md#bo)
+  - [`wo!`](./doc/laurel.md#wo)
+
 - [Variable](./doc/laurel.md#Variable)
 
   - [`g!`](./doc/laurel.md#g)
@@ -246,15 +256,6 @@ See [laurel.md](./doc/laurel.md) for each macro usage in details.
   - [`t!`](./doc/laurel.md#t)
   - [`v!`](./doc/laurel.md#v)
   - [`env!`](./doc/laurel.md#env)
-
-- [Option](./doc/laurel.md#Option)
-
-  - [`set!`](./doc/laurel.md#set)
-  - [`setglobal!`](./doc/laurel.md#setglobal)
-  - [`setlocal!`](./doc/laurel.md#setlocal)
-  - [`go!`](./doc/laurel.md#go)
-  - [`bo!`](./doc/laurel.md#bo)
-  - [`wo!`](./doc/laurel.md#wo)
 
 - [Others](./doc/laurel.md#Others)
   - [`command!`](./doc/laurel.md#command)
