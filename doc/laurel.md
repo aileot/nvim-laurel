@@ -560,6 +560,7 @@ and `vim.g`, `vim.b`, and so on.
 
 #### `set!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set, append, prepend, or remove, value to the option. Almost equivalent to
 `:set` in Vim script.
 
@@ -639,6 +640,7 @@ set `false` or `(not vim.go.foo)` respectively.
 
 #### `setglobal!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set, append, prepend, or remove, global value to the option. Almost equivalent
 to `:setglobal` in Vim script.
 
@@ -650,6 +652,7 @@ See [`set!`](#set) for the details.
 
 #### `setlocal!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set, append, prepend, or remove, local value to the option. Almost equivalent
 to `:setlocal` in Vim script.
 
@@ -661,6 +664,7 @@ See [`set!`](#set) for the details.
 
 #### `go!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Alias of [`setglobal!`](#setglobal).
 
 ```fennel
@@ -669,6 +673,7 @@ Alias of [`setglobal!`](#setglobal).
 
 #### `bo!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set a buffer option value. `:h nvim_buf_set_option()`.
 
 ```fennel
@@ -701,6 +706,7 @@ call setbufvar(10, '&buftype', 'nofile')
 
 #### `wo!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set a window option value. `:h nvim_win_set_option()`.
 
 ```fennel
@@ -742,6 +748,7 @@ call setwinvar(10, '&signcolumn', 'no')
 
 #### `g!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set global (`g:`) editor variable.
 
 ```fennel
@@ -753,6 +760,7 @@ Set global (`g:`) editor variable.
 
 #### `b!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
 an integer to access variables for specific buffer.
 
@@ -786,6 +794,7 @@ call setbufvar(8, 'baz', 'qux')
 
 #### `w!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set window-scoped (`w:`) variable for the current window. Can be indexed with
 an integer to access variables for specific window.
 
@@ -799,6 +808,7 @@ an integer to access variables for specific window.
 
 #### `t!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
 with an integer to access variables for specific tabpage.
 
@@ -812,6 +822,7 @@ with an integer to access variables for specific tabpage.
 
 #### `v!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set `v:` variable if not readonly.
 
 ```fennel
@@ -823,6 +834,7 @@ Set `v:` variable if not readonly.
 
 #### `env!`
 
+_(Subject to be deprecated in favor of `let!`)_  
 Set environment variable in the editor session.
 
 ```fennel
