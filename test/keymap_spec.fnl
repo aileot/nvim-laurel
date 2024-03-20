@@ -150,6 +150,21 @@
         (map! modes [:expr :literal] :lhs :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_nil replace_keycodes))))
+    (describe* :extra-opt
+      (describe* "`wait`"
+        (it* "disables `nowait` in extra-opts regardless of the order"
+          (map! :n [:nowait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 1 nowait))
+          (map! :n [:nowait :wait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 0 nowait))
+          (map! :n [:nowait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 1 nowait))
+          (map! :n [:wait :nowait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 0 nowait)))))
     (describe* :<Cmd>pattern
       (it* "symbol will be set to 'command'"
         (map! :n :lhs <default>-command)
