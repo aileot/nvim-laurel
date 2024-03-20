@@ -117,6 +117,9 @@ augroup+                                                     *laurel-augroup+*
   "Define augroup without clearing it."
   (augroup! `&default-opts {:clear false}
     ...))
+
+;; (Optional) At the end of my-macros.fnl to export it as `augroup!`.
+{:augroup! augroup+}
 ```
 
 <!-- panvimdoc-ignore-start -->
