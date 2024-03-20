@@ -986,8 +986,8 @@
     - `?val` is set in either symbol or list.
   ```fennel
   (let! scope name ?val)
-  (let! scope ?id name ?val) ; only in the scope: `b`, `w`, or `t`
   (let! scope name ?flag ?val) ; only in the scope: `opt`, `opt_local`, or `opt_global`
+  (let! scope ?id name ?val) ; only in the scope: `b`, `w`, or `t`
   ```
   @param scope \"g\"
   |\"b\"
