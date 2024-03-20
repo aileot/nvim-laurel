@@ -59,13 +59,11 @@ In a macro definition file, say my-macros.fnl,
         : autocmd!
         : feedkeys!
         : highlight!} (require :nvim-laurel.macros))
-
 ```
 
 And export them at the bottom of the file:
 
 ```fennel
-
 {: set!
  : setlocal!
  : setglobal!

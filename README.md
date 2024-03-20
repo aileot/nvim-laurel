@@ -279,10 +279,6 @@ See [laurel.md](./doc/laurel.md) for each macro usage in details.
   - [`highlight!`](./doc/laurel.md#highlight)
   - [`hi!`](./doc/laurel.md#hi)
 
-## Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md).
-
 ## Alternatives
 
 - [aniseed](https://github.com/Olical/aniseed)
