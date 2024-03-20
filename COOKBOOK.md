@@ -103,8 +103,6 @@ favor of `import-macros` in Fennel v0.4.0.)
 </details>
 <br>
 
-Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/macros.fnl
-
 <!-- panvimdoc-ignore-start -->
 
 #### `augroup+`
