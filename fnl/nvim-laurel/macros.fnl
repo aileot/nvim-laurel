@@ -1295,14 +1295,33 @@
           :go^ setglobal^
           :go- setglobal-})
 
-(fn __index [self key]
+;;; Lua-Vimscript Bridge ///1
+
+(fn __index [key]
   (fn [...]
     ;; TODO: Recursive __index to imitate vim.bo.foobar, vim.augroup.FileType,
     ;; etc.
     ;; TODO: Add spec tests.
-    (let [new-key (.. key "!")
-          laurel (. M new-key)]
-      (tset M new-key laurel)
+    (let [(new-key ?arg) ;
+          (case key
+            (where (or ;; Vim Variables
+                       :g :b :w :t :v :env ;
+                       ;; Vim Options
+                       :o :go :bo :wo ;
+                       ;; Vim Options (subject to be deprecated in nvim v0.10
+                       ;; or v0.11 in favor of `vim.o`)
+                       :opt :opt_local :opt_global))
+            ;; Let `let!` to be ignored.
+            (values :let! key)
+            _
+            (if (key:find "[a-z]$")
+                (.. key "!")
+                key))
+          laurel (if ?arg
+                     (fn [...]
+                       ((. M new-key) ?arg ...))
+                     (. M new-key))]
+      (tset M key laurel)
       (laurel ...))))
 
 (setmetatable M {: __index})
