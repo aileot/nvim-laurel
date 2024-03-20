@@ -2,8 +2,10 @@
 
 - [Recipes](#recipes)
   - [Create wrapper macros](#create-wrapper-macros)
-    - [augroup+: Create augroup macro without clearing itself by default](#augroup-create-augroup-macro-without-clearing-itself-by-default)
-    - [set+, set-, set^, ...: Create dedicated macros to append, remove, prepend Vim options](#set-set--set--create-dedicated-macros-to-append-remove-prepend-vim-options)
+    - [augroup+](#augroup)
+      - [Create augroup macro without clearing itself by default](#create-augroup-macro-without-clearing-itself-by-default)
+    - [set+, set-, set^, ...](#set-set--set-)
+      - [Create dedicated macros to append, remove, prepend Vim options](#create-dedicated-macros-to-append-remove-prepend-vim-options)
   - [Create autocmds on an monolithic augroup all over my vimrc](#create-autocmds-on-an-monolithic-augroup-all-over-my-vimrc)
     - [The simplest approach](#the-simplest-approach)
     - [Another approach with `augroup!` wrapper](#another-approach-with-augroup-wrapper)
@@ -103,12 +105,14 @@ Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/ma
 
 <!-- panvimdoc-ignore-start -->
 
-#### augroup+: Create augroup macro without clearing itself by default
+#### augroup+
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
                                                           *laurel-augroup+*
 -->
+
+##### Create augroup macro without clearing itself by default
 
 ```fennel
 (fn augroup+ [...]
@@ -119,7 +123,9 @@ Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/ma
 
 <!-- panvimdoc-ignore-start -->
 
-#### set+, set-, set^, ...: Create dedicated macros to append, remove, prepend Vim options
+#### set+, set-, set^, ...
+
+##### Create dedicated macros to append, remove, prepend Vim options
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
