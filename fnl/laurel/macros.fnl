@@ -1064,33 +1064,34 @@ For example,
                      `(tset vim ,scope ,... true))
           `(tset vim ,scope ,...))
       (let [supported-flags [`+ `- `^ `? `! `& `<]
-            (args symbols) (extract-symbols [...] supported-flags)
+            (args-without-symbol symbols) (extract-symbols [...]
+                                                           supported-flags)
             ?flag (next symbols)]
         (assert (< (length (tbl->keys symbols)) 2)
                 "only one symbol is supported at most")
         (case (case scope
-                :g (values 2 `vim.api.nvim_set_var `vim.api.nvim_set_var)
+                :g (values 2 `vim.api.nvim_set_var `vim.api.nvim_get_var)
                 :b (values 3 `vim.api.nvim_buf_set_var
-                           `vim.api.nvim_buf_set_var)
+                           `vim.api.nvim_buf_get_var)
                 :w (values 3 `vim.api.nvim_win_set_var
-                           `vim.api.nvim_win_set_var)
+                           `vim.api.nvim_win_get_var)
                 :t (values 3 `vim.api.nvim_tabpage_set_var
-                           `vim.api.nvim_tabpage_set_var)
-                :v (values 2 `vim.api.nvim_set_vvar `vim.api.nvim_set_vvar)
+                           `vim.api.nvim_tabpage_get_var)
+                :v (values 2 `vim.api.nvim_set_vvar `vim.api.nvim_get_vvar)
                 :env (values 2 `vim.fn.setenv `vim.fn.getenv))
           (max-args setter getter)
           ;; Vim Variables
-          (let [(?id name val) (case (length args)
-                                 3 (values (unpack args))
+          (let [(?id name val) (case (length args-without-symbol)
+                                 3 (unpack args-without-symbol)
                                  2 (case max-args
-                                     2 (values nil (unpack args))
-                                     3 (values 0 (unpack args)))
+                                     2 (values nil (unpack args-without-symbol))
+                                     3 (values 0 (unpack args-without-symbol)))
                                  1 (case max-args
-                                     2 (values nil (unpack args)
+                                     2 (values nil (unpack args-without-symbol)
                                                (deprecate "(Partial) The format `let!` without value"
                                                           "Set `true` to set it to `true` explicitly"
                                                           :v0.8.0 true))
-                                     3 (values 0 (unpack args)
+                                     3 (values 0 (unpack args-without-symbol)
                                                (deprecate "(Partial) The format `let!` without value"
                                                           "Set `true` to set it to `true` explicitly"
                                                           :v0.8.0 true))))
@@ -1104,13 +1105,13 @@ For example,
                   3 `(,setter ,?id ,name* ,val))))
           _
           ;; Vim Options
-          (let [[name ?val] args
+          (let [[name ?val] args-without-symbol
                 val (if (= nil ?val ?flag)
                         (deprecate "(Partial) The format `let!` without value"
                                    "Set `true` to set it to `true` explicitly"
                                    :v0.8.0 true)
                         ?val)]
-            (case (values scope args)
+            (case (values scope args-without-symbol)
               ;; Note: In the `case` body above, the scope for vim.opt,
               ;; vim.opt_local, and vim.opt_global max-args would be 2 or
               ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
