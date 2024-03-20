@@ -249,7 +249,11 @@
               (assert.is_same :rhs (buf-get-rhs 0 mode :lhs))
               (refresh-buffer)
               (assert.is_nil (buf-get-rhs 0 mode :lhs))
-              (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs))))))
+              (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs))))
+          (it* "creates mapping with `nowait` set to true by default"
+            (buf-map! :n :lhs :rhs)
+            (let [{: nowait} (buf-get-mapargs 0 :n :lhs)]
+              (assert.is_same 1 nowait)))))
       (describe* "imported macro"
         (describe* :remap!
           (it* "creates recursive mapping by default"
