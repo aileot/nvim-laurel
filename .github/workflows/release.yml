@@ -17,8 +17,9 @@ jobs:
         uses: kdheepak/panvimdoc@v4.0.0
         with:
           vimdoc: laurel
-          pandoc: doc/laurel.md
+          pandoc: REFERENCE.md
           version: "Neovim >= 0.9.5"
+          description: "Reference of nvim-laurel"
           demojify: true
           treesitter: true
           dedupsubheadings: false # Add heading to subheading anchor links to ensure that subheadings are unique
