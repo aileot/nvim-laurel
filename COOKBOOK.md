@@ -1,5 +1,26 @@
 # Cookbook with nvim-laurel
 
+- [Recipes](#recipes)
+  - [Create wrapper macros](#create-wrapper-macros)
+    - [augroup+: Create augroup macro without clearing itself by default](#augroup-create-augroup-macro-without-clearing-itself-by-default)
+    - [set+, set-, set^, ...: Create dedicated macros to append, remove, prepend Vim options](#set-set--set--create-dedicated-macros-to-append-remove-prepend-vim-options)
+  - [Create autocmds on an monolithic augroup all over my vimrc](#create-autocmds-on-an-monolithic-augroup-all-over-my-vimrc)
+    - [The simplest approach](#the-simplest-approach)
+    - [Another approach with `augroup!` wrapper](#another-approach-with-augroup-wrapper)
+    - [(Optional) An idea to define `autocmd`s with `group` in Integer id](#optional-an-idea-to-define-autocmds-with-group-in-integer-id)
+- [Anti-Patterns](#anti-patterns)
+  - [`&default-opts`](#default-opts)
+    - [Define macro wrappers](#define-macro-wrappers)
+      - [Anti-Pattern](#anti-pattern)
+      - [Pattern](#pattern)
+  - [`autocmd!`](#autocmd)
+    - [pcall in the end of callback](#pcall-in-the-end-of-callback)
+      - [Anti-Pattern](#anti-pattern-1)
+      - [Pattern](#pattern-1)
+    - [Nested anonymous function in callback](#nested-anonymous-function-in-callback)
+      - [Anti-Pattern](#anti-pattern-2)
+      - [Pattern](#pattern-2)
+
 ## Recipes
 
 ### Create wrapper macros
@@ -129,7 +150,7 @@ Here is a practical wrappers: https://github.com/aileot/nvim-fnl/blob/main/my/ma
 
 Replace "set", as you need, with "setlocal", "setglobal", etc.
 
-### Define autocmds all over my vimrc
+### Create autocmds on an monolithic augroup all over my vimrc
 
 <details>
 <summary>
@@ -214,4 +235,129 @@ With nvim-laurel, it could be implemented in some approaches:
 ;; or with predefined `augroup+` macro
 (augroup+ _G.my-augroup
   (au! :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
+```
+
+## Anti-Patterns
+
+### [`&default-opts`](#default-opts)
+
+#### Define macro wrappers
+
+To create wrapper of nvim-laurel macro, it is unrecommended to wrap them in
+runtime function; instead, wrap them in macro.
+Fennel macros cannot parse the contents of `varargs` (`...`) which is only
+determined at runtime.
+
+##### Anti-Pattern
+
+```fennel
+;; bad
+(autocmd! group [:FileType]
+  (fn []
+    (let [buf-au! (fn [...]
+                    (autocmd! &default-opts {:buffer 0} ...))]
+      (buf-au! [:InsertEnter] #(do :something))
+      (buf-au! [:BufWritePre] #(do :other))))
+```
+
+##### Pattern
+
+```fennel
+;; good
+(import-macros {: autocmd!} :nvim-laurel)
+
+(macro buf-au! [...]
+  `(autocmd! &default-opts {:buffer 0} ,...))
+
+(autocmd! group [:FileType]
+  (fn []
+     (buf-au! [:InsertEnter] #(do :something))
+     (buf-au! [:BufWritePre] #(do :other))))
+```
+
+or
+
+```fennel
+;; good
+;; in my/macros.fnl
+(local {: autocmd!} (require :nvim-laurel))
+
+(fn buf-au! [...]
+  (autocmd! `&default-opts {:buffer 0} ...))
+
+{: buf-au!}
+```
+
+```fennel
+;; in foobar.fnl (another file)
+(import-macros {: autocmd!} :nvim-laurel)
+(import-macros {: buf-au!} :my.macros)
+
+(autocmd! group [:FileType]
+  #(do
+     (buf-au! [:InsertEnter] (do :something))
+     (buf-au! [:BufWritePre] (do :other))))
+```
+
+### [`autocmd!`](#autocmd)
+
+#### pcall in the end of callback
+
+It could be an unexpected behavior that `autocmd` whose callback ends with
+`pcall` is executed only once because of the combination:
+
+- Fennel `list` returns the last value.
+- `pcall` returns `true` when the call succeeds without errors.
+- `nvim_create_autocmd()` deletes itself when its callback function returns
+  `true`.
+
+##### Anti-Pattern
+
+```fennel
+;; bad
+(autocmd! group events #(pcall foobar))
+(autocmd! group events (fn []
+                         ;; Do something else
+                         (pcall foobar)))
+```
+
+##### Pattern
+
+```fennel
+;; good
+(macro ->nil [...]
+  "Make sure to return `nil`."
+  `(do
+     ,...
+     nil))
+
+(autocmd! group events #(->nil (pcall foobar)))
+(autocmd! group events (fn []
+                         ;; Do something else
+                         (pcall foobar)
+                         ;; Return any other value than `true`.
+                         nil))
+```
+
+#### Nested anonymous function in callback
+
+`$` in the outermost hash function represents the single table argument from
+`nvim_create_autocmd()`; on the other hand, `$` in any hash functions included
+in another anonymous function is meaningless in many cases.
+
+##### Anti-Pattern
+
+```fennel
+;; bad
+(autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
+(autocmd! group events (fn []
+                         (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+```
+
+##### Pattern
+
+```fennel
+;; good
+(autocmd! group events #(vim.schedule (fn []
+                                        (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```

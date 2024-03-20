@@ -50,18 +50,6 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script.
     - [`feedkeys!`](#feedkeys)
     - [`highlight!`](#highlight)
     - [`hi!`](#hi)
-- [Anti-Patterns](#anti-patterns)
-  - [`&default-opts`](#default-opts-1)
-    - [Define macro wrappers](#define-macro-wrappers)
-      - [Anti-Pattern](#anti-pattern)
-      - [Pattern](#pattern)
-  - [`autocmd!`](#autocmd-2)
-    - [pcall in the end of callback](#pcall-in-the-end-of-callback)
-      - [Anti-Pattern](#anti-pattern-1)
-      - [Pattern](#pattern-1)
-    - [Nested anonymous function in callback](#nested-anonymous-function-in-callback)
-      - [Anti-Pattern](#anti-pattern-2)
-      - [Pattern](#pattern-2)
 - [Deprecated Features](#deprecated-features)
   - [Semantic Versioning](#semantic-versioning)
   - [Deprecated Feature Handling](#deprecated-feature-handling)
@@ -184,7 +172,7 @@ contains default values for `api-opts`, but it also interprets the additional
 keys available in `extra-opts`.
 To set boolean option, it requires to set to either `true` or
 `false` in spite of the syntax of `extra-opts` itself.
-See also its [Anti-Patterns](#default-opts-1).
+See also its [Anti-Patterns](./COOKBOOK.md#default-opts).
 
 List of macros in which `&default-opts` is available:
 
@@ -1025,131 +1013,6 @@ nvim_set_nl(0, "Foo", {
 
 An alias of [`highlight!`](#highlight).
 (`&default-opts` is available.)
-
-## Anti-Patterns
-
-### [`&default-opts`](#default-opts)
-
-#### Define macro wrappers
-
-To create wrapper of nvim-laurel macro, it is unrecommended to wrap them in
-runtime function; instead, wrap them in macro.
-Fennel macros cannot parse the contents of `varargs` (`...`) which is only
-determined at runtime.
-
-##### Anti-Pattern
-
-```fennel
-;; bad
-(autocmd! group [:FileType]
-  (fn []
-    (let [buf-au! (fn [...]
-                    (autocmd! &default-opts {:buffer 0} ...))]
-      (buf-au! [:InsertEnter] #(do :something))
-      (buf-au! [:BufWritePre] #(do :other))))
-```
-
-##### Pattern
-
-```fennel
-;; good
-(import-macros {: autocmd!} :nvim-laurel)
-
-(macro buf-au! [...]
-  `(autocmd! &default-opts {:buffer 0} ,...))
-
-(autocmd! group [:FileType]
-  (fn []
-     (buf-au! [:InsertEnter] #(do :something))
-     (buf-au! [:BufWritePre] #(do :other))))
-```
-
-or
-
-```fennel
-;; good
-;; in my/macros.fnl
-(local {: autocmd!} (require :nvim-laurel))
-
-(fn buf-au! [...]
-  (autocmd! `&default-opts {:buffer 0} ...))
-
-{: buf-au!}
-```
-
-```fennel
-;; in foobar.fnl (another file)
-(import-macros {: autocmd!} :nvim-laurel)
-(import-macros {: buf-au!} :my.macros)
-
-(autocmd! group [:FileType]
-  #(do
-     (buf-au! [:InsertEnter] (do :something))
-     (buf-au! [:BufWritePre] (do :other))))
-```
-
-### [`autocmd!`](#autocmd)
-
-#### pcall in the end of callback
-
-It could be an unexpected behavior that `autocmd` whose callback ends with
-`pcall` is executed only once because of the combination:
-
-- Fennel `list` returns the last value.
-- `pcall` returns `true` when the call succeeds without errors.
-- `nvim_create_autocmd()` deletes itself when its callback function returns
-  `true`.
-
-##### Anti-Pattern
-
-```fennel
-;; bad
-(autocmd! group events #(pcall foobar))
-(autocmd! group events (fn []
-                         ;; Do something else
-                         (pcall foobar)))
-```
-
-##### Pattern
-
-```fennel
-;; good
-(macro ->nil [...]
-  "Make sure to return `nil`."
-  `(do
-     ,...
-     nil))
-
-(autocmd! group events #(->nil (pcall foobar)))
-(autocmd! group events (fn []
-                         ;; Do something else
-                         (pcall foobar)
-                         ;; Return any other value than `true`.
-                         nil))
-```
-
-#### Nested anonymous function in callback
-
-`$` in the outermost hash function represents the single table argument from
-`nvim_create_autocmd()`; on the other hand, `$` in any hash functions included
-in another anonymous function is meaningless in many cases.
-
-##### Anti-Pattern
-
-```fennel
-;; bad
-(autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
-(autocmd! group events (fn []
-                         (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
-```
-
-##### Pattern
-
-```fennel
-;; good
-(autocmd! group events #(vim.schedule (fn []
-                                        (nnoremap [:buffer $.buf] :lhs :rhs))))
-```
 
 ## Deprecated Features
 
