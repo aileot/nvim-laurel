@@ -279,6 +279,8 @@
         (describe* "buf-map! with {:buffer 0} in its default-opts"
           (before-each (fn []
                          (refresh-buffer)))
+          (after-each (fn []
+                        (refresh-buffer)))
           (it* "creates current buffer-local mapping by default"
             (let [mode :x
                   bufnr (vim.api.nvim_get_current_buf)]
@@ -302,6 +304,10 @@
               (refresh-buffer)
               (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs)))))
         (describe* "buf-map! with {:<buffer> true} in its default-opts"
+          (before-each (fn []
+                         (refresh-buffer)))
+          (after-each (fn []
+                        (refresh-buffer)))
           (it* "creates current buffer-local mapping by default"
             (let [bufnr (vim.api.nvim_get_current_buf)]
               (assert.is_nil (get-rhs :x :lhs))
