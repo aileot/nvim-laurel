@@ -21,7 +21,7 @@
     - [`pcall` in the end of callback](#pcall-in-the-end-of-callback)
       - [Anti-Pattern](#anti-pattern-1)
       - [Pattern](#pattern-1)
-    - [Nested anonymous function in callback](#nested-anonymous-function-in-callback)
+    - [Nested hash functions in callback](#nested-hash-functions-in-callback)
       - [Anti-Pattern](#anti-pattern-2)
       - [Pattern](#pattern-2)
 
@@ -369,11 +369,11 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
                          nil))
 ```
 
-#### Nested anonymous function in callback
+#### Nested hash functions in callback
 
 `$` in the outermost hash function represents the single table argument from
 `nvim_create_autocmd()`; on the other hand, `$` in any hash functions included
-in another anonymous function is meaningless in many cases.
+in another hash function is meaningless in many cases.
 
 ##### Anti-Pattern
 
