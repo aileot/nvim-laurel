@@ -561,25 +561,6 @@ and `vim.g`, `vim.b`, and so on.
   value is supposed to be `true` (experimental). It does not work with `?id`
   argument.
 
-#### `set!`
-
-_(Subject to be deprecated in favor of `let!`)_  
-Set, append, prepend, or remove, value to the option. Almost equivalent to
-`:set` in Vim script.
-
-```fennel
-(set! name ?flag ?val)
-```
-
-- `name`: (string) Option name. As long as the option name is bare-string,
-  option name is case-insensitive; you can improve readability a bit with
-  camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
-  `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
-- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
-  prepend, or remove, value to the option.
-- `?val`: (boolean|number|string|table) New option value. If not provided, the
-  value is supposed to be `true` (experimental).
-
 ```fennel
 (set! :number true)
 (set! :formatOptions [:1 :2 :c :B])
@@ -640,6 +621,25 @@ vim.opt[opt] = false
 
 Note: There is no plan to support option prefix either `no` or `inv`; instead,
 set `false` or `(not vim.go.foo)` respectively.
+
+#### `set!`
+
+_(Subject to be deprecated in favor of `let!`)_  
+Set, append, prepend, or remove, value to the option. Almost equivalent to
+`:set` in Vim script.
+
+```fennel
+(set! name ?flag ?val)
+```
+
+- `name`: (string) Option name. As long as the option name is bare-string,
+  option name is case-insensitive; you can improve readability a bit with
+  camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
+  `(setlocal! :keywordPrg ":help")` for fennel still makes sense.
+- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
+  prepend, or remove, value to the option.
+- `?val`: (boolean|number|string|table) New option value. If not provided, the
+  value is supposed to be `true` (experimental).
 
 #### `setglobal!`
 
