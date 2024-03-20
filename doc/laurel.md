@@ -538,7 +538,7 @@ or `option`
 It can also append, prepend, or remove, value the Vim `option`
 in the scopes: opt, opt_local, opt_global.
 
-It is a replacement of `vim.o`, `vim.bo`, ...,
+This is an optimized replacement of `vim.o`, `vim.bo`, ...,
 `vim.opt`, `vim.opt_local`, `vim.opt_global`,
 and `vim.g`, `vim.b`, and so on.
 
