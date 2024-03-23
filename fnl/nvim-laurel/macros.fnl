@@ -1297,7 +1297,9 @@
 
 ;;; Lua-Vimscript Bridge ///1
 
-(fn __index [key]
+;; Note: import-macros does not allow to import metatable macro {: vim*}
+;; which attempts to import `(set M.vim* (setmetatable M {: __index}))`.
+(fn __index [_self key]
   (fn [...]
     ;; TODO: Recursive __index to imitate vim.bo.foobar, vim.augroup.FileType,
     ;; etc.
@@ -1319,9 +1321,10 @@
                 key))
           laurel (if ?arg
                      (fn [...]
-                       ((. M new-key) ?arg ...))
-                     (. M new-key))]
-      (tset M key laurel)
+                       ((rawget M new-key) ?arg ...))
+                     (rawget M new-key))]
+      (rawset M key laurel)
+      (rawset M new-key laurel)
       (laurel ...))))
 
 (setmetatable M {: __index})
