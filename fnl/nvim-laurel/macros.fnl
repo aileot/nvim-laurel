@@ -1319,13 +1319,13 @@
             (if (key:find "[a-z]$")
                 (.. key "!")
                 key))
-          laurel (if ?arg
-                     (fn [...]
-                       ((rawget M new-key) ?arg ...))
-                     (rawget M new-key))]
-      (rawset M key laurel)
-      (rawset M new-key laurel)
-      (laurel ...))))
+          callback (if ?arg
+                       (fn [...]
+                         ((rawget M new-key) ?arg ...))
+                       (rawget M new-key))]
+      (rawset M key callback)
+      (rawset M new-key callback)
+      (callback ...))))
 
 (setmetatable M {: __index})
 
