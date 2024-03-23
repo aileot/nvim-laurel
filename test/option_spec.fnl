@@ -167,7 +167,7 @@
           (each [_ scope (ipairs scope-list)]
             (let! scope :foo nil)
             (assert.is_nil (. vim scope :foo))))))
-    (describe* "with Vim script `option` scope in symbol (o, go, bo, wo, opt, opt_global, opt_local)"
+    (describe* "for Vim script `option` scope (o, go, bo, wo, opt, opt_global, opt_local)"
       (describe* "with scope in symbol"
         (it* "cannot set any options when option name is capitalized and scope is set in symbol or list"
           (each [_ scope (ipairs win-local-scope-list)]
