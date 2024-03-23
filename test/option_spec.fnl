@@ -169,6 +169,9 @@
             (assert.is_nil (. vim scope :foo))))))
     (describe* "with Vim script `option` scope in symbol (o, go, bo, wo, opt, opt_global, opt_local)"
       (describe* "with scope in symbol"
+        (it* "cannot set any options when option name is capitalized and scope is set in symbol or list"
+          (each [_ scope (ipairs win-local-scope-list)]
+            (assert.has_error #(let! scope :foldLevel 2))))
         (describe* "can set vim buf-local option"
           (it* "in boolean"
             (each [_ scope (ipairs buf-local-scope-list)]
@@ -186,9 +189,6 @@
             (each [_ scope (ipairs [:opt :opt_local])]
               (let! scope :path [:/foo :/bar :/baz])
               (assert.is_same [:/foo :/bar :/baz] (get-lo :path)))))
-        (it* "cannot set any options when option name is capitalized and scope is set in symbol or list"
-          (each [_ scope (ipairs win-local-scope-list)]
-            (assert.has_error #(let! scope :foldLevel 2))))
         (describe* "can set vim win-local option"
           (it* "in boolean"
             (each [_ scope (ipairs win-local-scope-list)]
