@@ -185,8 +185,7 @@
           (it* "in sequence (except :bo)"
             (each [_ scope (ipairs [:opt :opt_local])]
               (let! scope :path [:/foo :/bar :/baz])
-              (assert.is_same [:/foo :/bar :/baz] (get-lo :path))))))
-      (describe* "with scope in symbol"
+              (assert.is_same [:/foo :/bar :/baz] (get-lo :path)))))
         (it* "cannot set any options when option name is capitalized and scope is set in symbol or list"
           (each [_ scope (ipairs win-local-scope-list)]
             (assert.has_error #(let! scope :foldLevel 2))))
