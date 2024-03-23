@@ -1320,8 +1320,9 @@
                 (.. key "!")
                 key))
           callback (if ?arg
-                       (fn [...]
-                         ((rawget M new-key) ?arg ...))
+                       (let [cb (rawget M new-key)]
+                         (fn [...]
+                           (cb ?arg ...)))
                        (rawget M new-key))]
       (rawset M key callback)
       (rawset M new-key callback)
