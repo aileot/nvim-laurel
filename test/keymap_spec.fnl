@@ -1,10 +1,16 @@
-(import-macros {: setup* : teardown* : before-each : describe* : it*}
-               :test._busted_macros)
+(import-macros {: setup*
+                : teardown*
+                : before-each
+                : after-each
+                : describe*
+                : it*} :test._busted_macros)
+
 (import-macros {: nmap!
                 : omni-map!
                 : remap!
                 : buf-map!/with-buffer=0
-                : buf-map!/with-<buffer>=true} :test._wrapper_macros)
+                : buf-map!/with-<buffer>=true}
+               :test._wrapper_macros)
 
 (import-macros {: map! : unmap! : <C-u> : <Cmd>} :nvim-laurel.macros)
 
@@ -13,6 +19,9 @@
 
 (macro macro-command []
   :macro-command)
+
+(macro buf-map! [...]
+  `(map! &default-opts {:buffer 0 :nowait true} ,...))
 
 (local default-rhs :default-rhs)
 (local default-callback #:default-callback)
@@ -141,6 +150,25 @@
         (map! modes [:expr :literal] :lhs :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_nil replace_keycodes))))
+    (describe* :extra-opt
+      (describe* "`wait`"
+        (it* "disables `nowait` in extra-opts regardless of the order"
+          (map! :n [:nowait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 1 nowait))
+          (map! :n [:nowait :wait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 0 nowait))
+          (map! :n [:nowait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 1 nowait))
+          (map! :n [:wait :nowait] :lhs :rhs)
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 0 nowait)))
+        (it* "will NOT disable `nowait` _in api-opts_"
+          (map! :n [:wait] :lhs :rhs {:nowait true})
+          (let [{: nowait} (get-mapargs :n :lhs)]
+            (assert.is_same 1 nowait)))))
     (describe* :<Cmd>pattern
       (it* "symbol will be set to 'command'"
         (map! :n :lhs <default>-command)
@@ -224,6 +252,27 @@
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_nil replace_keycodes))))
     (describe* "with `&default-opts`,"
+      (describe* "local macro"
+        (describe* :buf-map!
+          (before-each (fn []
+                         (refresh-buffer)))
+          (after-each (fn []
+                        (refresh-buffer)))
+          (it* "creates current buffer-local mapping by default"
+            (let [mode :n
+                  bufnr (vim.api.nvim_get_current_buf)]
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_nil (buf-get-rhs 0 mode :lhs))
+              (buf-map! mode :lhs :rhs)
+              (assert.is_nil (get-rhs mode :lhs))
+              (assert.is_same :rhs (buf-get-rhs 0 mode :lhs))
+              (refresh-buffer)
+              (assert.is_nil (buf-get-rhs 0 mode :lhs))
+              (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs))))
+          (it* "creates mapping with `nowait` set to true by default"
+            (buf-map! :n :lhs :rhs)
+            (let [{: nowait} (buf-get-mapargs 0 :n :lhs)]
+              (assert.is_same 1 nowait)))))
       (describe* "imported macro"
         (describe* :remap!
           (it* "creates recursive mapping by default"
@@ -249,6 +298,8 @@
         (describe* "buf-map! with {:buffer 0} in its default-opts"
           (before-each (fn []
                          (refresh-buffer)))
+          (after-each (fn []
+                        (refresh-buffer)))
           (it* "creates current buffer-local mapping by default"
             (let [mode :x
                   bufnr (vim.api.nvim_get_current_buf)]
@@ -272,6 +323,10 @@
               (refresh-buffer)
               (assert.is_same :rhs (buf-get-rhs bufnr mode :lhs)))))
         (describe* "buf-map! with {:<buffer> true} in its default-opts"
+          (before-each (fn []
+                         (refresh-buffer)))
+          (after-each (fn []
+                        (refresh-buffer)))
           (it* "creates current buffer-local mapping by default"
             (let [bufnr (vim.api.nvim_get_current_buf)]
               (assert.is_nil (get-rhs :x :lhs))

@@ -571,6 +571,7 @@
   (set opts.buffer nil)
   (set opts.<buffer> nil)
   (set opts.literal nil)
+  (set opts.wait nil)
   opts)
 
 (lambda keymap/parse-args [...]
@@ -644,6 +645,8 @@
   @param ?api-opts kv-table"
   (when (and extra-opts.expr (not= false extra-opts.replace_keycodes))
     (set extra-opts.replace_keycodes (if extra-opts.literal false true)))
+  (when extra-opts.wait
+    (set extra-opts.nowait nil))
   (when (or extra-opts.remap
             (and extra-opts.callback (not extra-opts.expr)
                  (or (nil? ?api-opts)
