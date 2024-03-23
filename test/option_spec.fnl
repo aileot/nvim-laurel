@@ -169,7 +169,7 @@
             (assert.is_nil (. vim scope :foo))))))
     (describe* "for Vim script `option` scope (o, go, bo, wo, opt, opt_global, opt_local)"
       (describe* "with scope in symbol"
-        (it* "cannot set any options when option name is capitalized"
+        (it* "cannot set any options when option name is not in lowercase"
           (each [_ scope (ipairs win-local-scope-list)]
             (assert.has_error #(let! scope :foldLevel 2))))
         (describe* "can set vim buf-local option"
