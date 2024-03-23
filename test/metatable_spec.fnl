@@ -10,7 +10,7 @@
 (lambda get-rhs [mode lhs]
   (?. (get-mapargs mode lhs) :rhs))
 
-(describe* "On vim*,"
+(describe* "On metatable,"
   (describe* :vim*.map!
     (it* "sets keymap as `map!` does"
       ;; (assert.is_nil (get-rhs :n :lhs))
