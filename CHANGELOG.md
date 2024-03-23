@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.2](https://github.com/aileot/nvim-laurel/compare/v0.6.1...v0.6.2) (2024-03-23)
+
+
+### Features
+
+* **keymap:** add extra-opt `wait` against `nowait` ([#264](https://github.com/aileot/nvim-laurel/issues/264)) ([528d8ae](https://github.com/aileot/nvim-laurel/commit/528d8ae45c061431275645bcd61aa3ea6be5d996))
+* **option:** add `let!` macro as a superset of `opt`, `opt_local`, `opt_global`, `bo!`, `wo!`, ... ([#253](https://github.com/aileot/nvim-laurel/issues/253)) ([e737141](https://github.com/aileot/nvim-laurel/commit/e737141bf6c35eeec6f40d0dd0c29652a42bd977))
+
 ## [0.6.1](https://github.com/aileot/nvim-laurel/compare/v0.6.0...v0.6.1) (2024-03-16)
 
 
