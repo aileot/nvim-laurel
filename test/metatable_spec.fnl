@@ -12,7 +12,17 @@
 
 (describe* "On vim*,"
   (describe* :vim*.map!
-    (it* "sets keymap"
+    (it* "sets keymap as `map!` does"
       ;; (assert.is_nil (get-rhs :n :lhs))
       (vim*.map! :n :lhs :rhs)
-      (assert.same :rhs (get-rhs :n :lhs)))))
+      (assert.same :rhs (get-rhs :n :lhs))))
+  (describe* :vim*.map
+    (it* "sets keymap as `map!` does"
+      ;; (assert.is_nil (get-rhs :n :lhs))
+      (vim*.map :n :lhs :rhs)
+      (assert.same :rhs (get-rhs :n :lhs))))
+  (describe* :vim*.g
+    (it* "sets Vim Variable as `(let! :g ...)` does"
+      ;; (assert.is_nil (get-rhs :n :lhs))
+      (vim*.g :foo :bar)
+      (assert.same :bar vim.g.foo))))
