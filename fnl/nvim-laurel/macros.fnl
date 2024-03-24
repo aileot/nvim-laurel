@@ -243,7 +243,7 @@
                  :format (table.concat valid-types "/") val-type))))
   val)
 
-(lambda seq->kv-table [xs option-types]
+(lambda extra-opts/seq->kv-table [xs option-types]
   "Convert `xs` into a kv-table as follows:
   - The values for `x` listed in `?option-types` are set to `true`.
   - The values for the rest of `x`s are set to the next value in `xs`.
@@ -466,7 +466,7 @@
                          (view rest))))
           extra-opts (if (nil? ?extra-opts) {}
                          (-> ?extra-opts
-                             (seq->kv-table autocmd/extra-opt-keys)))
+                             (extra-opts/seq->kv-table autocmd/extra-opt-keys)))
           ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
           ?pat (or extra-opts.pattern ?pattern)]
       (set extra-opts.group ?id)
@@ -625,7 +625,7 @@
               ?extra-opts (when ?seq-extra-opts
                             (-> ?seq-extra-opts
                                 ;;(supplement-extra-opts! keymap/extra-opt-keys)
-                                (seq->kv-table keymap/extra-opt-keys)))
+                                (extra-opts/seq->kv-table keymap/extra-opt-keys)))
               [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
                                                    [{} a1 a2 ?a3]
                                                    (sequence? a1)
@@ -1138,7 +1138,8 @@
                             (sequence? a2) a2)
         (extra-opts name command ?api-opts) ;
         (case (when ?seq-extra-opts
-                (seq->kv-table ?seq-extra-opts command/extra-opt-keys))
+                (extra-opts/seq->kv-table ?seq-extra-opts
+                                          command/extra-opt-keys))
           nil (values {} a1 a2 ?a3)
           extra-opts (if (sequence? a1)
                          (values extra-opts a2 ?a3 ?a4)
