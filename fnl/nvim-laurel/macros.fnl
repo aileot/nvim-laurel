@@ -231,6 +231,18 @@
       _ (error* (msg-template/expected-actual "2 or 3 args"
                                               (+ 2 (select "#" ...)))))))
 
+(lambda validate-type [val valid-types]
+  "Validate the type of `val` is one of `valid-types`.
+  @param val any
+  @param valid-types string|string[]
+  @return any `val` as is"
+  (when-not (hidden-in-compile-time? val)
+    (let [val-type (type val)]
+      (assert (contains? valid-types val-type)
+              (: "expected %s, got %s" ;
+                 :format (table.concat valid-types "/") val-type))))
+  val)
+
 (lambda seq->kv-table [xs option-types]
   "Convert `xs` into a kv-table as follows:
   - The values for `x` listed in `?option-types` are set to `true`.
@@ -246,19 +258,8 @@
       (let [key (. xs i)
             val (case (. option-types key)
                   :boolean true
-                  [&as valid-types] (let [next-val (. xs (++ i))]
-                                      (when-not (hidden-in-compile-time? next-val)
-                                        (let [val-type (type next-val)]
-                                          (assert (contains? valid-types
-                                                             val-type)
-                                                  (: "%s expects %s, got %s"
-                                                     :format key
-                                                     (table.concat valid-types
-                                                                   "/")
-                                                     val-type))))
-                                      next-val)
-                  ?invalid (error (: "\"%s\" key expected sequence value, got %s"
-                                     :format key (type ?invalid))))]
+                  ?valid-types (let [next-val (. xs (++ i))]
+                                 (validate-type next-val ?valid-types)))]
         (assert (not= nil val) "nil is unexpected")
         (tset kv-table key val))
       (++ i))
