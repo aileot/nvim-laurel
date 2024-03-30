@@ -40,18 +40,26 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
 
 ## Treesitter: Personalize syntax highlights
 
-_To begin with, do not forget `;; extends` at the top
-of your `after/queries/fennel/highlights.scm`
-if you don't intend to override those defined by other plugins!_
+_(last edited at nvim-treesitter)_
+
+_To begin with, do not forget `;; extends` at the top of your
+`after/queries/fennel/<type>.scm`
+if you don't intend to override queries defined by other plugins!_
 
 ```query
 ;; extends
 ```
 
-Note:
-The capture names in the examples below follow nvim-treesitter convention,
+The following example queries are ready to be used on the latest
+tree-sitter-fennel parser supported by nvim-treesitter.
+However, it's obviously recommended to select and edit queries as your need,
+rather than indiscriminately copy and paste them.
+
+The capture names in the examples below follow the nvim-treesitter convention,
 on which most of nvim colorscheme plugins are expected to define highlight
 links to the captures.
+Since the capture names in the examples are just examples, you should change
+them as per your preference.
 
 ### Distinguish keys in table
 
