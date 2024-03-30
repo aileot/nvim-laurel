@@ -60,6 +60,38 @@ WIP
   key: (string) @variable.member)
 ```
 
+### Inject Vim syntax to Vim command callbacks in nvim-laurel macros
+
+```query
+; Without api-opts
+((list
+   . (symbol) @_call
+   (string
+     (string_content) @injection.content)
+   .)
+ (#any-of? @_call
+  "au!"
+  "autocmd!"
+  "command!")
+ (#set! injection.language "vim"))
+
+;; With api-opts
+((list
+   . (symbol) @_call
+   (string
+     (string_content) @injection.content)
+   . [(table) (symbol)] ;; api-opts
+   .)
+ (#any-of? @_call
+  "au!"
+  "autocmd!"
+  "command!")
+(#set! injection.language "vim"))
+```
+
+Note: Vim script syntax to be injected is Vim command syntax.
+It does not make sense to inject Vim syntax into `map!` macro.
+
 ## Hotpot.nvim: Clear compiled Lua cache
 
 Probably because I often run multiple nvim instances in editing nvim config
