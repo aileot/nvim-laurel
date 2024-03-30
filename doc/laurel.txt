@@ -18,3 +18,5 @@ Table of Contents                             *laurel-index-table-of-contents*
 - The <./CHANGELOG.md>, but the hints to update the features and
   usages deprecated, or removed, from nvim-laurel are written in the Cookbook
   instead.
+
+vim:tw=78:ts=8:noet:ft=help:norl:
