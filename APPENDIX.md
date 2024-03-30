@@ -68,6 +68,7 @@ WIP
 ### Highlight scope in nvim-laurel macro `let!`
 
 ```query
+;; in after/quries/fennel/highlight.scm
 (list
   . (symbol) @_call
   (#eq? @_call "let!")
@@ -92,6 +93,8 @@ WIP
 ### Inject Vim syntax to Vim command callbacks in nvim-laurel macros
 
 ```query
+;; in after/quries/fennel/injection.scm
+
 ; Without api-opts
 ((list
    . (symbol) @_call
