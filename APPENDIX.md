@@ -48,6 +48,11 @@ if you don't intend to override those defined by other plugins!_
 ;; extends
 ```
 
+Note:
+The capture names in the examples below follow nvim-treesitter convention,
+on which most of nvim colorscheme plugins are expected to define highlight
+links to the captures.
+
 ### Distinguish keys in table
 
 WIP
@@ -58,6 +63,30 @@ WIP
 ;; In after/queries/fennel/highlight.scm
 (table_pair
   key: (string) @variable.member)
+```
+
+### Highlight scope in nvim-laurel macro `let!`
+
+```query
+(list
+  . (symbol) @_call
+  (#eq? @_call "let!")
+  . (string
+      (string_content) @module)
+  (#any-of? @module
+    "g"
+    "b"
+    "w"
+    "t"
+    "v"
+    "env"
+    "o"
+    "go"
+    "bo"
+    "wo"
+    "opt"
+    "opt_local"
+    "opt_global"))
 ```
 
 ### Inject Vim syntax to Vim command callbacks in nvim-laurel macros
