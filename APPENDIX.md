@@ -68,7 +68,7 @@ WIP
 <!-- TODO: Paste Screenshot -->
 
 ```query
-;; In after/queries/fennel/highlight.scm
+;; in after/queries/fennel/highlight.scm
 (table_pair
   key: (string) @variable.member)
 ```
@@ -103,7 +103,7 @@ WIP
 ```query
 ;; in after/quries/fennel/injection.scm
 
-; Without api-opts
+; without api-opts
 ((list
    . (symbol) @_call
    (string
@@ -115,7 +115,7 @@ WIP
   "command!")
  (#set! injection.language "vim"))
 
-;; With api-opts
+;; with api-opts
 ((list
    . (symbol) @_call
    (string
