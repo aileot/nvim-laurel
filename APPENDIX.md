@@ -13,6 +13,14 @@ Fennel.
 - [Hotpot.nvim: Clear compiled Lua cache](#hotpotnvim-clear-compiled-lua-cache)
 - [Hotpot.nvim: Alternate Fennel file and its compiled Lua cache](#hotpotnvim-alternate-fennel-file-and-its-compiled-lua-cache)
 
+## Caveat
+
+This page might contain usage beyond the plugin authors intend.
+If the plugin authors say unrecommended, it's unrecommended;
+if the plugin authors request removal of a related article, it should be
+removed.  
+Please use the dark powers at your own risk.
+
 ## LSP: Get fennel-ls support
 
 This is an example to get a support from
