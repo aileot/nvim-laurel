@@ -3,6 +3,16 @@
 Extra knowledge not limited to nvim-laurel, but useful to write nvim config in
 Fennel.
 
+## TOC
+
+- [LSP: Get fennel-ls support](#lsp-get-fennel-ls-support)
+- [Treesitter: Personalize syntax highlights](#treesitter-personalize-syntax-highlights)
+  - [Distinguish keys in table](#distinguish-keys-in-table)
+  - [Highlight scope in nvim-laurel macro `let!`](#highlight-scope-in-nvim-laurel-macro-let)
+  - [Inject Vim syntax to Vim command callbacks in nvim-laurel macros](#inject-vim-syntax-to-vim-command-callbacks-in-nvim-laurel-macros)
+- [Hotpot.nvim: Clear compiled Lua cache](#hotpotnvim-clear-compiled-lua-cache)
+- [Hotpot.nvim: Alternate Fennel file and its compiled Lua cache](#hotpotnvim-alternate-fennel-file-and-its-compiled-lua-cache)
+
 ## LSP: Get fennel-ls support
 
 This is an example to get a support from
