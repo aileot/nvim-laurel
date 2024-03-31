@@ -1,5 +1,8 @@
 # Appendix of nvim-laurel
 
+Extra knowledge not limited to nvim-laurel, but useful to write nvim config in
+Fennel.
+
 ## LSP: Get fennel-ls support
 
 This is an example to get a support from
