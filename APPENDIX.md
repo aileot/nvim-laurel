@@ -37,10 +37,13 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
       pat-project-root "."
       _ (table.insert runtime-fnl-roots pat-project-root)
       ;; Note: It shares the suffix patterns with fennel-path and macro-path.
-      ;; Another step is required if you need `?/init-macros.fnl`.
+      ;; Another step is required if you also need `?/init-macros.fnl`.
       suffix-patterns [:/?.fnl :/?/init.fnl]
       default-patterns (table.concat [:?.fnl
                                       :?/init.fnl
+                                      ;; Note: The following src/ patterns are
+                                      ;; merely community convention, but
+                                      ;; recommended.
                                       :src/?.fnl
                                       :src/?/init.fnl]
                                      ";")
