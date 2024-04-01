@@ -5,6 +5,7 @@ Fennel.
 
 ## TOC
 
+- [Caveat](#caveat)
 - [LSP: Get fennel-ls support](#lsp-get-fennel-ls-support)
 - [Treesitter: Personalize syntax highlights](#treesitter-personalize-syntax-highlights)
   - [Distinguish keys in table](#distinguish-keys-in-table)
