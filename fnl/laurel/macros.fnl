@@ -1043,9 +1043,9 @@
     - `scope` is set in either symbol or list.
     - `?val` is set in either symbol or list.
   ```fennel
-  (let! scope name ?val)
-  (let! scope name ?flag ?val) ; only in the scope: `opt`, `opt_local`, or `opt_global`
-  (let! scope ?id name ?val) ; only in the scope: `b`, `w`, or `t`
+  (let! scope name val)
+  (let! scope name ?flag val) ; only in the scope: `opt`, `opt_local`, or `opt_global`
+  (let! scope ?id name val) ; only in the scope: `b`, `w`, or `t`
   ```
   @param scope \"g\"
   |\"b\"
@@ -1067,13 +1067,12 @@
   @param ?flag symbol Omittable flag. Set one of `+`, `^`, or `-` to append,
     prepend, or remove, value to the option. Only available in the `scope`s:
     `opt`, `opt_local`, `opt_global`.
-  @param ?val boolean|number|string|table New option value.
-    If not provided, the value is supposed to be `true` (experimental), and
-    not work with `?id`.
-    "
+  @param val boolean|number|string|table New option value."
   (if (hidden-in-compile-time? scope)
       (if (= 1 (select "#" ...))
-          `(tset vim ,scope ,... true)
+          (deprecate "(Partial) The format `let!` without value unless the macro includes `?` flag"
+                     "Set `true` to set it to `true`, or insert `?` flag to get the value"
+                     :v0.8.0 `(tset vim ,scope ,... true))
           `(tset vim ,scope ,...))
       (case (case scope
               :g (values 2 `vim.api.nvim_set_var)
