@@ -128,7 +128,7 @@ WIP
 ```query
 ;; in after/quries/fennel/injection.scm
 
-; without api-opts
+;; without api-opts
 ((list
    . (symbol) @_call
    (string
