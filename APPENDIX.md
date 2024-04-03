@@ -182,6 +182,9 @@ A quick glance at the compiled Lua results can find the cause of a problem
 more quickly and easily with than a line-by-line review through Fennel codes.
 
 ```fennel
+(macro file-readable? [file])
+  `(= (vim.fn.filereadable ,file) 1)))
+
 (command! :HotpotCacheAlternate
   [:desc "Open the alternate file of current buffer."]
   #(let [path (vim.fn.expand "%:p")
