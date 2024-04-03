@@ -124,7 +124,7 @@ WIP
     "opt_global"))
 ```
 
-## Treesitter: _Inject Vim syntax to Vim command callbacks in nvim-laurel macros_
+## Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_
 
 ```query
 ;; in after/quries/fennel/injection.scm
