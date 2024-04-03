@@ -87,7 +87,7 @@ links to the captures.
 Since the capture names in the examples are just examples, you should change
 them as per your preference.
 
-### Distinguish keys in table
+## Treesitter: Distinguish keys in table
 
 WIP
 
@@ -99,7 +99,7 @@ WIP
   key: (string) @variable.member)
 ```
 
-### Highlight scope in nvim-laurel macro `let!`
+## Treesitter: Highlight scope in nvim-laurel macro `let!`
 
 ```query
 ;; in after/quries/fennel/highlight.scm
@@ -124,7 +124,7 @@ WIP
     "opt_global"))
 ```
 
-### Inject Vim syntax to Vim command callbacks in nvim-laurel macros
+## Treesitter: Inject Vim syntax to Vim command callbacks in nvim-laurel macros
 
 ```query
 ;; in after/quries/fennel/injection.scm
