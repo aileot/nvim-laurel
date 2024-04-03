@@ -160,7 +160,7 @@ It does not make sense to inject Vim syntax into `map!` macro.
 ## Hotpot.nvim: Clear compiled Lua cache
 
 Probably because I often run multiple nvim instances in editing nvim config
-files, hotpot.nvim sometimes fails to catch up the latest. In such cases,
+files, hotpot.nvim is sometimes unaware of the latest changes. In such cases,
 the following codes would be useful.
 
 ```fennel
