@@ -232,7 +232,8 @@
                                               (+ 2 (select "#" ...)))))))
 
 (lambda validate-type [val valid-types]
-  "Validate the type of `val` is one of `valid-types`.
+  "Validate the type of `val` is one of `valid-types`. When `val` is symbol or
+  list, it's ignored.
   @param val any
   @param valid-types string|string[]
   @return any `val` as is"
