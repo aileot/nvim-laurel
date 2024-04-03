@@ -10,7 +10,7 @@ Fennel._
 - [Treesitter: _Personalize syntax highlights_](#treesitter-_personalize-syntax-highlights)
 - [Treesitter: _Distinguish keys in table_](#treesitter-_distinguish-keys-in-table)
 - [Treesitter: _Highlight scope in nvim-laurel macro `let!`_](#treesitter-_highlight-scope-in-nvim-laurel-macro-let)
-- [Treesitter: _Inject Vim syntax to Vim command callbacks in nvim-laurel macros_](#treesitter-_inject-vim-syntax-to-vim-command-callbacks-in-nvim-laurel-macros)
+- [Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_](#treesitter-_inject-vim-syntax-highlight-to-vim-command-in-nvim-laurel-macros)
 - [Hotpot.nvim: _Clear compiled Lua cache_](#hotpotnvim-_clear-compiled-lua-cache)
 - [Hotpot.nvim: _Alternate Fennel file and its compiled Lua cache_](#hotpotnvim-_alternate-fennel-file-and-its-compiled-lua-cache)
 
