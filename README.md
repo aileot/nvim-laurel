@@ -28,9 +28,10 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 - The [Appendix](./APPENDIX.md) shows extra knowledge not limited to
   nvim-laurel, but useful to write nvim config files in Fennel:
   LSP, Treesitter, hotpot.nvim, etc. Happy Coding!
-- The [Changelog](./CHANGELOG.md), but the hints to update the features and
-  usages deprecated, or removed, from nvim-laurel are written in the Cookbook
-  instead.
+- The [Changelog](./CHANGELOG.md).
+  _Please read the [Cookbook](./COOKBOOK.md) instead_
+  for tips how to update features and usages deprecated or removed in
+  nvim-laurel.
 
 ## Design
 
