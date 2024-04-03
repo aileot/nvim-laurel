@@ -17,7 +17,7 @@ Fennel.
 ## Caveat
 
 This page might contain usage beyond the plugin authors intend.
-If the plugin authors say unrecommended, it's unrecommended;
+If the plugin authors say it is unrecommended, it is unrecommended;
 if the plugin authors request removal of a related article, it should be
 removed.
 
