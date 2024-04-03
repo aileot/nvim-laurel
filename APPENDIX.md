@@ -1,7 +1,7 @@
 # Appendix of nvim-laurel
 
-Extra knowledge not limited to nvim-laurel, but useful to write nvim config in
-Fennel.
+_Extra knowledge not limited to nvim-laurel, but useful to write nvim config in
+Fennel._
 
 ## TOC
 
