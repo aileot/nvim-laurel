@@ -178,8 +178,13 @@ the following codes would be useful.
 
 ## Hotpot.nvim: Alternate Fennel file and its compiled Lua cache
 
-A quick glance at the compiled Lua results can find the cause of a problem
-more quickly and easily with than a line-by-line review through Fennel codes.
+A quick glance at the compiled Lua results with syntax highlight could find
+the cause of a problem more quickly and easily with than a line-by-line review
+through Fennel codes.
+(Besides, peeking Lua result is inevitable to optimize performance at all...)
+The `correlate` option should be temporarily disabled before compiling the
+file.
+Haven't you already set up with [lua-language-server][lua_ls]?
 
 ```fennel
 (macro file-readable? [file])
@@ -261,3 +266,5 @@ more quickly and easily with than a line-by-line review through Fennel codes.
           (buf-nmap! [:desc ":split <alternate>"] "]A"
                      (<Cmd> "vertical below HotpotCacheAlternate")))))
 ```
+
+[lua_ls]: https://github.com/LuaLS/lua-language-server
