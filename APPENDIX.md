@@ -19,8 +19,9 @@ Fennel.
 This page might contain usage beyond the plugin authors intend.
 If the plugin authors say unrecommended, it's unrecommended;
 if the plugin authors request removal of a related article, it should be
-removed.  
-Please use the dark powers at your own risk.
+removed.
+
+_You are responsible for your own codes._
 
 ## LSP: Get fennel-ls support
 
