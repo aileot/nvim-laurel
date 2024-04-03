@@ -21,7 +21,7 @@ If the plugin authors say it is unrecommended, it is unrecommended;
 if the plugin authors request removal of a related article, it should be
 removed.
 
-_You are responsible for your own codes._
+_Please adopt or adjust the snippets at your own risk._
 
 ## LSP: Get fennel-ls support
 
