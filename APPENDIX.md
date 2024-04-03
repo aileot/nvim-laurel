@@ -29,7 +29,7 @@ This is an example to get a support from
 with
 [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig).
 The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
-`&runtimepath`.
+`&runtimepath`, including nvim-laurel macros.
 
 ```fennel
 (let [globals [:vim]
