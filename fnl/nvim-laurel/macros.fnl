@@ -638,7 +638,6 @@
                                   (sequence? a2) a2)
               ?extra-opts (when ?seq-extra-opts
                             (-> ?seq-extra-opts
-                                ;;(supplement-extra-opts! keymap/extra-opt-keys)
                                 (extra-opts/seq->kv-table keymap/extra-opt-keys)))
               [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
                                                    [{} a1 a2 ?a3]
