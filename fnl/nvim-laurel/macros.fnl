@@ -284,6 +284,17 @@
       (++ i))
     kv-table))
 
+(lambda extra-opts/supplement-desc-key! [extra-opts extra-opt-valid-keys]
+  ;; TODO: Add this feature after a version update where `autocmd!` should
+  ;; demand pattern or buffer just before extra-opts.
+  "Insert missing `desc` key in `extra-opts` sequence.
+  @param extra-opts sequence
+  @param extra-opt-valid-keys string[]
+  @return sequence"
+  (when-not (contains? extra-opt-valid-keys (first extra-opts))
+    (table.insert extra-opts 1 :desc)
+    extra-opts))
+
 (lambda merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
   @param ?extra-opts kv-table|nil
