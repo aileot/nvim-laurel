@@ -54,7 +54,7 @@ nvim-laurel macros properly.
 An example to import and export nvim-laurel macros
 </summary>
 
-In a macro definition file, say my-macros.fnl,
+In a macro definition file, say `my-macros.fnl`,
 
 ```fennel
 (local {: set!
