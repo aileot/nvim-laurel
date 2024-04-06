@@ -263,7 +263,7 @@
             val (case (. option-types key)
                   :boolean true
                   valid-types (let [next-val (. xs (++ i))]
-                                (if (. option-types next-val)
+                                (if (or (. option-types next-val) (< max i))
                                     (case valid-types
                                       :boolean true
                                       [:default default-val] default-val)
