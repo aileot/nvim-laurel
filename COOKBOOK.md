@@ -124,7 +124,7 @@ Then, at the top of example codes,
 
 <!-- panvimdoc-ignore-start -->
 
-#### `augroup+`: _Create augroup macro without clearing itself by default_
+#### `augroup+`: _An augroup macro without clearing itself by default_
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
@@ -143,7 +143,7 @@ augroup+                                                     *laurel-augroup+*
 
 <!-- panvimdoc-ignore-start -->
 
-#### `set+`, `set-`, `set^`, ...: _Create dedicated macros to append/remove/prepend Vim options_
+#### `set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
