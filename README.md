@@ -21,7 +21,8 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 
 > [!WARNING]
 > Some breaking changes are planned until v1.0.0.  
-> COOKBOOK.md contains how to update them as painlessly as possible.
+> [COOKBOOK.md](./COOKBOOK.md) contains how to update them as painlessly as
+> possible.
 
 ## Documentations
 
