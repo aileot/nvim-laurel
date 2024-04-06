@@ -72,7 +72,7 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
 
 ## Treesitter
 
-_(last edited at nvim-treesitter)_
+_(last edited at nvim-treesitter [e6cd337e](https://github.com/nvim-treesitter/nvim-treesitter/commit/e6cd337e30962cc0982d51fa03beedcc6bc70e3d))_
 
 _To begin with, do not forget `;; extends` at the top of your
 `after/queries/fennel/<type>.scm`
