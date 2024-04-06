@@ -64,7 +64,11 @@
   (describe* :extra-opts
     (it* "can be either first arg or second arg"
       (assert.has_no_error #(command! [:bang] :Foo :Bar))
-      (assert.has_no_error #(command! :Foo [:bang] :Bar))))
+      (assert.has_no_error #(command! :Foo [:bang] :Bar)))
+    (it* "can define command with `range` key with its value"
+      (command! [:range "%"] :Foo :bar))
+    (it* "can define command with `range` key without its value"
+      (command! [:range] :Foo :bar)))
   (describe* :api-opts
     (it* "gives priority api-opts over extra-opts"
       (command! :Foo [:bar :bang] :FooBar)
