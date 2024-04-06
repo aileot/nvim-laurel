@@ -124,14 +124,12 @@ Then, at the top of example codes,
 
 <!-- panvimdoc-ignore-start -->
 
-#### `augroup+`
+#### `augroup+`: _Create augroup macro without clearing itself by default_
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
 augroup+                                                     *laurel-augroup+*
 -->
-
-##### Create augroup macro without clearing itself by default
 
 ```fennel
 (fn augroup+ [...]
@@ -145,7 +143,7 @@ augroup+                                                     *laurel-augroup+*
 
 <!-- panvimdoc-ignore-start -->
 
-#### `set+`, `set-`, `set^`, ...
+#### `set+`, `set-`, `set^`, ...: _Create dedicated macros to append/remove/prepend Vim options_
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
@@ -163,8 +161,6 @@ go-                                                               *laurel-go-*
 go^                                                               *laurel-go^*
 -->
 
-##### Create dedicated macros to append, remove, prepend Vim options
-
 ```fennel
 (lambda set+ [name val]
   (let! :opt name `+ val)))
@@ -180,14 +176,12 @@ Replace "set", as you need, with "setlocal", "setglobal", etc.
 
 <!-- panvimdoc-ignore-start -->
 
-#### A monolithic augroup
+#### Create autocmds in a monolithic augroup all over my vimrc
 
 <!-- panvimdoc-ignore-end -->
 <!-- panvimdoc-include-comment
 monolithic-augroup                                 *laurel-monolithic-augroup*
 -->
-
-##### Create autocmds in a monolithic augroup all over my vimrc
 
 <details>
 <summary>
@@ -216,7 +210,7 @@ augroup END
 
 With nvim-laurel, it could be implemented in some approaches:
 
-###### The simplest approach
+##### The simplest approach
 
 1. Define an `augroup` at first in a runtime file.
 
@@ -233,7 +227,7 @@ With nvim-laurel, it could be implemented in some approaches:
   (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim])))
 ```
 
-###### Another approach with `augroup!` wrapper
+##### Another approach with `augroup!` wrapper
 
 1. In a macro definition file, define and export a wrapper macro not to clear
    `augroup` by default.
@@ -258,7 +252,7 @@ With nvim-laurel, it could be implemented in some approaches:
   (au! :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
 ```
 
-###### (Optional) An idea to define `autocmd`s with `group` in Integer id
+##### (Optional) An idea to define `autocmd`s with `group` in Integer id
 
 1. Define an `augroup` in runtime file, but assign its `id` to an global
    variable either `_G` or `vim.g`.
