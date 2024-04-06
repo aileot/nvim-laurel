@@ -4,8 +4,8 @@
 
 - [Recipes](#recipes)
   - [Create wrapper macros](#create-wrapper-macros)
-    - [`augroup+`: _An augroup macro without clearing itself by default_](#augroup-_an-augroup-macro-without-clearing-itself-by-default)
-    - [`set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_](#set-set--set--_the-dedicated-macros-to-appendremoveprepend-vim-options)
+    - [`augroup+`: _An augroup macro without clearing itself by default_](#augroup-an-augroup-macro-without-clearing-itself-by-default)
+    - [`set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_](#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options)
   - [Back to the good and old Vim script era](#back-to-the-good-and-old-vim-script-era)
     - [Create autocmds in a monolithic augroup all over my vimrc](#create-autocmds-in-a-monolithic-augroup-all-over-my-vimrc)
       - [The simplest approach](#the-simplest-approach)
