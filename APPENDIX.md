@@ -3,7 +3,7 @@
 _Extra knowledge not limited to nvim-laurel, but useful to write nvim config in
 Fennel._
 
-## TOC
+<!-- panvimdoc-ignore-start -->
 
 - [Caveat](#caveat)
 - [LSP](#lsp)
@@ -16,6 +16,8 @@ Fennel._
 - [Hotpot.nvim](#hotpotnvim)
   - [Hotpot.nvim: _Clear compiled Lua cache_](#hotpotnvim-_clear-compiled-lua-cache)
   - [Hotpot.nvim: _Alternate Fennel file and its compiled Lua cache_](#hotpotnvim-_alternate-fennel-file-and-its-compiled-lua-cache)
+
+<!-- panvimdoc-ignore-end -->
 
 ## Caveat
 

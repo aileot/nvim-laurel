@@ -1,5 +1,7 @@
 # Cookbook with nvim-laurel
 
+<!-- panvimdoc-ignore-start -->
+
 - [Recipes](#recipes)
   - [Create wrapper macros](#create-wrapper-macros)
     - [`augroup+`: _An augroup macro without clearing itself by default_](#augroup-_an-augroup-macro-without-clearing-itself-by-default)
@@ -21,6 +23,8 @@
     - [Nested hash functions in callback](#nested-hash-functions-in-callback)
       - [Anti-Pattern](#anti-pattern-2)
       - [Pattern](#pattern-2)
+
+<!-- panvimdoc-ignore-end -->
 
 ## Recipes
 
