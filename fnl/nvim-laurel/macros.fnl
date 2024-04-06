@@ -264,10 +264,10 @@
                   :boolean true
                   valid-types (let [next-val (. xs (++ i))]
                                 (if (. option-types next-val)
-                                    (validate-type next-val valid-types)
                                     (case valid-types
                                       :boolean true
-                                      [:default default-val] default-val))))]
+                                      [:default default-val] default-val)
+                                    (validate-type next-val valid-types))))]
         (assert (not= nil val) (: "nil at `%s` key is unexpected" :format key))
         (tset kv-table key val))
       (++ i))
@@ -1105,7 +1105,7 @@
         :buffer [:number]
         :callback [:function]
         :complete [:function :string]
-        :count [:number]
+        :count [:default 0 :number]
         :custom [:string]
         :customlist [:string]
         :desc [:string]
@@ -1117,7 +1117,7 @@
         :noremap :boolean
         :nowait :boolean
         :preview [:function]
-        :range :boolean
+        :range [:default "" :number :string]
         :register :boolean})
 
 (lambda command/->compatible-opts! [opts]
