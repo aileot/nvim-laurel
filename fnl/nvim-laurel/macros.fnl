@@ -266,8 +266,11 @@
                                 (if (or (. option-types next-val) (< max i))
                                     (case valid-types
                                       :boolean true
-                                      [:default default-val] default-val)
-                                    (validate-type next-val valid-types))))]
+                                      [:default default-val] default-val
+                                      _ (error (: "`%s` key requires a value"
+                                                  :format key)))
+                                    (validate-type next-val valid-types)))
+                  _ (error (.. "Invalid option: " key)))]
         (assert (not= nil val) (: "nil at `%s` key is unexpected" :format key))
         (tset kv-table key val))
       (++ i))
