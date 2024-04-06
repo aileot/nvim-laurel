@@ -79,6 +79,9 @@
 
 ;; Misc ///2
 
+(fn error-fmt [str ...]
+  (error (: str :format ...)))
+
 (fn assert-seq [x]
   "Assert `x` is either sequence or list, or not.
   @param x any
