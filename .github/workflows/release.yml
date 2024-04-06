@@ -36,6 +36,17 @@ jobs:
           treesitter: true
           dedupsubheadings: false # Add heading to subheading anchor links to ensure that subheadings are unique
           docmapping: false # Use h4 headers as mapping docs
+      - name: Generate vimdoc (appendix)
+        uses: kdheepak/panvimdoc@v4.0.0
+        with:
+          vimdoc: laurel-appendix
+          pandoc: APPENDIX.md
+          version: "Neovim >= 0.9.5"
+          description: "Appendix of nvim-laurel"
+          demojify: true
+          treesitter: true
+          dedupsubheadings: false # Add heading to subheading anchor links to ensure that subheadings are unique
+          docmapping: false # Use h4 headers as mapping docs
       - name: PR new vimdoc
         uses: peter-evans/create-pull-request@v6
         with:
