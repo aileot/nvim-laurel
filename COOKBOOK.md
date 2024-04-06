@@ -109,10 +109,10 @@ And export them at the bottom of the file:
 ```
 
 Then, at the top of example codes,
-(For convenience sake only. `require-macros` is officially deprecated in
-favor of `import-macros` in Fennel v0.4.0.)
 
 ```fennel
+;; Note: This is only for convenience sake; `require-macros` is officially deprecated
+;; in favor of `import-macros` in Fennel v0.4.0.
 (require-macros :my-macros)
 ```
 
