@@ -22,7 +22,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 > [!WARNING]
 > Some breaking changes are planned until v1.0.0.  
 > [COOKBOOK.md](./COOKBOOK.md) contains how to update them as painlessly as
-> possible.
+> possible; see [REFERENCE.md](./REFERENCE.md) for usage of
+> `g:laurel_deprecated`, which would also help you update them as long as they
+> are deprecated, but not abolished yet.
 
 ## Documentations
 
