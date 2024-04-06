@@ -19,6 +19,10 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 
 </div>
 
+> [!WARNING]
+> Some breaking changes are planned until v1.0.0.  
+> COOKBOOK.md contains how to update them as painlessly as possible.
+
 ## Documentations
 
 - The [Reference](./REFERENCE.md) lists out the nvim-laurel interfaces.
