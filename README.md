@@ -245,7 +245,7 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 ## Usage
 
 ```fennel
-(import-macros {: set! : map! : augroup! : au! ...} :nvim-laurel.macros)
+(import-macros {: set! : map! : augroup! : au! ...} :laurel.macros)
 ```
 
 See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
