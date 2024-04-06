@@ -51,7 +51,9 @@ nvim-laurel macros properly.
 
 <details>
 <summary>
+<i>
 An example to import and export nvim-laurel macros
+</i>
 </summary>
 
 In a macro definition file, say `my-macros.fnl`,
