@@ -9,7 +9,6 @@ Fennel._
 - [LSP](#lsp)
   - [LSP: _Get fennel-ls support_](#lsp-_get-fennel-ls-support)
 - [Treesitter](#treesitter)
-  - [Treesitter: _Personalize syntax highlights_](#treesitter-_personalize-syntax-highlights)
   - [Treesitter: _Distinguish keys in table_](#treesitter-_distinguish-keys-in-table)
   - [Treesitter: _Highlight scope in nvim-laurel macro `let!`_](#treesitter-_highlight-scope-in-nvim-laurel-macro-let)
   - [Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_](#treesitter-_inject-vim-syntax-highlight-to-vim-command-in-nvim-laurel-macros)
@@ -72,8 +71,6 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
 ```
 
 ## Treesitter
-
-### Treesitter: _Personalize syntax highlights_
 
 _(last edited at nvim-treesitter)_
 
