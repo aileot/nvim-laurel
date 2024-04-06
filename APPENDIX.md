@@ -6,13 +6,16 @@ Fennel._
 ## TOC
 
 - [Caveat](#caveat)
-- [LSP: _Get fennel-ls support_](#lsp-_get-fennel-ls-support)
-- [Treesitter: _Personalize syntax highlights_](#treesitter-_personalize-syntax-highlights)
-- [Treesitter: _Distinguish keys in table_](#treesitter-_distinguish-keys-in-table)
-- [Treesitter: _Highlight scope in nvim-laurel macro `let!`_](#treesitter-_highlight-scope-in-nvim-laurel-macro-let)
-- [Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_](#treesitter-_inject-vim-syntax-highlight-to-vim-command-in-nvim-laurel-macros)
-- [Hotpot.nvim: _Clear compiled Lua cache_](#hotpotnvim-_clear-compiled-lua-cache)
-- [Hotpot.nvim: _Alternate Fennel file and its compiled Lua cache_](#hotpotnvim-_alternate-fennel-file-and-its-compiled-lua-cache)
+- [LSP](#lsp)
+  - [LSP: _Get fennel-ls support_](#lsp-_get-fennel-ls-support)
+- [Treesitter](#treesitter)
+  - [Treesitter: _Personalize syntax highlights_](#treesitter-_personalize-syntax-highlights)
+  - [Treesitter: _Distinguish keys in table_](#treesitter-_distinguish-keys-in-table)
+  - [Treesitter: _Highlight scope in nvim-laurel macro `let!`_](#treesitter-_highlight-scope-in-nvim-laurel-macro-let)
+  - [Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_](#treesitter-_inject-vim-syntax-highlight-to-vim-command-in-nvim-laurel-macros)
+- [Hotpot.nvim](#hotpotnvim)
+  - [Hotpot.nvim: _Clear compiled Lua cache_](#hotpotnvim-_clear-compiled-lua-cache)
+  - [Hotpot.nvim: _Alternate Fennel file and its compiled Lua cache_](#hotpotnvim-_alternate-fennel-file-and-its-compiled-lua-cache)
 
 ## Caveat
 
@@ -23,7 +26,9 @@ removed.
 
 _Please adopt or adjust the snippets at your own risk._
 
-## LSP: _Get fennel-ls support_
+## LSP
+
+### LSP: _Get fennel-ls support_
 
 This is an example to get a support from
 [fennel-ls](https://git.sr.ht/~xerool/fennel-ls)
@@ -64,7 +69,9 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
  (lspconfig.setup config)
 ```
 
-## Treesitter: _Personalize syntax highlights_
+## Treesitter
+
+### Treesitter: _Personalize syntax highlights_
 
 _(last edited at nvim-treesitter)_
 
@@ -87,7 +94,7 @@ links to the captures.
 Since the capture names in the examples are just examples, you should change
 them as per your preference.
 
-## Treesitter: _Distinguish keys in table_
+### Treesitter: _Distinguish keys in table_
 
 WIP
 
@@ -99,7 +106,7 @@ WIP
   key: (string) @variable.member)
 ```
 
-## Treesitter: _Highlight scope in nvim-laurel macro `let!`_
+### Treesitter: _Highlight scope in nvim-laurel macro `let!`_
 
 ```query
 ;; in after/quries/fennel/highlight.scm
@@ -124,7 +131,7 @@ WIP
     "opt_global"))
 ```
 
-## Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_
+### Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_
 
 ```query
 ;; in after/quries/fennel/injection.scm
@@ -158,7 +165,9 @@ WIP
 Note: Vim script syntax to be injected is Vim command syntax.
 It does not make sense to inject Vim syntax into `map!` macro.
 
-## Hotpot.nvim: _Clear compiled Lua cache_
+## Hotpot.nvim
+
+### Hotpot.nvim: _Clear compiled Lua cache_
 
 Probably because I often run multiple nvim instances in editing nvim config
 files, hotpot.nvim is sometimes unaware of the latest changes. In such cases,
@@ -177,7 +186,7 @@ the following codes would be useful.
      (vim.fn.system [:nvim :--headless :+q])))
 ```
 
-## Hotpot.nvim: _Alternate Fennel file and its compiled Lua cache_
+### Hotpot.nvim: _Alternate Fennel file and its compiled Lua cache_
 
 A quick glance at the compiled Lua results with syntax highlight could find
 the cause of a problem more quickly and easily with than a line-by-line review
