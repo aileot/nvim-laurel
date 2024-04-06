@@ -1109,7 +1109,7 @@
         :keepscript :boolean
         :nargs [:string]
         :preview [:function]
-        :range [:default "" :number :string]
+        :range [:default true :number :string]
         :register :boolean})
 
 (lambda command/->compatible-opts! [opts]
