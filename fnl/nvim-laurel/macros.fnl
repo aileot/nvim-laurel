@@ -270,8 +270,8 @@
                                     (case valid-types
                                       :boolean true
                                       [:default default-val] default-val
-                                      _ (error (: "`%s` key requires a value"
-                                                  :format key)))
+                                      _ (error-fmt "`%s` key requires a value"
+                                                   key))
                                     (validate-type next-val valid-types)))
                   _ (error (.. "Invalid option: " key)))]
         (assert (not= nil val) (: "nil at `%s` key is unexpected" :format key))
