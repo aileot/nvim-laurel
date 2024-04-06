@@ -137,6 +137,20 @@
     (fcollect [i first last]
       (. xs i))))
 
+(fn tbl->keys [tbl]
+  "Return keys of `tbl`.
+  @param tbl table
+  @return sequence"
+  (icollect [k _ (pairs tbl)]
+    k))
+
+;; (fn tbl->values [tbl]
+;;   "Return values of `tbl`.
+;;   @param tbl table
+;;   @return sequence"
+;;   (icollect [_ v (pairs tbl)]
+;;     v))
+
 (fn tbl/copy [from ?to]
   "Return a shallow copy of table `from`.
   @param from table
@@ -217,41 +231,38 @@
       _ (error* (msg-template/expected-actual "2 or 3 args"
                                               (+ 2 (select "#" ...)))))))
 
-(lambda seq->kv-table [xs ?trues]
+(lambda validate-type [val valid-types]
+  "Validate the type of `val` is one of `valid-types`. When `val` is symbol or
+  list, it's ignored.
+  @param val any
+  @param valid-types string|string[]
+  @return any `val` as is"
+  (when-not (hidden-in-compile-time? val)
+    (let [val-type (type val)]
+      (assert (contains? valid-types val-type)
+              (: "expected %s, got %s" ;
+                 :format (table.concat valid-types "/") val-type))))
+  val)
+
+(lambda extra-opts/seq->kv-table [xs option-types]
   "Convert `xs` into a kv-table as follows:
-  - The values for `x` listed in `?trues` are set to `true`.
+  - The values for `x` listed in `?option-types` are set to `true`.
   - The values for the rest of `x`s are set to the next value in `xs`.
   @param xs sequence
-  @param ?trues string[] The sequence of keys set to `true`.
+  @param option-types string[] The sequence of keys set to `true`.
   @return kv-table"
+  (assert (sequence? xs) (.. "expected sequence, got " (type xs)))
   (let [kv-table {}
-        max (length xs)
-        trues (or ?trues [])]
+        max (length xs)]
     (var i 1)
     (while (<= i max)
-      (let [x (. xs i)]
-        (if (contains? trues x)
-            (tset kv-table x true)
-            (tset kv-table x (. xs (++ i)))))
-      (++ i))
-    kv-table))
-
-(lambda seq->trues [xs ?nexts]
-  "Convert `xs` into a kv-table as follows:
-  - The values for `x` listed in `?nexts` are set to the next value in `xs`.
-  - The values for the rest of `x`s are set to `true`.
-  @param xs sequence
-  @param ?nexts string[]
-  @return kv-table"
-  (let [kv-table {}
-        max (length xs)
-        nexts (or ?nexts [])]
-    (var i 1)
-    (while (<= i max)
-      (let [x (. xs i)]
-        (if (contains? nexts x)
-            (tset kv-table x (. xs (++ i)))
-            (tset kv-table x true)))
+      (let [key (. xs i)
+            val (case (. option-types key)
+                  :boolean true
+                  ?valid-types (let [next-val (. xs (++ i))]
+                                 (validate-type next-val ?valid-types)))]
+        (assert (not= nil val) "nil is unexpected")
+        (tset kv-table key val))
       (++ i))
     kv-table))
 
@@ -397,15 +408,16 @@
 
 ;; Autocmd ///1
 
-(local autocmd/extra-opt-keys [:group
-                               :pattern
-                               :buffer
-                               :<buffer>
-                               :desc
-                               :callback
-                               :command
-                               :once
-                               :nested])
+(local autocmd/extra-opt-keys
+       {:<buffer> :boolean
+        :buffer [:number]
+        :callback [:function]
+        :command [:string]
+        :desc [:string]
+        :nested :boolean
+        :once :boolean
+        :pattern [:string :table]
+        :group [:string :number]})
 
 (lambda autocmd/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
@@ -446,14 +458,16 @@
             (where [a ex-opts c ?d] (sequence? ex-opts)) (values a ex-opts c ?d)
             [a b ?c nil] (if (or (str? a) (hidden-in-compile-time? a))
                              (values nil nil a b)
-                             (contains? autocmd/extra-opt-keys (first a))
+                             (contains? (tbl->keys autocmd/extra-opt-keys)
+                                        (first a))
                              (values nil a b ?c)
                              (values a nil b ?c))
             _ (error* (: "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
                          :format (view args) (view ?id) (view events)
                          (view rest))))
           extra-opts (if (nil? ?extra-opts) {}
-                         (seq->kv-table ?extra-opts [:once :nested :<buffer>]))
+                         (-> ?extra-opts
+                             (extra-opts/seq->kv-table autocmd/extra-opt-keys)))
           ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
           ?pat (or extra-opts.pattern ?pattern)]
       (set extra-opts.group ?id)
@@ -566,6 +580,21 @@
 
 ;; Keymap ///1
 
+(local keymap/extra-opt-keys {:<buffer> :boolean
+                              :buffer [:number]
+                              :callback [:function]
+                              :desc [:string]
+                              :expr :boolean
+                              :literal :boolean
+                              :noremap :boolean
+                              :nowait :boolean
+                              :remap :boolean
+                              :replace_keycodes :boolean
+                              :script :boolean
+                              :silent :boolean
+                              :unique :boolean
+                              :wait :boolean})
+
 (lambda keymap/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
@@ -595,8 +624,9 @@
         (let [?seq-extra-opts (if (sequence? a1) a1
                                   (sequence? a2) a2)
               ?extra-opts (when ?seq-extra-opts
-                            (seq->trues ?seq-extra-opts
-                                        [:desc :buffer :callback]))
+                            (-> ?seq-extra-opts
+                                ;;(supplement-extra-opts! keymap/extra-opt-keys)
+                                (extra-opts/seq->kv-table keymap/extra-opt-keys)))
               [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
                                                    [{} a1 a2 ?a3]
                                                    (sequence? a1)
@@ -1060,6 +1090,29 @@
 
 ;; Command ///1
 
+(local command/extra-opt-keys
+       {:<buffer> :boolean
+        :addr [:string]
+        :bang :boolean
+        :bar :boolean
+        :buffer [:number]
+        :callback [:function]
+        :complete [:function :string]
+        :count [:number]
+        :custom [:string]
+        :customlist [:string]
+        :desc [:string]
+        :expr :boolean
+        :force :boolean
+        :keepscript :boolean
+        :literal :boolean
+        :nargs [:string]
+        :noremap :boolean
+        :nowait :boolean
+        :preview [:function]
+        :range :boolean
+        :register :boolean})
+
 (lambda command/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
@@ -1086,8 +1139,8 @@
                             (sequence? a2) a2)
         (extra-opts name command ?api-opts) ;
         (case (when ?seq-extra-opts
-                (seq->kv-table ?seq-extra-opts
-                               [:bar :bang :<buffer> :register :keepscript]))
+                (extra-opts/seq->kv-table ?seq-extra-opts
+                                          command/extra-opt-keys))
           nil (values {} a1 a2 ?a3)
           extra-opts (if (sequence? a1)
                          (values extra-opts a2 ?a3 ?a4)
