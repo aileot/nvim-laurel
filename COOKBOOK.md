@@ -1,6 +1,5 @@
 # Cookbook with nvim-laurel
 
-- [Rationale](#rationale)
 - [Recipes](#recipes)
   - [Create wrapper macros](#create-wrapper-macros)
     - [`augroup+`: _An augroup macro without clearing itself by default_](#augroup-_an-augroup-macro-without-clearing-itself-by-default)
@@ -22,23 +21,6 @@
     - [Nested hash functions in callback](#nested-hash-functions-in-callback)
       - [Anti-Pattern](#anti-pattern-2)
       - [Pattern](#pattern-2)
-
-## Rationale
-
-In Fennel, macro is the same as function except it's evaluated at compile time
-and it can return a quoted list addition to the other types of values.
-Fennel treats an exported macro definition symbol as if a function-type value
-_within macro files;_ instead, Fennel treats it as if a global function value,
-once a function is imported as a macro by `import-macros`,
-~~or `require-macros` _(officially deprecated in Fennel v0.4.0)_~~,
-or a symbol defined in `macro`/`macros` macro list,
-to be expanded _in a runtime file_.
-
-What's interesting is that, once Fennel hits upon a symbol undefined within
-the macro definition, it tries to look up imported macro definitions before
-telling it an undefined global symbol.
-
-WIP
 
 ## Recipes
 
