@@ -167,11 +167,11 @@ go^                                                               *laurel-go^*
 
 ```fennel
 (lambda set+ [name val]
-  (set! name `+ val)))
+  (let! :opt name `+ val)))
 (lambda set- [name val]
-  (set! name `- val)))
+  (let! :opt name `- val)))
 (lambda set^ [name val]
-  (set! name `^ val)))
+  (let! :opt name `^ val)))
 ```
 
 Replace "set", as you need, with "setlocal", "setglobal", etc.
