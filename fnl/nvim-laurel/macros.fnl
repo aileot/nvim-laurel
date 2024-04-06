@@ -1103,19 +1103,11 @@
         :bang :boolean
         :bar :boolean
         :buffer [:number]
-        :callback [:function]
         :complete [:function :string]
         :count [:default 0 :number]
-        :custom [:string]
-        :customlist [:string]
         :desc [:string]
-        :expr :boolean
-        :force :boolean
         :keepscript :boolean
-        :literal :boolean
         :nargs [:string]
-        :noremap :boolean
-        :nowait :boolean
         :preview [:function]
         :range [:default "" :number :string]
         :register :boolean})
