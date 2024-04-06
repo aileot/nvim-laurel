@@ -189,7 +189,9 @@ monolithic-augroup                                 *laurel-monolithic-augroup*
 
 <details>
 <summary>
-<i>Traditionally, spartan Vimmers have created a monolithtic augroup in Vim script to reduce startup time...</i>
+<i>
+Traditionally, spartan Vimmers have created a monolithtic augroup in Vim script to reduce startup time...
+</i>
 </summary>
 
 ```vim
