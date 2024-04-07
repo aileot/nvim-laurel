@@ -5,7 +5,9 @@
 
 ### Features
 
-* accept `buffer` with no next value in `extra-opts` to set it to `0` ([#268](https://github.com/aileot/nvim-laurel/issues/268)) ([4b4a82d](https://github.com/aileot/nvim-laurel/commit/4b4a82dcb6d1fc780cb18f2fa8c5ec1795066bb0))
+* **autocmd:** accept `buffer` with no next value in `extra-opts` to set it to `0` ([#268](https://github.com/aileot/nvim-laurel/issues/268)) ([4b4a82d](https://github.com/aileot/nvim-laurel/commit/4b4a82dcb6d1fc780cb18f2fa8c5ec1795066bb0))
+* **command:** accept `buffer` with no next value in `extra-opts` to set it to `0` ([#268](https://github.com/aileot/nvim-laurel/issues/268)) ([4b4a82d](https://github.com/aileot/nvim-laurel/commit/4b4a82dcb6d1fc780cb18f2fa8c5ec1795066bb0))
+* **keymap:** accept `buffer` with no next value in `extra-opts` to set it to `0` ([#268](https://github.com/aileot/nvim-laurel/issues/268)) ([4b4a82d](https://github.com/aileot/nvim-laurel/commit/4b4a82dcb6d1fc780cb18f2fa8c5ec1795066bb0))
 * **keymap:** add extra-opt `wait` against `nowait` ([#264](https://github.com/aileot/nvim-laurel/issues/264)) ([528d8ae](https://github.com/aileot/nvim-laurel/commit/528d8ae45c061431275645bcd61aa3ea6be5d996))
 * **option:** add `let!` macro as a superset of `opt`, `opt_local`, `opt_global`, `bo!`, `wo!`, ... ([#253](https://github.com/aileot/nvim-laurel/issues/253)) ([e737141](https://github.com/aileot/nvim-laurel/commit/e737141bf6c35eeec6f40d0dd0c29652a42bd977))
 
@@ -19,7 +21,10 @@
 
 ### Features
 
-* add option `&default-opts` ([#227](https://github.com/aileot/nvim-laurel/issues/227)) ([bc019ed](https://github.com/aileot/nvim-laurel/commit/bc019edcf3bf69339ced1214ed0a43c4b9219ff1))
+* **autocmd**: add option `&default-opts` ([#227](https://github.com/aileot/nvim-laurel/issues/227)) ([bc019ed](https://github.com/aileot/nvim-laurel/commit/bc019edcf3bf69339ced1214ed0a43c4b9219ff1))
+* **command**: add option `&default-opts` ([#227](https://github.com/aileot/nvim-laurel/issues/227)) ([bc019ed](https://github.com/aileot/nvim-laurel/commit/bc019edcf3bf69339ced1214ed0a43c4b9219ff1))
+* **keymap**: add option `&default-opts` ([#227](https://github.com/aileot/nvim-laurel/issues/227)) ([bc019ed](https://github.com/aileot/nvim-laurel/commit/bc019edcf3bf69339ced1214ed0a43c4b9219ff1))
+* **highlight**: add option `&default-opts` ([#227](https://github.com/aileot/nvim-laurel/issues/227)) ([bc019ed](https://github.com/aileot/nvim-laurel/commit/bc019edcf3bf69339ced1214ed0a43c4b9219ff1))
 * **option:** detect infix flag in symbol to append, prepend, ...; deprecate `:foo+`, ..., format and `set+`, ..., macros ([#233](https://github.com/aileot/nvim-laurel/issues/233)) ([669bdf4](https://github.com/aileot/nvim-laurel/commit/669bdf4ed5d4503f3eb40f28024f2ebbaa4547df))
 
 
