@@ -1,4 +1,4 @@
-# Appendix of nvim-laurel
+# Appendix
 
 _Extra knowledge not limited to nvim-laurel, but useful to write nvim config in
 Fennel._

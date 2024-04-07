@@ -1,4 +1,4 @@
-# Cookbook with nvim-laurel
+# Cookbook
 
 <!-- panvimdoc-ignore-start -->
 
