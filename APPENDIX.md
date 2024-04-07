@@ -13,8 +13,6 @@ Fennel._
   - [Treesitter: _Highlight scope in nvim-laurel macro `let!`_](#treesitter-highlight-scope-in-nvim-laurel-macro-let)
   - [Treesitter: _Highlight name of `augroup`, `command`, and `highlight`_](#treesitter-highlight-name-of-augroup-command-and-highlight)
   - [Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_](#treesitter-inject-vim-syntax-highlight-to-vim-command-in-nvim-laurel-macros)
-- [Hotpot.nvim](#hotpotnvim)
-  - [Hotpot.nvim: _Clear compiled Lua cache_](#hotpotnvim-clear-compiled-lua-cache)
 
 <!-- panvimdoc-ignore-end -->
 
@@ -182,26 +180,3 @@ if you don't intend to override queries defined by other plugins._
 
 Note: Vim script syntax to be injected is Vim command syntax.
 It does not make sense to inject Vim syntax into `map!` macro.
-
-## Hotpot.nvim
-
-_(last edited at hotpot.nvim [5c96b423](https://github.com/rktjmp/hotpot.nvim/commit/5c96b423a6663c91c47d6184f810acf1dacf4615))_
-
-### Hotpot.nvim: _Clear compiled Lua cache_
-
-Probably because I often run multiple nvim instances in editing nvim config
-files, hotpot.nvim is sometimes unaware of the latest changes. In such cases,
-the following codes would be useful.
-
-```fennel
-(command! :HotpotCacheClear
-  [:desc "[hotpot] clear compiled Lua cache"]
-  #(let [{: clear-cache} (require :hotpot.api.cache)]
-     (clear-cache)))
-
-(command! :HotpotCacheForceUpdate
-  [:desc "[hotpot] clear & recache compiled Lua"]
-  #(let [{: clear-cache} (require :hotpot.api.cache)]
-     (clear-cache)
-     (vim.fn.system [:nvim :--headless :+q])))
-```
