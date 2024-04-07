@@ -43,12 +43,7 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 ## Design
 
 - **Fast:** Each macro is expanded to a few nvim API functions in principle.
-- **Intuitive:** Most of the macros imitates the corresponding Vim script
-  command or function in syntax: by and large, you can write as if functions
-  replaced Ex commands, preceded by left parens `(`. In addition, each macro
-  is also a replacement for the corresponding nvim API function, where
-  meaningless arguments for end-users are omittable, e.g., `(augroup! :name)`
-  replaces `(vim.api.nvim_create_augroup :name {})`.
+- **Less:** The syntax is as little, but flexible as possible.
 - **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set
   in sequential table instead of key-value table. In this format, options are
   likely to be `format`ted into the same line where nvim-laurel macro starts
