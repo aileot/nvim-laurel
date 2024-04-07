@@ -83,16 +83,19 @@ if you don't intend to override queries defined by other plugins._
 ;; extends
 ```
 
-The following example queries are ready to be used on the latest
-tree-sitter-fennel parser supported by nvim-treesitter.
-However, it's obviously recommended to select and edit queries as your need,
-rather than indiscriminately copy and paste them.
+- Unless otherwise noted, the treesitter query snippets should be written in
+  after/queries/fennel/highlight.scm.
 
-The capture names in the examples below follow the nvim-treesitter convention,
-on which most of nvim colorscheme plugins are expected to define highlight
-links to the captures.
-Since the capture names in the examples are just examples, you should change
-them as per your preference.
+- The following example queries are ready to be used on the latest
+  tree-sitter-fennel parser supported by nvim-treesitter.
+  However, it's obviously recommended to select and edit queries as your need,
+  rather than indiscriminately copy and paste them.
+
+- The capture names in the examples below follow the nvim-treesitter convention,
+  on which most of nvim colorscheme plugins are expected to define highlight
+  links to the captures.
+  Since the capture names in the examples are just examples, you should change
+  them as per your preference.
 
 ### Treesitter: _Distinguish keys in table_
 
