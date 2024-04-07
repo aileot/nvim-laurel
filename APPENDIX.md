@@ -28,6 +28,8 @@ _Please adopt or adjust the snippets at your own risk._
 
 ## LSP
 
+_(last edited at nvim-lspconfig [9619e53d](https://github.com/neovim/nvim-lspconfig/commit/9619e53d3f99f0ca4ea3b88f5d97fce703131820))_
+
 ### LSP: _Get fennel-ls support_
 
 This is an example to get a support from
@@ -164,6 +166,8 @@ Note: Vim script syntax to be injected is Vim command syntax.
 It does not make sense to inject Vim syntax into `map!` macro.
 
 ## Hotpot.nvim
+
+_(last edited at hotpot.nvim [5c96b423](https://github.com/rktjmp/hotpot.nvim/commit/5c96b423a6663c91c47d6184f810acf1dacf4615))_
 
 ### Hotpot.nvim: _Clear compiled Lua cache_
 
