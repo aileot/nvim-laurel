@@ -96,8 +96,6 @@ them as per your preference.
 
 ### Treesitter: _Distinguish keys in table_
 
-WIP
-
 <!-- TODO: Paste Screenshot -->
 
 ```query
@@ -107,6 +105,8 @@ WIP
 ```
 
 ### Treesitter: _Highlight scope in nvim-laurel macro `let!`_
+
+<!-- TODO: Paste Screenshot -->
 
 ```query
 ;; in after/quries/fennel/highlight.scm
