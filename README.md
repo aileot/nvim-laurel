@@ -81,7 +81,6 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
          "git",
          "clone",
          "--filter=blob:none",
-         "--single-branch",
          url,
          path,
        })
@@ -130,7 +129,6 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
          "git",
          "clone",
          "--filter=blob:none",
-         "--single-branch",
          url,
          path,
        })
