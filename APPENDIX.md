@@ -46,7 +46,7 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
       _ (table.insert runtime-fnl-roots pat-project-root)
       ;; Note: It shares the suffix patterns with fennel-path and macro-path.
       ;; Another step is required if you also need `?/init-macros.fnl`.
-      suffix-patterns [:/?.fnl :/?/init.fnl]
+      suffix-patterns [:?.fnl :?/init.fnl]
       default-patterns (table.concat [:?.fnl
                                       :?/init.fnl
                                       ;; Note: The following src/ patterns are
@@ -66,8 +66,8 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
       config {:settings {:fennel-ls {: extra-globals
                                      : fennel-path
                                      : macro-path}}}]
-      lspconfig (require :lspconfig)
- (lspconfig.setup config)
+      {: fennel_ls} (require :lspconfig)
+ (fennel_ls.setup config))
 ```
 
 ## Treesitter
