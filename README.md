@@ -238,47 +238,47 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 (import-macros {: set! : map! : augroup! : au! ...} :nvim-laurel.macros)
 ```
 
-See [laurel.md](./doc/laurel.md) for each macro usage in details.
+See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
 
 ### Macro List
 
-- [Autocmd](./doc/laurel.md#Autocmd)
+- [Autocmd](./doc/REFERENCE.md#Autocmd)
 
-  - [`augroup!`](./doc/laurel.md#augroup)
-  - [`autocmd!`](./doc/laurel.md#autocmd)
-  - [`au!`](./doc/laurel.md#au)
+  - [`augroup!`](./doc/REFERENCE.md#augroup)
+  - [`autocmd!`](./doc/REFERENCE.md#autocmd)
+  - [`au!`](./doc/REFERENCE.md#au)
 
-- [Keymap](./doc/laurel.md#Keymap)
+- [Keymap](./doc/REFERENCE.md#Keymap)
 
-  - [`map!`](./doc/laurel.md#map): A replacement of `vim.keymap.set`
-  - [`unmap!`](./doc/laurel.md#unmap): A replacement of `vim.keymap.del`
-  - [`<Cmd>`](./doc/laurel.md#Cmd)
-  - [`<C-u>`](./doc/laurel.md#C-u)
+  - [`map!`](./doc/REFERENCE.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./doc/REFERENCE.md#unmap): A replacement of `vim.keymap.del`
+  - [`<Cmd>`](./doc/REFERENCE.md#Cmd)
+  - [`<C-u>`](./doc/REFERENCE.md#C-u)
 
-- [Option](./doc/laurel.md#Option)
+- [Option](./doc/REFERENCE.md#Option)
 
-  - [`let!`](./doc/laurel.md#let)
-  - [`set!`](./doc/laurel.md#set)
-  - [`setglobal!`](./doc/laurel.md#setglobal)
-  - [`setlocal!`](./doc/laurel.md#setlocal)
-  - [`go!`](./doc/laurel.md#go)
-  - [`bo!`](./doc/laurel.md#bo)
-  - [`wo!`](./doc/laurel.md#wo)
+  - [`let!`](./doc/REFERENCE.md#let)
+  - [`set!`](./doc/REFERENCE.md#set)
+  - [`setglobal!`](./doc/REFERENCE.md#setglobal)
+  - [`setlocal!`](./doc/REFERENCE.md#setlocal)
+  - [`go!`](./doc/REFERENCE.md#go)
+  - [`bo!`](./doc/REFERENCE.md#bo)
+  - [`wo!`](./doc/REFERENCE.md#wo)
 
-- [Variable](./doc/laurel.md#Variable)
+- [Variable](./doc/REFERENCE.md#Variable)
 
-  - [`g!`](./doc/laurel.md#g)
-  - [`b!`](./doc/laurel.md#b)
-  - [`w!`](./doc/laurel.md#w)
-  - [`t!`](./doc/laurel.md#t)
-  - [`v!`](./doc/laurel.md#v)
-  - [`env!`](./doc/laurel.md#env)
+  - [`g!`](./doc/REFERENCE.md#g)
+  - [`b!`](./doc/REFERENCE.md#b)
+  - [`w!`](./doc/REFERENCE.md#w)
+  - [`t!`](./doc/REFERENCE.md#t)
+  - [`v!`](./doc/REFERENCE.md#v)
+  - [`env!`](./doc/REFERENCE.md#env)
 
-- [Others](./doc/laurel.md#Others)
-  - [`command!`](./doc/laurel.md#command)
-  - [`feedkeys!`](./doc/laurel.md#feedkeys)
-  - [`highlight!`](./doc/laurel.md#highlight)
-  - [`hi!`](./doc/laurel.md#hi)
+- [Others](./doc/REFERENCE.md#Others)
+  - [`command!`](./doc/REFERENCE.md#command)
+  - [`feedkeys!`](./doc/REFERENCE.md#feedkeys)
+  - [`highlight!`](./doc/REFERENCE.md#highlight)
+  - [`hi!`](./doc/REFERENCE.md#hi)
 
 ## Alternatives
 
