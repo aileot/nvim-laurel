@@ -11,6 +11,7 @@ Fennel._
 - [Treesitter](#treesitter)
   - [Treesitter: _Distinguish keys in table_](#treesitter-distinguish-keys-in-table)
   - [Treesitter: _Highlight scope in nvim-laurel macro `let!`_](#treesitter-highlight-scope-in-nvim-laurel-macro-let)
+  - [Treesitter: _Highlight name of `augroup`, `command`, and `highlight`_](#treesitter-highlight-name-of-augroup-command-and-highlight)
   - [Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_](#treesitter-inject-vim-syntax-highlight-to-vim-command-in-nvim-laurel-macros)
 - [Hotpot.nvim](#hotpotnvim)
   - [Hotpot.nvim: _Clear compiled Lua cache_](#hotpotnvim-clear-compiled-lua-cache)
@@ -131,6 +132,21 @@ if you don't intend to override queries defined by other plugins._
     "opt"
     "opt_local"
     "opt_global"))
+```
+
+### Treesitter: _Highlight name of `augroup`, `command`, and `highlight`_
+
+```query
+;; nvim-laurel: (augroup! :title), etc.
+(list
+  . (symbol) @_call
+  . (string
+      (string_content) @label)
+  (#any-of? @_call
+    "augroup!"
+    "command!"
+    "highlight!"
+    "hi!"))
 ```
 
 ### Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_
