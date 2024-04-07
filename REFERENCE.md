@@ -378,10 +378,10 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   bare-string, multi modes can be set in a string like `:nox` instead of
   `[:n :o :x]`.
 - `?extra-opts`: (bare-sequence) Additional option:
-  - `<buffer>`: Map `lhs` in current buffer by itself.
-- `buffer`: (number?) Map `lhs` to a buffer of the next value. With `0` or
-  with no following value, create autocmd to current buffer.
 
+  - `<buffer>`: Map `lhs` in current buffer by itself.
+  - `buffer`: (number?) Map `lhs` to a buffer of the next value. With `0` or
+    with no following value, create autocmd to current buffer.
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
     `expr` is set in `extra-opts`.
   - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
