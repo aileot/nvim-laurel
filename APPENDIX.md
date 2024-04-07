@@ -77,7 +77,7 @@ _(last edited at nvim-treesitter [e6cd337e](https://github.com/nvim-treesitter/n
 
 _To begin with, do not forget `;; extends` at the top of your
 `after/queries/fennel/<type>.scm`
-if you don't intend to override queries defined by other plugins!_
+if you don't intend to override queries defined by other plugins._
 
 ```query
 ;; extends
