@@ -278,10 +278,10 @@ Create or get an augroup, or override an existing augroup.
 (augroup! :sample-augroup
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! [:InsertEnter :InsertLeave]
-      [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
-  (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
+      [:buffer :desc "call foo#bar() without any args"] vim.fn.foo#bar)
+  (autocmd! :VimEnter * [:once :nested :desc "call baz#qux() with <amatch>"]
       #(vim.fn.baz#qux $.match)))
-  (autocmd! :LspAttach
+  (autocmd! :LspAttach *
       #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
 ```
 
