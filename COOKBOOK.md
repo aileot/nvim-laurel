@@ -339,8 +339,9 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
 
 - Fennel `list` returns the last value.
 - `pcall` returns `true` when the call succeeds without errors.
-- `nvim_create_autocmd()` deletes itself when its callback function returns
-  `true`.
+- `nvim_create_autocmd()` destroys itself when its callback function returns
+  `true` in nvim < v0.10; In nvim >= v0.10, it destroys the autocmd itself
+  when its callback function returns any value other than `false` or `nil`.
 
 ##### Anti-Pattern
 
@@ -392,3 +393,5 @@ in another hash function is meaningless in many cases.
 (autocmd! group events #(vim.schedule (fn []
                                         (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
+
+[augroup+]: #augroup-an-augroup-macro-without-clearing-itself-by-default
