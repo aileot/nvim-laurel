@@ -1,0 +1,347 @@
+*laurel-cookbook.txt*                                  Cookbook of nvim-laurel
+
+==============================================================================
+Table of Contents                          *laurel-cookbook-table-of-contents*
+
+1. Cookbook                                         |laurel-cookbook-cookbook|
+  - Recipes                                          |laurel-cookbook-recipes|
+  - Anti-Patterns                              |laurel-cookbook-anti-patterns|
+
+==============================================================================
+1. Cookbook                                         *laurel-cookbook-cookbook*
+
+_Demonstrations with practical snippets._
+
+
+RECIPES                                              *laurel-cookbook-recipes*
+
+
+CREATE WRAPPER MACROS ~
+
+The codes in examples below are supposed to import and export all the
+nvim-laurel macros properly.
+
+
+An example to import and export nvim-laurel macros
+ ~
+
+In a macro definition file, say `my-macros.fnl`,
+
+>fennel
+    (local {: let!
+            : set!
+            : setlocal!
+            : setglobal!
+            : go!
+            : bo!
+            : wo!
+            : g!
+            : b!
+            : w!
+            : t!
+            : v!
+            : env!
+            : map!
+            : unmap!
+            : <C-u>
+            : <Cmd>
+            : command!
+            : augroup!
+            : au!
+            : autocmd!
+            : feedkeys!
+            : highlight!} (require :nvim-laurel.macros))
+<
+
+And export them at the bottom of the file:
+
+>fennel
+    {: let!
+     : set!
+     : setlocal!
+     : setglobal!
+     : go!
+     : bo!
+     : wo!
+     : g!
+     : b!
+     : w!
+     : t!
+     : v!
+     : env!
+     : map!
+     : unmap!
+     : <C-u>
+     : <Cmd>
+     : command!
+     : augroup!
+     : au!
+     : autocmd!
+     : feedkeys!
+     : highlight!}
+<
+
+Then, at the top of example codes,
+
+>fennel
+    ;; Note: This is only for convenience sake; `require-macros` is officially deprecated
+    ;; in favor of `import-macros` in Fennel v0.4.0.
+    (require-macros :my-macros)
+<
+
+augroup+ _laurel-augroup+_
+
+>fennel
+    (fn augroup+ [...]
+      "Define augroup without clearing it."
+      (augroup! `&default-opts {:clear false}
+        ...))
+    
+    ;; (Optional) At the end of my-macros.fnl to export it as `augroup!`.
+    {:augroup! augroup+}
+<
+
+set+ _laurel-set+_ set- _laurel-set-_ set^ _laurel-set setlocal+
+laurel-setlocal+ setlocal- laurel-setlocal- setlocal^ laurel-setlocal_
+setglobal+ _laurel-setglobal+_ setglobal- _laurel-setglobal-_ setglobal^
+_laurel-setglobal go+ laurel-go+ go- laurel-go- go^ laurel-go_
+
+>fennel
+    (lambda set+ [name val]
+      (let! :opt name `+ val)))
+    (lambda set- [name val]
+      (let! :opt name `- val)))
+    (lambda set^ [name val]
+      (let! :opt name `^ val)))
+<
+
+Replace "set", as you need, with "setlocal", "setglobal", etc.
+
+
+BACK TO THE GOOD AND OLD VIM SCRIPT ERA ~
+
+monolithic-augroup _laurel-monolithic-augroup_
+
+
+Traditionally, spartan Vimmers have created a monolithtic augroup in Vim script to reduce startup time…
+ ~
+
+>vim
+    " At first,
+    augroup MyVimrc
+      au!
+    augroup END
+    
+    " Then, define as many autocmds as needed.
+    au MyVimrc FileType *.fnl setlocal suffixesadd=.fnl,.lua,.vim
+    " or in another format,
+    augroup MyVimrc
+      au FileType *.fnl setlocal suffixesadd=.fnl,.lua,.vim
+    augroup END
+<
+
+
+
+With nvim-laurel, it could be implemented in some approaches:
+
+
+THE SIMPLEST APPROACH
+
+1. Define an `augroup` at first in a runtime file.
+
+>fennel
+    (augroup! :MyVimrc)
+<
+
+1. Define `autocmd`s with the `group` in the first argument.
+
+>fennel
+    (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
+    ;; or if you don't mind to set the option to each augroup.
+    (augroup! :MyVimrc {:clear false}
+      (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim])))
+<
+
+
+ANOTHER APPROACH WITH AUGROUP! WRAPPER
+
+1. In a macro definition file, define and export a wrapper macro not to clear
+`augroup` by default.
+
+>fennel
+    (fn augroup+ [...]
+      "Define augroup without clearing it."
+      (augroup! `&default-opts {:clear false}
+        ...))
+<
+
+1. Define an `augroup` at first in runtime file.
+
+>fennel
+    (augroup! :MyVimrc)
+<
+
+1. Define `autocmd`s within the wrapper `augroup+`.
+
+>fennel
+    (augroup+ :MyVimrc
+      (au! :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
+<
+
+
+(OPTIONAL) AN IDEA TO DEFINE AUTOCMDS WITH GROUP IN INTEGER ID
+
+1. Define an `augroup` in runtime file, but assign its `id` to an global
+variable either `_G` or `vim.g`.
+
+>fennel
+    (set _G.my-augroup (augroup! :MyAugroup))
+<
+
+1. Define autocmds with the `id`.
+
+>fennel
+    (au! _G.my-augroup :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
+    ;; or with predefined `augroup+` macro
+    (augroup+ _G.my-augroup
+      (au! :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
+<
+
+
+ANTI-PATTERNS                                  *laurel-cookbook-anti-patterns*
+
+_laurel-anti-patterns-&default-opts_
+
+
+DEFINE MACRO WRAPPERS
+
+To create wrapper of nvim-laurel macro, it is unrecommended to wrap them in
+runtime function; instead, wrap them in macro. Fennel macros cannot parse the
+contents of `varargs` (`...`) which is only determined at runtime.
+
+
+ANTI-PATTERN
+
+>fennel
+    ;; bad
+    (autocmd! group [:FileType]
+      (fn []
+        (let [buf-au! (fn [...]
+                        (autocmd! &default-opts {:buffer 0} ...))]
+          (buf-au! [:InsertEnter] #(do :something))
+          (buf-au! [:BufWritePre] #(do :other))))
+<
+
+
+PATTERN
+
+>fennel
+    ;; good
+    (import-macros {: autocmd!} :nvim-laurel)
+    
+    (macro buf-au! [...]
+      `(autocmd! &default-opts {:buffer 0} ,...))
+    
+    (autocmd! group [:FileType]
+      (fn []
+         (buf-au! [:InsertEnter] #(do :something))
+         (buf-au! [:BufWritePre] #(do :other))))
+<
+
+or
+
+>fennel
+    ;; good
+    ;; in my/macros.fnl
+    (local {: autocmd!} (require :nvim-laurel))
+    
+    (fn buf-au! [...]
+      (autocmd! `&default-opts {:buffer 0} ...))
+    
+    {: buf-au!}
+<
+
+>fennel
+    ;; in foobar.fnl (another file)
+    (import-macros {: autocmd!} :nvim-laurel)
+    (import-macros {: buf-au!} :my.macros)
+    
+    (autocmd! group [:FileType]
+      #(do
+         (buf-au! [:InsertEnter] (do :something))
+         (buf-au! [:BufWritePre] (do :other))))
+<
+
+_laurel-anti-patterns-autocmd!_
+
+
+PCALL IN THE END OF CALLBACK
+
+It could be an unexpected behavior that `autocmd` whose callback ends with
+`pcall` is executed only once because of the combination:
+
+- Fennel `list` returns the last value.
+- `pcall` returns `true` when the call succeeds without errors.
+- `nvim_create_autocmd()` destroys itself when its callback function returns
+    `true` in nvim < v0.10; In nvim >= v0.10, it destroys the autocmd itself
+    when its callback function returns any value other than `false` or `nil`.
+
+
+ANTI-PATTERN
+
+>fennel
+    ;; bad
+    (autocmd! group events #(pcall foobar))
+    (autocmd! group events (fn []
+                             ;; Do something else
+                             (pcall foobar)))
+<
+
+
+PATTERN
+
+>fennel
+    ;; good
+    (macro ->nil [...]
+      "Make sure to return `nil`."
+      `(do
+         ,...
+         nil))
+    
+    (autocmd! group events #(->nil (pcall foobar)))
+    (autocmd! group events (fn []
+                             ;; Do something else
+                             (pcall foobar)
+                             ;; Return any other value than `true`.
+                             nil))
+<
+
+
+NESTED HASH FUNCTIONS IN CALLBACK
+
+`$` in the outermost hash function represents the single table argument from
+`nvim_create_autocmd()`; on the other hand, `$` in any hash functions included
+in another hash function is meaningless in many cases.
+
+
+ANTI-PATTERN
+
+>fennel
+    ;; bad
+    (autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
+    (autocmd! group events (fn []
+                             (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+<
+
+
+PATTERN
+
+>fennel
+    ;; good
+    (autocmd! group events #(vim.schedule (fn []
+                                            (nnoremap [:buffer $.buf] :lhs :rhs))))
+<
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:

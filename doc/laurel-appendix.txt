@@ -1,0 +1,183 @@
+*laurel-appendix.txt*                                  Appendix of nvim-laurel
+
+==============================================================================
+Table of Contents                          *laurel-appendix-table-of-contents*
+
+1. Appendix                                         |laurel-appendix-appendix|
+  - Caveat                                            |laurel-appendix-caveat|
+  - LSP                                                  |laurel-appendix-lsp|
+  - Treesitter                                    |laurel-appendix-treesitter|
+
+==============================================================================
+1. Appendix                                         *laurel-appendix-appendix*
+
+_Extra knowledge not limited to nvim-laurel, but useful to write nvim config in
+Fennel._
+
+
+CAVEAT                                                *laurel-appendix-caveat*
+
+This page might contain usage beyond the plugin authors intend. If the plugin
+authors say it is unrecommended, it is unrecommended; if the plugin authors
+request removal of a related article, it should be removed.
+
+_Please adopt or adjust the snippets at your own risk._
+
+
+LSP                                                      *laurel-appendix-lsp*
+
+_(last edited at nvim-lspconfig 9619e53d)_
+
+
+LSP: GET FENNEL-LS SUPPORT OVER &RTP, OR &RUNTIMEPATH ~
+
+This is an example to get a support from fennel-ls
+<https://git.sr.ht/~xerool/fennel-ls> with nvim-lspconfig
+<https://github.com/neovim/nvim-lspconfig>. The code lets `fennel-ls` aware of
+all the Fennel files under `fnl/` in `&runtimepath`, including nvim-laurel
+macros.
+
+>fennel
+    (let [globals [:vim]
+          extra-globals (table.concat globals " ")
+          runtime-fnl-roots (vim.api.nvim_get_runtime_file :fnl true)
+          pat-project-root "."
+          _ (table.insert runtime-fnl-roots pat-project-root)
+          ;; Note: It shares the suffix patterns with fennel-path and macro-path.
+          ;; Another step is required if you also need `?/init-macros.fnl`.
+          suffix-patterns [:/?.fnl :/?/init.fnl]
+          default-patterns (table.concat [:?.fnl
+                                          :?/init.fnl
+                                          ;; Note: The following src/ patterns are
+                                          ;; merely community convention, but
+                                          ;; recommended.
+                                          :src/?.fnl
+                                          :src/?/init.fnl]
+                                         ";")
+          fnl-patterns (accumulate [patterns default-patterns ;
+                                    _ root (ipairs runtime-fnl-roots)]
+                         (do
+                           (each [_ suffix (ipairs suffix-patterns)]
+                             (set patterns (.. patterns ";" root "/" suffix)))
+                           patterns))
+          fennel-path fnl-patterns
+          macro-path fnl-patterns
+          config {:settings {:fennel-ls {: extra-globals
+                                         : fennel-path
+                                         : macro-path}}}]
+          lspconfig (require :lspconfig)
+     (lspconfig.setup config)
+<
+
+
+TREESITTER                                        *laurel-appendix-treesitter*
+
+_(last edited at nvim-treesitter e6cd337e)_
+
+_To begin with, do not forget ;; extends at the top of your
+after/queries/fennel/<type>.scm if you don’t intend to override queries
+defined by other plugins._
+
+>query
+    ;; extends
+<
+
+- Unless otherwise noted, the treesitter query snippets should be written in
+    after/queries/fennel/highlight.scm.
+- The following example queries are ready to be used on the latest
+    tree-sitter-fennel parser supported by nvim-treesitter. However, it’s
+    obviously recommended to select and edit queries as your need, rather than
+    indiscriminately copy and paste them.
+- The capture names in the examples below follow the nvim-treesitter convention,
+    on which most of nvim colorscheme plugins are expected to define highlight
+    links to the captures. Since the capture names in the examples are just
+    examples, you should change them as per your preference.
+
+
+TREESITTER: DISTINGUISH KEYS IN TABLE ~
+
+>query
+    (table_pair
+      key: (string) @variable.member)
+<
+
+
+TREESITTER: HIGHLIGHT SCOPE IN NVIM-LAUREL MACRO LET! ~
+
+>query
+    ;; nvim-laurel: (let! :bo ...), etc.
+    (list
+      . (symbol) @_call
+      (#eq? @_call "let!")
+      . (string
+          (string_content) @module)
+      (#any-of? @module
+        "g"
+        "b"
+        "w"
+        "t"
+        "v"
+        "env"
+        "o"
+        "go"
+        "bo"
+        "wo"
+        "opt"
+        "opt_local"
+        "opt_global"))
+<
+
+
+TREESITTER: HIGHLIGHT NAME OF AUGROUP, COMMAND, AND HIGHLIGHT ~
+
+>query
+    ;; nvim-laurel: (augroup! :title), etc.
+    (list
+      . (symbol) @_call
+      . (string
+          (string_content) @label)
+      (#any-of? @_call
+        "augroup!"
+        "command!"
+        "highlight!"
+        "hi!"))
+<
+
+
+TREESITTER: INJECT VIM SYNTAX HIGHLIGHT TO VIM COMMAND IN NVIM-LAUREL MACROS ~
+
+>query
+    ;; in after/quries/fennel/injection.scm
+    
+    ;; without api-opts
+    ((list
+       . (symbol) @_call
+       (string
+         (string_content) @injection.content)
+       .)
+     (#any-of? @_call
+      "au!"
+      "autocmd!"
+      "command!")
+     (#set! injection.language "vim"))
+    
+    ;; with api-opts
+    ((list
+       . (symbol) @_call
+       (string
+         (string_content) @injection.content)
+       . [(table) (symbol)] ;; api-opts
+       .)
+     (#any-of? @_call
+      "au!"
+      "autocmd!"
+      "command!")
+    (#set! injection.language "vim"))
+<
+
+Note: Vim script syntax to be injected is Vim command syntax. It does not make
+sense to inject Vim syntax into `map!` macro.
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:
