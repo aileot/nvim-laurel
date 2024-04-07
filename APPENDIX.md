@@ -7,7 +7,7 @@ Fennel._
 
 - [Caveat](#caveat)
 - [LSP](#lsp)
-  - [LSP: _Get fennel-ls support_](#lsp-get-fennel-ls-support)
+  - [LSP: _Get fennel-ls support over `&rtp`, or `&runtimepath`_](#lsp-get-fennel-ls-support-over-rtp-or-runtimepath)
 - [Treesitter](#treesitter)
   - [Treesitter: _Distinguish keys in table_](#treesitter-distinguish-keys-in-table)
   - [Treesitter: _Highlight scope in nvim-laurel macro `let!`_](#treesitter-highlight-scope-in-nvim-laurel-macro-let)
@@ -31,7 +31,7 @@ _Please adopt or adjust the snippets at your own risk._
 
 _(last edited at nvim-lspconfig [9619e53d](https://github.com/neovim/nvim-lspconfig/commit/9619e53d3f99f0ca4ea3b88f5d97fce703131820))_
 
-### LSP: _Get fennel-ls support_
+### LSP: _Get fennel-ls support over `&rtp`, or `&runtimepath`_
 
 This is an example to get a support from
 [fennel-ls](https://git.sr.ht/~xerool/fennel-ls)
