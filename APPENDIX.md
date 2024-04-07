@@ -66,8 +66,8 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
       config {:settings {:fennel-ls {: extra-globals
                                      : fennel-path
                                      : macro-path}}}]
-      lspconfig (require :lspconfig)
- (lspconfig.setup config)
+      {: fennel_ls} (require :lspconfig)
+ (fennel_ls.setup config))
 ```
 
 ## Treesitter
