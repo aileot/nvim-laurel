@@ -43,7 +43,7 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 ## Design
 
 - **Fast:** Each macro is expanded to a few nvim API functions in principle.
-- **Less:** The syntax is as little, but flexible as possible.
+- **Less:** The syntax is as little, but flexible and extensible as possible.
 - **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set
   in sequential table instead of key-value table. In this format, options are
   likely to be `format`ted into the same line where nvim-laurel macro starts
