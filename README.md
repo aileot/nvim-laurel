@@ -19,15 +19,31 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 
 </div>
 
+> [!WARNING]
+> Some breaking changes are planned until v1.0.0.  
+> [COOKBOOK.md](./COOKBOOK.md) contains how to update them as painlessly as
+> possible; see [REFERENCE.md](./REFERENCE.md) for usage of
+> `g:laurel_deprecated`, which would also help you update them as long as they
+> are deprecated, but not abolished yet.
+
+## Documentations
+
+- The [Reference](./REFERENCE.md) lists out the nvim-laurel interfaces.
+  Note that the interfaces are not limited to Fennel macros.
+- The [Cookbook](./COOKBOOK.md) demonstrates practical codes on the
+  nvim-laurel interfaces.
+- The [Appendix](./APPENDIX.md) shows extra knowledge not limited to
+  nvim-laurel, but useful to write nvim config files in Fennel:
+  LSP, Treesitter, etc. Happy Coding!
+- The [Changelog](./CHANGELOG.md).
+  _Please read the [Cookbook](./COOKBOOK.md) instead_
+  for tips how to update features and usages deprecated or removed in
+  nvim-laurel.
+
 ## Design
 
 - **Fast:** Each macro is expanded to a few nvim API functions in principle.
-- **Intuitive:** Most of the macros imitates the corresponding Vim script
-  command or function in syntax: by and large, you can write as if functions
-  replaced Ex commands, preceded by left parens `(`. In addition, each macro
-  is also a replacement for the corresponding nvim API function, where
-  meaningless arguments for end-users are omittable, e.g., `(augroup! :name)`
-  replaces `(vim.api.nvim_create_augroup :name {})`.
+- **Less:** The syntax is as little, but flexible and extensible as possible.
 - **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set
   in sequential table instead of key-value table. In this format, options are
   likely to be `format`ted into the same line where nvim-laurel macro starts
@@ -60,7 +76,6 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
          "git",
          "clone",
          "--filter=blob:none",
-         "--single-branch",
          url,
          path,
        })
@@ -82,6 +97,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
        macros = {
          env = "_COMPILER",
          allowedGlobals = false,
+         -- Comment out below to use `os`, `vim`, etc. at compile time,
+         -- but UNRECOMMENDED with nvim-laurel.
+         -- compilerEnv = _G,
        },
      },
    })
@@ -106,7 +124,6 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
          "git",
          "clone",
          "--filter=blob:none",
-         "--single-branch",
          url,
          path,
        })
@@ -221,51 +238,47 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 (import-macros {: set! : map! : augroup! : au! ...} :nvim-laurel.macros)
 ```
 
-See [laurel.md](./doc/laurel.md) for each macro usage in details.
+See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
 
 ### Macro List
 
-- [Autocmd](./doc/laurel.md#Autocmd)
+- [Autocmd](./doc/REFERENCE.md#Autocmd)
 
-  - [`augroup!`](./doc/laurel.md#augroup)
-  - [`autocmd!`](./doc/laurel.md#autocmd)
-  - [`au!`](./doc/laurel.md#au)
+  - [`augroup!`](./doc/REFERENCE.md#augroup)
+  - [`autocmd!`](./doc/REFERENCE.md#autocmd)
+  - [`au!`](./doc/REFERENCE.md#au)
 
-- [Keymap](./doc/laurel.md#Keymap)
+- [Keymap](./doc/REFERENCE.md#Keymap)
 
-  - [`map!`](./doc/laurel.md#map): A replacement of `vim.keymap.set`
-  - [`unmap!`](./doc/laurel.md#unmap): A replacement of `vim.keymap.del`
-  - [`<Cmd>`](./doc/laurel.md#Cmd)
-  - [`<C-u>`](./doc/laurel.md#C-u)
+  - [`map!`](./doc/REFERENCE.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./doc/REFERENCE.md#unmap): A replacement of `vim.keymap.del`
+  - [`<Cmd>`](./doc/REFERENCE.md#Cmd)
+  - [`<C-u>`](./doc/REFERENCE.md#C-u)
 
-- [Option](./doc/laurel.md#Option)
+- [Option](./doc/REFERENCE.md#Option)
 
-  - [`let!`](./doc/laurel.md#let)
-  - [`set!`](./doc/laurel.md#set)
-  - [`setglobal!`](./doc/laurel.md#setglobal)
-  - [`setlocal!`](./doc/laurel.md#setlocal)
-  - [`go!`](./doc/laurel.md#go)
-  - [`bo!`](./doc/laurel.md#bo)
-  - [`wo!`](./doc/laurel.md#wo)
+  - [`let!`](./doc/REFERENCE.md#let)
+  - [`set!`](./doc/REFERENCE.md#set)
+  - [`setglobal!`](./doc/REFERENCE.md#setglobal)
+  - [`setlocal!`](./doc/REFERENCE.md#setlocal)
+  - [`go!`](./doc/REFERENCE.md#go)
+  - [`bo!`](./doc/REFERENCE.md#bo)
+  - [`wo!`](./doc/REFERENCE.md#wo)
 
-- [Variable](./doc/laurel.md#Variable)
+- [Variable](./doc/REFERENCE.md#Variable)
 
-  - [`g!`](./doc/laurel.md#g)
-  - [`b!`](./doc/laurel.md#b)
-  - [`w!`](./doc/laurel.md#w)
-  - [`t!`](./doc/laurel.md#t)
-  - [`v!`](./doc/laurel.md#v)
-  - [`env!`](./doc/laurel.md#env)
+  - [`g!`](./doc/REFERENCE.md#g)
+  - [`b!`](./doc/REFERENCE.md#b)
+  - [`w!`](./doc/REFERENCE.md#w)
+  - [`t!`](./doc/REFERENCE.md#t)
+  - [`v!`](./doc/REFERENCE.md#v)
+  - [`env!`](./doc/REFERENCE.md#env)
 
-- [Others](./doc/laurel.md#Others)
-  - [`command!`](./doc/laurel.md#command)
-  - [`feedkeys!`](./doc/laurel.md#feedkeys)
-  - [`highlight!`](./doc/laurel.md#highlight)
-  - [`hi!`](./doc/laurel.md#hi)
-
-## Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md).
+- [Others](./doc/REFERENCE.md#Others)
+  - [`command!`](./doc/REFERENCE.md#command)
+  - [`feedkeys!`](./doc/REFERENCE.md#feedkeys)
+  - [`highlight!`](./doc/REFERENCE.md#highlight)
+  - [`hi!`](./doc/REFERENCE.md#hi)
 
 ## Alternatives
 
