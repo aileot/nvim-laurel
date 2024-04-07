@@ -77,8 +77,8 @@
                             (. :range)))))
     (it* "can define command with `count` key with its value"
       (command! [:count 5] :Foo :bar)
-      (assert.is_same "5" (-> (get-command :Foo)
-                              (. :count))))
+      (assert.is_same :5 (-> (get-command :Foo)
+                             (. :count))))
     (it* "can define command with `count` key without its value"
       (command! [:count] :Foo :bar)
       (let [default-count 0]

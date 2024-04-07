@@ -423,7 +423,7 @@
 
 (local autocmd/extra-opt-keys
        {:<buffer> :boolean
-        :buffer [:number]
+        :buffer [:default 0 :number]
         :callback [:function]
         :command [:string]
         :desc [:string]
@@ -481,7 +481,8 @@
           extra-opts (if (nil? ?extra-opts) {}
                          (-> ?extra-opts
                              (extra-opts/seq->kv-table autocmd/extra-opt-keys)))
-          ?bufnr (if extra-opts.<buffer> 0 extra-opts.buffer)
+          ?bufnr (if (or extra-opts.<buffer> (= true extra-opts.buffer)) 0
+                     extra-opts.buffer)
           ?pat (or extra-opts.pattern ?pattern)]
       (set extra-opts.group ?id)
       (set extra-opts.buffer ?bufnr)
@@ -594,7 +595,7 @@
 ;; Keymap ///1
 
 (local keymap/extra-opt-keys {:<buffer> :boolean
-                              :buffer [:number]
+                              :buffer [:default 0 :number]
                               :callback [:function]
                               :desc [:string]
                               :expr :boolean
@@ -638,7 +639,6 @@
                                   (sequence? a2) a2)
               ?extra-opts (when ?seq-extra-opts
                             (-> ?seq-extra-opts
-                                ;;(supplement-extra-opts! keymap/extra-opt-keys)
                                 (extra-opts/seq->kv-table keymap/extra-opt-keys)))
               [extra-opts lhs raw-rhs ?api-opts] (if-not ?extra-opts
                                                    [{} a1 a2 ?a3]
@@ -1108,7 +1108,7 @@
         :addr [:string]
         :bang :boolean
         :bar :boolean
-        :buffer [:number]
+        :buffer [:default 0 :number]
         :complete [:function :string]
         :count [:default 0 :number]
         :desc [:string]

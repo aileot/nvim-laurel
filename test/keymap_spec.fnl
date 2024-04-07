@@ -151,6 +151,19 @@
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_nil replace_keycodes))))
     (describe* :extra-opt
+      (describe* "`buffer`"
+        (it* "with the next value sets buffer-local keymap to the buffer"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (map! :n [:buffer buf] :lhs :rhs)
+            (assert.is_same :rhs (buf-get-rhs buf :n :lhs))))
+        (it* "with no next value sets buffer-local keymap to current buffer"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (map! :n [:buffer] :lhs :rhs)
+            (assert.is_same :rhs (buf-get-rhs buf :n :lhs))))
+        (it* "with no next value, followed by another extra-opts, sets buffer-local keymap to current buffer"
+          (let [buf (vim.api.nvim_get_current_buf)]
+            (map! :n [:buffer :nowait] :lhs :rhs)
+            (assert.is_same :rhs (buf-get-rhs buf :n :lhs)))))
       (describe* "`wait`"
         (it* "disables `nowait` in extra-opts regardless of the order"
           (map! :n [:nowait] :lhs :rhs)
