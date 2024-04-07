@@ -102,7 +102,6 @@ if you don't intend to override queries defined by other plugins._
 <!-- TODO: Paste Screenshot -->
 
 ```query
-;; in after/queries/fennel/highlight.scm
 (table_pair
   key: (string) @variable.member)
 ```
@@ -112,7 +111,7 @@ if you don't intend to override queries defined by other plugins._
 <!-- TODO: Paste Screenshot -->
 
 ```query
-;; in after/quries/fennel/highlight.scm
+;; nvim-laurel: (let! :bo ...), etc.
 (list
   . (symbol) @_call
   (#eq? @_call "let!")
