@@ -79,6 +79,9 @@
 
 ;; Misc ///2
 
+(fn error-fmt [str ...]
+  (error (: str :format ...)))
+
 (fn assert-seq [x]
   "Assert `x` is either sequence or list, or not.
   @param x any
@@ -231,14 +234,17 @@
       _ (error* (msg-template/expected-actual "2 or 3 args"
                                               (+ 2 (select "#" ...)))))))
 
-(lambda validate-type [val valid-types]
-  "Validate the type of `val` is one of `valid-types`. When `val` is symbol or
+(lambda validate-type [val valid-type-list]
+  "Validate the type of `val` is one of valid-types. When `val` is symbol or
   list, it's ignored.
   @param val any
-  @param valid-types string|string[]
+  @param valid-type-list string|string[]
   @return any `val` as is"
   (when-not (hidden-in-compile-time? val)
-    (let [val-type (type val)]
+    (let [val-type (type val)
+          valid-types (case valid-type-list
+                        [:default _ & rest] rest
+                        _ valid-type-list)]
       (assert (contains? valid-types val-type)
               (: "expected %s, got %s" ;
                  :format (table.concat valid-types "/") val-type))))
@@ -259,9 +265,16 @@
       (let [key (. xs i)
             val (case (. option-types key)
                   :boolean true
-                  ?valid-types (let [next-val (. xs (++ i))]
-                                 (validate-type next-val ?valid-types)))]
-        (assert (not= nil val) "nil is unexpected")
+                  valid-types (let [next-val (. xs (++ i))]
+                                (if (or (. option-types next-val) (< max i))
+                                    (case valid-types
+                                      :boolean true
+                                      [:default default-val] default-val
+                                      _ (error-fmt "`%s` key requires a value"
+                                                   key))
+                                    (validate-type next-val valid-types)))
+                  _ (error (.. "Invalid option: " key)))]
+        (assert (not= nil val) (: "nil at `%s` key is unexpected" :format key))
         (tset kv-table key val))
       (++ i))
     kv-table))
@@ -1096,21 +1109,13 @@
         :bang :boolean
         :bar :boolean
         :buffer [:number]
-        :callback [:function]
         :complete [:function :string]
-        :count [:number]
-        :custom [:string]
-        :customlist [:string]
+        :count [:default 0 :number]
         :desc [:string]
-        :expr :boolean
-        :force :boolean
         :keepscript :boolean
-        :literal :boolean
         :nargs [:string]
-        :noremap :boolean
-        :nowait :boolean
         :preview [:function]
-        :range :boolean
+        :range [:default true :number :string]
         :register :boolean})
 
 (lambda command/->compatible-opts! [opts]

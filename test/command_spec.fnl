@@ -64,7 +64,27 @@
   (describe* :extra-opts
     (it* "can be either first arg or second arg"
       (assert.has_no_error #(command! [:bang] :Foo :Bar))
-      (assert.has_no_error #(command! :Foo [:bang] :Bar))))
+      (assert.has_no_error #(command! :Foo [:bang] :Bar)))
+    (it* "can define command with `range` key with its value"
+      (command! [:range "%"] :Foo :bar)
+      (assert.is_same "%" (-> (get-command :Foo)
+                              (. :range))))
+    (it* "can define command with `range` key without its value"
+      (command! [:range] :Foo :bar)
+      (let [indicator-current-line "."]
+        (assert.is_same indicator-current-line
+                        (-> (get-command :Foo)
+                            (. :range)))))
+    (it* "can define command with `count` key with its value"
+      (command! [:count 5] :Foo :bar)
+      (assert.is_same "5" (-> (get-command :Foo)
+                              (. :count))))
+    (it* "can define command with `count` key without its value"
+      (command! [:count] :Foo :bar)
+      (let [default-count 0]
+        (assert.is_same (tostring default-count)
+                        (-> (get-command :Foo)
+                            (. :count))))))
   (describe* :api-opts
     (it* "gives priority api-opts over extra-opts"
       (command! :Foo [:bar :bang] :FooBar)
