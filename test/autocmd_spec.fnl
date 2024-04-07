@@ -269,6 +269,31 @@
           (assert.is_same seq-pat au.pattern))
         (let [au (get-first-autocmd {:pattern tbl-pat})]
           (assert.is_same tbl-pat au.pattern))))
+    (describe* "with the symbol `*` at `pattern` position"
+      (describe* "without `extra-opts`"
+        (it* "can create autocmd with pattern `*`."
+          (autocmd! default-augroup default-event * default-callback)
+          (assert.is_same "*" (-> (get-first-autocmd {:group default-augroup})
+                                  (. :pattern))))
+        (describe* "but with `api-opts`"
+          (it* "can create autocmd with pattern `*`."
+            (autocmd! default-augroup default-event * default-callback
+                      {:desc :foo})
+            (assert.is_same "*"
+                            (-> (get-first-autocmd {:group default-augroup})
+                                (. :pattern))))))
+      (describe* "preceding `extra-opts`"
+        (it* "can create autocmd with pattern `*`."
+          (autocmd! default-augroup default-event * [:desc :foo]
+                    default-callback)
+          (assert.is_same "*" (-> (get-first-autocmd {:group default-augroup})
+                                  (. :pattern)))))
+      (describe* "preceding both `extra-opts` and `api-opts`"
+        (it* "can create autocmd with pattern `*`."
+          (autocmd! default-augroup default-event * [:nested] default-callback
+                    {:desc :foo})
+          (let [au (get-first-autocmd {:group default-augroup-id})]
+            (assert.is_same "*" au.pattern)))))
     (describe* "detects 2 args:"
       (it* "sequence pattern and string callback"
         (autocmd! default-augroup default-event [:pat] :callback))
