@@ -1,4 +1,4 @@
-# nvim-laurel
+# Reference
 
 _nvim-laurel provides a set of macros for Neovim config, inspired by the
 builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script._
