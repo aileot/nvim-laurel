@@ -1,5 +1,7 @@
 # Cookbook
 
+_Demonstrations with practical snippets._
+
 <!-- panvimdoc-ignore-start -->
 
 - [Recipes](#recipes)
