@@ -87,7 +87,33 @@
                                [default-event default-callback]
                                (au! :FileType [:foo :bar] #:foobar)
                                [default-event default-callback]
-                               (au! :FileType [:foo :bar] #:foobar)))))
+                               (au! :FileType [:foo :bar] #:foobar))))
+    (describe* "including bare-sequences with the symbol `*` at `pattern` position"
+      (describe* "without `extra-opts`"
+        (it* "can create autocmd with pattern `*`."
+          (augroup! default-augroup
+            [default-event * default-callback])
+          (assert.is_same "*" (-> (get-first-autocmd {:group default-augroup})
+                                  (. :pattern))))
+        (describe* "but with `api-opts`"
+          (it* "can create autocmd with pattern `*`."
+            (augroup! default-augroup
+              [default-event * default-callback {:desc :foo}])
+            (assert.is_same "*"
+                            (-> (get-first-autocmd {:group default-augroup})
+                                (. :pattern))))))
+      (describe* "preceding `extra-opts`"
+        (it* "can create autocmd with pattern `*`."
+          (augroup! default-augroup
+            [default-event * [:desc :foo] default-callback])
+          (assert.is_same "*" (-> (get-first-autocmd {:group default-augroup})
+                                  (. :pattern)))))
+      (describe* "preceding both `extra-opts` and `api-opts`"
+        (it* "can create autocmd with pattern `*`."
+          (augroup! default-augroup
+            [default-event * [:nested] default-callback {:desc :foo}])
+          (let [au (get-first-autocmd {:group default-augroup-id})]
+            (assert.is_same "*" au.pattern))))))
   (describe* :au!/autocmd!
     (describe* "nested autocmds"
       (it* "callback arg value at `group` is `nil` when parent group is `nil`."
