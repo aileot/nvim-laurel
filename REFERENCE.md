@@ -251,9 +251,10 @@ Create or get an augroup, or override an existing augroup.
   use macro/function named `au!` or `autocmd!` here.
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
-  symbol or list, set it in either `extra-opts` or `api-opts` instead. The
+- `?pattern`: (bare-sequence|`*`) Patterns to match against. To set `pattern`
+  in symbol or list, set it in either `extra-opts` or `api-opts` instead. The
   first pattern in string cannot be any of the keys used in `?extra-opts`.
+  The symbol `*` is available to imply pattern `"*"` here.
 - `?extra-opts`: (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
   - `buffer`: (number?) Create command in the buffer of the next
