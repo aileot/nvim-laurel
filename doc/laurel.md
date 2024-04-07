@@ -268,6 +268,9 @@ Create or get an augroup, or override an existing augroup.
   first pattern in string cannot be any of the keys used in `?extra-opts`.
 - `?extra-opts`: (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
+  - `buffer`: (number?) Create command in the buffer of the next
+    value. Without 0 or no following number, create autocmd to current buffer
+    by itself.
 - `callback`: (string|function) Set either callback function or Ex command. A
   callback is interpreted as Lua function by default. To set Ex command, you
   have three options:
@@ -388,7 +391,9 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   `[:n :o :x]`.
 - `?extra-opts`: (bare-sequence) Additional option:
   - `<buffer>`: Map `lhs` in current buffer by itself.
-  - `buffer`: Map `lhs` to a buffer of the next value.
+- `buffer`: (number?) Map `lhs` to a buffer of the next value. With `0` or
+  with no following value, create autocmd to current buffer.
+
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
     `expr` is set in `extra-opts`.
   - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
@@ -396,6 +401,7 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - `wait`: Disable `nowait` _in extra-opts;_ will NOT disable `nowait`
     _in api-opts_. Useful in wrapper macro which set `nowait` with
     `&default-opts`.
+
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
   function or Key sequence. A callback is interpreted as Lua function by
@@ -916,8 +922,11 @@ Create a user command.
 
 - `?extra-opts`: (bare-sequence) Optional command attributes.
   Additional attributes:
+
   - `<buffer>`: Create command in current buffer by itself.
-  - `buffer`: Create command in the buffer of the next value.
+  - `buffer`: Create command in the buffer of the next value. Without 0 or no
+    following number, create autocmd to current buffer by itself.
+
 - `name`: (string) Name of the new user command. It must begin with an
   uppercase letter.
 - `command`: (string|function) Replacement command.
