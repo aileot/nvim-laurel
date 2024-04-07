@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.6.2](https://github.com/aileot/nvim-laurel/compare/v0.6.1...v0.6.2) (2024-04-07)
+
+
+### Features
+
+* accept `buffer` with no next value in `extra-opts` to set it to `0` ([#268](https://github.com/aileot/nvim-laurel/issues/268)) ([4b4a82d](https://github.com/aileot/nvim-laurel/commit/4b4a82dcb6d1fc780cb18f2fa8c5ec1795066bb0))
+* **keymap:** add extra-opt `wait` against `nowait` ([#264](https://github.com/aileot/nvim-laurel/issues/264)) ([528d8ae](https://github.com/aileot/nvim-laurel/commit/528d8ae45c061431275645bcd61aa3ea6be5d996))
+* **option:** add `let!` macro as a superset of `opt`, `opt_local`, `opt_global`, `bo!`, `wo!`, ... ([#253](https://github.com/aileot/nvim-laurel/issues/253)) ([e737141](https://github.com/aileot/nvim-laurel/commit/e737141bf6c35eeec6f40d0dd0c29652a42bd977))
+
+
+### Bug Fixes
+
+* **command:** accept `:count` and `:range` without value to set default option value  ([#267](https://github.com/aileot/nvim-laurel/issues/267)) ([949686a](https://github.com/aileot/nvim-laurel/commit/949686ab3bac18e410ba2bd4cd45215e0ebf8ae5))
+
 ## [0.6.1](https://github.com/aileot/nvim-laurel/compare/v0.6.0...v0.6.1) (2024-03-16)
 
 
