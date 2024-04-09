@@ -469,7 +469,7 @@
           (match rest
             [cb nil nil nil] (values nil nil cb nil)
             (where [a ex-opts c ?d] (sequence? ex-opts)) (values a ex-opts c ?d)
-            [a b ?c nil] (if (or (= `* a) (= [`*] a))
+            [a b ?c nil] (if (= `* a)
                              (if (sequence? b)
                                  (values "*" b ?c)
                                  (values "*" nil b ?c))
@@ -493,8 +493,7 @@
       (let [pat (if (and (sequence? ?pat) (= 1 (length ?pat)))
                     (first ?pat)
                     ?pat)
-            pattern (if (or (= `* pat) (= [`*] pat))
-                        "*"
+            pattern (if (= `* pat) "*"
                         pat)]
         ;; Note: `*` is the default pattern and redundant.
         (when-not (and (str? pattern) (= "*" pattern))
