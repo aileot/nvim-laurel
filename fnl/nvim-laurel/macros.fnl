@@ -495,7 +495,7 @@
                     ?pat)
             pattern (if (= `* pat) "*"
                         pat)]
-        ;; Note: `*` is the default pattern and redundant.
+        ;; Note: `*` is the default pattern and redundant in compiled result.
         (when-not (and (str? pattern) (= "*" pattern))
           (set extra-opts.pattern pattern)))
       (if (or ?vim-indice (str? callback) (vim-callback-format? callback))
