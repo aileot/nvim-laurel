@@ -251,9 +251,10 @@ Create or get an augroup, or override an existing augroup.
   use macro/function named `au!` or `autocmd!` here.
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
-- `?pattern`: (bare-sequence) Patterns to match against. To set `pattern` in
-  symbol or list, set it in either `extra-opts` or `api-opts` instead. The
+- `?pattern`: (bare-sequence|`*`) Patterns to match against. To set `pattern`
+  in symbol or list, set it in either `extra-opts` or `api-opts` instead. The
   first pattern in string cannot be any of the keys used in `?extra-opts`.
+  The symbol `*` is available to imply pattern `"*"` here.
 - `?extra-opts`: (bare-sequence) Additional option:
   - `<buffer>`: Create autocmd to current buffer by itself.
   - `buffer`: (number?) Create command in the buffer of the next
@@ -277,10 +278,10 @@ Create or get an augroup, or override an existing augroup.
 (augroup! :sample-augroup
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! [:InsertEnter :InsertLeave]
-      [:<buffer> :desc "call foo#bar() without any args"] vim.fn.foo#bar)
-  (autocmd! :VimEnter [:once :nested :desc "call baz#qux() with <amatch>"]
+      [:buffer :desc "call foo#bar() without any args"] vim.fn.foo#bar)
+  (autocmd! :VimEnter * [:once :nested :desc "call baz#qux() with <amatch>"]
       #(vim.fn.baz#qux $.match)))
-  (autocmd! :LspAttach
+  (autocmd! :LspAttach *
       #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
 ```
 
