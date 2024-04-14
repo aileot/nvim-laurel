@@ -343,7 +343,7 @@
   (let [gcc-error-format "%s:%d: %s"
         deprecation `(vim.deprecate ,(: "[nvim-laurel] %s" :format deprecated)
                                     ,alternative
-                                    ,(: "%s. `:cexpr g:laurel_deprecated` would help you update it. See `:h g:laurel_deprecated` for the details."
+                                    ,(: "%s, and the deprecated module will not be updated."
                                         :format version)
                                     :nvim-laurel false)
         msg (: "nvim-laurel: %s is deprecated. Please update it with %s."
