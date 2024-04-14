@@ -67,7 +67,7 @@ In a macro definition file, say `my-macros.fnl`,
         : au!
         : autocmd!
         : feedkeys!
-        : highlight!} (require :nvim-laurel.macros))
+        : highlight!} (require :laurel.macros))
 ```
 
 And export them at the bottom of the file:
@@ -290,7 +290,7 @@ determined at runtime.
 
 ```fennel
 ;; good
-(import-macros {: autocmd!} :nvim-laurel)
+(import-macros {: autocmd!} :laurel.macros)
 
 (macro buf-au! [...]
   `(autocmd! &default-opts {:buffer 0} ,...))
@@ -306,7 +306,7 @@ or
 ```fennel
 ;; good
 ;; in my/macros.fnl
-(local {: autocmd!} (require :nvim-laurel))
+(local {: autocmd!} (require :laurel.macros))
 
 (fn buf-au! [...]
   (autocmd! `&default-opts {:buffer 0} ...))
@@ -316,7 +316,7 @@ or
 
 ```fennel
 ;; in foobar.fnl (another file)
-(import-macros {: autocmd!} :nvim-laurel)
+(import-macros {: autocmd!} :laurel.macros)
 (import-macros {: buf-au!} :my.macros)
 
 (autocmd! group [:FileType]
