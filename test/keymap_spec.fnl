@@ -12,7 +12,7 @@
                 : buf-map!/with-<buffer>=true}
                :test._wrapper_macros)
 
-(import-macros {: map! : unmap! : <C-u> : <Cmd>} :nvim-laurel.macros)
+(import-macros {: map! : unmap! : <C-u> : <Cmd>} :laurel.macros)
 
 (macro macro-callback []
   `#:macro-callback)

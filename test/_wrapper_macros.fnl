@@ -1,6 +1,6 @@
 ;; fennel-ls: macro-file
 (local {: augroup! : autocmd! : set! : map! : command! : highlight!}
-       (require :nvim-laurel.macros))
+       (require :laurel.macros))
 
 (fn my-autocmd! [...]
   "Create an autocmd in predefined augroup, but the augroup MUST be defined

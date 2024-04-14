@@ -5,7 +5,7 @@
                 : describe*
                 : it*} :test._busted_macros)
 
-(import-macros {: augroup! : au! : autocmd!} :nvim-laurel.macros)
+(import-macros {: augroup! : au! : autocmd!} :laurel.macros)
 (import-macros {: my-autocmd!
                 : augroup+
                 : bufnr-suffixed-augroup!
