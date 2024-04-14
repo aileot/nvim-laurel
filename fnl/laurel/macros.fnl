@@ -519,6 +519,57 @@
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
+;;; Export ///2
+
+(fn autocmd! [...]
+  "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
+  ```fennel
+  (autocmd! events api-opts)
+  (autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
+  ```
+  @param name|id string|integer|nil The autocmd group name or id to match
+      against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
+      this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
+      Set it to `nil` to define `autocmd`s affiliated with no augroup.
+  @param events string|string[] The event or events to register this autocmd.
+  @param ?pattern bare-sequence
+  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
+      available to set `autocmd` to current buffer.
+  @param callback string|function Set either vim Ex command, or function. Any
+      bare string here is interpreted as vim Ex command; use `vim.fn` interface
+      instead to set a Vimscript function.
+  @param ?api-opts kv-table Optional autocmd attributes.
+  @return undefined The return value of `nvim_create_autocmd`"
+  ;; TODO: Detect if it were embedded in a runtime function with varg.
+  ;;  (let [varg-size (select "#" ...)
+  ;;        last-arg (select varg-size ...)]
+  ;;    (assert (varg? last-arg) (.. "varg is incompatible. Please consider to embed it into macro instead of function:
+  ;;" (view [...]))))
+  (define-autocmd! ...))
+
+(fn au! [...]
+  "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
+  The same as `autocmd!`.
+  ```fennel
+  (au! events api-opts)
+  (au! name|id events ?pattern ?extra-opts callback ?api-opts)
+  ```
+  @param name|id string|integer|nil The autocmd group name or id to match
+      against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
+      this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
+      Set it to `nil` to define `autocmd`s affiliated with no augroup.
+  @param events string|string[] The event or events to register this autocmd.
+  @param ?pattern bare-sequence
+  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
+      available to set `autocmd` to current buffer.
+  @param callback string|function Set either vim Ex command, or function. Any
+      bare string here is interpreted as vim Ex command; use `vim.fn` interface
+      instead to set a Vimscript function.
+  @param ?api-opts kv-table Optional autocmd attributes.
+  @return undefined The return value of `nvim_create_autocmd`"
+  (define-autocmd! ...))
+
+;;; Augroup ///1
 (lambda define-augroup! [name api-opts autocmds]
   "Define an augroup.
   ```fennel
@@ -536,14 +587,15 @@
       `(vim.api.nvim_create_augroup ,name ,api-opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
          ,(icollect [_ args (ipairs autocmds)]
-            (let [au-args (if (autocmd? args)
-                              (slice args 2)
-                              (sequence? args)
-                              args
-                              (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
-                                                                    (type args)
-                                                                    (view args))))]
-              (define-autocmd! `id# (unpack au-args)))))))
+            (if (list? args)
+                (let [first-args (first args)]
+                  (if (= first-args `au!) (au! `id# (unpack args 2))
+                      (= first-args `autocmd!) (autocmd! `id# (unpack args 2))))
+                (sequence? args)
+                (define-autocmd! `id# (unpack args))
+                ;; Otherwise,
+                (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
+                                                      (type args) (view args))))))))
 
 ;; Export ///2
 
@@ -571,32 +623,6 @@
                                 (values ?api-opts|?autocmd rest))
         api-opts* (default/merge-opts! api-opts)]
     (define-augroup! name api-opts* autocmds)))
-
-(fn autocmd! [...]
-  "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
-  ```fennel
-  (autocmd! events api-opts)
-  (autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
-  ```
-  @param name|id string|integer|nil The autocmd group name or id to match
-      against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
-      this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
-      Set it to `nil` to define `autocmd`s affiliated with no augroup.
-  @param events string|string[] The event or events to register this autocmd.
-  @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
-  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
-      available to set `autocmd` to current buffer.
-  @param callback string|function Set either vim Ex command, or function. Any
-      bare string here is interpreted as vim Ex command; use `vim.fn` interface
-      instead to set a Vimscript function.
-  @param ?api-opts kv-table Optional autocmd attributes.
-  @return undefined The return value of `nvim_create_autocmd`"
-  ;; TODO: Detect if it were embedded in a runtime function with varg.
-  ;;  (let [varg-size (select "#" ...)
-  ;;        last-arg (select varg-size ...)]
-  ;;    (assert (varg? last-arg) (.. "varg is incompatible. Please consider to embed it into macro instead of function:
-  ;;" (view [...]))))
-  (define-autocmd! ...))
 
 ;; Keymap ///1
 
@@ -1247,7 +1273,7 @@
  : <C-u>
  : augroup!
  : autocmd!
- :au! autocmd!
+ : au!
  : set!
  : setlocal!
  : setglobal!
