@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/aileot/nvim-laurel/compare/v0.7.0...v0.7.1) (2024-04-14)
+
+
+### Bug Fixes
+
+* **module:** temporarily restore `nvim-laurel.macros` for more secure updates ([#281](https://github.com/aileot/nvim-laurel/issues/281)) ([#282](https://github.com/aileot/nvim-laurel/issues/282)) ([7b2c3ba](https://github.com/aileot/nvim-laurel/commit/7b2c3ba347f0a614123f5110748adac1f40cf0bc))
+
 ## [0.7.0](https://github.com/aileot/nvim-laurel/compare/v0.6.2...v0.7.0) (2024-04-14)
 
 ### ⚠ BREAKING CHANGES
