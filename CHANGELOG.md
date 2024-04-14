@@ -2,12 +2,27 @@
 
 ## [0.7.0](https://github.com/aileot/nvim-laurel/compare/v0.6.2...v0.7.0) (2024-04-14)
 
-
 ### ⚠ BREAKING CHANGES
 
-* **module:** The module prefix `nvim-laurel` is renamed to `laurel` following the nvim community convention.
-* **option:** The previously deprecated macros (`set+`, `set^`, `set-`, `setlocal+`, `setlocal^`, `setlocal-`, `setglobal+`, `setglobal^`, `setglobal-`, `go+`, `go^`, `go-`) have been removed according to the "less" design principle of this project. Please make your own wrappers if you still need them: some sample snippets are available in [Cookbook](https://github.com/aileot/nvim-laurel/blob/main/COOKBOOK.md)
-* **autocmd:** `autocmd` macros now interpret the symbol `*` at `pattern` position as an alias of `[:*]`. Since the symbol `*` is too unlikely to be overridden, this change is applied without deprecation notice.
+- **option:** The previously deprecated macros (`set+`, `set^`, `set-`, `setlocal+`, `setlocal^`, `setlocal-`, `setglobal+`, `setglobal^`, `setglobal-`, `go+`, `go^`, `go-`) have been removed according to the "less" design principle of this project. Please make your own wrappers if you still need them: some sample snippets are available in [Cookbook](https://github.com/aileot/nvim-laurel/blob/main/COOKBOOK.md)
+- **autocmd:** `autocmd` macros now interpret the symbol `*` at `pattern` position as an alias of `[:*]`. Since the symbol `*` is too unlikely to be overridden, this change is applied without deprecation notice.
+- **module:** The module prefix `nvim-laurel` is renamed to `laurel` following the nvim community convention.
+
+  Just in case, please make sure to backup your nvim config files via `git`,
+  `cp`, etc., before updating the module name.
+  The following snippet is an example oneliner shell script to rename
+  `nvim-laurel` to `laurel` in `require`d or `import`ed via table, and
+  `:update` at once on nvim Ex command.
+
+  ```bash
+  nvim -u NONE +'exe "argadd" glob(stdpath("config") .."**/*.fnl")->substitute("\n"," ","ge")' +'argdo %s;} :\zsnvim-\zelaurel;;e|%s;(require :\zsnvim-\zelaurel;;e|up' +qa
+  ```
+
+  Tested only on `bash`.
+  The script might not work as expected on other shells.
+
+  (Alternatively, you can run `make fnl/nvim-laurel/` at nvim-laurel project
+  root if you doubt about updating the module name.)
 
 ### Features
 
