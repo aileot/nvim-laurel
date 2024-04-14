@@ -4,7 +4,7 @@
 
 ### ⚠ BREAKING CHANGES
 
-- **option:** The previously deprecated macros (`set+`, `set^`, `set-`, `setlocal+`, `setlocal^`, `setlocal-`, `setglobal+`, `setglobal^`, `setglobal-`, `go+`, `go^`, `go-`) have been removed according to the "less" design principle of this project. Please make your own wrappers if you still need them: some sample snippets are available in [Cookbook](https://github.com/aileot/nvim-laurel/blob/main/COOKBOOK.md)
+- **option:** The previously deprecated macros (`set+`, `set^`, `set-`, `setlocal+`, `setlocal^`, `setlocal-`, `setglobal+`, `setglobal^`, `setglobal-`, `go+`, `go^`, `go-`) have been removed according to the "less" design principle of this project. Please make your own wrappers if you still need them: some sample snippets are available in [Cookbook](https://github.com/aileot/nvim-laurel/blob/main/COOKBOOK.md).
 - **autocmd:** `autocmd` macros now interpret the symbol `*` at `pattern` position as an alias of `[:*]`. Since the symbol `*` is too unlikely to be overridden, this change is applied without deprecation notice.
 - **module:** The module prefix `nvim-laurel` is renamed to `laurel` following the nvim community convention.
 
