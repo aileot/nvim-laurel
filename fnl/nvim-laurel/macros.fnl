@@ -1,4 +1,9 @@
 ;; fennel-ls: macro-file
+
+;;; WARNING: This module is only for backward compatibility. This module will
+;;; not be updated any longer, and is supposed to be removed at v0.8.0 in
+;;; favor of the new module `laurel.macros`.
+
 ;; General Macros ///1
 
 (macro ++ [num]
