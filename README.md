@@ -165,8 +165,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
    require("lazy.nvim").setup({
      {
        "aileot/nvim-laurel", {
-       -- v0.6.0 <= {version} < v0.7.0
-       version = "~v0.6.0",
+       -- v0.7.1 <= {version} < v0.8.0
+       -- Note: v0.7.0 has a backward compatibility issue.
+       version = "~v0.7.1",
      },
      ... -- and other plugins
    }, {
@@ -189,8 +190,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
    ```fennel
    (local lazy (require :lazy))
    (lazy.setup [{1 :aileot/nvim-laurel
-                 ;; v0.6.0 <= {version} < v0.7.0
-                 :version "~v0.6.0"
+                 ;; v0.7.1 <= {version} < v0.8.0
+                 ;; Note: v0.7.0 has a backward compatibility issue.
+                 :version "~v0.7.0"
                 ...] ;; and other plugins
                {:defaults {:lazy true
                            ;; Note: Not to remove nvim-laurel from &rtp, and not to encounter any
@@ -204,7 +206,8 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
    ```toml
    [[plugins]]
    repo = "aileot/nvim-laurel"
-   rev = "v0.6.*"
+   # Note: v0.7.0 has a backward compatibility issue.
+   rev = "v0.7.*"
    ```
 
 ### To compile outside Neovim
