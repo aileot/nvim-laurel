@@ -49,11 +49,15 @@ The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
       suffix-patterns [:?.fnl :?/init.fnl]
       default-patterns (table.concat [:?.fnl
                                       :?/init.fnl
-                                      ;; Note: The following src/ patterns are
-                                      ;; merely community convention, but
-                                      ;; recommended.
+                                      ;; Extra worth considering patterns.
                                       :src/?.fnl
-                                      :src/?/init.fnl]
+                                      :src/?/init.fnl
+                                      :fnl/?.fnl
+                                      :fnl/?/init.fnl
+                                      :test/?.fnl
+                                      :test/?/init.fnl
+                                      :tests/?.fnl
+                                      :tests/?/init.fnl]
                                      ";")
       fnl-patterns (accumulate [patterns default-patterns ;
                                 _ root (ipairs runtime-fnl-roots)]
