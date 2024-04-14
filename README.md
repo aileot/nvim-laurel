@@ -36,7 +36,7 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
   nvim-laurel, but useful to write nvim config files in Fennel:
   LSP, Treesitter, etc. Happy Coding!
 - The [Changelog](./CHANGELOG.md).
-  _Please read the [Cookbook](./COOKBOOK.md) instead_
+  _See also the [Cookbook](./COOKBOOK.md)_
   for tips how to update features and usages deprecated or removed in
   nvim-laurel.
 
