@@ -189,7 +189,7 @@ Note that quote position depends on where the wrapper macros are defined:
 
   ```fennel
   ;; in foobar.fnl
-  (import-macros {: map!} :nvim-laurel)
+  (import-macros {: map!} :laurel.macros)
 
   (macro buf-map! [...]
     `(map! &default-opts {:buffer 0} ,...))
@@ -202,7 +202,7 @@ Note that quote position depends on where the wrapper macros are defined:
 
   ```fennel
   ;; in my/macros.fnl
-  (local {: map!} (require :nvim-laurel))
+  (local {: map!} (require :laurel.macros))
 
   (fn buf-map! [...]
     (map! `&default-opts {:buffer 0} ...))

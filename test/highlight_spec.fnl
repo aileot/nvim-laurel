@@ -1,5 +1,5 @@
 (import-macros {: before-each : describe* : it*} :test._busted_macros)
-(import-macros {: highlight!} :nvim-laurel.macros)
+(import-macros {: highlight!} :laurel.macros)
 (import-macros {: bold-highlight!} :test._wrapper_macros)
 
 (macro get-hl-of-rgb-color [name]

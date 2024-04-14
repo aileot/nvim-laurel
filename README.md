@@ -167,6 +167,11 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
        "aileot/nvim-laurel", {
        -- v0.6.0 <= {version} < v0.7.0
        version = "~v0.6.0",
+       -- (Optional) A workaround only for backward compatibility to
+       -- import laurel module from "nvim-laurel" instead.
+       -- See CHANGELOG.md to update to the exact module names all
+       -- over your config files.
+       build = "make fnl/nvim-laurel/",
      },
      ... -- and other plugins
    }, {
@@ -191,6 +196,11 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
    (lazy.setup [{1 :aileot/nvim-laurel
                  ;; v0.6.0 <= {version} < v0.7.0
                  :version "~v0.6.0"
+                 ;; (Optional) A workaround only for backward compatibility to
+                 ;; import laurel module from "nvim-laurel" instead.
+                 ;; See CHANGELOG.md to update to the exact module names all
+                 ;; over your config files.
+                 :build "make fnl/nvim-laurel/"
                 ...] ;; and other plugins
                {:defaults {:lazy true
                            ;; Note: Not to remove nvim-laurel from &rtp, and not to encounter any
@@ -235,7 +245,7 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 ## Usage
 
 ```fennel
-(import-macros {: set! : map! : augroup! : au! ...} :nvim-laurel.macros)
+(import-macros {: set! : map! : augroup! : au! ...} :laurel.macros)
 ```
 
 See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.

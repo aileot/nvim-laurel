@@ -1,5 +1,5 @@
 (import-macros {: before-each : describe* : it*} :test._busted_macros)
-(import-macros {: b! : env!} :nvim-laurel.macros)
+(import-macros {: b! : env!} :laurel.macros)
 
 (describe* :b!
   (before-each (fn []

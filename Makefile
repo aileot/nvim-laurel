@@ -41,6 +41,9 @@ help: ## Show this help
 	@egrep -h '^\S+: .*## \S+' $(MAKEFILE_LIST) | sed 's/: .*##/:/' | column -t -c 2 -s ':' | sed 's/^/  /'
 	@echo
 
+fnl/nvim-laurel/: ## Create link for backward compatibility
+	@ln -dsvL "$(REPO_ROOT)/fnl/laurel" "$(REPO_ROOT)/fnl/nvim-laurel"
+
 %_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
 	@$(FENNEL) \
 		$(FNL_FLAGS) \

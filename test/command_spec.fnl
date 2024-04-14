@@ -1,5 +1,5 @@
 (import-macros {: before-each : describe* : it*} :test._busted_macros)
-(import-macros {: command!} :nvim-laurel.macros)
+(import-macros {: command!} :laurel.macros)
 (import-macros {: buf-command!/as-api-alias} :test._wrapper_macros)
 
 (macro macro-callback []
