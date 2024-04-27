@@ -273,7 +273,7 @@
                                       _ (error-fmt "`%s` key requires a value"
                                                    key))
                                     (validate-type next-val valid-types)))
-                  _ (error (.. "Invalid option: " key)))]
+                  _ (error (.. "Invalid option in extra-opts: " key)))]
         (assert (not= nil val) (: "nil at `%s` key is unexpected" :format key))
         (tset kv-table key val))
       (++ i))
