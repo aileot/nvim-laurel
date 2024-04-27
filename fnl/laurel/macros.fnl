@@ -250,12 +250,15 @@
                  :format (table.concat valid-types "/") val-type))))
   val)
 
-(lambda extra-opts/seq->kv-table [xs option-types]
+(lambda extra-opts/seq->kv-table [xs valid-option-types]
   "Convert `xs` into a kv-table as follows:
-  - The values for `x` listed in `?option-types` are set to `true`.
+  - The keys in `valid-option-types` cannot be a value of `x`. So, when the
+  next value of `x` is a key `valid-option-types`, the value next to `:default`
+  in `valid-option-types` at `x` is set to `x`.
+  - When the valid type of `valid-option-types` of `x` is boolean, set to `true`.
   - The values for the rest of `x`s are set to the next value in `xs`.
   @param xs sequence
-  @param option-types string[] The sequence of keys set to `true`.
+  @param valid-option-types 'boolean'|table<string,string[]> Type-validation table for each available option. Set :boolean instead to set to `true`.
   @return kv-table"
   (assert (sequence? xs) (.. "expected sequence, got " (type xs)))
   (let [kv-table {}
@@ -263,17 +266,20 @@
     (var i 1)
     (while (<= i max)
       (let [key (. xs i)
-            val (case (. option-types key)
+            val (case (. valid-option-types key)
                   :boolean true
-                  valid-types (let [next-val (. xs (++ i))]
-                                (if (or (. option-types next-val) (< max i))
+                  valid-types (let [next-val (. xs (inc i))]
+                                (if (or (. valid-option-types next-val)
+                                        (<= max i))
                                     (case valid-types
                                       :boolean true
                                       [:default default-val] default-val
                                       _ (error-fmt "`%s` key requires a value"
                                                    key))
-                                    (validate-type next-val valid-types)))
-                  _ (error (.. "Invalid option: " key)))]
+                                    (do
+                                      (++ i)
+                                      (validate-type next-val valid-types))))
+                  _ (error (.. "Invalid option in extra-opts: " key)))]
         (assert (not= nil val) (: "nil at `%s` key is unexpected" :format key))
         (tset kv-table key val))
       (++ i))
