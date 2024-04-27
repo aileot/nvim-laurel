@@ -268,14 +268,17 @@
       (let [key (. xs i)
             val (case (. valid-option-types key)
                   :boolean true
-                  valid-types (let [next-val (. xs (++ i))]
-                                (if (or (. valid-option-types next-val) (< max i))
+                  valid-types (let [next-val (. xs (inc i))]
+                                (if (or (. valid-option-types next-val)
+                                        (<= max i))
                                     (case valid-types
                                       :boolean true
                                       [:default default-val] default-val
                                       _ (error-fmt "`%s` key requires a value"
                                                    key))
-                                    (validate-type next-val valid-types)))
+                                    (do
+                                      (++ i)
+                                      (validate-type next-val valid-types))))
                   _ (error (.. "Invalid option in extra-opts: " key)))]
         (assert (not= nil val) (: "nil at `%s` key is unexpected" :format key))
         (tset kv-table key val))
