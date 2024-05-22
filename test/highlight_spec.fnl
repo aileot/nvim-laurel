@@ -74,6 +74,12 @@
     (highlight! :Bar {:link :Foo})
     (assert.is_same {:foreground 0 :background 255 :bold true}
                     (get-hl-of-256-color :Bar)))
+  (it* "can link to another hl-group with other attributes, but discard the attributes other than those from link"
+    (highlight! :Foo {:ctermfg 0 :ctermbg 255 :bold true})
+    (highlight! :Bar {:link :Foo :italic true :fg :Blue :ctermbg 1})
+    (assert.is_same {:foreground 0 :background 255 :bold true}
+                    (get-hl-of-256-color :Bar))
+    (assert.is_same {:bold true} (get-hl-of-rgb-color :Bar)))
   (describe* "with its value in bare-kv-table"
     (it* "can set fg/bg in cterm table instead of ctermfg/ctermbg"
       (highlight! :FooBar {:cterm {:fg 0 :bg 255 :bold true}})
