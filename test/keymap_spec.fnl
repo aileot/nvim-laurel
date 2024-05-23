@@ -216,6 +216,29 @@
         (map! :n [:buffer bufnr] :lhs :rhs)
         (assert.is_same :rhs (buf-get-rhs bufnr :n :lhs))
         (unmap! bufnr :n :lhs)
+        (assert.is_nil (buf-get-rhs bufnr :n :lhs))))
+    (it* "can unmap a key in multi modes at once"
+      (map! :n :lhs :rhs1)
+      (map! :x :lhs :rhs2)
+      (map! :o :lhs :rhs3)
+      (assert.is_same :rhs1 (get-rhs :n :lhs))
+      (assert.is_same :rhs2 (get-rhs :x :lhs))
+      (assert.is_same :rhs3 (get-rhs :o :lhs))
+      (unmap! [:n :x :o] :lhs)
+      (assert.is_nil (get-rhs :n :lhs))
+      (assert.is_nil (get-rhs :x :lhs))
+      (assert.is_nil (get-rhs :o :lhs)))
+    (it* "can unmap buffer-locally a key in multi modes at once"
+      (let [bufnr (vim.api.nvim_get_current_buf)]
+        (map! :n [:buffer bufnr] :lhs :rhs1)
+        (map! :x [:buffer bufnr] :lhs :rhs2)
+        (map! :o [:buffer bufnr] :lhs :rhs3)
+        (assert.is_same :rhs1 (buf-get-rhs bufnr :n :lhs))
+        (assert.is_same :rhs2 (buf-get-rhs bufnr :x :lhs))
+        (assert.is_same :rhs3 (buf-get-rhs bufnr :o :lhs))
+        (unmap! bufnr [:n :x :o] :lhs)
+        (assert.is_nil (buf-get-rhs bufnr :n :lhs))
+        (assert.is_nil (buf-get-rhs bufnr :x :lhs))
         (assert.is_nil (buf-get-rhs bufnr :o :lhs)))))
   (describe* :<Cmd>/<C-u>
     (it* "is set to rhs as a string"
