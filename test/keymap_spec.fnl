@@ -96,18 +96,18 @@
         (map! mode :lhs :rhs)
         (map! modes :lhs :rhs)
         (let [{: noremap} (get-mapargs mode :lhs)]
-          (assert.is.same 1 noremap))
+          (assert.is_same 1 noremap))
         (each [_ m (ipairs modes)]
           (let [{: noremap} (get-mapargs m :lhs)]
-            (assert.is.same 1 noremap)))))
+            (assert.is_same 1 noremap)))))
     (it* "is also available to recursive mappings"
       (let [mode :n]
         (map! :o [:remap] :lhs :rhs)
         (map! mode [:remap] :lhs :rhs)
         (let [{: noremap} (get-mapargs :o :lhs)]
-          (assert.is.same 0 noremap))
+          (assert.is_same 0 noremap))
         (let [{: noremap} (get-mapargs mode :lhs)]
-          (assert.is.same 0 noremap))))
+          (assert.is_same 0 noremap))))
     (it* "gives priority to `api-opts`"
       (let [mode :n
             modes [:i :c :t]
@@ -116,12 +116,12 @@
         (map! mode :lhs :rhs api-opts)
         (map! modes :lhs :rhs api-opts)
         (let [{: noremap} (get-mapargs :o :lhs)]
-          (assert.is.same 1 noremap))
+          (assert.is_same 1 noremap))
         (let [{: noremap} (get-mapargs mode :lhs)]
-          (assert.is.same 1 noremap))
+          (assert.is_same 1 noremap))
         (each [_ m (ipairs modes)]
           (let [{: noremap} (get-mapargs m :lhs)]
-            (assert.is.same 1 noremap)))))
+            (assert.is_same 1 noremap)))))
     (it* "should set callback via macro"
       (map! :n :lhs (macro-callback))
       (assert.is_not_nil (get-callback :n :lhs)))
@@ -135,16 +135,16 @@
       (let [modes [:n :c :t]]
         (map! modes :lhs :rhs)
         (each [_ mode (ipairs modes)]
-          (assert.is.same :rhs (get-rhs mode :lhs)))))
+          (assert.is_same :rhs (get-rhs mode :lhs)))))
     (it* "maps multiple mode mappings with a bare-string at once"
       (map! :nct :lhs :rhs)
       (each [mode (-> :nct (: :gmatch "."))]
-        (assert.is.same :rhs (get-rhs mode :lhs))))
+        (assert.is_same :rhs (get-rhs mode :lhs))))
     (it* "enables `replace_keycodes` with `expr` in `extra-opts`"
       (let [modes [:n]]
         (map! modes [:expr] :lhs :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-          (assert.is.same 1 replace_keycodes))))
+          (assert.is_same 1 replace_keycodes))))
     (it* "disables `replace_keycodes` with `literal` in `extra-opts`"
       (let [modes [:n]]
         (map! modes [:expr :literal] :lhs :rhs)
@@ -186,11 +186,11 @@
       (it* "symbol will be set to 'command'"
         (map! :n :lhs <default>-command)
         (let [rhs (get-rhs :n :lhs)]
-          (assert.is.same <default>-command rhs)))
+          (assert.is_same <default>-command rhs)))
       (it* "list will be set to 'command'"
         (map! :n :lhs (<default>-str-callback))
         (let [rhs (get-rhs :n :lhs)]
-          (assert.is.same (<default>-str-callback) rhs))))
+          (assert.is_same (<default>-str-callback) rhs))))
     (describe* "with `&vim` indicator"
       (it* "sets `callback` in symbol as key sequence"
         (map! :n :lhs &vim default-rhs)
@@ -204,25 +204,25 @@
   (describe* :unmap!
     (it* "`unmap`s key"
       (map! :n :lhs :rhs)
-      (assert.is.same :rhs (get-rhs :n :lhs))
+      (assert.is_same :rhs (get-rhs :n :lhs))
       (unmap! :n :lhs)
       (assert.is_nil (get-rhs :n :lhs)))
     (it* "can unmap buffer local key"
       (let [bufnr (vim.api.nvim_get_current_buf)]
         (map! :n [:<buffer>] :lhs :rhs)
-        (assert.is.same :rhs (buf-get-rhs 0 :n :lhs))
+        (assert.is_same :rhs (buf-get-rhs 0 :n :lhs))
         (unmap! 0 :n :lhs)
         (assert.is_nil (buf-get-rhs 0 :n :lhs))
         (map! :n [:buffer bufnr] :lhs :rhs)
-        (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))
+        (assert.is_same :rhs (buf-get-rhs bufnr :n :lhs))
         (unmap! bufnr :n :lhs)
-        (assert.is_nil (buf-get-rhs bufnr :n :lhs)))))
+        (assert.is_nil (buf-get-rhs bufnr :o :lhs)))))
   (describe* :<Cmd>/<C-u>
     (it* "is set to rhs as a string"
       (assert.has_no.errors #(map! :n :lhs (<Cmd> "Do something")))
-      (assert.is.same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
+      (assert.is_same "<Cmd>Do something<CR>" (get-rhs :n :lhs))
       (assert.has_no.errors #(map! :n [:<buffer>] :lhs (<C-u> "Do something")))
-      (assert.is.same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
+      (assert.is_same ":<C-U>Do something<CR>" (buf-get-rhs 0 :n :lhs))))
   (describe* "(wrapper)"
     (describe* :omni-map!
       (it* "should map to lhs in any mode"
@@ -237,25 +237,25 @@
         (assert.has_no.errors #(nmap! :lhs [:nowait] :rhs)))
       (it* "maps to current buffer with `<buffer>`"
         (nmap! [:<buffer>] :lhs :rhs)
-        (assert.is.same :rhs (buf-get-rhs 0 :n :lhs)))
+        (assert.is_same :rhs (buf-get-rhs 0 :n :lhs)))
       (it* "maps to specific buffer with `buffer`"
         (let [bufnr (vim.api.nvim_get_current_buf)]
           (refresh-buffer)
           (nmap! [:buffer bufnr] :lhs :rhs)
           (assert.is_nil (buf-get-rhs 0 :n :lhs))
-          (assert.is.same :rhs (buf-get-rhs bufnr :n :lhs))))
+          (assert.is_same :rhs (buf-get-rhs bufnr :n :lhs))))
       (it* "set a list which will result in string without callback"
         (nmap! :lhs &vim (.. :r :h :s))
         (nmap! :lhs1 &vim (.. (<Cmd> :foobar) :<Esc>))
-        (assert.is.same :rhs (get-rhs :n :lhs))
-        (assert.is.same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1)))
+        (assert.is_same :rhs (get-rhs :n :lhs))
+        (assert.is_same :<Cmd>foobar<CR><Esc> (get-rhs :n :lhs1)))
       (it* "enables `replace_keycodes` when `expr` is set in `extra-opts`"
         (nmap! :lhs [:expr] :rhs)
         (nmap! :lhs1 :rhs {:expr true})
         (let [opt {:expr true}]
           (nmap! :lhs2 :rhs opt))
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-          (assert.is.same 1 replace_keycodes))
+          (assert.is_same 1 replace_keycodes))
         (let [{: replace_keycodes} (get-mapargs :n :lhs1)]
           (assert.is_nil replace_keycodes))
         (let [{: replace_keycodes} (get-mapargs :n :lhs2)]
@@ -294,20 +294,20 @@
               (remap! mode :lhs :rhs)
               (remap! modes :lhs :rhs)
               (let [{: noremap} (get-mapargs mode :lhs)]
-                (assert.is.same 0 noremap))
+                (assert.is_same 0 noremap))
               (each [_ m (ipairs modes)]
                 (let [{: noremap} (get-mapargs m :lhs)]
-                  (assert.is.same 0 noremap)))))
+                  (assert.is_same 0 noremap)))))
           (it* "can create non-recursive mappings by overriding option"
             (let [mode :x
                   modes [:n :o :t]]
               (map! mode [:noremap] :lhs :rhs)
               (map! modes [:noremap] :lhs :rhs)
               (let [{: noremap} (get-mapargs mode :lhs)]
-                (assert.is.same 1 noremap))
+                (assert.is_same 1 noremap))
               (each [_ m (ipairs modes)]
                 (let [{: noremap} (get-mapargs m :lhs)]
-                  (assert.is.same 1 noremap))))))
+                  (assert.is_same 1 noremap))))))
         (describe* "buf-map! with {:buffer 0} in its default-opts"
           (before-each (fn []
                          (refresh-buffer)))
