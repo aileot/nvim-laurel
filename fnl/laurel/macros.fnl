@@ -736,8 +736,10 @@
              ,(set-keymap modes)
              (vim.tbl_map (fn [m#]
                             ,(set-keymap `m#)) ,modes))
-        (icollect [_ m (ipairs modes)]
-          (set-keymap m)))))
+        `(do
+           ,(-> (icollect [_ m (ipairs modes)]
+                  (set-keymap m))
+                (unpack))))))
 
 ;; Export ///2
 
