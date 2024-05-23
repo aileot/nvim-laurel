@@ -1217,30 +1217,22 @@
                                   ;; `default/merge-opts!` could not work
                                   ;; expectedly.
                                   api-opts)]
-    (if (?. api-opts* :link)
-        (each [k _ (pairs api-opts*)]
-          (assert-compile (= k :link)
-                          (.. "`link` key excludes any other options: " k)
-                          api-opts*))
-        (do
-          (when (nil? api-opts*.ctermfg)
-            (set api-opts*.ctermfg (?. api-opts* :cterm :fg))
-            (when api-opts*.cterm
-              (set api-opts*.cterm.fg nil)))
-          (when (nil? api-opts*.ctermbg)
-            (set api-opts*.ctermbg (?. api-opts* :cterm :bg))
-            (when api-opts*.cterm
-              (set api-opts*.cterm.bg nil)))
-          (assert-compile (or (cterm-color? api-opts*.ctermfg)
-                              (hidden-in-compile-time? api-opts*.ctermfg))
-                          (.. "ctermfg expects 256 color, got "
-                              (view api-opts*.ctermfg))
-                          api-opts*)
-          (assert-compile (or (cterm-color? api-opts*.ctermbg)
-                              (hidden-in-compile-time? api-opts*.ctermbg))
-                          (.. "ctermbg expects 256 color, got "
-                              (view api-opts*.ctermbg))
-                          api-opts*)))
+    (when (nil? api-opts*.ctermfg)
+      (set api-opts*.ctermfg (?. api-opts* :cterm :fg))
+      (when api-opts*.cterm
+        (set api-opts*.cterm.fg nil)))
+    (when (nil? api-opts*.ctermbg)
+      (set api-opts*.ctermbg (?. api-opts* :cterm :bg))
+      (when api-opts*.cterm
+        (set api-opts*.cterm.bg nil)))
+    (assert-compile (or (cterm-color? api-opts*.ctermfg)
+                        (hidden-in-compile-time? api-opts*.ctermfg))
+                    (.. "ctermfg expects 256 color, got "
+                        (view api-opts*.ctermfg)) api-opts*)
+    (assert-compile (or (cterm-color? api-opts*.ctermbg)
+                        (hidden-in-compile-time? api-opts*.ctermbg))
+                    (.. "ctermbg expects 256 color, got "
+                        (view api-opts*.ctermbg)) api-opts*)
     `(vim.api.nvim_set_hl ,(or ?ns-id 0) ,name ,api-opts*)))
 
 ;; Deprecated ///1
