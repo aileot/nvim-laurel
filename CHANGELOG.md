@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.2](https://github.com/aileot/nvim-laurel/compare/v0.7.1...v0.7.2) (2024-05-23)
+
+
+### Bug Fixes
+
+* **extra-opts:** do not skip the next option after self-sufficient key ([#284](https://github.com/aileot/nvim-laurel/issues/284)) ([39302c4](https://github.com/aileot/nvim-laurel/commit/39302c44a69fd13e9fa623a58e79f103d9f3aa8e))
+* **highlight:** remove `link` attribute restriction at compile time ([#287](https://github.com/aileot/nvim-laurel/issues/287)) ([0e20ac8](https://github.com/aileot/nvim-laurel/commit/0e20ac8eb5a5074959c7acc1cf58c6b7dde1e8d3))
+* **keymap:** let `unmap!` with multi modes ([#280](https://github.com/aileot/nvim-laurel/issues/280)) ([5f5e66d](https://github.com/aileot/nvim-laurel/commit/5f5e66d29be83636dac395c317b92a3777b472a3))
+
 ## [0.7.1](https://github.com/aileot/nvim-laurel/compare/v0.7.0...v0.7.1) (2024-04-14)
 
 
