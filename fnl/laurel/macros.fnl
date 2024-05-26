@@ -1254,29 +1254,30 @@
 
 ;; Export ///1
 
-{: map!
- : unmap!
- : <Cmd>
- : <C-u>
- : augroup!
- : autocmd!
- :au! autocmd!
- : set!
- : setlocal!
- : setglobal!
- :go! setglobal!
- : bo!
- : wo!
- : g!
- : b!
- : w!
- : t!
- : v!
- : env!
- : command!
- : feedkeys!
- : highlight!
- :hi! highlight!
- : let!}
+(collect [k v (pairs {: map!
+                      : unmap!
+                      : <Cmd>
+                      : <C-u>
+                      : augroup!
+                      : autocmd!
+                      :au! autocmd!
+                      : set!
+                      : setlocal!
+                      : setglobal!
+                      :go! setglobal!
+                      : bo!
+                      : wo!
+                      : g!
+                      : b!
+                      : w!
+                      : t!
+                      : v!
+                      : env!
+                      : command!
+                      : feedkeys!
+                      : highlight!
+                      :hi! highlight!
+                      : let!})]
+  (values k (pin-args v)))
 
 ;; vim:fdm=marker:foldmarker=///,""""
