@@ -353,6 +353,12 @@
   @param version string Version to drop the compatibility
   @param compatible any Anything to keep the compatibility
   @return list"
+  (var ?fnl-path nil)
+  (var ?row nil)
+  (each [_ a (ipairs args) &until ?fnl-path]
+    (let [ast (ast-source a)]
+      (set ?fnl-path ast.filename)
+      (set ?row ast.line)))
   (let [gcc-error-format "%s:%d: %s"
         deprecation `(vim.deprecate ,(: "[nvim-laurel] %s" :format deprecated)
                                     ,alternative
@@ -360,32 +366,13 @@
                                         :format version)
                                     :nvim-laurel false)
         msg (: "nvim-laurel: %s is deprecated. Please update it with %s."
-               :format deprecated alternative)]
+               :format deprecated alternative)
+        qf-msg (string.format gcc-error-format ?fnl-path ?row msg)]
     `((fn []
-        (when (= nil _G.__laurel_has_fnl_dir)
-          (tset _G :__laurel_has_fnl_dir
-                (= 1 (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
         (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
         ;; Note: `table.insert` instead cannot handle `vim.g` interface.
-        (let [qf-msg# ;
-              (let [{:source source# :linedefined row#} ;
-                    (debug.getinfo 1 :S)
-                    lua-path# (source#:gsub "^@" "")
-                    /fnl/-or-/lua/# (if _G.__laurel_has_fnl_dir :/fnl/ :/lua/)
-                    fnl-path# (.. (vim.fn.stdpath :config)
-                                  (-> lua-path#
-                                      (: :gsub "%.lua$" :.fnl)
-                                      (: :gsub :^.*/nvim/fnl/ :/fnl/)
-                                      (: :gsub :^.*/nvim/lua/ /fnl/-or-/lua/#)))]
-                (string.format ,gcc-error-format fnl-path# row# ,msg))]
-          ;; Note: _G.__laurel_loaded_deprecated prevents duplicated item
-          ;; in g:laurel_deprecated for QuickFix list.
-          (when (= nil _G.__laurel_deprecated_loaded)
-            (tset _G :__laurel_deprecated_loaded {}))
-          (when (= nil (. _G.__laurel_deprecated_loaded qf-msg#))
-            (tset _G.__laurel_deprecated_loaded qf-msg# true)
-            (tset vim.g :laurel_deprecated
-                  (vim.fn.add vim.g.laurel_deprecated qf-msg#))))
+        (tset vim.g :laurel_deprecated
+              (vim.fn.add vim.g.laurel_deprecated ,qf-msg))
         ;; Note: It's safer to wrap it in `vim.schedule`.
         (vim.schedule #,deprecation)
         ,compatible))))
