@@ -512,7 +512,8 @@
           extra-opts (if (nil? ?extra-opts) {}
                          (-> ?extra-opts
                              (extra-opts/seq->kv-table autocmd/extra-opt-keys)))
-          ?bufnr (if (or extra-opts.<buffer> (= true extra-opts.buffer)) 0
+          ?bufnr (if extra-opts.<buffer>
+                     (deprecate ":<buffer> key" ":buffer key" :v0.9.0 0)
                      extra-opts.buffer)
           ?pat (or extra-opts.pattern ?pattern)]
       (set extra-opts.group ?id)
