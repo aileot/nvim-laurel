@@ -361,7 +361,7 @@
                                     :nvim-laurel false)
         msg (: "nvim-laurel: %s is deprecated. Please update it with %s."
                :format deprecated alternative)]
-    (case (accumulate [(?filename ?line) nil _ a (ipairs args) &until ?filename]
+    (case (accumulate [(?filename _line) nil _ a (ipairs args) &until ?filename]
             (let [ast (ast-source a)]
               (values ast.filename ast.line)))
       (fnl-path row) (let [qf-msg (string.format gcc-error-format fnl-path row
