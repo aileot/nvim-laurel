@@ -383,8 +383,7 @@
            (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
            ;; Note: `table.insert` instead cannot handle `vim.g` interface.
            (let [qf-msg# ;
-                 (let [{:source source# :linedefined row#} ;
-                       (debug.getinfo 1 :S)
+                 (let [{:source source# :linedefined row#} (debug.getinfo 1 :S)
                        lua-path# (source#:gsub "^@" "")
                        /fnl/-or-/lua/# (if _G.__laurel_has_fnl_dir :/fnl/
                                            :/lua/)
