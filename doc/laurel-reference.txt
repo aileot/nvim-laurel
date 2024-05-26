@@ -224,7 +224,6 @@ available.)
     pattern in string cannot be any of the keys used in `?extra-opts`. The symbol
     `*` is available to imply pattern `"*"` here.
 - `?extra-opts`(bare-sequence) Additional option:
-    - `<buffer>`Create autocmd to current buffer by itself.
     - `buffer`(number?) Create command in the buffer of the next
         value. Without 0 or no following number, create autocmd to current buffer
         by itself.
@@ -346,7 +345,6 @@ available.)
     bare-string, multi modes can be set in a string like `:nox` instead of `[:n :o
     :x]`.
 - `?extra-opts`(bare-sequence) Additional option:
-    - `<buffer>`Map `lhs` in current buffer by itself.
     - `buffer`(number?) Map `lhs` to a buffer of the next value. With `0` or
         with no following value, create autocmd to current buffer.
     - `literal`Disable `replace_keycodes`, which is automatically enabled when
@@ -886,7 +884,6 @@ Create a user command. (`&default-opts` is available.)
 
 - `?extra-opts`(bare-sequence) Optional command attributes. Additional
     attributes:
-    - `<buffer>`Create command in current buffer by itself.
     - `buffer`Create command in the buffer of the next value. Without 0 or no
         following number, create autocmd to current buffer by itself.
 - `name`(string) Name of the new user command. It must begin with an uppercase
@@ -897,7 +894,7 @@ Create a user command. (`&default-opts` is available.)
 
 >fennel
     (command! :SayHello "echo 'Hello world!'")
-    (command! :Salute [:bar :<buffer> :desc "Salute!"] #(print "Hello world!"))
+    (command! :Salute [:bar :buffer :desc "Salute!"] #(print "Hello world!"))
 <
 
 is equivalent to
