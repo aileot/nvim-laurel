@@ -1192,7 +1192,9 @@
                          (values extra-opts a2 ?a3 ?a4)
                          (values extra-opts a1 ?a3 ?a4)))
         extra-opts* (default/merge-opts! extra-opts)
-        ?bufnr (if extra-opts*.<buffer> 0 extra-opts*.buffer)
+        ?bufnr (if extra-opts*.<buffer>
+                   (deprecate ":<buffer> key" ":buffer key" :v0.9.0 0)
+                   extra-opts*.buffer)
         api-opts (-> (command/->compatible-opts! extra-opts*)
                      (merge-api-opts ?api-opts))]
     (if ?bufnr
