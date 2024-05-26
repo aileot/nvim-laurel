@@ -685,7 +685,9 @@
                       (do
                         (set extra-opts*.callback raw-rhs)
                         ""))
-              ?bufnr (if extra-opts*.<buffer> 0 extra-opts*.buffer)]
+              ?bufnr (if extra-opts*.<buffer>
+                         (deprecate ":<buffer> key" ":buffer key" :v0.9.0 0)
+                         extra-opts*.buffer)]
           (set extra-opts*.buffer ?bufnr)
           (values modes extra-opts* lhs rhs ?api-opts)))))
 
