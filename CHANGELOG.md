@@ -5,7 +5,7 @@
 
 ### Features
 
-* **extra-opts:** deprecate old `:&lt;buffer&gt;` options; use `:buffer` options instead ([#291](https://github.com/aileot/nvim-laurel/issues/291)) ([12797c5](https://github.com/aileot/nvim-laurel/commit/12797c505d2c39e6e2bb47959e7bd15252fa637e))
+* **extra-opts:** deprecate old `:<buffer>` options; use `:buffer` options instead ([#291](https://github.com/aileot/nvim-laurel/issues/291)) ([12797c5](https://github.com/aileot/nvim-laurel/commit/12797c505d2c39e6e2bb47959e7bd15252fa637e))
 
 
 ### Performance Improvements
