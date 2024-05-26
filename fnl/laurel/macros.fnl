@@ -353,12 +353,6 @@
   @param version string Version to drop the compatibility
   @param compatible any Anything to keep the compatibility
   @return list"
-  (var ?fnl-path nil)
-  (var ?row nil)
-  (each [_ a (ipairs args) &until ?fnl-path]
-    (let [ast (ast-source a)]
-      (set ?fnl-path ast.filename)
-      (set ?row ast.line)))
   (let [gcc-error-format "%s:%d: %s"
         deprecation `(vim.deprecate ,(: "[nvim-laurel] %s" :format deprecated)
                                     ,alternative
@@ -367,7 +361,11 @@
                                     :nvim-laurel false)
         msg (: "nvim-laurel: %s is deprecated. Please update it with %s."
                :format deprecated alternative)
-        qf-msg (string.format gcc-error-format ?fnl-path ?row msg)]
+        (fnl-path row) (accumulate [(?fnl-path ?row) nil _ a (ipairs args)
+                                    &until ?fnl-path]
+                         (let [ast (ast-source a)]
+                           (values ast.filename ast.line)))
+        qf-msg (string.format gcc-error-format fnl-path row msg)]
     `((fn []
         (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
         ;; Note: `table.insert` instead cannot handle `vim.g` interface.
