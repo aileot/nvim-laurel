@@ -513,7 +513,8 @@
                          (-> ?extra-opts
                              (extra-opts/seq->kv-table autocmd/extra-opt-keys)))
           ?bufnr (if extra-opts.<buffer>
-                     (deprecate ":<buffer> key" ":buffer key" :v0.9.0 0)
+                     (deprecate ":<buffer> key" ":buffer key alone, or with 0,"
+                                :v0.9.0 0)
                      extra-opts.buffer)
           ?pat (or extra-opts.pattern ?pattern)]
       (set extra-opts.group ?id)
@@ -687,7 +688,8 @@
                         (set extra-opts*.callback raw-rhs)
                         ""))
               ?bufnr (if extra-opts*.<buffer>
-                         (deprecate ":<buffer> key" ":buffer key" :v0.9.0 0)
+                         (deprecate ":<buffer> key"
+                                    ":buffer key alone, or with 0," :v0.9.0 0)
                          extra-opts*.buffer)]
           (set extra-opts*.buffer ?bufnr)
           (values modes extra-opts* lhs rhs ?api-opts)))))
@@ -1196,7 +1198,8 @@
                          (values extra-opts a1 ?a3 ?a4)))
         extra-opts* (default/merge-opts! extra-opts)
         ?bufnr (if extra-opts*.<buffer>
-                   (deprecate ":<buffer> key" ":buffer key" :v0.9.0 0)
+                   (deprecate ":<buffer> key" ":buffer key alone, or with 0,"
+                              :v0.9.0 0)
                    extra-opts*.buffer)
         api-opts (-> (command/->compatible-opts! extra-opts*)
                      (merge-api-opts ?api-opts))]
