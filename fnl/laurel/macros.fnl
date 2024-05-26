@@ -476,8 +476,7 @@
       Set it to `nil` to define `autocmd`s affiliated with no augroup.
   @param events string|string[] The event or events to register this autocmd.
   @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
-  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
-      available to set `autocmd` to current buffer.
+  @param ?extra-opts bare-sequence
   @param callback string|function Set either vim Ex command, or function. Any
       bare string here is interpreted as vim Ex command; use `vim.fn` interface
       instead to set a Vimscript function.
@@ -613,8 +612,7 @@
       Set it to `nil` to define `autocmd`s affiliated with no augroup.
   @param events string|string[] The event or events to register this autocmd.
   @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
-  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
-      available to set `autocmd` to current buffer.
+  @param ?extra-opts bare-sequence
   @param callback string|function Set either vim Ex command, or function. Any
       bare string here is interpreted as vim Ex command; use `vim.fn` interface
       instead to set a Vimscript function.
@@ -1177,9 +1175,6 @@
   (command! name ?extra-opts command ?api-opts)
   ```
   @param ?extra-opts bare-sequence Optional command attributes.
-    Additional attributes:
-    - <buffer>: with this alone, command is set in current buffer instead.
-    - buffer: with the next value, command is set to the buffer instead.
   @param name string Name of the new user command.
     It must begin with an uppercase letter.
   @param command string|function Replacement command.
