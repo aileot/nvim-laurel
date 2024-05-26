@@ -256,7 +256,6 @@ Create or get an augroup, or override an existing augroup.
   first pattern in string cannot be any of the keys used in `?extra-opts`.
   The symbol `*` is available to imply pattern `"*"` here.
 - `?extra-opts`: (bare-sequence) Additional option:
-  - `<buffer>`: Create autocmd to current buffer by itself.
   - `buffer`: (number?) Create command in the buffer of the next
     value. Without 0 or no following number, create autocmd to current buffer
     by itself.
@@ -380,7 +379,6 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   `[:n :o :x]`.
 - `?extra-opts`: (bare-sequence) Additional option:
 
-  - `<buffer>`: Map `lhs` in current buffer by itself.
   - `buffer`: (number?) Map `lhs` to a buffer of the next value. With `0` or
     with no following value, create autocmd to current buffer.
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
@@ -912,7 +910,6 @@ Create a user command.
 - `?extra-opts`: (bare-sequence) Optional command attributes.
   Additional attributes:
 
-  - `<buffer>`: Create command in current buffer by itself.
   - `buffer`: Create command in the buffer of the next value. Without 0 or no
     following number, create autocmd to current buffer by itself.
 
@@ -924,7 +921,7 @@ Create a user command.
 
 ```fennel
 (command! :SayHello "echo 'Hello world!'")
-(command! :Salute [:bar :<buffer> :desc "Salute!"] #(print "Hello world!"))
+(command! :Salute [:bar :buffer :desc "Salute!"] #(print "Hello world!"))
 ```
 
 is equivalent to

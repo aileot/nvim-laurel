@@ -361,7 +361,7 @@
                                     :nvim-laurel false)
         msg (: "nvim-laurel: %s is deprecated. Please update it with %s."
                :format deprecated alternative)]
-    (case (accumulate [(?filename ?line) nil _ a (ipairs args) &until ?filename]
+    (case (accumulate [(?filename _line) nil _ a (ipairs args) &until ?filename]
             (let [ast (ast-source a)]
               (values ast.filename ast.line)))
       (fnl-path row) (let [qf-msg (string.format gcc-error-format fnl-path row
@@ -476,8 +476,7 @@
       Set it to `nil` to define `autocmd`s affiliated with no augroup.
   @param events string|string[] The event or events to register this autocmd.
   @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
-  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
-      available to set `autocmd` to current buffer.
+  @param ?extra-opts bare-sequence
   @param callback string|function Set either vim Ex command, or function. Any
       bare string here is interpreted as vim Ex command; use `vim.fn` interface
       instead to set a Vimscript function.
@@ -512,7 +511,9 @@
           extra-opts (if (nil? ?extra-opts) {}
                          (-> ?extra-opts
                              (extra-opts/seq->kv-table autocmd/extra-opt-keys)))
-          ?bufnr (if (or extra-opts.<buffer> (= true extra-opts.buffer)) 0
+          ?bufnr (if extra-opts.<buffer>
+                     (deprecate ":<buffer> key" ":buffer key alone, or with 0,"
+                                :v0.9.0 0)
                      extra-opts.buffer)
           ?pat (or extra-opts.pattern ?pattern)]
       (set extra-opts.group ?id)
@@ -611,8 +612,7 @@
       Set it to `nil` to define `autocmd`s affiliated with no augroup.
   @param events string|string[] The event or events to register this autocmd.
   @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
-  @param ?extra-opts bare-sequence Addition to `api-opts` keys, `:<buffer>` is
-      available to set `autocmd` to current buffer.
+  @param ?extra-opts bare-sequence
   @param callback string|function Set either vim Ex command, or function. Any
       bare string here is interpreted as vim Ex command; use `vim.fn` interface
       instead to set a Vimscript function.
@@ -685,7 +685,10 @@
                       (do
                         (set extra-opts*.callback raw-rhs)
                         ""))
-              ?bufnr (if extra-opts*.<buffer> 0 extra-opts*.buffer)]
+              ?bufnr (if extra-opts*.<buffer>
+                         (deprecate ":<buffer> key"
+                                    ":buffer key alone, or with 0," :v0.9.0 0)
+                         extra-opts*.buffer)]
           (set extra-opts*.buffer ?bufnr)
           (values modes extra-opts* lhs rhs ?api-opts)))))
 
@@ -1172,9 +1175,6 @@
   (command! name ?extra-opts command ?api-opts)
   ```
   @param ?extra-opts bare-sequence Optional command attributes.
-    Additional attributes:
-    - <buffer>: with this alone, command is set in current buffer instead.
-    - buffer: with the next value, command is set to the buffer instead.
   @param name string Name of the new user command.
     It must begin with an uppercase letter.
   @param command string|function Replacement command.
@@ -1192,7 +1192,10 @@
                          (values extra-opts a2 ?a3 ?a4)
                          (values extra-opts a1 ?a3 ?a4)))
         extra-opts* (default/merge-opts! extra-opts)
-        ?bufnr (if extra-opts*.<buffer> 0 extra-opts*.buffer)
+        ?bufnr (if extra-opts*.<buffer>
+                   (deprecate ":<buffer> key" ":buffer key alone, or with 0,"
+                              :v0.9.0 0)
+                   extra-opts*.buffer)
         api-opts (-> (command/->compatible-opts! extra-opts*)
                      (merge-api-opts ?api-opts))]
     (if ?bufnr
