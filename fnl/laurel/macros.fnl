@@ -910,7 +910,7 @@
         ;; opt-obj `(. ,interface ,name)
         opt-obj (if (str? ?q-flag)
                     (deprecate "flag-in-name format like `(set! :foo+ :bar)`"
-                               "infix flag like `(set! :foo + :bar)`" :v0.7.0
+                               "infix flag like `(set! :foo + :bar)`" :v0.8.0
                                `(. ,interface ,name))
                     `(. ,interface ,name))
         ?val (if (and (contains? [:formatoptions :fo :shortmess :shm] name)
