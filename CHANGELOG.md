@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.3](https://github.com/aileot/nvim-laurel/compare/v0.7.2...v0.7.3) (2024-05-26)
+
+
+### Features
+
+* **extra-opts:** deprecate old `:&lt;buffer&gt;` options; use `:buffer` options instead ([#291](https://github.com/aileot/nvim-laurel/issues/291)) ([12797c5](https://github.com/aileot/nvim-laurel/commit/12797c505d2c39e6e2bb47959e7bd15252fa637e))
+
+
+### Performance Improvements
+
+* **keymap:** define multi-mode mappings in `do` list instead of table ([#288](https://github.com/aileot/nvim-laurel/issues/288)) ([74db65e](https://github.com/aileot/nvim-laurel/commit/74db65eb8c52f47ff7fe7c124e88a67f58f1dfc7))
+
 ## [0.7.2](https://github.com/aileot/nvim-laurel/compare/v0.7.1...v0.7.2) (2024-05-23)
 
 
