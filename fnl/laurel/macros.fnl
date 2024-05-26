@@ -335,6 +335,13 @@
 
 ;;; Deprecation Utils ///1
 
+(var args nil)
+(fn pin-args [callback]
+  "Pin arguments to specify deprecated code location later."
+  (fn [...]
+    (set args [...])
+    (callback ...)))
+
 (lambda deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
   deprecation when the file including it is `require`d at runtime.
