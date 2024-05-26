@@ -335,6 +335,13 @@
 
 ;;; Deprecation Utils ///1
 
+(var args nil)
+(fn pin-args [callback]
+  "Pin arguments to specify deprecated code location later."
+  (fn [...]
+    (set args [...])
+    (callback ...)))
+
 (lambda deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
   deprecation when the file including it is `require`d at runtime.
@@ -354,34 +361,48 @@
                                     :nvim-laurel false)
         msg (: "nvim-laurel: %s is deprecated. Please update it with %s."
                :format deprecated alternative)]
-    `((fn []
-        (when (= nil _G.__laurel_has_fnl_dir)
-          (tset _G :__laurel_has_fnl_dir
-                (= 1 (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
-        (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
-        ;; Note: `table.insert` instead cannot handle `vim.g` interface.
-        (let [qf-msg# ;
-              (let [{:source source# :linedefined row#} ;
-                    (debug.getinfo 1 :S)
-                    lua-path# (source#:gsub "^@" "")
-                    /fnl/-or-/lua/# (if _G.__laurel_has_fnl_dir :/fnl/ :/lua/)
-                    fnl-path# (.. (vim.fn.stdpath :config)
-                                  (-> lua-path#
-                                      (: :gsub "%.lua$" :.fnl)
-                                      (: :gsub :^.*/nvim/fnl/ :/fnl/)
-                                      (: :gsub :^.*/nvim/lua/ /fnl/-or-/lua/#)))]
-                (string.format ,gcc-error-format fnl-path# row# ,msg))]
-          ;; Note: _G.__laurel_loaded_deprecated prevents duplicated item
-          ;; in g:laurel_deprecated for QuickFix list.
-          (when (= nil _G.__laurel_deprecated_loaded)
-            (tset _G :__laurel_deprecated_loaded {}))
-          (when (= nil (. _G.__laurel_deprecated_loaded qf-msg#))
-            (tset _G.__laurel_deprecated_loaded qf-msg# true)
-            (tset vim.g :laurel_deprecated
-                  (vim.fn.add vim.g.laurel_deprecated qf-msg#))))
-        ;; Note: It's safer to wrap it in `vim.schedule`.
-        (vim.schedule #,deprecation)
-        ,compatible))))
+    (case (accumulate [(?filename ?line) nil _ a (ipairs args) &until ?filename]
+            (let [ast (ast-source a)]
+              (values ast.filename ast.line)))
+      (fnl-path row) (let [qf-msg (string.format gcc-error-format fnl-path row
+                                                 msg)]
+                       `(do
+                          (tset vim.g :laurel_deprecated
+                                (or vim.g.laurel_deprecated {}))
+                          ;; Note: `table.insert` instead cannot handle `vim.g` interface.
+                          (tset vim.g :laurel_deprecated
+                                (vim.fn.add vim.g.laurel_deprecated ,qf-msg))
+                          ;; Note: It's safer to wrap it in `vim.schedule`.
+                          (vim.schedule #,deprecation)
+                          ,compatible))
+      _ `(do
+           (when (= nil _G.__laurel_has_fnl_dir)
+             (tset _G :__laurel_has_fnl_dir
+                   (= 1
+                      (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
+           (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
+           ;; Note: `table.insert` instead cannot handle `vim.g` interface.
+           (let [qf-msg# ;
+                 (let [{:source source# :linedefined row#} (debug.getinfo 1 :S)
+                       lua-path# (source#:gsub "^@" "")
+                       /fnl/-or-/lua/# (if _G.__laurel_has_fnl_dir :/fnl/
+                                           :/lua/)
+                       fnl-path# (.. (vim.fn.stdpath :config)
+                                     (-> lua-path#
+                                         (: :gsub "%.lua$" :.fnl)
+                                         (: :gsub :^.-/lua/ /fnl/-or-/lua/#)))]
+                   (string.format ,gcc-error-format fnl-path# row# ,msg))]
+             ;; Note: _G.__laurel_loaded_deprecated prevents duplicated item
+             ;; in g:laurel_deprecated for QuickFix list.
+             (when (= nil _G.__laurel_deprecated_loaded)
+               (tset _G :__laurel_deprecated_loaded {}))
+             (when (= nil (. _G.__laurel_deprecated_loaded qf-msg#))
+               (tset _G.__laurel_deprecated_loaded qf-msg# true)
+               (tset vim.g :laurel_deprecated
+                     (vim.fn.add vim.g.laurel_deprecated qf-msg#))))
+           ;; Note: It's safer to wrap it in `vim.schedule`.
+           (vim.schedule #,deprecation)
+           ,compatible))))
 
 ;;; Default API Options ///1
 
@@ -916,7 +937,7 @@
         ;; opt-obj `(. ,interface ,name)
         opt-obj (if (str? ?q-flag)
                     (deprecate "flag-in-name format like `(set! :foo+ :bar)`"
-                               "infix flag like `(set! :foo + :bar)`" :v0.7.0
+                               "infix flag like `(set! :foo + :bar)`" :v0.8.0
                                `(. ,interface ,name))
                     `(. ,interface ,name))
         ?val (if (and (contains? [:formatoptions :fo :shortmess :shm] name)
@@ -1247,29 +1268,30 @@
 
 ;; Export ///1
 
-{: map!
- : unmap!
- : <Cmd>
- : <C-u>
- : augroup!
- : autocmd!
- :au! autocmd!
- : set!
- : setlocal!
- : setglobal!
- :go! setglobal!
- : bo!
- : wo!
- : g!
- : b!
- : w!
- : t!
- : v!
- : env!
- : command!
- : feedkeys!
- : highlight!
- :hi! highlight!
- : let!}
+(collect [k v (pairs {: map!
+                      : unmap!
+                      : <Cmd>
+                      : <C-u>
+                      : augroup!
+                      : autocmd!
+                      :au! autocmd!
+                      : set!
+                      : setlocal!
+                      : setglobal!
+                      :go! setglobal!
+                      : bo!
+                      : wo!
+                      : g!
+                      : b!
+                      : w!
+                      : t!
+                      : v!
+                      : env!
+                      : command!
+                      : feedkeys!
+                      : highlight!
+                      :hi! highlight!
+                      : let!})]
+  (values k (pin-args v)))
 
 ;; vim:fdm=marker:foldmarker=///,""""
