@@ -391,9 +391,7 @@
                        fnl-path# (.. (vim.fn.stdpath :config)
                                      (-> lua-path#
                                          (: :gsub "%.lua$" :.fnl)
-                                         (: :gsub :^.*/nvim/fnl/ :/fnl/)
-                                         (: :gsub :^.*/nvim/lua/
-                                            /fnl/-or-/lua/#)))]
+                                         (: :gsub :^.-/lua/ /fnl/-or-/lua/#)))]
                    (string.format ,gcc-error-format fnl-path# row# ,msg))]
              ;; Note: _G.__laurel_loaded_deprecated prevents duplicated item
              ;; in g:laurel_deprecated for QuickFix list.
