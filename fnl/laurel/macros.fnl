@@ -366,46 +366,46 @@
               (values ast.filename ast.line)))
       (fnl-path row) (let [qf-msg (string.format gcc-error-format fnl-path row
                                                  msg)]
-                       `((fn []
-                           (tset vim.g :laurel_deprecated
-                                 (or vim.g.laurel_deprecated {}))
-                           ;; Note: `table.insert` instead cannot handle `vim.g` interface.
-                           (tset vim.g :laurel_deprecated
-                                 (vim.fn.add vim.g.laurel_deprecated ,qf-msg))
-                           ;; Note: It's safer to wrap it in `vim.schedule`.
-                           (vim.schedule #,deprecation)
-                           ,compatible)))
-      _ `((fn []
-            (when (= nil _G.__laurel_has_fnl_dir)
-              (tset _G :__laurel_has_fnl_dir
-                    (= 1
-                       (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
-            (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
-            ;; Note: `table.insert` instead cannot handle `vim.g` interface.
-            (let [qf-msg# ;
-                  (let [{:source source# :linedefined row#} ;
-                        (debug.getinfo 1 :S)
-                        lua-path# (source#:gsub "^@" "")
-                        /fnl/-or-/lua/# (if _G.__laurel_has_fnl_dir :/fnl/
-                                            :/lua/)
-                        fnl-path# (.. (vim.fn.stdpath :config)
-                                      (-> lua-path#
-                                          (: :gsub "%.lua$" :.fnl)
-                                          (: :gsub :^.*/nvim/fnl/ :/fnl/)
-                                          (: :gsub :^.*/nvim/lua/
-                                             /fnl/-or-/lua/#)))]
-                    (string.format ,gcc-error-format fnl-path# row# ,msg))]
-              ;; Note: _G.__laurel_loaded_deprecated prevents duplicated item
-              ;; in g:laurel_deprecated for QuickFix list.
-              (when (= nil _G.__laurel_deprecated_loaded)
-                (tset _G :__laurel_deprecated_loaded {}))
-              (when (= nil (. _G.__laurel_deprecated_loaded qf-msg#))
-                (tset _G.__laurel_deprecated_loaded qf-msg# true)
-                (tset vim.g :laurel_deprecated
-                      (vim.fn.add vim.g.laurel_deprecated qf-msg#))))
-            ;; Note: It's safer to wrap it in `vim.schedule`.
-            (vim.schedule #,deprecation)
-            ,compatible)))))
+                       `(do
+                          (tset vim.g :laurel_deprecated
+                                (or vim.g.laurel_deprecated {}))
+                          ;; Note: `table.insert` instead cannot handle `vim.g` interface.
+                          (tset vim.g :laurel_deprecated
+                                (vim.fn.add vim.g.laurel_deprecated ,qf-msg))
+                          ;; Note: It's safer to wrap it in `vim.schedule`.
+                          (vim.schedule #,deprecation)
+                          ,compatible))
+      _ `(do
+           (when (= nil _G.__laurel_has_fnl_dir)
+             (tset _G :__laurel_has_fnl_dir
+                   (= 1
+                      (vim.fn.isdirectory (.. (vim.fn.stdpath :config) :/fnl)))))
+           (tset vim.g :laurel_deprecated (or vim.g.laurel_deprecated {}))
+           ;; Note: `table.insert` instead cannot handle `vim.g` interface.
+           (let [qf-msg# ;
+                 (let [{:source source# :linedefined row#} ;
+                       (debug.getinfo 1 :S)
+                       lua-path# (source#:gsub "^@" "")
+                       /fnl/-or-/lua/# (if _G.__laurel_has_fnl_dir :/fnl/
+                                           :/lua/)
+                       fnl-path# (.. (vim.fn.stdpath :config)
+                                     (-> lua-path#
+                                         (: :gsub "%.lua$" :.fnl)
+                                         (: :gsub :^.*/nvim/fnl/ :/fnl/)
+                                         (: :gsub :^.*/nvim/lua/
+                                            /fnl/-or-/lua/#)))]
+                   (string.format ,gcc-error-format fnl-path# row# ,msg))]
+             ;; Note: _G.__laurel_loaded_deprecated prevents duplicated item
+             ;; in g:laurel_deprecated for QuickFix list.
+             (when (= nil _G.__laurel_deprecated_loaded)
+               (tset _G :__laurel_deprecated_loaded {}))
+             (when (= nil (. _G.__laurel_deprecated_loaded qf-msg#))
+               (tset _G.__laurel_deprecated_loaded qf-msg# true)
+               (tset vim.g :laurel_deprecated
+                     (vim.fn.add vim.g.laurel_deprecated qf-msg#))))
+           ;; Note: It's safer to wrap it in `vim.schedule`.
+           (vim.schedule #,deprecation)
+           ,compatible))))
 
 ;;; Default API Options ///1
 
