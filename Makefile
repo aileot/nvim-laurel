@@ -56,7 +56,7 @@ clean: ## Clean lua test files compiled from fnl
 	@rm $(LUA_SPECS) || exit 0
 
 .PHONY: test
-test: clean $(LUA_SPECS) ## Run test
+test: $(LUA_SPECS) ## Run test
 	@$(VUSTED) \
 		$(VUSTED_FLAGS) \
 		$(VUSTED_EXTRA_FLAGS) \
