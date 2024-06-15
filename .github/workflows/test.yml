@@ -13,24 +13,13 @@ jobs:
           - v0.9.5
           - stable
           - nightly
-    env:
-      LUAROCKS_HOME: /home/runner/.local/.luarocks
     steps:
       - uses: actions/checkout@v4
-      - run: date +%Y%W > weekly
-      - name: Restore test dependencies in Luarocks
-        uses: actions/cache@v4
-        id: cache-luarocks
+      - uses: leafo/gh-actions-lua@v10
         with:
-          path: |
-            /home/runner/.local/.luarocks
-            /home/runner/.local/LuaJIT-*
-          key: ${{ runner.os }}-${{ hashFiles('weekly') }}-luarocks
-      - name: Set up environment for Neovim plugin written in Lua
-        if: steps.cache-luarocks.outputs.cache-hit != 'true'
-        uses: notomo/action-setup-nvim-lua@v1
+          luaVersion: "luajit-openresty"
+      - uses: leafo/gh-actions-luarocks@v4
       - name: Install test dependencies in Luarocks
-        if: steps.cache-luarocks.outputs.cache-hit != 'true'
         run: |
           luarocks --lua-version=5.1 install fennel
           luarocks --lua-version=5.1 install vusted
@@ -41,10 +30,4 @@ jobs:
           version: ${{ matrix.nvim_version }}
       - name: Run tests
         run: make test
-        env:
-          LUA_PATH: /home/runner/.local/luarocks-3.9.0/lua_modules/share/lua/5.1/?.lua;/home/runner/.local/luarocks-3.9.0/lua_modules/share/lua/5.1/?/init.lua;/home/runner/.luarocks/share/lua/5.1/?.lua;/home/runner/.luarocks/share/lua/5.1/?/init.lua;/home/runner/.local/.luarocks/share/lua/5.1/?.lua;/home/runner/.local/.luarocks/share/lua/5.1/?/init.lua
-          LUA_CPATH: /home/runner/.local/luarocks-3.9.0/lua_modules/lib/lua/5.1/?.so;/home/runner/.luarocks/lib/lua/5.1/?.so;/home/runner/.local/.luarocks/lib/lua/5.1/?.so
-          FENNEL: ${LUAROCKS_HOME}/bin/fennel
-          VUSTED: ${LUAROCKS_HOME}/bin/vusted
-          VUSTED_NVIM: ${{ steps.vim.outputs.executable }}
         timeout-minutes: 5
