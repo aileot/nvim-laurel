@@ -58,12 +58,13 @@
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe* :autocmd
   (setup* (fn []
-            (let [nvim-builtin-augroups [:nvim_cmdwin
-                                         :nvim_terminal
-                                         :nvim_swapfile]]
-              (each [_ group (ipairs nvim-builtin-augroups)]
-                (augroup! group)))
-            (vim.cmd "function g:Test() abort\nendfunction")))
+            ;; Clear all the badly defined autocmds apart from any group.
+            (vim.api.nvim_clear_autocmds {})
+            (let [builtin-autocmds (vim.api.nvim_get_autocmds {})]
+              (each [_ {: group} (ipairs builtin-autocmds)]
+                ;; NOTE: autocmd id could be nil.
+                (vim.api.nvim_clear_autocmds {: group})))
+            (vim.cmd "function! g:Test() abort\nendfunction")))
   (teardown* (fn []
                (vim.cmd "delfunction g:Test")))
   (before-each (fn []
