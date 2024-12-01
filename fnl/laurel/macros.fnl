@@ -925,13 +925,14 @@
         (table? ?val)
         (option/concat-kv-table ?val))))
 
-(λ option/modify [api-opts raw-name ?val ?q-flag]
-  (let [(name ?flag) (if (str? raw-name)
-                         (case (raw-name:match "^(%a+)(%A?)$")
-                           (name flag) (values (name:lower)
-                                               (if (= "" flag) nil flag))
-                           _ (error (.. "invalid option name format: " raw-name)))
-                         raw-name)
+(λ option/modify [api-opts raw-name ?val ?flag]
+  (let [(name ?infix-flag) (if (str? raw-name)
+                               (case (raw-name:match "^(%a+)(%A?)$")
+                                 (name flag) (values (name:lower)
+                                                     (if (= "" flag) nil flag))
+                                 _ (error (.. "invalid option name format: "
+                                              raw-name)))
+                               raw-name)
         interface (match api-opts
                     {:scope nil :buf nil :win nil} `vim.opt
                     {:scope :local} `vim.opt_local
@@ -940,7 +941,7 @@
                     {: win :buf nil} (if (= 0 win) `vim.wo `(. vim.wo ,win))
                     _ (error* (.. "invalid api-opts: " (view api-opts))))
         ;; opt-obj `(. ,interface ,name)
-        opt-obj (if (str? ?q-flag)
+        opt-obj (if ?infix-flag
                     (deprecate "flag-in-name format like `(set! :foo+ :bar)`"
                                "infix flag like `(set! :foo + :bar)`" :v0.8.0
                                `(. ,interface ,name))
@@ -951,7 +952,7 @@
                      (table.concat ?val)
                      `(table.concat ,?val))
                  ?val)]
-    (match ?flag
+    (match (or ?flag ?infix-flag)
       nil
       (match (option/->?vim-value ?val)
         vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
