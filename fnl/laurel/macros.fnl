@@ -925,7 +925,7 @@
         (table? ?val)
         (option/concat-kv-table ?val))))
 
-(λ option/modify [api-opts raw-name ?val ?flag]
+(λ option/modify [api-opts raw-name ?val ?q-flag]
   (let [(name ?infix-flag) (if (str? raw-name)
                                (case (raw-name:match "^(%a+)(%A?)$")
                                  (name flag) (values (name:lower)
@@ -946,6 +946,8 @@
                                "infix flag like `(set! :foo + :bar)`" :v0.8.0
                                `(. ,interface ,name))
                     `(. ,interface ,name))
+        ?flag (when ?q-flag
+                (->str ?q-flag))
         ?val (if (and (contains? [:formatoptions :fo :shortmess :shm] name)
                       (sequence? ?val) (not= ?flag "-"))
                  (if (option/concatenatable? ?val)
