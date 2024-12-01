@@ -1102,9 +1102,9 @@
   @param val boolean|number|string|table New option value."
   (if (hidden-in-compile-time? scope)
       (if (= 1 (select "#" ...))
-          (deprecate "(Partial) The format `let!` without value unless the macro includes `?` flag"
-                     "Set `true` to set it to `true`, or insert `?` flag to get the value"
-                     :v0.8.0 `(tset vim ,scope ,... true))
+          (deprecate "(Partial) The format `let!` without value"
+                     "Set `true` to set it to `true` explicitly" :v0.8.0
+                     `(tset vim ,scope ,... true))
           `(tset vim ,scope ,...))
       (let [supported-flags [`+ `- `^ `? `! `& `<]
             (args symbols) (extract-symbols [...] supported-flags)
@@ -1128,12 +1128,12 @@
                                      3 (values 0 (unpack args)))
                                  1 (case max-args
                                      2 (values nil (unpack args)
-                                               (deprecate "(Partial) The format `let!` without value unless the macro includes `?` flag"
-                                                          "Set `true` to set it to `true`, or insert `?` flag to get the value"
+                                               (deprecate "(Partial) The format `let!` without value"
+                                                          "Set `true` to set it to `true` explicitly"
                                                           :v0.8.0 true))
                                      3 (values 0 (unpack args)
-                                               (deprecate "(Partial) The format `let!` without value unless the macro includes `?` flag"
-                                                          "Set `true` to set it to `true`, or insert `?` flag to get the value"
+                                               (deprecate "(Partial) The format `let!` without value"
+                                                          "Set `true` to set it to `true` explicitly"
                                                           :v0.8.0 true))))]
             (if (= "?" ?operator)
                 `(,getter ,name)
@@ -1144,8 +1144,8 @@
           ;; Vim Options
           (let [[name ?val] args
                 val (if (= nil ?val ?operator)
-                        (deprecate "(Partial) The format `let!` without value unless the macro includes `?` flag"
-                                   "Set `true` to set it to `true`, or insert `?` flag to get the value"
+                        (deprecate "(Partial) The format `let!` without value"
+                                   "Set `true` to set it to `true` explicitly"
                                    :v0.8.0 true)
                         ?val)]
             (case (values scope args)
