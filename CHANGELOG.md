@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.4](https://github.com/aileot/nvim-laurel/compare/v0.7.3...v0.7.4) (2024-12-01)
+
+
+### Features
+
+* **option:** deprecate `true` supplement ([#302](https://github.com/aileot/nvim-laurel/issues/302)) ([f4886e1](https://github.com/aileot/nvim-laurel/commit/f4886e16f5f30dfd5b976bb1935d6136ce6b7f90))
+* **option:** deprecate `true` supplement for `let!` without value ([#298](https://github.com/aileot/nvim-laurel/issues/298)) ([956240d](https://github.com/aileot/nvim-laurel/commit/956240d7441759cec2170d56f4f1b6fa18269dfc))
+
 ## [0.7.3](https://github.com/aileot/nvim-laurel/compare/v0.7.2...v0.7.3) (2024-05-26)
 
 
