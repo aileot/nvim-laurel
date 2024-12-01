@@ -1109,6 +1109,8 @@
       (let [supported-flags [`+ `- `^ `? `! `& `<]
             (args symbols) (extract-symbols [...] supported-flags)
             ?operator (next symbols)]
+        (assert (< (length (tbl->keys symbols)) 2)
+                "only one symbol is supported at most")
         (case (case scope
                 :g (values 2 `vim.api.nvim_set_var `vim.api.nvim_set_var)
                 :b (values 3 `vim.api.nvim_buf_set_var
