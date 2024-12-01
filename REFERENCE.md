@@ -640,7 +640,7 @@ vim.opt.signcolumn = val
 
 #### `set!`
 
-_(Subject to be deprecated in favor of `let!`)_  
+_(Deprecated in favor of `let!` with `:opt` at the first arg)_  
 Set, append, prepend, or remove, value to the option. Almost equivalent to
 `:set` in Vim script.
 
@@ -659,7 +659,7 @@ Set, append, prepend, or remove, value to the option. Almost equivalent to
 
 #### `setglobal!`
 
-_(Subject to be deprecated in favor of `let!`)_  
+_(Deprecated in favor of `let!` with `:opt_global` at the first arg)_  
 Set, append, prepend, or remove, global value to the option. Almost equivalent
 to `:setglobal` in Vim script.
 
@@ -671,7 +671,7 @@ See [`set!`](#set) for the details.
 
 #### `setlocal!`
 
-_(Subject to be deprecated in favor of `let!`)_  
+_(Deprecated in favor of `let!` with `:opt_local` at the first arg)_  
 Set, append, prepend, or remove, local value to the option. Almost equivalent
 to `:setlocal` in Vim script.
 
@@ -683,7 +683,7 @@ See [`set!`](#set) for the details.
 
 #### `go!`
 
-_(Subject to be deprecated in favor of `let!`)_  
+_(Deprecated in favor of `let!` at the first arg)_  
 Alias of [`setglobal!`](#setglobal).
 
 ```fennel
@@ -692,7 +692,7 @@ Alias of [`setglobal!`](#setglobal).
 
 #### `bo!`
 
-_(Subject to be deprecated in favor of `let!`)_  
+_(Deprecated in favor of `let!` with `:bo` at the first arg)_  
 Set a buffer option value. `:h nvim_buf_set_option()`.
 
 ```fennel
@@ -725,7 +725,7 @@ call setbufvar(10, '&buftype', 'nofile')
 
 #### `wo!`
 
-_(Subject to be deprecated in favor of `let!`)_  
+_(Deprecated in favor of `let!` with `:wo` at the first arg)_  
 Set a window option value. `:h nvim_win_set_option()`.
 
 ```fennel
