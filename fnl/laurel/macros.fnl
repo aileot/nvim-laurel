@@ -1107,7 +1107,8 @@
                      :v0.8.0 `(tset vim ,scope ,... true))
           `(tset vim ,scope ,...))
       (let [supported-flags [`+ `- `^ `? `! `& `<]
-            (args symbols) (extract-symbols [...] supported-flags)]
+            (args symbols) (extract-symbols [...] supported-flags)
+            ?operator (next symbols)]
         (case (case scope
                 :g (values 2 `vim.api.nvim_set_var `vim.api.nvim_set_var)
                 :b (values 3 `vim.api.nvim_buf_set_var
@@ -1134,32 +1135,38 @@
                                                (deprecate "(Partial) The format `let!` without value unless the macro includes `?` flag"
                                                           "Set `true` to set it to `true`, or insert `?` flag to get the value"
                                                           :v0.8.0 true))))]
-            (if (. symbols "?")
+            (if (= "?" ?operator)
                 `(,getter ,name)
                 (case max-args
                   2 `(,setter ,name ,val)
                   3 `(,setter ,?id ,name ,val))))
           _
           ;; Vim Options
-          (case (values scope args)
-            ;; Note: In the `case` body above, the scope for vim.opt,
-            ;; vim.opt_local, and vim.opt_global max-args would be 2 or
-            ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
-            ;;   order to set option scope later, temporarily set `nil` here.
-            (where (or :o :opt))
-            (option/set-with-scope {} ...)
-            :opt_local
-            (option/set-with-scope {:scope :local} ...)
-            (where (or :go :opt_global))
-            (option/set-with-scope {:scope :global} ...)
-            (:bo [name val nil])
-            (option/modify {:buf 0} name val)
-            (:wo [name val nil])
-            (option/modify {:win 0} name val)
-            (:bo [id name val])
-            (option/modify {:buf id} name val)
-            (:wo [id name val])
-            (option/modify {:win id} name val))))))
+          (let [[name ?val] args
+                val (if (= nil ?val ?operator)
+                        (deprecate "(Partial) The format `let!` without value unless the macro includes `?` flag"
+                                   "Set `true` to set it to `true`, or insert `?` flag to get the value"
+                                   :v0.8.0 true)
+                        ?val)]
+            (case (values scope args)
+              ;; Note: In the `case` body above, the scope for vim.opt,
+              ;; vim.opt_local, and vim.opt_global max-args would be 2 or
+              ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
+              ;;   order to set option scope later, temporarily set `nil` here.
+              (where (or :o :opt))
+              (option/modify {} name val ?operator)
+              :opt_local
+              (option/modify {:scope :local} name val ?operator)
+              (where (or :go :opt_global))
+              (option/modify {:scope :global} name val ?operator)
+              (:bo [name val nil])
+              (option/modify {:buf 0} name val)
+              (:wo [name val nil])
+              (option/modify {:win 0} name val)
+              (:bo [id name val])
+              (option/modify {:buf id} name val)
+              (:wo [id name val])
+              (option/modify {:win id} name val)))))))
 
 ;; Command ///1
 
