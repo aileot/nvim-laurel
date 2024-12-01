@@ -1151,7 +1151,7 @@
   (deprecate :setglobal! "`let!` with :opt_global for first arg" :v0.8.0
              (let! :opt_global ...)))
 
-(λ bo! [name|?id val|name ...]
+(λ bo! [...]
   "(Subject to be deprecated in favor of `let!`)
   Set a buffer option value.
   ```fennel
@@ -1160,11 +1160,9 @@
   @param ?id integer Buffer handle, or 0 for current buffer.
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
-  (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])]
-    (option/modify {:buf id} name val)))
+  (deprecate :bo! "`let!` with :bo for first arg" :v0.8.0 (let! :bo ...)))
 
-(λ wo! [name|?id val|name ...]
+(λ wo! [...]
   "(Subject to be deprecated in favor of `let!`)
   Set a window option value.
   ```fennel
@@ -1173,9 +1171,7 @@
   @param ?id integer Window handle, or 0 for current window.
   @param name string Option name. Case-insensitive as long as in bare-string.
   @param value any Option value."
-  (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])]
-    (option/modify {:win id} name val)))
+  (deprecate :wo! "`let!` with :wo for first arg" :v0.8.0 (let! :wo ...)))
 
 ;; Command ///1
 
