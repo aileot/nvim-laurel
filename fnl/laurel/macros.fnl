@@ -926,10 +926,12 @@
         (option/concat-kv-table ?val))))
 
 (λ option/modify [api-opts name ?val ?q-flag]
-  (let [name (if (str? name) (name:lower) name)
-        ?flag (when ?q-flag
-                ;; Note: ->str rips quote off.
-                (->str ?q-flag))
+  (let [(name ?flag) (if (str? name)
+                         (case (name:match "^(%a+)(%A?)$")
+                           (name flag) (values (name:lower)
+                                               (if (= "" flag) nil flag))
+                           _ (error (.. "invalid option name format: " name)))
+                         name)
         interface (match api-opts
                     {:scope nil :buf nil :win nil} `vim.opt
                     {:scope :local} `vim.opt_local
