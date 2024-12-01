@@ -1108,7 +1108,7 @@
           `(tset vim ,scope ,...))
       (let [supported-flags [`+ `- `^ `? `! `& `<]
             (args symbols) (extract-symbols [...] supported-flags)
-            ?operator (next symbols)]
+            ?flag (next symbols)]
         (assert (< (length (tbl->keys symbols)) 2)
                 "only one symbol is supported at most")
         (case (case scope
@@ -1137,7 +1137,7 @@
                                                (deprecate "(Partial) The format `let!` without value"
                                                           "Set `true` to set it to `true` explicitly"
                                                           :v0.8.0 true))))]
-            (if (= "?" ?operator)
+            (if (= "?" ?flag)
                 `(,getter ,name)
                 (case max-args
                   2 `(,setter ,name ,val)
@@ -1145,7 +1145,7 @@
           _
           ;; Vim Options
           (let [[name ?val] args
-                val (if (= nil ?val ?operator)
+                val (if (= nil ?val ?flag)
                         (deprecate "(Partial) The format `let!` without value"
                                    "Set `true` to set it to `true` explicitly"
                                    :v0.8.0 true)
@@ -1156,11 +1156,11 @@
               ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
               ;;   order to set option scope later, temporarily set `nil` here.
               (where (or :o :opt))
-              (option/modify {} name val ?operator)
+              (option/modify {} name val ?flag)
               :opt_local
-              (option/modify {:scope :local} name val ?operator)
+              (option/modify {:scope :local} name val ?flag)
               (where (or :go :opt_global))
-              (option/modify {:scope :global} name val ?operator)
+              (option/modify {:scope :global} name val ?flag)
               (:bo [name val nil])
               (option/modify {:buf 0} name val)
               (:wo [name val nil])
