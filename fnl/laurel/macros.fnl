@@ -1011,28 +1011,6 @@ For example,
       _
       (error* (.. "Invalid vim option modifier: " (view ?flag))))))
 
-(λ option/extract-flag [name-?flag]
-  (let [?flag (name-?flag:match "[^a-zA-Z]")
-        name (if ?flag (name-?flag:match "[a-zA-Z]+") name-?flag)]
-    (values name ?flag)))
-
-(fn option/set-with-scope [scope ...]
-  (assert-compile (table? scope) "Expected kv-table" scope)
-  (let [supported-flags [`+ `- `^ `! `& `<]]
-    (case (case ...
-            (name nil)
-            (values name nil true)
-            (where (name flag ?val)
-                   (and (sym? flag) (contains? supported-flags flag)))
-            (values name flag ?val)
-            ;; TODO: Remove flag-extraction on v0.7.0.
-            (name-?flag val nil)
-            (if (str? name-?flag)
-                (let [(name ?flag) (option/extract-flag name-?flag)]
-                  (values name ?flag val))
-                (values name-?flag nil val)))
-      (name ?flag val) (option/modify scope name val ?flag))))
-
 ;; Export ///2
 
 (λ let! [scope ...]
