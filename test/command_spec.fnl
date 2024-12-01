@@ -14,16 +14,16 @@
 (local default-callback #:default-callback)
 (local default {:multi {:sym #:default.multi.sym}})
 
-(lambda get-command [name]
+(λ get-command [name]
   (-> (vim.api.nvim_get_commands {:builtin false})
       (. name)))
 
-(lambda get-command-definition [name]
+(λ get-command-definition [name]
   "Return command, or value for desc if callback is Lua function.
   Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
   (. (get-command name) :definition))
 
-(lambda get-buf-command [bufnr name]
+(λ get-buf-command [bufnr name]
   (-> (vim.api.nvim_buf_get_commands bufnr {:builtin false})
       (. name)))
 

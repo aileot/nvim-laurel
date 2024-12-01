@@ -20,14 +20,14 @@
       `#(do
           ,...)))
 
-(lambda inject-fn [name ...]
+(λ inject-fn [name ...]
   "Construct busted wrapper.
  @param name string busted method name
  @param ... list a function, or any number of list to be wrapped into a function."
   (assert (< 0 (select "#" ...)) "expected one or more args")
   `(,name ,(->fn ...)))
 
-(lambda inject-desc-fn [name desc ...]
+(λ inject-desc-fn [name desc ...]
   "Construct busted wrapper.
   @param name string busted method name
   @param desc string spec description
