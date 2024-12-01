@@ -45,7 +45,7 @@
 (local <default>-command :<default>-command)
 (local <default>-str-callback #:<default>-str-callback)
 
-(lambda get-first-autocmd [?opts]
+(λ get-first-autocmd [?opts]
   (. (get-autocmds ?opts) 1))
 
 (var default-augroup-id nil)

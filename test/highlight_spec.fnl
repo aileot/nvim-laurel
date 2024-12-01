@@ -16,10 +16,10 @@
 
 (local test-hl-name :HlTest)
 
-(lambda get-hl [ns-id opts]
+(λ get-hl [ns-id opts]
   (vim.api.nvim_get_hl ns-id opts))
 
-(lambda hex->decimal [hex]
+(λ hex->decimal [hex]
   (let [t (type hex)]
     (assert (= t :string) (.. "expected string, got " t))
     (let [hex-map {:0 0

@@ -41,28 +41,28 @@
   (vim.cmd.new)
   (vim.cmd.only))
 
-(lambda get-mapargs [mode lhs]
+(λ get-mapargs [mode lhs]
   (let [mappings (vim.api.nvim_get_keymap mode)]
     (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
       (when (= lhs m.lhs)
         m))))
 
-(lambda get-rhs [mode lhs]
+(λ get-rhs [mode lhs]
   (?. (get-mapargs mode lhs) :rhs))
 
-(lambda get-callback [mode lhs]
+(λ get-callback [mode lhs]
   (?. (get-mapargs mode lhs) :callback))
 
-(lambda buf-get-mapargs [bufnr mode lhs]
+(λ buf-get-mapargs [bufnr mode lhs]
   (let [mappings (vim.api.nvim_buf_get_keymap bufnr mode)]
     (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
       (when (= lhs m.lhs)
         m))))
 
-(lambda buf-get-rhs [bufnr mode lhs]
+(λ buf-get-rhs [bufnr mode lhs]
   (?. (buf-get-mapargs bufnr mode lhs) :rhs))
 
-(lambda buf-get-callback [bufnr mode lhs]
+(λ buf-get-callback [bufnr mode lhs]
   (?. (buf-get-mapargs bufnr mode lhs) :callback))
 
 (describe* :macros.keymap

@@ -23,7 +23,7 @@
 ;; General Utils ///1
 ;; Predicates ///2
 
-(lambda contains? [xs ?a]
+(λ contains? [xs ?a]
   "Check if `?a` is in `xs`.
   @param xs sequence
   @param ?a any
@@ -108,7 +108,7 @@
 ;;   (assert-compile (num? x) "Expected number" x)
 ;;   (- x 1))
 
-(lambda first [xs]
+(λ first [xs]
   "Return the first value in `xs`.
   @param xs sequence|list
   @return any"
@@ -129,7 +129,7 @@
 ;;   (assert-seq xs)
 ;;   (. xs (length xs)))
 
-(lambda slice [xs ?start ?end]
+(λ slice [xs ?start ?end]
   "Return sequence from `?start` to `?end`.
   @param xs sequence
   @param ?start integer
@@ -215,11 +215,11 @@
 
 ;; Specific Utils ///1
 
-(lambda error* [msg]
+(λ error* [msg]
   "Throw error with prefix."
   (error (.. "[nvim-laurel] " msg)))
 
-(lambda msg-template/expected-actual [expected actual ...]
+(λ msg-template/expected-actual [expected actual ...]
   "Assert `expr` but with error message in template.
   ```fennel
   (msg-template/expected-actual [expected actual] ?dump)
@@ -234,7 +234,7 @@
       _ (error* (msg-template/expected-actual "2 or 3 args"
                                               (+ 2 (select "#" ...)))))))
 
-(lambda validate-type [val valid-type-list]
+(λ validate-type [val valid-type-list]
   "Validate the type of `val` is one of valid-types. When `val` is symbol or
   list, it's ignored.
   @param val any
@@ -250,7 +250,7 @@
                  :format (table.concat valid-types "/") val-type))))
   val)
 
-(lambda extra-opts/seq->kv-table [xs valid-option-types]
+(λ extra-opts/seq->kv-table [xs valid-option-types]
   "Convert `xs` into a kv-table as follows:
   - The keys in `valid-option-types` cannot be a value of `x`. So, when the
   next value of `x` is a key `valid-option-types`, the value next to `:default`
@@ -285,7 +285,7 @@
       (++ i))
     kv-table))
 
-(lambda merge-api-opts [?extra-opts ?api-opts]
+(λ merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
   @param ?extra-opts kv-table|nil
   @param ?api-opts kv-table|symbol|list
@@ -306,7 +306,7 @@
 ;;       (second x)
 ;;       x))
 
-(lambda extract-?vim-fn-name [x]
+(λ extract-?vim-fn-name [x]
   "Extract \"foobar\" from multi-symbol `vim.fn.foobar`, or return `nil`.
   @param x any
   @return string|nil"
@@ -314,7 +314,7 @@
         pat-vim-fn "^vim%.fn%.(%S+)$"]
     (name:match pat-vim-fn)))
 
-(lambda extract-symbols [seq sym-names]
+(λ extract-symbols [seq sym-names]
   "Extract symbols from `seq`, and return a copy of the rest and the 1-indexed
   positions of given `sym-names.`
   (extract-symbols ['&foo :bar '&foo '&foo :baz] ['&foo]) ;; => {:&foo [1 3 4]}
@@ -342,7 +342,7 @@
     (set args [...])
     (callback ...)))
 
-(lambda deprecate [deprecated alternative version compatible]
+(λ deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
   deprecation when the file including it is `require`d at runtime.
   The message format of `vim.schedule`:
@@ -408,7 +408,7 @@
 
 (local default/api-opts {})
 
-(lambda default/extract-opts! [seq]
+(λ default/extract-opts! [seq]
   "Extract symbols `&default-opts` and the following `kv-table`s from varg;
   no other type of args is supposed to precede them. The rightmost has priority.
   @param seq sequence
@@ -427,7 +427,7 @@
           (table.insert new-seq v)))
     new-seq))
 
-(lambda default/release-opts! []
+(λ default/release-opts! []
   "Return saved default opts defined by user, and reset them.
   This operation can run without stack because macro expansion only runs sequentially.
   @return kv-table"
@@ -438,7 +438,7 @@
       (tset default/api-opts k nil))
     opts))
 
-(lambda default/merge-opts! [api-opts]
+(λ default/merge-opts! [api-opts]
   "Return the merge result of `api-opts` and `default/api-opts` saved by
   `default/extract-opts!`. The values of `api-opts` overrides those of
   `default/api-opts`. The `default/api-opts` gets cleared after the merge.
@@ -459,12 +459,12 @@
         :pattern [:string :table]
         :group [:string :number]})
 
-(lambda autocmd/->compatible-opts! [opts]
+(λ autocmd/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.<buffer> nil)
   opts)
 
-(lambda define-autocmd! [...]
+(λ define-autocmd! [...]
   "Define an autocmd.
   ```fennel
   (define-autocmd! events api-opts)
@@ -547,7 +547,7 @@
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
-(lambda define-augroup! [name api-opts autocmds]
+(λ define-augroup! [name api-opts autocmds]
   "Define an augroup.
   ```fennel
   (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
@@ -575,7 +575,7 @@
 
 ;; Export ///2
 
-(lambda augroup! [...]
+(λ augroup! [...]
   "Create, or override, an augroup, and add `autocmd` to the augroup.
   ```fennel
   (augroup! name ?api-opts
@@ -642,7 +642,7 @@
                               :unique :boolean
                               :wait :boolean})
 
-(lambda keymap/->compatible-opts! [opts]
+(λ keymap/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
   (set opts.<buffer> nil)
@@ -650,7 +650,7 @@
   (set opts.wait nil)
   opts)
 
-(lambda keymap/parse-args [...]
+(λ keymap/parse-args [...]
   "Parse map! macro args in sequence.
   ```fennel
   (keymap/parse-args ?extra-opts lhs rhs ?api-opts)
@@ -692,7 +692,7 @@
           (set extra-opts*.buffer ?bufnr)
           (values modes extra-opts* lhs rhs ?api-opts)))))
 
-(lambda keymap/del-maps! [...]
+(λ keymap/del-maps! [...]
   "Delete keymap.
   ```fennel
   (keymap/del-keymap! ?bufnr mode lhs)
@@ -718,7 +718,7 @@
             `(vim.keymap.del ,mode ,lhs {:buffer ,?bufnr})
             `(vim.keymap.del ,mode ,lhs)))))
 
-(lambda keymap/set-maps! [modes extra-opts lhs rhs ?api-opts]
+(λ keymap/set-maps! [modes extra-opts lhs rhs ?api-opts]
   "Set keymap
   ```fennel
   (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)
@@ -742,7 +742,7 @@
   (let [?bufnr extra-opts.buffer
         api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
                                  ?api-opts)
-        set-keymap (lambda [mode]
+        set-keymap (λ [mode]
                      (if ?bufnr
                          `(vim.api.nvim_buf_set_keymap ,?bufnr ,mode ,lhs ,rhs
                                                        ,api-opts)
@@ -767,7 +767,7 @@
 
 ;; Export ///2
 
-(lambda map! [...]
+(λ map! [...]
   "Map `lhs` to `rhs` in `modes`, non-recursively by default.
   ```fennel
   (map! modes ?extra-opts lhs rhs ?api-opts)
@@ -783,7 +783,7 @@
         extra-opts* (tbl/merge default-opts extra-opts)]
     (keymap/set-maps! modes extra-opts* lhs rhs ?api-opts)))
 
-(lambda unmap! [...]
+(λ unmap! [...]
   "Delete keymap.
   ```fennel
   (unmap! ?bufnr mode lhs)
@@ -793,7 +793,7 @@
   @param lhs string"
   (keymap/del-maps! ...))
 
-(lambda <Cmd> [x]
+(λ <Cmd> [x]
   "Return \"<Cmd>`x`<CR>\"
   @param x string
   @return string"
@@ -801,7 +801,7 @@
       (.. :<Cmd> x :<CR>)
       `(.. :<Cmd> ,x :<CR>)))
 
-(lambda <C-u> [x]
+(λ <C-u> [x]
   "Return \":<C-u>`x`<CR>\"
   @param x string
   @return string"
@@ -811,7 +811,7 @@
 
 ;; Variable ///1
 
-(lambda g! [name val]
+(λ g! [name val]
   "(Subject to be deprecated in favor of `let!`)
   Set global (`g:`) editor variable.
   ```fennel
@@ -821,7 +821,7 @@
   @param val any Variable value."
   `(vim.api.nvim_set_var ,name ,val))
 
-(lambda b! [id|name name|val ?val]
+(λ b! [id|name name|val ?val]
   "(Subject to be deprecated in favor of `let!`)
   Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
   with an integer to access variables for specific buffer.
@@ -835,7 +835,7 @@
       `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
 
-(lambda w! [id|name name|val ?val]
+(λ w! [id|name name|val ?val]
   "(Subject to be deprecated in favor of `let!`)
   Set window-scoped (`w:`) variable for the current window. Can be indexed
   with an integer to access variables for specific window.
@@ -849,7 +849,7 @@
       `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
 
-(lambda t! [id|name name|val ?val]
+(λ t! [id|name name|val ?val]
   "(Subject to be deprecated in favor of `let!`)
   Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
   with an integer to access variables for specific tabpage.
@@ -863,7 +863,7 @@
       `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
 
-(lambda v! [name val]
+(λ v! [name val]
   "(Subject to be deprecated in favor of `let!`)
   Set `v:` variable if not readonly.
   ```fennel
@@ -873,7 +873,7 @@
   @param val any Variable value."
   `(vim.api.nvim_set_vvar ,name ,val))
 
-(lambda env! [name val]
+(λ env! [name val]
   "(Subject to be deprecated in favor of `let!`)
   Set environment variable in the editor session.
   ```fennel
@@ -897,7 +897,7 @@
         (and (contains? concatable-types (type k))
              (contains? concatable-types (type v)))))))
 
-(lambda option/concat-kv-table [kv-table]
+(λ option/concat-kv-table [kv-table]
   "Concat kv table into a string for `vim.api.nvim_set_option_value`.
   For example,
   `{:eob \" \" :fold \"-\"})` should be compiled to `\"eob: ,fold:-\"`"
@@ -909,7 +909,7 @@
                   (.. k ":" v))]
     (table.concat key-val ",")))
 
-(lambda option/->?vim-value [?val]
+(λ option/->?vim-value [?val]
   "Return in vim value for such API as `nvim_set_option`.
   @param val any
   @return 'vim.NIL|boolean|number|string|nil"
@@ -925,7 +925,7 @@
         (table? ?val)
         (option/concat-kv-table ?val))))
 
-(lambda option/modify [api-opts name ?val ?q-flag]
+(λ option/modify [api-opts name ?val ?q-flag]
   (let [name (if (str? name) (name:lower) name)
         ?flag (when ?q-flag
                 ;; Note: ->str rips quote off.
@@ -970,7 +970,7 @@
       _
       (error* (.. "Invalid vim option modifier: " (view ?flag))))))
 
-(lambda option/extract-flag [name-?flag]
+(λ option/extract-flag [name-?flag]
   (let [?flag (name-?flag:match "[^a-zA-Z]")
         name (if ?flag (name-?flag:match "[a-zA-Z]+") name-?flag)]
     (values name ?flag)))
@@ -994,7 +994,7 @@
 
 ;; Export ///2
 
-(lambda set! [...]
+(λ set! [...]
   "(Subject to be deprecated in favor of `let!`)
   Set value to the option.
   Almost equivalent to `:set` in Vim script.
@@ -1021,7 +1021,7 @@
   ```"
   (option/set-with-scope {} ...))
 
-(lambda setlocal! [...]
+(λ setlocal! [...]
   "(Subject to be deprecated in favor of `let!`)
   Set local value to the option.
   Almost equivalent to `:setlocal` in Vim script.
@@ -1031,7 +1031,7 @@
   See `set!` for the details."
   (option/set-with-scope {:scope :local} ...))
 
-(lambda setglobal! [...]
+(λ setglobal! [...]
   "(Subject to be deprecated in favor of `let!`)
   Set global value to the option.
   Almost equivalent to `:setglobal` in Vim script.
@@ -1041,7 +1041,7 @@
   See `set!` for the details."
   (option/set-with-scope {:scope :global} ...))
 
-(lambda bo! [name|?id val|name ...]
+(λ bo! [name|?id val|name ...]
   "(Subject to be deprecated in favor of `let!`)
   Set a buffer option value.
   ```fennel
@@ -1054,7 +1054,7 @@
                           [name|?id val|name ...])]
     (option/modify {:buf id} name val)))
 
-(lambda wo! [name|?id val|name ...]
+(λ wo! [name|?id val|name ...]
   "(Subject to be deprecated in favor of `let!`)
   Set a window option value.
   ```fennel
@@ -1067,7 +1067,7 @@
                           [name|?id val|name ...])]
     (option/modify {:win id} name val)))
 
-(lambda let! [scope ...]
+(λ let! [scope ...]
   "(Experimental) Set editor variable in `scope`.
   This macro is expanded to a list of `vim.api` in most cases; otherwise,
   this macro is expanded to `(tset vim.opt name val)` instead.
@@ -1162,13 +1162,13 @@
         :range [:default true :number :string]
         :register :boolean})
 
-(lambda command/->compatible-opts! [opts]
+(λ command/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
   (set opts.<buffer> nil)
   opts)
 
-(lambda command! [...]
+(λ command! [...]
   "Define a user command.
   ```fennel
   (command! ?extra-opts name command ?api-opts)
@@ -1204,7 +1204,7 @@
 
 ;; Misc ///1
 
-(lambda str->keycodes [str]
+(λ str->keycodes [str]
   "Replace terminal codes and keycodes in a string.
   ```fennel
   (str->keycodes str)
@@ -1213,7 +1213,7 @@
   @return string"
   `(vim.api.nvim_replace_termcodes ,str true true true))
 
-(lambda feedkeys! [keys ?flags]
+(λ feedkeys! [keys ?flags]
   "Equivalent to `vim.fn.feedkeys()`.
   ```fennel
   (feedkeys! keys ?flags)
@@ -1225,13 +1225,13 @@
                   `(or ,?flags ""))]
     `(vim.api.nvim_feedkeys ,(str->keycodes keys) ,flags false)))
 
-(lambda cterm-color? [?color]
+(λ cterm-color? [?color]
   "`:h cterm-colors`
   @param ?color any
   @return boolean"
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
-(lambda highlight! [...]
+(λ highlight! [...]
   "Set a highlight group.
   ```fennel
   (highlight! ?ns-id name api-opts)
