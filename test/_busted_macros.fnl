@@ -6,9 +6,9 @@
 
 (fn function? [x]
   "(Compile time) Check if `x` is anonymous function defined by builtin
-  constructor.
-  @param x any
-  @return boolean"
+constructor.
+@param x any
+@return boolean"
   (and (list? x) ;
        (case (. x 1 1)
          (where (or :fn :hashfn :lambda :partial)) true)))

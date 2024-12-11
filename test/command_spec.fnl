@@ -20,7 +20,7 @@
 
 (λ get-command-definition [name]
   "Return command, or value for desc if callback is Lua function.
-  Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
+Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
   (. (get-command name) :definition))
 
 (λ get-buf-command [bufnr name]
