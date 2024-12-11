@@ -3,8 +3,8 @@
 
 (macro ++ [num]
   "Increment `num` by 1
-  @param num number
-  @return number"
+@param num number
+@return number"
   `(do
      (set ,num (+ 1 ,num))
      ,num))
@@ -25,9 +25,9 @@
 
 (λ contains? [xs ?a]
   "Check if `?a` is in `xs`.
-  @param xs sequence
-  @param ?a any
-  @return boolean"
+@param xs sequence
+@param ?a any
+@return boolean"
   (accumulate [eq? false ;
                _ x (ipairs xs) ;
                &until eq?]
@@ -35,46 +35,46 @@
 
 (fn nil? [x]
   "Check if `x` is `nil`.
-  @param x any
-  @return boolean"
+@param x any
+@return boolean"
   (= nil x))
 
 (fn str? [x]
   "Check if `x` is `string`.
-  @param x any
-  @return boolean"
+@param x any
+@return boolean"
   (= :string (type x)))
 
 (fn tbl? [x]
   "Check if `x` is `table`.
-  @param x any
-  @return boolean"
+@param x any
+@return boolean"
   (= :table (type x)))
 
 (fn num? [x]
   "Check if `x` is `number`.
-  @param x any
-  @return boolean"
+@param x any
+@return boolean"
   (= :number (type x)))
 
 (fn hidden-in-compile-time? [x]
   "Check if the value of `x` is hidden in compile time.
-  @param x any
-  @return boolean"
+@param x any
+@return boolean"
   (or (sym? x) (list? x) (varg? x)))
 
 (fn seq? [x]
   "Check if `x` is sequence or list.
-  @param x
-  @return boolean"
+@param x
+@return boolean"
   (or (sequence? x) ;; Note: sequence? does not consider [...] as sequence.
       (list? x) ;
       (and (table? x) (= 1 (next x)))))
 
 (fn kv-table? [x]
   "Check if the value of `x` is kv-table.
-  @param x any
-  @return boolean"
+@param x any
+@return boolean"
   (and (table? x) (not (sequence? x))))
 
 ;; Misc ///2
@@ -84,20 +84,20 @@
 
 (fn assert-seq [x]
   "Assert `x` is either sequence or list, or not.
-  @param x any
-  @return boolean"
+@param x any
+@return boolean"
   (assert (seq? x) (.. "expected sequence or list, got" (view x))))
 
 (fn ->str [x]
   "Convert `x` to a string, or get the name if `x` is a symbol.
-  @param x any
-  @return string"
+@param x any
+@return string"
   (tostring x))
 
 (fn inc [x]
   "Increment number `x`.
-  @param x number
-  @return number"
+@param x number
+@return number"
   (assert-compile (num? x) "Expected number" x)
   (+ x 1))
 
@@ -110,8 +110,8 @@
 
 (λ first [xs]
   "Return the first value in `xs`.
-  @param xs sequence|list
-  @return any"
+@param xs sequence|list
+@return any"
   (assert-seq xs)
   (. xs 1))
 
@@ -131,10 +131,10 @@
 
 (λ slice [xs ?start ?end]
   "Return sequence from `?start` to `?end`.
-  @param xs sequence
-  @param ?start integer
-  @param ?end integer
-  @return sequence"
+@param xs sequence
+@param ?start integer
+@param ?end integer
+@return sequence"
   (let [first (or ?start 1)
         last (or ?end (length xs))]
     (fcollect [i first last]
@@ -142,8 +142,8 @@
 
 (fn tbl->keys [tbl]
   "Return keys of `tbl`.
-  @param tbl table
-  @return sequence"
+@param tbl table
+@return sequence"
   (icollect [k _ (pairs tbl)]
     k))
 
@@ -156,17 +156,17 @@
 
 (fn tbl/copy [from ?to]
   "Return a shallow copy of table `from`.
-  @param from table
-  @param ?to table
-  @return table"
+@param from table
+@param ?to table
+@return table"
   (collect [k v (pairs (or from [])) &into (or ?to {})]
     (values k v)))
 
 (fn tbl/merge [...]
   "Return a new merged tables. The rightmost map has priority. `nil` is
-  ignored.
-  @param ... kv-table|nil symbol or list are unexpected.
-  @return table"
+ignored.
+@param ... kv-table|nil symbol or list are unexpected.
+@return table"
   (let [new-tbl {}]
     (each [_ t (ipairs [...])]
       (when t
@@ -177,9 +177,9 @@
 
 (fn tbl/merge! [tbl1 ...]
   "Merge tables into the first table `tbl1`. The rightmost map has
-  priority. `nil` is ignored.
-  @param ... kv-table|nil symbol or list are unexpected.
-  @return table"
+priority. `nil` is ignored.
+@param ... kv-table|nil symbol or list are unexpected.
+@return table"
   (each [_ t (ipairs [...])]
     (when t
       (assert-compile (tbl? t) "Expected table or nil" ...)
@@ -205,9 +205,9 @@
 
 (fn vim-callback-format? [callback]
   "Tell if `callback` is to be interpreted in Vim script just by the
-  `callback` format.
-  @param callback any
-  @return boolean"
+`callback` format.
+@param callback any
+@return boolean"
   (or (and (sym? callback) ;
            (-> (->str callback) (: :match "^<.+>")))
       (and (list? callback) ;
@@ -236,10 +236,10 @@
 
 (λ validate-type [val valid-type-list]
   "Validate the type of `val` is one of valid-types. When `val` is symbol or
-  list, it's ignored.
-  @param val any
-  @param valid-type-list string|string[]
-  @return any `val` as is"
+list, it's ignored.
+@param val any
+@param valid-type-list string|string[]
+@return any `val` as is"
   (when-not (hidden-in-compile-time? val)
     (let [val-type (type val)
           valid-types (case valid-type-list
@@ -252,11 +252,12 @@
 
 (λ extra-opts/seq->kv-table [xs valid-option-types]
   "Convert `xs` into a kv-table as follows:
-  - The keys in `valid-option-types` cannot be a value of `x`. So, when the
+
+- The keys in `valid-option-types` cannot be a value of `x`. So, when the
   next value of `x` is a key `valid-option-types`, the value next to `:default`
   in `valid-option-types` at `x` is set to `x`.
-  - When the valid type of `valid-option-types` of `x` is boolean, set to `true`.
-  - The values for the rest of `x`s are set to the next value in `xs`.
+- When the valid type of `valid-option-types` of `x` is boolean, set to `true`.
+- The values for the rest of `x`s are set to the next value in `xs`.
   @param xs sequence
   @param valid-option-types 'boolean'|table<string,string[]> Type-validation table for each available option. Set :boolean instead to set to `true`.
   @return kv-table"
@@ -287,9 +288,9 @@
 
 (λ merge-api-opts [?extra-opts ?api-opts]
   "Merge `?api-opts` into `?extra-opts` safely.
-  @param ?extra-opts kv-table|nil
-  @param ?api-opts kv-table|symbol|list
-  @return table"
+@param ?extra-opts kv-table|nil
+@param ?api-opts kv-table|symbol|list
+@return table"
   (if (hidden-in-compile-time? ?api-opts)
       (if (nil? ?extra-opts) `(or ,?api-opts {})
           `(vim.tbl_extend :force ,?extra-opts ,?api-opts))
@@ -316,12 +317,12 @@
 
 (λ extract-symbols [seq sym-names]
   "Extract symbols from `seq`, and return a copy of the rest and the 1-indexed
-  positions of given `sym-names.`
-  (extract-symbols ['&foo :bar '&foo '&foo :baz] ['&foo]) ;; => {:&foo [1 3 4]}
-  @alias match-counts table[number]
-  @param seq sequence
-  @param sym-names quoted-symbol[]
-  @return sequence, table<string,match-counts>"
+positions of given `sym-names.`
+(extract-symbols ['&foo :bar '&foo '&foo :baz] ['&foo]) ;; => {:&foo [1 3 4]}
+@alias match-counts table[number]
+@param seq sequence
+@param sym-names quoted-symbol[]
+@return sequence, table<string,match-counts>"
   (let [new-seq [] ;
         symbol-positions {}]
     (each [i v (ipairs seq)]
@@ -344,8 +345,8 @@
 
 (λ deprecate [deprecated alternative version compatible]
   "Return a wrapper function, which returns `compatible`, about to notify
-  deprecation when the file including it is `require`d at runtime.
-  The message format of `vim.schedule`:
+deprecation when the file including it is `require`d at runtime.
+The message format of `vim.schedule`:
   \"{deprecated} is deprecated, use {alternative} instead. See :h deprecated
   This function will be removed in nvim-laurel version {version}\"
   @param deprecated string Deprecated target
@@ -410,9 +411,9 @@
 
 (λ default/extract-opts! [seq]
   "Extract symbols `&default-opts` and the following `kv-table`s from varg;
-  no other type of args is supposed to precede them. The rightmost has priority.
-  @param seq sequence
-  @return sequence"
+no other type of args is supposed to precede them. The rightmost has priority.
+@param seq sequence
+@return sequence"
   (let [new-seq []
         removed-items []]
     (each [i v (ipairs seq)]
@@ -440,10 +441,10 @@
 
 (λ default/merge-opts! [api-opts]
   "Return the merge result of `api-opts` and `default/api-opts` saved by
-  `default/extract-opts!`. The values of `api-opts` overrides those of
-  `default/api-opts`. The `default/api-opts` gets cleared after the merge.
-  @param api-opts kv-table The options to override `default/api-opts`.
-  @return kv-table"
+`default/extract-opts!`. The values of `api-opts` overrides those of
+`default/api-opts`. The `default/api-opts` gets cleared after the merge.
+@param api-opts kv-table The options to override `default/api-opts`.
+@return kv-table"
   (tbl/merge (default/release-opts!) api-opts))
 
 ;; Autocmd ///1
@@ -466,22 +467,24 @@
 
 (λ define-autocmd! [...]
   "Define an autocmd.
-  ```fennel
-  (define-autocmd! events api-opts)
-  (define-autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
-  ```
-  @param name|id string|integer|nil The autocmd group name or id to match
-      against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
-      this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
-      Set it to `nil` to define `autocmd`s affiliated with no augroup.
-  @param events string|string[] The event or events to register this autocmd.
-  @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
-  @param ?extra-opts bare-sequence
-  @param callback string|function Set either vim Ex command, or function. Any
-      bare string here is interpreted as vim Ex command; use `vim.fn` interface
-      instead to set a Vimscript function.
-  @param ?api-opts kv-table Optional autocmd attributes.
-  @return undefined The return value of `nvim_create_autocmd`"
+
+```fennel
+(define-autocmd! events api-opts)
+(define-autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
+```
+
+@param name|id string|integer|nil The autocmd group name or id to match
+against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
+this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
+Set it to `nil` to define `autocmd`s affiliated with no augroup.
+@param events string|string[] The event or events to register this autocmd.
+@param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
+@param ?extra-opts bare-sequence
+@param callback string|function Set either vim Ex command, or function. Any
+bare string here is interpreted as vim Ex command; use `vim.fn` interface
+instead to set a Vimscript function.
+@param ?api-opts kv-table Optional autocmd attributes.
+@return undefined The return value of `nvim_create_autocmd`"
   (case (default/extract-opts! [...])
     ;; It works as an alias of `vim.api.nvim_create_autocmd()` if only two
     ;; args are provided.
@@ -521,8 +524,7 @@
       (let [pat (if (and (sequence? ?pat) (= 1 (length ?pat)))
                     (first ?pat)
                     ?pat)
-            pattern (if (= `* pat) "*"
-                        pat)]
+            pattern (if (= `* pat) "*" pat)]
         ;; Note: `*` is the default pattern and redundant in compiled result.
         (when-not (and (str? pattern) (= "*" pattern))
           (set extra-opts.pattern pattern)))
@@ -549,17 +551,21 @@
 
 (λ define-augroup! [name api-opts autocmds]
   "Define an augroup.
-  ```fennel
-  (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
-  (define-augroup! name api-opts (au! events ?pattern ?extra-opts callback ?api-opts))
-  (define-augroup! name api-opts (autocmd! events ?pattern ?extra-opts callback ?api-opts))
-  ```
-  @param name string Augroup name.
-  @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
-  @param autocmds sequence|list Parameters for `define-autocmd!`.
-  @return undefined Without `...`, the return value of `nvim_create_augroup`;
-      otherwise, undefined (currently a sequence of `autocmd`s defined in the
-      augroup.)"
+
+```fennel
+(define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
+(define-augroup! name api-opts
+  (au! events ?pattern ?extra-opts callback ?api-opts))
+(define-augroup! name api-opts
+  (autocmd! events ?pattern ?extra-opts callback ?api-opts))
+```
+
+@param name string Augroup name.
+@param opts kv-table Dictionary parameters for `nvim_create_augroup`.
+@param autocmds sequence|list Parameters for `define-autocmd!`.
+@return undefined Without `...`, the return value of `nvim_create_augroup`;
+otherwise, undefined (currently a sequence of `autocmd`s defined in the
+augroup.)"
   (if (= 0 (length autocmds))
       `(vim.api.nvim_create_augroup ,name ,api-opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
@@ -602,22 +608,24 @@
 
 (fn autocmd! [...]
   "Define an autocmd. This macro also works as a syntax sugar in `augroup!`.
-  ```fennel
-  (autocmd! events api-opts)
-  (autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
-  ```
-  @param name|id string|integer|nil The autocmd group name or id to match
-      against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
-      this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
-      Set it to `nil` to define `autocmd`s affiliated with no augroup.
-  @param events string|string[] The event or events to register this autocmd.
-  @param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
-  @param ?extra-opts bare-sequence
-  @param callback string|function Set either vim Ex command, or function. Any
-      bare string here is interpreted as vim Ex command; use `vim.fn` interface
-      instead to set a Vimscript function.
-  @param ?api-opts kv-table Optional autocmd attributes.
-  @return undefined The return value of `nvim_create_autocmd`"
+
+```fennel
+(autocmd! events api-opts)
+(autocmd! name|id events ?pattern ?extra-opts callback ?api-opts)
+```
+
+@param name|id string|integer|nil The autocmd group name or id to match
+against. It is necessary unlike `vim.api.nvim_create_autocmd()` unless
+this `autocmd!` macro is within either `augroup!` or `augroup+` macro.
+Set it to `nil` to define `autocmd`s affiliated with no augroup.
+@param events string|string[] The event or events to register this autocmd.
+@param ?pattern bare-sequence|`*` pattern(s) to match literally `autocmd-pattern`.
+@param ?extra-opts bare-sequence
+@param callback string|function Set either vim Ex command, or function. Any
+bare string here is interpreted as vim Ex command; use `vim.fn` interface
+instead to set a Vimscript function.
+@param ?api-opts kv-table Optional autocmd attributes.
+@return undefined The return value of `nvim_create_autocmd`"
   ;; TODO: Detect if it were embedded in a runtime function with varg.
   ;;  (let [varg-size (select "#" ...)
   ;;        last-arg (select varg-size ...)]
@@ -652,18 +660,20 @@
 
 (λ keymap/parse-args [...]
   "Parse map! macro args in sequence.
-  ```fennel
-  (keymap/parse-args ?extra-opts lhs rhs ?api-opts)
-  (keymap/parse-args lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param ?extra-opts sequence|kv-table
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table
-  @return extra-opts kv-table
-  @return lhs string
-  @return rhs string|function
-  @return ?api-opts kv-table"
+
+```fennel
+(keymap/parse-args ?extra-opts lhs rhs ?api-opts)
+(keymap/parse-args lhs ?extra-opts rhs ?api-opts)
+```
+
+@param ?extra-opts sequence|kv-table
+@param lhs string
+@param rhs string|function
+@param ?api-opts kv-table
+@return extra-opts kv-table
+@return lhs string
+@return rhs string|function
+@return ?api-opts kv-table"
   (let [args (default/extract-opts! [...])
         ([modes a1 a2 ?a3 ?a4] {:&vim ?vim-indice}) ;
         (extract-symbols args [`&vim])]
@@ -694,12 +704,14 @@
 
 (λ keymap/del-maps! [...]
   "Delete keymap.
-  ```fennel
-  (keymap/del-keymap! ?bufnr mode lhs)
-  ```
-  @param ?bufnr integer Buffer handle, or 0 for current buffer
-  @param mode string
-  @param lhs string"
+
+```fennel
+(keymap/del-keymap! ?bufnr mode lhs)
+```
+
+@param ?bufnr integer Buffer handle, or 0 for current buffer
+@param mode string
+@param lhs string"
   ;; TODO: Identify the cause to reach `_` just with three args.
   ;; (match (pick-values 4 ...)
   ;;   (mode lhs) `(vim.api.nvim_del_keymap ,mode ,lhs)
@@ -720,16 +732,21 @@
 
 (λ keymap/set-maps! [modes extra-opts lhs rhs ?api-opts]
   "Set keymap
-  ```fennel
-  (keymap/set-maps! modes extra-opts lhs rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param extra-opts kv-table
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
+
+```fennel
+(keymap/set-maps! modes extra-opts lhs rhs ?api-opts)
+```
+
+@param modes string|string[]
+@param extra-opts kv-table
+@param lhs string
+@param rhs string|function
+@param ?api-opts kv-table"
   (when (and extra-opts.expr (not= false extra-opts.replace_keycodes))
-    (set extra-opts.replace_keycodes (if extra-opts.literal false true)))
+    (set extra-opts.replace_keycodes
+         (if extra-opts.literal
+             false
+             true)))
   (when extra-opts.wait
     (set extra-opts.nowait nil))
   (when (or extra-opts.remap
@@ -769,15 +786,17 @@
 
 (λ map! [...]
   "Map `lhs` to `rhs` in `modes`, non-recursively by default.
-  ```fennel
-  (map! modes ?extra-opts lhs rhs ?api-opts)
-  (map! modes lhs ?extra-opts rhs ?api-opts)
-  ```
-  @param modes string|string[]
-  @param ?extra-opts bare-sequence
-  @param lhs string
-  @param rhs string|function
-  @param ?api-opts kv-table"
+
+```fennel
+(map! modes ?extra-opts lhs rhs ?api-opts)
+(map! modes lhs ?extra-opts rhs ?api-opts)
+```
+
+@param modes string|string[]
+@param ?extra-opts bare-sequence
+@param lhs string
+@param rhs string|function
+@param ?api-opts kv-table"
   (let [default-opts {:noremap true}
         (modes extra-opts lhs rhs ?api-opts) (keymap/parse-args ...)
         extra-opts* (tbl/merge default-opts extra-opts)]
@@ -785,16 +804,18 @@
 
 (λ unmap! [...]
   "Delete keymap.
-  ```fennel
-  (unmap! ?bufnr mode lhs)
-  ```
-  @param ?bufnr integer Buffer handle, or 0 for current buffer
-  @param mode string
-  @param lhs string"
+
+```fennel
+(unmap! ?bufnr mode lhs)
+```
+
+@param ?bufnr integer Buffer handle, or 0 for current buffer
+@param mode string
+@param lhs string"
   (keymap/del-maps! ...))
 
 (λ <Cmd> [x]
-  "Return \"<Cmd>`x`<CR>\"
+  "Return\"<Cmd>`x`<CR>\"
   @param x string
   @return string"
   (if (str? x)
@@ -802,7 +823,7 @@
       `(.. :<Cmd> ,x :<CR>)))
 
 (λ <C-u> [x]
-  "Return \":<C-u>`x`<CR>\"
+  "Return\":<C-u>`x`<CR>\"
   @param x string
   @return string"
   (if (str? x)
@@ -813,75 +834,87 @@
 
 (λ g! [name val]
   "(Subject to be deprecated in favor of `let!`)
-  Set global (`g:`) editor variable.
-  ```fennel
-  (g! name val)
-  ```
-  @param name string Variable name.
-  @param val any Variable value."
+Set global (`g:`) editor variable.
+
+```fennel
+(g! name val)
+```
+
+@param name string Variable name.
+@param val any Variable value."
   `(vim.api.nvim_set_var ,name ,val))
 
 (λ b! [id|name name|val ?val]
   "(Subject to be deprecated in favor of `let!`)
-  Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
-  with an integer to access variables for specific buffer.
-  ```fennel
-  (b! ?id name val)
-  ```
-  @param ?id integer Buffer handle, or 0 for current buffer.
-  @param name string Variable name.
-  @param val any Variable value."
+Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed
+with an integer to access variables for specific buffer.
+
+```fennel
+(b! ?id name val)
+```
+
+@param ?id integer Buffer handle, or 0 for current buffer.
+@param name string Variable name.
+@param val any Variable value."
   (if ?val
       `(vim.api.nvim_buf_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_buf_set_var 0 ,id|name ,name|val)))
 
 (λ w! [id|name name|val ?val]
   "(Subject to be deprecated in favor of `let!`)
-  Set window-scoped (`w:`) variable for the current window. Can be indexed
-  with an integer to access variables for specific window.
-  ```fennel
-  (w! ?id name val)
-  ```
-  @param ?id integer Window handle, or 0 for current window.
-  @param name string Variable name.
-  @param val any Variable value."
+Set window-scoped (`w:`) variable for the current window. Can be indexed
+with an integer to access variables for specific window.
+
+```fennel
+(w! ?id name val)
+```
+
+@param ?id integer Window handle, or 0 for current window.
+@param name string Variable name.
+@param val any Variable value."
   (if ?val
       `(vim.api.nvim_win_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_win_set_var 0 ,id|name ,name|val)))
 
 (λ t! [id|name name|val ?val]
   "(Subject to be deprecated in favor of `let!`)
-  Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
-  with an integer to access variables for specific tabpage.
-  ```fennel
-  (t! ?id name val)
-  ```
-  @param ?id integer Tabpage handle, or 0 for current tabpage.
-  @param name string Variable name.
-  @param val any Variable value."
+Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
+with an integer to access variables for specific tabpage.
+
+```fennel
+(t! ?id name val)
+```
+
+@param ?id integer Tabpage handle, or 0 for current tabpage.
+@param name string Variable name.
+@param val any Variable value."
   (if ?val
       `(vim.api.nvim_tabpage_set_var ,id|name ,name|val ,?val)
       `(vim.api.nvim_tabpage_set_var 0 ,id|name ,name|val)))
 
 (λ v! [name val]
   "(Subject to be deprecated in favor of `let!`)
-  Set `v:` variable if not readonly.
-  ```fennel
-  (v! name val)
-  ```
-  @param name string Variable name.
-  @param val any Variable value."
+Set `v:` variable if not readonly.
+
+```fennel
+(v! name val)
+```
+
+@param name string Variable name.
+@param val any Variable value."
   `(vim.api.nvim_set_vvar ,name ,val))
 
 (λ env! [name val]
   "(Subject to be deprecated in favor of `let!`)
-  Set environment variable in the editor session.
-  ```fennel
-  (env! name val)
-  ```
-  @param name string Variable name. A bare-string can starts with `$` (ignored
-    internally), which helps `gf` jump to the path.
-  @param val any Variable value."
+Set environment variable in the editor session.
+
+```fennel
+(env! name val)
+```
+
+@param name string Variable name. A bare-string can starts with `$` (ignored
+internally), which helps `gf` jump to the path.
+@param val any Variable value."
   (let [new-name (if (str? name) (name:gsub "^%$" "") name)]
     `(vim.fn.setenv ,new-name ,val)))
 
@@ -911,8 +944,8 @@
 
 (λ option/->?vim-value [?val]
   "Return in vim value for such API as `nvim_set_option`.
-  @param val any
-  @return 'vim.NIL|boolean|number|string|nil"
+@param val any
+@return 'vim.NIL|boolean|number|string|nil"
   (match (type ?val)
     :nil `vim.NIL
     :boolean ?val
@@ -1028,46 +1061,54 @@
 
 (λ setlocal! [...]
   "(Subject to be deprecated in favor of `let!`)
-  Set local value to the option.
-  Almost equivalent to `:setlocal` in Vim script.
-  ```fennel
-  (setlocal! name-?flag ?val)
-  ```
-  See `set!` for the details."
+Set local value to the option.
+Almost equivalent to `:setlocal` in Vim script.
+
+```fennel
+(setlocal! name-?flag ?val)
+```
+
+See `set!` for the details."
   (option/set-with-scope {:scope :local} ...))
 
 (λ setglobal! [...]
   "(Subject to be deprecated in favor of `let!`)
-  Set global value to the option.
-  Almost equivalent to `:setglobal` in Vim script.
-  ```fennel
-  (setglobal! name-?flag ?val)
-  ```
-  See `set!` for the details."
+Set global value to the option.
+Almost equivalent to `:setglobal` in Vim script.
+
+```fennel
+(setglobal! name-?flag ?val)
+```
+
+See `set!` for the details."
   (option/set-with-scope {:scope :global} ...))
 
 (λ bo! [name|?id val|name ...]
   "(Subject to be deprecated in favor of `let!`)
-  Set a buffer option value.
-  ```fennel
-  (bo! ?id name value)
-  ```
-  @param ?id integer Buffer handle, or 0 for current buffer.
-  @param name string Option name. Case-insensitive as long as in bare-string.
-  @param value any Option value."
+Set a buffer option value.
+
+```fennel
+(bo! ?id name value)
+```
+
+@param ?id integer Buffer handle, or 0 for current buffer.
+@param name string Option name. Case-insensitive as long as in bare-string.
+@param value any Option value."
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
                           [name|?id val|name ...])]
     (option/modify {:buf id} name val)))
 
 (λ wo! [name|?id val|name ...]
   "(Subject to be deprecated in favor of `let!`)
-  Set a window option value.
-  ```fennel
-  (wo! ?id name value)
-  ```
-  @param ?id integer Window handle, or 0 for current window.
-  @param name string Option name. Case-insensitive as long as in bare-string.
-  @param value any Option value."
+Set a window option value.
+
+```fennel
+(wo! ?id name value)
+```
+
+@param ?id integer Window handle, or 0 for current window.
+@param name string Option name. Case-insensitive as long as in bare-string.
+@param value any Option value."
   (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
                           [name|?id val|name ...])]
     (option/modify {:win id} name val)))
@@ -1200,16 +1241,18 @@
 
 (λ command! [...]
   "Define a user command.
-  ```fennel
-  (command! ?extra-opts name command ?api-opts)
-  (command! name ?extra-opts command ?api-opts)
-  ```
-  @param ?extra-opts bare-sequence Optional command attributes.
-  @param name string Name of the new user command.
-    It must begin with an uppercase letter.
-  @param command string|function Replacement command.
-  @param ?api-opts kv-table Optional command attributes.
-    The same as {opts} for `nvim_create_user_command`."
+
+```fennel
+(command! ?extra-opts name command ?api-opts)
+(command! name ?extra-opts command ?api-opts)
+```
+
+@param ?extra-opts bare-sequence Optional command attributes.
+@param name string Name of the new user command.
+It must begin with an uppercase letter.
+@param command string|function Replacement command.
+@param ?api-opts kv-table Optional command attributes.
+The same as {opts} for `nvim_create_user_command`."
   (let [[a1 a2 ?a3 ?a4] (default/extract-opts! [...])
         ?seq-extra-opts (if (sequence? a1) a1
                             (sequence? a2) a2)
@@ -1236,20 +1279,24 @@
 
 (λ str->keycodes [str]
   "Replace terminal codes and keycodes in a string.
-  ```fennel
-  (str->keycodes str)
-  ```
-  @param str string
-  @return string"
+
+```fennel
+(str->keycodes str)
+```
+
+@param str string
+@return string"
   `(vim.api.nvim_replace_termcodes ,str true true true))
 
 (λ feedkeys! [keys ?flags]
   "Equivalent to `vim.fn.feedkeys()`.
-  ```fennel
-  (feedkeys! keys ?flags)
-  ```
-  @param keys string
-  @param ?flags string"
+
+```fennel
+(feedkeys! keys ?flags)
+```
+
+@param keys string
+@param ?flags string"
   (let [flags (if (str? ?flags)
                   (or ?flags "")
                   `(or ,?flags ""))]
@@ -1257,18 +1304,20 @@
 
 (λ cterm-color? [?color]
   "`:h cterm-colors`
-  @param ?color any
-  @return boolean"
+@param ?color any
+@return boolean"
   (or (nil? ?color) (num? ?color) (and (str? ?color) (?color:match "[a-zA-Z]"))))
 
 (λ highlight! [...]
   "Set a highlight group.
-  ```fennel
-  (highlight! ?ns-id name api-opts)
- ```
- @param ?ns-id integer
- @param name string
- @param api-opts kv-table The same as {val} in `vim.api.nvim_set_hl()`."
+
+```fennel
+(highlight! ?ns-id name api-opts)
+```
+
+@param ?ns-id integer
+@param name string
+@param api-opts kv-table The same as {val} in `vim.api.nvim_set_hl()`."
   {:fnl/arglist [ns-id|name name|api-opts ?api-opts]}
   (let [(?ns-id name api-opts) (case (default/extract-opts! [...])
                                  [name api-opts nil] (values nil name api-opts)
