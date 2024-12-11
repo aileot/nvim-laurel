@@ -25,8 +25,8 @@
 
 (macro ->trues [seq]
   "Convert sequence into a kv-table `seq` items as keys and `true` as values.
-  @param seq sequence
-  @return kv-table"
+@param seq sequence
+@return kv-table"
   (collect [_ v (ipairs seq)]
     (values v true)))
 
