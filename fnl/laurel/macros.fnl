@@ -1002,7 +1002,8 @@ internally), which helps `gf` jump to the path.
       `(tset ,opt-obj (not (: ,opt-obj :get)))
       "<" ; Sync local option to global one.
       `(vim.api.nvim_set_option_value ,name ;
-                                      (vim.api.nvim_get_option ,name)
+                                      (vim.api.nvim_get_option_value ,name
+                                                                     {:scope :global})
                                       {:scope :local})
       ;; "&" `(vim.cmd.set (.. ,name "&"))
       _
