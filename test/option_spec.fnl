@@ -1169,6 +1169,7 @@
             (wo! win :foldlevel (return-val))
             (assert.is_same new-val (. vim.wo win :foldlevel)))))))
   (describe* "(wrapper)"
+    ;; TODO: Add tests for wrappers: `set!`, `setlocal!`, ...
     (describe* :set+
       (it* "appends option value of sequence"
         (let [name :path
