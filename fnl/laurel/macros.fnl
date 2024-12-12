@@ -556,6 +556,7 @@ instead to set a Vimscript function.
 (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
 (define-augroup! name api-opts
   (au! events ?pattern ?extra-opts callback ?api-opts))
+
 (define-augroup! name api-opts
   (autocmd! events ?pattern ?extra-opts callback ?api-opts))
 ```
@@ -1138,7 +1139,7 @@ For example,
               (option/modify {:win id} name val)))))))
 
 (λ set! [...]
-  "(Subject to be deprecated in favor of `let!`)
+  "(Deprecated in favor of `let!`)
   Set value to the option.
   Almost equivalent to `:set` in Vim script.
   ```fennel
@@ -1162,10 +1163,10 @@ For example,
   (let [opt :formatOptions]
     (set! opt + [:1 :B]))
   ```"
-  (option/set-with-scope {} ...))
+  (deprecate :set! "`let!` with :opt for first arg" :v0.8.0 (let! :opt ...)))
 
 (λ setlocal! [...]
-  "(Subject to be deprecated in favor of `let!`)
+  "(Deprecated in favor of `let!`)
 Set local value to the option.
 Almost equivalent to `:setlocal` in Vim script.
 
@@ -1174,10 +1175,11 @@ Almost equivalent to `:setlocal` in Vim script.
 ```
 
 See `set!` for the details."
-  (option/set-with-scope {:scope :local} ...))
+  (deprecate :setlocal! "`let!` with :opt_local for first arg" :v0.8.0
+             (let! :opt_local ...)))
 
 (λ setglobal! [...]
-  "(Subject to be deprecated in favor of `let!`)
+  "(Deprecated in favor of `let!`)
 Set global value to the option.
 Almost equivalent to `:setglobal` in Vim script.
 
@@ -1186,7 +1188,8 @@ Almost equivalent to `:setglobal` in Vim script.
 ```
 
 See `set!` for the details."
-  (option/set-with-scope {:scope :global} ...))
+  (deprecate :setglobal! "`let!` with :opt_global for first arg" :v0.8.0
+             (let! :opt_global ...)))
 
 (λ bo! [name|?id val|name ...]
   "(Subject to be deprecated in favor of `let!`)
