@@ -26,6 +26,21 @@
 (fn buf-autocmd!/with-buffer=0 [...]
   (autocmd! `&default-opts {:buffer 0} ...))
 
+(fn set! [...]
+  (let! :opt ...))
+
+(fn setlocal! [...]
+  (let! :opt_local ...))
+
+(fn setglobal! [...]
+  (let! :opt_global ...))
+
+(fn bo! [...]
+  (let! :bo ...))
+
+(fn wo! [...]
+  (let! :wo ...))
+
 (fn set+ [name ...]
   (let! :opt name `+ ...))
 
@@ -67,6 +82,11 @@
  : bufnr-suffixed-augroup!
  : buf-autocmd!/with-no-default-bufnr
  : buf-autocmd!/with-buffer=0
+ : set!
+ : setlocal!
+ : setglobal!
+ : bo!
+ : wo!
  : set+
  : set-
  : set^
