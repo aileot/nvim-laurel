@@ -1,5 +1,5 @@
 ;; fennel-ls: macro-file
-(local {: augroup! : autocmd! : set! : map! : command! : highlight!}
+(local {: augroup! : autocmd! : let! : map! : command! : highlight!}
        (require :laurel.macros))
 
 (fn my-autocmd! [...]
@@ -27,13 +27,13 @@
   (autocmd! `&default-opts {:buffer 0} ...))
 
 (fn set+ [name ...]
-  (set! name `+ ...))
+  (let! :opt name `+ ...))
 
 (fn set- [name ...]
-  (set! name `- ...))
+  (let! :opt name `- ...))
 
 (fn set^ [name ...]
-  (set! name `^ ...))
+  (let! :opt name `^ ...))
 
 (fn nmap! [...]
   (map! :n ...))
