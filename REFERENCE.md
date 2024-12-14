@@ -67,8 +67,8 @@ usages are subject to change without notifications.
 
 ## Terminology
 
-- [For Convenience Sake](#For-Convenience-Sake)
-- [Reserved Symbol](#Reserved-Symbol)
+- [For Convenience Sake](#for-convenience-sake)
+- [Reserved Symbol](#reserved-symbol)
 
 ### For Convenience Sake
 
@@ -219,16 +219,16 @@ Note that quote position depends on where the wrapper macros are defined:
 
 ## Macros
 
-- [Autocmd](#Autocmd)
-- [Keymap](#Keymap)
-- [Variable](#Variable)
-- [Option](#Option)
-- [Others](#Others)
+- [Autocmd](#autocmd)
+- [Keymap](#keymap)
+- [Variable](#variable)
+- [Option](#option)
+- [Others](#others)
 
 ### Autocmd
 
 - [`augroup!`](#augroup)
-- [`autocmd!`](#autocmd)
+- [`autocmd!`](#autocmd-1)
 - [`au!`](#au)
 
 #### `augroup!`
@@ -237,10 +237,12 @@ Create or get an augroup, or override an existing augroup.
 (`&default-opts` is available.)
 
 ```fennel
-(augroup! name ?api-opts-for-augroup) ; Only this format returns the augroup id.
+; Only this format returns the augroup id.
+(augroup! name ?api-opts-for-augroup)
 (augroup! name ?api-opts-for-augroup
   [events ?pattern ?extra-opts callback ?api-opts]
   ...)
+
 (augroup! name ?api-opts-for-augroup
   ;; Wrap args in `autocmd!` or `au!` instead of brackets.
   (autocmd! events ?pattern ?extra-opts callback ?api-opts)
@@ -277,11 +279,13 @@ Create or get an augroup, or override an existing augroup.
 (augroup! :sample-augroup
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! [:InsertEnter :InsertLeave]
-      [:buffer :desc "call foo#bar() without any args"] vim.fn.foo#bar)
+            [:buffer :desc "call foo#bar() without any args"] vim.fn.foo#bar)
   (autocmd! :VimEnter * [:once :nested :desc "call baz#qux() with <amatch>"]
-      #(vim.fn.baz#qux $.match)))
-  (autocmd! :LspAttach *
-      #(au! $.group :CursorHold [:buffer $.buf] vim.lsp.buf.document_highlight))
+            #(vim.fn.baz#qux $.match)))
+
+(autocmd! :LspAttach *
+          #(au! $.group :CursorHold [:buffer $.buf]
+                vim.lsp.buf.document_highlight))
 ```
 
 is equivalent to
@@ -302,10 +306,10 @@ local id = vim.api.nvim_create_augroup("sample-augroup", {})
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = id,
   callback = function()
-   vim.highlight.on_yank {timeout=450, on_visual=false}
+    vim.highlight.on_yank({ timeout = 450, on_visual = false })
   end,
 })
-vim.api.nvim_create_autocmd({"InsertEnter", "InsertLeave"}, {
+vim.api.nvim_create_autocmd({ "InsertEnter", "InsertLeave" }, {
   group = id,
   buffer = 0,
   desc = "call foo#bar() without any args",
@@ -332,7 +336,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 ```
 
-c.f. [`autocmd!`](#autocmd)
+c.f. [`autocmd!`](#autocmd-1)
 
 #### `autocmd!`
 
@@ -340,7 +344,8 @@ Create an autocmd.
 (`&default-opts` is available.)
 
 ```fennel
-(autocmd! events api-opts) ; Just as an alias of `nvim_create_autocmd()`.
+; Just as an alias of `nvim_create_autocmd()`.
+(autocmd! events api-opts)
 (autocmd! name-or-id events ?pattern ?extra-opts callback ?api-opts)
 ```
 
@@ -353,15 +358,15 @@ See [`augroup!`](#augroup) for the rest.
 
 #### `au!`
 
-An alias of [`autocmd!`](#autocmd).
+An alias of [`autocmd!`](#autocmd-1).
 (`&default-opts` is available.)
 
 ### Keymap
 
 - [`map!`](#map): A replacement of `vim.keymap.set`
 - [`unmap!`](#unmap): A replacement of `vim.keymap.del`
-- [`<Cmd>`](#Cmd)
-- [`<C-u>`](#C-u)
+- [`<Cmd>`](#cmd)
+- [`<C-u>`](#c-u)
 
 #### `map!`
 
@@ -403,10 +408,13 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
 ```fennel
 (map! :i :jk :<Esc>)
 (map! :n :lhs [:desc "call foo#bar()"] #(vim.fn.foo#bar))
-(map! [:n :x] [:remap :expr :literal] :d "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'")
-(map! [:n :x] [:remap :expr] :u #(if vim.bo.readonly
-                                     "<Plug>(readonly-u)"
-                                     "<Plug>(noreadonly-u)"))
+(map! [:n :x] [:remap :expr :literal] :d
+      "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'")
+
+(map! [:n :x] [:remap :expr] :u
+      #(if vim.bo.readonly
+           "<Plug>(readonly-u)"
+           "<Plug>(noreadonly-u)"))
 ```
 
 is equivalent to
@@ -424,15 +432,26 @@ vim.api.nvim_set_keymap("n", "lhs", "", {
   -- callback = vim.fn["foo#bar"], -- If you don't care autoload.
   callback = function()
     vim.fn["foo#bar"]()
-end})
-vim.api.nvim_set_keymap("n", "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
-  expr = true,
-  replace_keycodes = false,
+  end,
 })
-vim.api.nvim_set_keymap("x", "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
-  expr = true,
-  replace_keycodes = false,
-})
+vim.api.nvim_set_keymap(
+  "n",
+  "d",
+  "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'",
+  {
+    expr = true,
+    replace_keycodes = false,
+  }
+)
+vim.api.nvim_set_keymap(
+  "x",
+  "d",
+  "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'",
+  {
+    expr = true,
+    replace_keycodes = false,
+  }
+)
 vim.api.nvim_set_keymap("n", "u", "", {
   expr = true,
   callback = function()
@@ -450,11 +469,16 @@ vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("n", "lhs", function()
   vim.fn["foo#bar"]()
 end)
-vim.keymap.set({ "n", "x" }, "d", "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'", {
-  remap = true,
-  expr = true,
-  replace_keycodes = false,
-})
+vim.keymap.set(
+  { "n", "x" },
+  "d",
+  "&readonly ? '<Plug>(readonly-d)' : '<Plug>(noreadonly-d)'",
+  {
+    remap = true,
+    expr = true,
+    replace_keycodes = false,
+  }
+)
 vim.keymap.set({ "n", "x" }, "u", function()
   return vim.bo.readonly and "<Plug>(readonly-u)" or "<Plug>(noreadonly-u)"
 end, {
@@ -543,8 +567,12 @@ set `false` or `(not vim.go.foo)` respectively.
 
 ```fennel
 (let! scope name ?val)
-(let! scope name ?flag ?val) ; only in the scope: "opt", "opt_local", or "opt_global"
-(let! scope ?id name ?flag ?val) ; only in the scope: "b", "w", or "t"
+(let! scope name ?flag ?val)
+
+; only in the scope: "opt", "opt_local", or "opt_global"
+(let! scope ?id name ?flag ?val)
+
+; only in the scope: "b", "w", or "t"
 ```
 
 - `scope`: ("g"|"b"|"w"|"t"|"v"|"env"|"o"|"go"|"bo"|"wo"|"opt"|"opt_local"|"opt_global")
@@ -962,8 +990,14 @@ call feedkeys('foo<CR>', 'ni')
 ```
 
 ```lua
-vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<CR>", true, true, true) "ni", false)
-vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true) "ni", false)
+vim.api.nvim_feedkeys(
+  vim.api.nvim_replace_termcodes("foo<CR>", true, true, true)("ni"),
+  false
+)
+vim.api.nvim_feedkeys(
+  vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true)("ni"),
+  false
+)
 ```
 
 #### `highlight!`
@@ -983,9 +1017,17 @@ Set a highlight group.
   instead of `ctermfg`/`ctermbg` key.
 
 ```fennel
-(highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :ctermfg 103 :cterm {:bold true :italic true}})
+(highlight! :Foo {:fg "#8d9eb2"
+                  :bold true
+                  :italic true
+                  :ctermfg 103
+                  :cterm {:bold true :italic true}})
+
 ;; or (as long as `api-opts` keys are bare-strings)
-(highlight! :Foo {:fg "#8d9eb2" :bold true :italic true :cterm {:fg 103 :bold true :italic true}})
+(highlight! :Foo {:fg "#8d9eb2"
+                  :bold true
+                  :italic true
+                  :cterm {:fg 103 :bold true :italic true}})
 ```
 
 is equivalent to
@@ -1003,7 +1045,7 @@ nvim_set_nl(0, "Foo", {
   cterm = {
     bold = true,
     italic = true,
-  }
+  },
 })
 ```
 
