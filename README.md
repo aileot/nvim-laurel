@@ -192,8 +192,9 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
    (lazy.setup [{1 :aileot/nvim-laurel
                  ;; v0.7.1 <= {version} < v0.8.0
                  ;; Note: v0.7.0 has a backward compatibility issue.
-                 :version "~v0.7.0"
-                ...] ;; and other plugins
+                 :version "~v0.7.0"}
+                 ;; and other plugins
+                ]
                {:defaults {:lazy true
                            ;; Note: Not to remove nvim-laurel from &rtp, and not to encounter any
                            ;; other potential issues, it's UNRECOMMENDED to reset &rtp unless you
