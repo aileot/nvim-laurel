@@ -27,7 +27,8 @@ _and by good old Vim script_
 > [COOKBOOK.md](./COOKBOOK.md)
 > will help you as painlessly update them as possible;
 > see [REFERENCE.md](./REFERENCE.md)
-> for usage of `g:laurel_deprecated`, which would also help you update them as
+> for usage of [`g:laurel_deprecated`](./REFERENCE.md#glaurel_deprecated),
+> which would also help you update them as
 > long as they are deprecated, but not abolished yet.
 
 ## Documentations
