@@ -21,7 +21,7 @@ _and by good old Vim script_
 </div>
 
 > [!WARNING]
-> Some breaking changes are planned until v1.0.0.  
+> Some breaking changes are planned until v1.0.0.\
 > [COOKBOOK.md](./COOKBOOK.md) contains how to update them as painlessly as
 > possible; see [REFERENCE.md](./REFERENCE.md) for usage of
 > `g:laurel_deprecated`, which would also help you update them as long as they
