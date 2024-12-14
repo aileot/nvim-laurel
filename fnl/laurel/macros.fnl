@@ -556,6 +556,7 @@ instead to set a Vimscript function.
 (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
 (define-augroup! name api-opts
   (au! events ?pattern ?extra-opts callback ?api-opts))
+
 (define-augroup! name api-opts
   (autocmd! events ?pattern ?extra-opts callback ?api-opts))
 ```
@@ -932,8 +933,9 @@ internally), which helps `gf` jump to the path.
 
 (λ option/concat-kv-table [kv-table]
   "Concat kv table into a string for `vim.api.nvim_set_option_value`.
-  For example,
-  `{:eob \" \" :fold \"-\"})` should be compiled to `\"eob: ,fold:-\"`"
+For example,
+`{:eob\"
+ \" :fold\"-\"})` should be compiled to `\"eob: ,fold:-\"`"
   (assert-compile (table? kv-table)
                   (msg-template/expected-actual :table (type kv-table)
                                                 (view kv-table))
@@ -1009,110 +1011,7 @@ internally), which helps `gf` jump to the path.
       _
       (error* (.. "Invalid vim option modifier: " (view ?flag))))))
 
-(λ option/extract-flag [name-?flag]
-  (let [?flag (name-?flag:match "[^a-zA-Z]")
-        name (if ?flag (name-?flag:match "[a-zA-Z]+") name-?flag)]
-    (values name ?flag)))
-
-(fn option/set-with-scope [scope ...]
-  (assert-compile (table? scope) "Expected kv-table" scope)
-  (let [supported-flags [`+ `- `^ `! `& `<]]
-    (case (case ...
-            (name nil)
-            (values name nil true)
-            (where (name flag ?val)
-                   (and (sym? flag) (contains? supported-flags flag)))
-            (values name flag ?val)
-            ;; TODO: Remove flag-extraction on v0.7.0.
-            (name-?flag val nil)
-            (if (str? name-?flag)
-                (let [(name ?flag) (option/extract-flag name-?flag)]
-                  (values name ?flag val))
-                (values name-?flag nil val)))
-      (name ?flag val) (option/modify scope name val ?flag))))
-
 ;; Export ///2
-
-(λ set! [...]
-  "(Subject to be deprecated in favor of `let!`)
-  Set value to the option.
-  Almost equivalent to `:set` in Vim script.
-  ```fennel
-  (set! name ?flag ?val)
-  ```
-  @param name string Option name.
-    As long as the option name is a bare string, i.e., neither symbol nor list,
-    this macro has an advantage: option name is case-insensitive. You can
-    improve readability a bit with camelCase/PascalCase. Since `:h {option}`
-    is also case-insensitive, `(setlocal! :keywordPrg \":help\")` for fennel
-    still makes sense.
-  @param ?flag symbol One of `+`, `-`, or `^` is available.
-  @param ?val boolean|number|string|table New option value.
-    If not provided, the value is supposed to be `true` (experimental).
-    This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
-    however, when the value is set in either symbol or list,
-    this macro is expanding to `(tset vim.opt name val)` instead.
-  Note: There is no plan to support option prefix either `no` or `inv`;
-  instead, set `false` or `(not vim.go.foo)` respectively.
-  ```fennel
-  (let [opt :formatOptions]
-    (set! opt + [:1 :B]))
-  ```"
-  (option/set-with-scope {} ...))
-
-(λ setlocal! [...]
-  "(Subject to be deprecated in favor of `let!`)
-Set local value to the option.
-Almost equivalent to `:setlocal` in Vim script.
-
-```fennel
-(setlocal! name-?flag ?val)
-```
-
-See `set!` for the details."
-  (option/set-with-scope {:scope :local} ...))
-
-(λ setglobal! [...]
-  "(Subject to be deprecated in favor of `let!`)
-Set global value to the option.
-Almost equivalent to `:setglobal` in Vim script.
-
-```fennel
-(setglobal! name-?flag ?val)
-```
-
-See `set!` for the details."
-  (option/set-with-scope {:scope :global} ...))
-
-(λ bo! [name|?id val|name ...]
-  "(Subject to be deprecated in favor of `let!`)
-Set a buffer option value.
-
-```fennel
-(bo! ?id name value)
-```
-
-@param ?id integer Buffer handle, or 0 for current buffer.
-@param name string Option name. Case-insensitive as long as in bare-string.
-@param value any Option value."
-  (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])]
-    (option/modify {:buf id} name val)))
-
-(λ wo! [name|?id val|name ...]
-  "(Subject to be deprecated in favor of `let!`)
-Set a window option value.
-
-```fennel
-(wo! ?id name value)
-```
-
-@param ?id integer Window handle, or 0 for current window.
-@param name string Option name. Case-insensitive as long as in bare-string.
-@param value any Option value."
-  (let [[id name val] (if (= 0 (select "#" ...)) [0 name|?id val|name]
-                          [name|?id val|name ...])]
-    (option/modify {:win id} name val)))
 
 (λ let! [scope ...]
   "(Experimental) Set editor variable in `scope`.
@@ -1216,6 +1115,85 @@ Set a window option value.
               (option/modify {:buf id} name val)
               (:wo [id name val])
               (option/modify {:win id} name val)))))))
+
+(λ set! [...]
+  "(Deprecated in favor of `let!`)
+  Set value to the option.
+  Almost equivalent to `:set` in Vim script.
+  ```fennel
+  (set! name ?flag ?val)
+  ```
+  @param name string Option name.
+    As long as the option name is a bare string, i.e., neither symbol nor list,
+    this macro has an advantage: option name is case-insensitive. You can
+    improve readability a bit with camelCase/PascalCase. Since `:h {option}`
+    is also case-insensitive, `(setlocal! :keywordPrg \":help\")` for fennel
+    still makes sense.
+  @param ?flag symbol One of `+`, `-`, or `^` is available.
+  @param ?val boolean|number|string|table New option value.
+    If not provided, the value is supposed to be `true` (experimental).
+    This macro is expanding to `(vim.api.nvim_set_option_value name val)`;
+    however, when the value is set in either symbol or list,
+    this macro is expanding to `(tset vim.opt name val)` instead.
+  Note: There is no plan to support option prefix either `no` or `inv`;
+  instead, set `false` or `(not vim.go.foo)` respectively.
+  ```fennel
+  (let [opt :formatOptions]
+    (set! opt + [:1 :B]))
+  ```"
+  (deprecate :set! "`let!` with :opt for first arg" :v0.8.0 (let! :opt ...)))
+
+(λ setlocal! [...]
+  "(Deprecated in favor of `let!`)
+Set local value to the option.
+Almost equivalent to `:setlocal` in Vim script.
+
+```fennel
+(setlocal! name-?flag ?val)
+```
+
+See `set!` for the details."
+  (deprecate :setlocal! "`let!` with :opt_local for first arg" :v0.8.0
+             (let! :opt_local ...)))
+
+(λ setglobal! [...]
+  "(Deprecated in favor of `let!`)
+Set global value to the option.
+Almost equivalent to `:setglobal` in Vim script.
+
+```fennel
+(setglobal! name-?flag ?val)
+```
+
+See `set!` for the details."
+  (deprecate :setglobal! "`let!` with :opt_global for first arg" :v0.8.0
+             (let! :opt_global ...)))
+
+(λ bo! [...]
+  "(Deprecated in favor of `let!`)
+Set a buffer option value.
+
+```fennel
+(bo! ?id name value)
+```
+
+@param ?id integer Buffer handle, or 0 for current buffer.
+@param name string Option name. Case-insensitive as long as in bare-string.
+@param value any Option value."
+  (deprecate :bo! "`let!` with :bo for first arg" :v0.8.0 (let! :bo ...)))
+
+(λ wo! [...]
+  "(Deprecated in favor of `let!`)
+Set a window option value.
+
+```fennel
+(wo! ?id name value)
+```
+
+@param ?id integer Window handle, or 0 for current window.
+@param name string Option name. Case-insensitive as long as in bare-string.
+@param value any Option value."
+  (deprecate :wo! "`let!` with :wo for first arg" :v0.8.0 (let! :wo ...)))
 
 ;; Command ///1
 

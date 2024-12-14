@@ -7,7 +7,9 @@ _Demonstrations with practical snippets._
 - [Recipes](#recipes)
   - [Create wrapper macros](#create-wrapper-macros)
     - [`augroup+`: _An augroup macro without clearing itself by default_](#augroup-an-augroup-macro-without-clearing-itself-by-default)
+    - [`set!`, `setlocal!`, `setglobal!`: _The dedicated macros to set Vim options_](#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options)
     - [`set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_](#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options)
+    - [`bo!`/`wo!`: _The dedicated macros to set buffer/window local Vim options_](#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options)
   - [Back to the good and old Vim script era](#back-to-the-good-and-old-vim-script-era)
     - [Create autocmds in a monolithic augroup all over my vimrc](#create-autocmds-in-a-monolithic-augroup-all-over-my-vimrc)
       - [The simplest approach](#the-simplest-approach)
@@ -73,29 +75,7 @@ In a macro definition file, say `my-macros.fnl`,
 And export them at the bottom of the file:
 
 ```fennel
-{: let!
- : set!
- : setlocal!
- : setglobal!
- : go!
- : bo!
- : wo!
- : g!
- : b!
- : w!
- : t!
- : v!
- : env!
- : map!
- : unmap!
- : <C-u>
- : <Cmd>
- : command!
- : augroup!
- : au!
- : autocmd!
- : feedkeys!
- : highlight!}
+
 ```
 
 Then, at the top of example codes,
@@ -129,6 +109,28 @@ augroup+                                                     *laurel-augroup+*
 
 <!-- panvimdoc-ignore-start -->
 
+#### `set!`, `setlocal!`, `setglobal!`: _The dedicated macros to set Vim options_
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+set!                                                             *laurel-set!*
+setlocal!                                                   *laurel-setlocal!*
+setglobal!                                                 *laurel-setglobal!*
+-->
+
+<!-- panvimdoc-ignore-start -->
+
+```fennel
+(fn set! [...]
+  (let! :opt ...))
+
+(fn setlocal! [...]
+  (let! :opt_local ...))
+
+(fn setglobal! [...]
+  (let! :opt_global ...))
+```
+
 #### `set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_
 
 <!-- panvimdoc-ignore-end -->
@@ -157,6 +159,24 @@ go^                                                               *laurel-go^*
 ```
 
 Replace "set", as you need, with "setlocal", "setglobal", etc.
+
+#### `bo!`/`wo!`: _The dedicated macros to set buffer/window local Vim options_
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+bo!                                                               *laurel-bo!*
+wo!                                                               *laurel-wo!*
+-->
+
+<!-- panvimdoc-ignore-start -->
+
+```fennel
+(fn bo! [...]
+  (let! :bo ...))
+
+(fn wo! [...]
+  (let! :wo ...))
+```
 
 ### Back to the good and old Vim script era
 
@@ -209,8 +229,10 @@ With nvim-laurel, it could be implemented in some approaches:
 ```fennel
 (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
 ;; or if you don't mind to set the option to each augroup.
-(augroup! :MyVimrc {:clear false}
-  (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim])))
+(augroup! :MyVimrc
+  {:clear false}
+  (au! :MyVimrc :FileType ["*.fnl"]
+       #(setlocal! :suffixesAdd [:.fnl :.lua :.vim])))
 ```
 
 ##### Another approach with `augroup!` wrapper
@@ -295,10 +317,14 @@ determined at runtime.
 (macro buf-au! [...]
   `(autocmd! &default-opts {:buffer 0} ,...))
 
-(autocmd! group [:FileType]
-  (fn []
-     (buf-au! [:InsertEnter] #(do :something))
-     (buf-au! [:BufWritePre] #(do :other))))
+(autocmd! group [:FileType] ;
+          (fn []
+            (buf-au! [:InsertEnter]
+                     #(do
+                        :something))
+            (buf-au! [:BufWritePre]
+                     #(do
+                        :another))))
 ```
 
 or
@@ -312,17 +338,19 @@ or
   (autocmd! `&default-opts {:buffer 0} ...))
 
 {: buf-au!}
-```
 
-```fennel
-;; in foobar.fnl (another file)
+;; in another file
 (import-macros {: autocmd!} :laurel.macros)
 (import-macros {: buf-au!} :my.macros)
 
-(autocmd! group [:FileType]
-  #(do
-     (buf-au! [:InsertEnter] (do :something))
-     (buf-au! [:BufWritePre] (do :other))))
+(autocmd! group [:FileType] ;
+          (fn[]
+            (buf-au! [:InsertEnter]
+                     #(do
+                        :something))
+            (buf-au! [:BufWritePre]
+                     #(do
+                        :another))))
 ```
 
 <!-- panvimdoc-ignore-start -->
@@ -384,16 +412,23 @@ in another hash function is meaningless in many cases.
 ```fennel
 ;; bad
 (autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
-(autocmd! group events (fn []
-                         (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+(autocmd! group events
+          (fn []
+            (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+(autocmd! group events
+          (vim.schedule_wrap #(nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
 
 ##### Pattern
 
 ```fennel
 ;; good
-(autocmd! group events #(vim.schedule (fn []
-                                        (nnoremap [:buffer $.buf] :lhs :rhs))))
-```
+(autocmd! group events
+          #(vim.schedule (fn []
+                           (nnoremap [:buffer $.buf] :lhs :rhs))))
 
-[augroup+]: #augroup-an-augroup-macro-without-clearing-itself-by-default
+;; or
+(autocmd! group events
+          (fn [a]
+            (vim.schedule #(nnoremap [:buffer a.buf] :lhs :rhs))))
+```
