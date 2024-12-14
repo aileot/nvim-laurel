@@ -6,7 +6,8 @@
 [![badge/test](https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square)][workflow/test]
 [![badge/semver](https://img.shields.io/github/release/aileot/nvim-laurel?display_name=tag&sort=semver&label=Release)][path/to/semver]\
 _A set of macros for Neovim config_\
-_inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script_
+_inspired by the builtin Nvim Lua-Vimscript bridge on metatable_
+_and by good old Vim script_
 
 ![image/nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
 
@@ -68,7 +69,8 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 
    ```lua
    local function prerequisite(name, url)
-     -- To manage the version of repo, the path should be where your plugin manager will download it.
+     -- To manage the version of repo, the path should be where your plugin
+     -- manager will download it.
      local name = url:gsub("^.*/", "")
      local path = vim.fn.stdpath("data") .. "/lazy/" .. name
      if not vim.loop.fs_stat(path) then
@@ -117,7 +119,8 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 
    ```lua
    local function prerequisite(url)
-     -- To manage the version of repo, the path should be where your plugin manager will download it.
+     -- To manage the version of repo, the path should be where your plugin
+     -- manager will download it.
      local path = "~/.cache/dein/repos/" .. url:gsub("^.*://", "")
      if not vim.loop.fs_stat(path) then
        vim.fn.system({
@@ -133,13 +136,10 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 
    -- Install your favorite plugin manager.
    prerequisite("https://github.com/Shougo/dein.vim")
-
    -- Install nvim-laurel
    prerequisite("https://github.com/aileot/nvim-laurel")
-
    -- Install a runtime compiler
    prerequisite("https://github.com/rktjmp/hotpot.nvim")
-
    require("hotpot").setup({
      compiler = {
        macros = {
@@ -196,9 +196,11 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
                  ;; and other plugins
                 ]
                {:defaults {:lazy true
-                           ;; Note: Not to remove nvim-laurel from &rtp, and not to encounter any
-                           ;; other potential issues, it's UNRECOMMENDED to reset &rtp unless you
-                           ;; don't mind the extra cost to maintain the "paths" properly.
+                           ;; Note: Not to remove nvim-laurel from &rtp, and
+                           ;; not to encounter any other potential issues,
+                           ;; it's UNRECOMMENDED to reset &rtp unless you
+                           ;; don't mind the extra cost to maintain the
+                           ;; "paths" properly.
                            :performance {:rtp {:reset false}}}})
    ```
 
