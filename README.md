@@ -247,9 +247,12 @@ See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
 
 - [Autocmd](./doc/REFERENCE.md#Autocmd)
 
-  - [`augroup!`](./doc/REFERENCE.md#augroup)
-  - [`autocmd!`](./doc/REFERENCE.md#autocmd)
-  - [`au!`](./doc/REFERENCE.md#au)
+  - [`augroup!`](./doc/REFERENCE.md#augroup):
+    A replacement of `vim.api.nvim_create_augroup`
+  - [`autocmd!`](./doc/REFERENCE.md#autocmd):
+    A replacement of `vim.api.nvim_create_autocmd`
+  - [`au!`](./doc/REFERENCE.md#au):
+    An alias of `autocmd!`
 
 - [Keymap](./doc/REFERENCE.md#Keymap)
 
@@ -278,7 +281,8 @@ See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
   - [`env!`](./doc/REFERENCE.md#env)
 
 - [Others](./doc/REFERENCE.md#Others)
-  - [`command!`](./doc/REFERENCE.md#command)
+  - [`command!`](./doc/REFERENCE.md#command):
+    A replacement of `vim.api.nvim_create_user_command`
   - [`feedkeys!`](./doc/REFERENCE.md#feedkeys)
   - [`highlight!`](./doc/REFERENCE.md#highlight)
   - [`hi!`](./doc/REFERENCE.md#hi)
