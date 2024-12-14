@@ -23,9 +23,10 @@ _and by good old Vim script_
 > [!WARNING]
 > Some breaking changes are planned until v1.0.0.
 > (The version would be released after nvim v1.0.)\
-> For breaking changes and the preceding deprecation notices,
+> If you encounter breaking changes
+> and the deprecation notices that precede them,
 > [COOKBOOK.md](./COOKBOOK.md)
-> will help you as painlessly update them as possible;
+> will help you update as painlessly as possible;
 > see [REFERENCE.md](./REFERENCE.md)
 > for usage of [`g:laurel_deprecated`](./REFERENCE.md#glaurel_deprecated),
 > which would also help you update them as
