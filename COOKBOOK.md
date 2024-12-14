@@ -129,6 +129,19 @@ augroup+                                                     *laurel-augroup+*
 
 <!-- panvimdoc-ignore-start -->
 
+#### `set!`, `setlocal!`, `setglobal!`: _The dedicated macros to set Vim options_
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+set!                                                             *laurel-set!*
+setlocal!                                                   *laurel-setlocal!*
+setglobal!                                                 *laurel-setglobal!*
+-->
+
+<!-- panvimdoc-ignore-start -->
+
+TODO
+
 #### `set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_
 
 <!-- panvimdoc-ignore-end -->
