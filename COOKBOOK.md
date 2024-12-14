@@ -48,12 +48,6 @@ In a macro definition file, say `my-macros.fnl`,
 
 ```fennel
 (local {: let!
-        : set!
-        : setlocal!
-        : setglobal!
-        : go!
-        : bo!
-        : wo!
         : g!
         : b!
         : w!
@@ -75,7 +69,23 @@ In a macro definition file, say `my-macros.fnl`,
 And export them at the bottom of the file:
 
 ```fennel
-
+{: let!
+ : g!
+ : b!
+ : w!
+ : t!
+ : v!
+ : env!
+ : map!
+ : unmap!
+ : <C-u>
+ : <Cmd>
+ : command!
+ : augroup!
+ : au!
+ : autocmd!
+ : feedkeys!
+ : highlight!}
 ```
 
 Then, at the top of example codes,
