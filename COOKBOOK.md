@@ -8,7 +8,7 @@ _Demonstrations with practical snippets._
   - [Create wrapper macros](#create-wrapper-macros)
     - [`augroup+`: _An augroup macro without clearing itself by default_](#augroup-an-augroup-macro-without-clearing-itself-by-default)
     - [`set!`, `setlocal!`, `setglobal!`: _The dedicated macros to set Vim options_](#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options)
-    - [`set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_](#set-set-set-the-dedicated-macros-to-appendremoveprepend-vim-options)
+    - [`set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_](#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options)
     - [`bo!`/`wo!`: _The dedicated macros to set buffer/window local Vim options_](#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options)
   - [Back to the good and old Vim script era](#back-to-the-good-and-old-vim-script-era)
     - [Create autocmds in a monolithic augroup all over my vimrc](#create-autocmds-in-a-monolithic-augroup-all-over-my-vimrc)
