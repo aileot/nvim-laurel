@@ -41,6 +41,12 @@
 (fn wo! [...]
   (let! :wo ...))
 
+(fn b! [...]
+  (let! :b ...))
+
+(fn env! [...]
+  (let! :env ...))
+
 (fn set+ [name ...]
   (let! :opt name `+ ...))
 
@@ -87,6 +93,8 @@
  : setglobal!
  : bo!
  : wo!
+ : b!
+ : env!
  : set+
  : set-
  : set^
