@@ -73,29 +73,7 @@ In a macro definition file, say `my-macros.fnl`,
 And export them at the bottom of the file:
 
 ```fennel
-{: let!
- : set!
- : setlocal!
- : setglobal!
- : go!
- : bo!
- : wo!
- : g!
- : b!
- : w!
- : t!
- : v!
- : env!
- : map!
- : unmap!
- : <C-u>
- : <Cmd>
- : command!
- : augroup!
- : au!
- : autocmd!
- : feedkeys!
- : highlight!}
+
 ```
 
 Then, at the top of example codes,
@@ -140,7 +118,16 @@ setglobal!                                                 *laurel-setglobal!*
 
 <!-- panvimdoc-ignore-start -->
 
-TODO
+```fennel
+(fn set! [...]
+  (let! :opt ...))
+
+(fn setlocal! [...]
+  (let! :opt_local ...))
+
+(fn setglobal! [...]
+  (let! :opt_global ...))
+```
 
 #### `set+`, `set-`, `set^`, ...: _The dedicated macros to append/remove/prepend Vim options_
 
@@ -181,7 +168,13 @@ wo!                                                               *laurel-wo!*
 
 <!-- panvimdoc-ignore-start -->
 
-TODO
+```fennel
+(fn bo! [...]
+  (let! :bo ...))
+
+(fn wo! [...]
+  (let! :wo ...))
+```
 
 ### Back to the good and old Vim script era
 
