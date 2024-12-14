@@ -234,8 +234,10 @@ With nvim-laurel, it could be implemented in some approaches:
 ```fennel
 (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim]))
 ;; or if you don't mind to set the option to each augroup.
-(augroup! :MyVimrc {:clear false}
-  (au! :MyVimrc :FileType ["*.fnl"] #(setlocal! :suffixesAdd [:.fnl :.lua :.vim])))
+(augroup! :MyVimrc
+  {:clear false}
+  (au! :MyVimrc :FileType ["*.fnl"]
+       #(setlocal! :suffixesAdd [:.fnl :.lua :.vim])))
 ```
 
 ##### Another approach with `augroup!` wrapper
@@ -320,10 +322,14 @@ determined at runtime.
 (macro buf-au! [...]
   `(autocmd! &default-opts {:buffer 0} ,...))
 
-(autocmd! group [:FileType]
-  (fn []
-     (buf-au! [:InsertEnter] #(do :something))
-     (buf-au! [:BufWritePre] #(do :other))))
+(autocmd! group [:FileType] ;
+          (fn []
+            (buf-au! [:InsertEnter]
+                     #(do
+                        :something))
+            (buf-au! [:BufWritePre]
+                     #(do
+                        :another))))
 ```
 
 or
@@ -337,17 +343,19 @@ or
   (autocmd! `&default-opts {:buffer 0} ...))
 
 {: buf-au!}
-```
 
-```fennel
-;; in foobar.fnl (another file)
+;; in another file
 (import-macros {: autocmd!} :laurel.macros)
 (import-macros {: buf-au!} :my.macros)
 
-(autocmd! group [:FileType]
-  #(do
-     (buf-au! [:InsertEnter] (do :something))
-     (buf-au! [:BufWritePre] (do :other))))
+(autocmd! group [:FileType] ;
+          (fn[]
+            (buf-au! [:InsertEnter]
+                     #(do
+                        :something))
+            (buf-au! [:BufWritePre]
+                     #(do
+                        :another))))
 ```
 
 <!-- panvimdoc-ignore-start -->
@@ -409,16 +417,16 @@ in another hash function is meaningless in many cases.
 ```fennel
 ;; bad
 (autocmd! group events #(vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs)))
-(autocmd! group events (fn []
-                         (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+(autocmd! group events
+          (fn []
+            (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
 
 ##### Pattern
 
 ```fennel
 ;; good
-(autocmd! group events #(vim.schedule (fn []
-                                        (nnoremap [:buffer $.buf] :lhs :rhs))))
+(autocmd! group events
+          #(vim.schedule (fn []
+                           (nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
-
-[augroup+]: #augroup-an-augroup-macro-without-clearing-itself-by-default
