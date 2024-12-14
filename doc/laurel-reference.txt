@@ -605,8 +605,9 @@ is equivalent to
 
 set!                                                   *laurel-reference-set!*
 
-_(Subject to be deprecated in favor of let!)_ Set, append, prepend, or remove,
-value to the option. Almost equivalent to `:set` in Vim script.
+_(Deprecated in favor of let! with :opt at the first arg)_ Set, append,
+prepend, or remove, value to the option. Almost equivalent to `:set` in Vim
+script.
 
 >fennel
     (set! name ?flag ?val)
@@ -624,8 +625,9 @@ value to the option. Almost equivalent to `:set` in Vim script.
 
 setglobal!                                       *laurel-reference-setglobal!*
 
-_(Subject to be deprecated in favor of let!)_ Set, append, prepend, or remove,
-global value to the option. Almost equivalent to `:setglobal` in Vim script.
+_(Deprecated in favor of let! with :opt_global at the first arg)_ Set, append,
+prepend, or remove, global value to the option. Almost equivalent to
+`:setglobal` in Vim script.
 
 >fennel
     (setglobal! name ?flag ?val)
@@ -636,8 +638,9 @@ See |laurel-reference-`set!`| for the details.
 
 setlocal!                                         *laurel-reference-setlocal!*
 
-_(Subject to be deprecated in favor of let!)_ Set, append, prepend, or remove,
-local value to the option. Almost equivalent to `:setlocal` in Vim script.
+_(Deprecated in favor of let! with :opt_local at the first arg)_ Set, append,
+prepend, or remove, local value to the option. Almost equivalent to `:setlocal`
+in Vim script.
 
 >fennel
     (setlocal! name ?flag ?val)
@@ -648,7 +651,7 @@ See |laurel-reference-`set!`| for the details.
 
 go!                                                     *laurel-reference-go!*
 
-_(Subject to be deprecated in favor of let!)_ Alias of
+_(Deprecated in favor of let! at the first arg)_ Alias of
 |laurel-reference-`setglobal!`|.
 
 >fennel
@@ -658,8 +661,8 @@ _(Subject to be deprecated in favor of let!)_ Alias of
 
 bo!                                                     *laurel-reference-bo!*
 
-_(Subject to be deprecated in favor of let!)_ Set a buffer option value.
-|nvim_buf_set_option()|.
+_(Deprecated in favor of let! with :bo at the first arg)_ Set a buffer option
+value. |nvim_buf_set_option()|.
 
 >fennel
     (bo! ?id name value)
@@ -692,8 +695,8 @@ is equivalent to
 
 wo!                                                     *laurel-reference-wo!*
 
-_(Subject to be deprecated in favor of let!)_ Set a window option value.
-|nvim_win_set_option()|.
+_(Deprecated in favor of let! with :wo at the first arg)_ Set a window option
+value. |nvim_win_set_option()|.
 
 >fennel
     (wo! ?id name value)
