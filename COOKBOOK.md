@@ -420,6 +420,8 @@ in another hash function is meaningless in many cases.
 (autocmd! group events
           (fn []
             (vim.schedule #(nnoremap [:buffer $.buf] :lhs :rhs))))
+(autocmd! group events
+          (vim.schedule_wrap #(nnoremap [:buffer $.buf] :lhs :rhs))))
 ```
 
 ##### Pattern
@@ -429,4 +431,9 @@ in another hash function is meaningless in many cases.
 (autocmd! group events
           #(vim.schedule (fn []
                            (nnoremap [:buffer $.buf] :lhs :rhs))))
+
+;; or
+(autocmd! group events
+          (fn [a]
+            (vim.schedule #(nnoremap [:buffer a.buf] :lhs :rhs))))
 ```
