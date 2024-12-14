@@ -1,4 +1,4 @@
-(import-macros {: describe* : it*} :test._busted_macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 
 (describe* :prerequisites
   (it* "vim.api is not nil"

@@ -1,6 +1,6 @@
-(import-macros {: before-each : describe* : it*} :test._busted_macros)
+(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
 (import-macros {: command!} :laurel.macros)
-(import-macros {: buf-command!/as-api-alias} :test._wrapper_macros)
+(import-macros {: buf-command!/as-api-alias} :test.helper.wrapper-macros)
 
 (macro macro-callback []
   `#:macro-callback)

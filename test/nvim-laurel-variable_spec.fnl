@@ -1,4 +1,4 @@
-(import-macros {: before-each : describe* : it*} :test._busted_macros)
+(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
 (import-macros {: b! : env!} :laurel.macros)
 
 (describe* :b!

@@ -3,14 +3,14 @@
                 : before-each
                 : after-each
                 : describe*
-                : it*} :test._busted_macros)
+                : it*} :test.helper.busted-macros)
 
 (import-macros {: nmap!
                 : omni-map!
                 : remap!
                 : buf-map!/with-buffer=0
                 : buf-map!/with-<buffer>=true}
-               :test._wrapper_macros)
+               :test.helper.wrapper-macros)
 
 (import-macros {: map! : unmap! : <C-u> : <Cmd>} :laurel.macros)
 
