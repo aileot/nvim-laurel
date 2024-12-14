@@ -264,12 +264,6 @@ See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
 - [Option](./doc/REFERENCE.md#Option)
 
   - [`let!`](./doc/REFERENCE.md#let)
-  - [`set!`](./doc/REFERENCE.md#set)
-  - [`setglobal!`](./doc/REFERENCE.md#setglobal)
-  - [`setlocal!`](./doc/REFERENCE.md#setlocal)
-  - [`go!`](./doc/REFERENCE.md#go)
-  - [`bo!`](./doc/REFERENCE.md#bo)
-  - [`wo!`](./doc/REFERENCE.md#wo)
 
 - [Variable](./doc/REFERENCE.md#Variable)
 
