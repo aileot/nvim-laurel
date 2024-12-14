@@ -263,7 +263,15 @@ See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
 
 - [Option](./doc/REFERENCE.md#Option)
 
-  - [`let!`](./doc/REFERENCE.md#let)
+  - [`let!`](./doc/REFERENCE.md#let):
+    A replacement of
+    `vim.opt`, `vim.opt_local`, `vim.opt_global`,
+    `vim.o`, `vim.bo`, `vim.wo`.\
+    You can wrap this macro into [`set!`, `setlocal!`, ...](./doc/COOKBOOK.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
+    [`set+`, `set-`, ...](./doc/COOKBOOK.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
+    [`bo!`, `wo!`](./doc/COOKBOOK.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
+    and so on.\
+    Follow the links for the details.
 
 - [Variable](./doc/REFERENCE.md#Variable)
 
