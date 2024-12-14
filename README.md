@@ -241,53 +241,53 @@ _inspired by the builtin Nvim Lua-Vimscript bridge on metatable and by good old 
 (import-macros {: set! : map! : augroup! : au! ...} :laurel.macros)
 ```
 
-See [REFERENCE.md](./doc/REFERENCE.md) for each macro usage in details.
+See [REFERENCE.md](./REFERENCE.md) for each macro usage in details.
 
 ### Macro List
 
-- [Autocmd](./doc/REFERENCE.md#Autocmd)
+- [Autocmd](./REFERENCE.md#autocmd)
 
-  - [`augroup!`](./doc/REFERENCE.md#augroup):
+  - [`augroup!`](./REFERENCE.md#augroup):
     A replacement of `vim.api.nvim_create_augroup`
-  - [`autocmd!`](./doc/REFERENCE.md#autocmd):
+  - [`autocmd!`](./REFERENCE.md#autocmd-1):
     A replacement of `vim.api.nvim_create_autocmd`
-  - [`au!`](./doc/REFERENCE.md#au):
+  - [`au!`](./REFERENCE.md#au):
     An alias of `autocmd!`
 
-- [Keymap](./doc/REFERENCE.md#Keymap)
+- [Keymap](./REFERENCE.md#Keymap)
 
-  - [`map!`](./doc/REFERENCE.md#map): A replacement of `vim.keymap.set`
-  - [`unmap!`](./doc/REFERENCE.md#unmap): A replacement of `vim.keymap.del`
-  - [`<Cmd>`](./doc/REFERENCE.md#Cmd)
-  - [`<C-u>`](./doc/REFERENCE.md#C-u)
+  - [`map!`](./REFERENCE.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./REFERENCE.md#unmap): A replacement of `vim.keymap.del`
+  - [`<Cmd>`](./REFERENCE.md#Cmd)
+  - [`<C-u>`](./REFERENCE.md#C-u)
 
-- [Option](./doc/REFERENCE.md#Option)
+- [Option](./REFERENCE.md#Option)
 
-  - [`let!`](./doc/REFERENCE.md#let):
+  - [`let!`](./REFERENCE.md#let):
     A replacement of
     `vim.opt`, `vim.opt_local`, `vim.opt_global`,
     `vim.o`, `vim.bo`, `vim.wo`.\
-    You can wrap this macro into [`set!`, `setlocal!`, ...](./doc/COOKBOOK.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
-    [`set+`, `set-`, ...](./doc/COOKBOOK.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
-    [`bo!`, `wo!`](./doc/COOKBOOK.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
+    You can wrap this macro into [`set!`, `setlocal!`, ...](./COOKBOOK.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
+    [`set+`, `set-`, ...](./COOKBOOK.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
+    [`bo!`, `wo!`](./COOKBOOK.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
     and so on.\
     Follow the links for the details.
 
-- [Variable](./doc/REFERENCE.md#Variable)
+- [Variable](./REFERENCE.md#Variable)
 
-  - [`g!`](./doc/REFERENCE.md#g)
-  - [`b!`](./doc/REFERENCE.md#b)
-  - [`w!`](./doc/REFERENCE.md#w)
-  - [`t!`](./doc/REFERENCE.md#t)
-  - [`v!`](./doc/REFERENCE.md#v)
-  - [`env!`](./doc/REFERENCE.md#env)
+  - [`g!`](./REFERENCE.md#g)
+  - [`b!`](./REFERENCE.md#b)
+  - [`w!`](./REFERENCE.md#w)
+  - [`t!`](./REFERENCE.md#t)
+  - [`v!`](./REFERENCE.md#v)
+  - [`env!`](./REFERENCE.md#env)
 
-- [Others](./doc/REFERENCE.md#Others)
-  - [`command!`](./doc/REFERENCE.md#command):
+- [Others](./REFERENCE.md#Others)
+  - [`command!`](./REFERENCE.md#command):
     A replacement of `vim.api.nvim_create_user_command`
-  - [`feedkeys!`](./doc/REFERENCE.md#feedkeys)
-  - [`highlight!`](./doc/REFERENCE.md#highlight)
-  - [`hi!`](./doc/REFERENCE.md#hi)
+  - [`feedkeys!`](./REFERENCE.md#feedkeys)
+  - [`highlight!`](./REFERENCE.md#highlight)
+  - [`hi!`](./REFERENCE.md#hi)
 
 ## Alternatives
 
