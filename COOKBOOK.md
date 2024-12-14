@@ -171,6 +171,18 @@ go^                                                               *laurel-go^*
 
 Replace "set", as you need, with "setlocal", "setglobal", etc.
 
+#### `bo!`/`wo!`: _The dedicated macros to set buffer/window local Vim options_
+
+<!-- panvimdoc-ignore-end -->
+<!-- panvimdoc-include-comment
+bo!                                                               *laurel-bo!*
+wo!                                                               *laurel-wo!*
+-->
+
+<!-- panvimdoc-ignore-start -->
+
+TODO
+
 ### Back to the good and old Vim script era
 
 <!-- panvimdoc-ignore-start -->
