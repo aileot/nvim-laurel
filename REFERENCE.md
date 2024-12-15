@@ -148,8 +148,7 @@ macros to extend their functionalities.
 
 #### `&vim`
 
-_(Since v0.5.3)_
-
+_(Since v0.5.3)_\
 A reserved symbol to set Vim script callback in symbol or list.  
 Basically, symbol and list are interpreted as Lua callback function in the
 lists of nvim-laurel macros.
@@ -164,8 +163,7 @@ List of macros in which `&vim` makes sense:
 
 #### `&default-opts`
 
-_(Since v0.6.1)_
-
+_(Since v0.6.1)_\
 A reserved symbol to set default values of `api-opts` fields.  
 It indicates that the bare `kv-table` next to the symbol `&default-opts`
 contains default values for `api-opts`, but it also interprets the additional
