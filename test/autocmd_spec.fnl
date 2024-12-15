@@ -31,7 +31,7 @@
     (values v true)))
 
 (local get-autocmds vim.api.nvim_get_autocmds)
-(local del-autocmd vim.api.nvim_del_autocmd)
+(local del-autocmd! vim.api.nvim_del_autocmd)
 (local exec-autocmds vim.api.nvim_exec_autocmds)
 (local del-augroup-by-id vim.api.nvim_del_augroup_by_id)
 (local del-augroup-by-name vim.api.nvim_del_augroup_by_name)
@@ -79,8 +79,8 @@
                  (let [aus (get-autocmds {})]
                    (assert.is_nil (next aus)))))
   (after-each (fn []
-                (pcall del-autocmd au-id1)
-                (pcall del-autocmd au-id2)))
+                (pcall del-autocmd! au-id1)
+                (pcall del-autocmd! au-id2)))
   (describe* :augroup!
     (it* "returns augroup id without autocmds insides"
       (let [id (augroup! default-augroup)]
