@@ -185,6 +185,21 @@
           (map! :n [:wait] :lhs :rhs {:nowait true})
           (let [{: nowait} (get-mapargs :n :lhs)]
             (assert.is_same 1 nowait)))))
+    (describe* "`:desc` key as the first `extra-opts` value can be omittable"
+      (it* "if `extra-opts` precedes `lhs`."
+        (map! :n :lhs ["foo"] :rhs)
+        (assert.is_same :foo (get-map-desc :n :lhs))
+        (map! :n :lhs ["bar" :nowait] :rhs)
+        (assert.is_same :bar (get-map-desc :n :lhs))
+        (map! :n :lhs ["baz"] :rhs {:nowait true})
+        (assert.is_same :baz (get-map-desc :n :lhs)))
+      (it* "if `lhs` precedes `extra-opts`."
+        (map! :n ["foo"] :lhs :rhs)
+        (assert.is_same :foo (get-map-desc :n :lhs))
+        (map! :n ["bar" :nowait] :lhs :rhs)
+        (assert.is_same :bar (get-map-desc :n :lhs))
+        (map! :n :lhs ["baz"] :rhs {:nowait true})
+        (assert.is_same :baz (get-map-desc :n :lhs))))
     (describe* :<Cmd>pattern
       (it* "symbol will be set to 'command'"
         (map! :n :lhs <default>-command)
