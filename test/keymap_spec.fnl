@@ -53,6 +53,9 @@
 (λ get-callback [mode lhs]
   (?. (get-mapargs mode lhs) :callback))
 
+(λ get-map-desc [mode lhs]
+  (?. (get-mapargs mode lhs) :desc))
+
 (λ buf-get-mapargs [bufnr mode lhs]
   (let [mappings (vim.api.nvim_buf_get_keymap bufnr mode)]
     (accumulate [rhs nil _ m (ipairs mappings) &until rhs]
