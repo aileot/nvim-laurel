@@ -45,6 +45,14 @@
 (local <default>-command :<default>-command)
 (local <default>-str-callback #:<default>-str-callback)
 
+(fn clear-any-autocmds! []
+  ;; Clear all the badly defined autocmds apart from any group.
+  (vim.api.nvim_clear_autocmds {})
+  (let [builtin-autocmds (vim.api.nvim_get_autocmds {})]
+    (each [_ {: group} (ipairs builtin-autocmds)]
+      ;; NOTE: autocmd id could be nil.
+      (vim.api.nvim_clear_autocmds {: group}))))
+
 (λ get-first-autocmd [?opts]
   (. (get-autocmds ?opts) 1))
 
@@ -62,12 +70,7 @@
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe* :autocmd
   (setup* (fn []
-            ;; Clear all the badly defined autocmds apart from any group.
-            (vim.api.nvim_clear_autocmds {})
-            (let [builtin-autocmds (vim.api.nvim_get_autocmds {})]
-              (each [_ {: group} (ipairs builtin-autocmds)]
-                ;; NOTE: autocmd id could be nil.
-                (vim.api.nvim_clear_autocmds {: group})))
+            (clear-any-autocmds!)
             (vim.cmd "function! g:Test() abort\nendfunction")))
   (teardown* (fn []
                (vim.cmd "delfunction g:Test")))
