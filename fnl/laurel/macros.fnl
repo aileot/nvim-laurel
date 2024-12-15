@@ -115,12 +115,12 @@
   (assert-seq xs)
   (. xs 1))
 
-;; (lambda second [xs]
-;;   "Return the second value in `xs`.
-;;   @param xs sequence|list
-;;   @return any"
-;;   (assert-seq xs)
-;;   (. xs 2))
+(λ second [xs]
+  "Return the second value in `xs`.
+@param xs sequence|list
+@return any"
+  (assert-seq xs)
+  (. xs 2))
 
 ;; (fn last [xs]
 ;;   "Return the last value in `xs`.
@@ -515,7 +515,8 @@ instead to set a Vimscript function.
                                  (values "*" nil b ?c))
                              (or (str? a) (hidden-in-compile-time? a))
                              (values nil nil a b)
-                             (. autocmd/extra-opt-keys (first a))
+                             (or (. autocmd/extra-opt-keys (first a))
+                                 (. autocmd/extra-opt-keys (second a)))
                              (values nil a b ?c)
                              (values a nil b ?c))
             _ (error* (: "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
