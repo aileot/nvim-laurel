@@ -515,8 +515,7 @@ instead to set a Vimscript function.
                                  (values "*" nil b ?c))
                              (or (str? a) (hidden-in-compile-time? a))
                              (values nil nil a b)
-                             (contains? (tbl->keys autocmd/extra-opt-keys)
-                                        (first a))
+                             (. autocmd/extra-opt-keys (first a))
                              (values nil a b ?c)
                              (values a nil b ?c))
             _ (error* (: "unexpected args:\n?id: %s\nevents: %s\nrest: %s"
