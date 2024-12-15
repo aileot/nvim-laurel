@@ -48,6 +48,10 @@
 (λ get-first-autocmd [?opts]
   (. (get-autocmds ?opts) 1))
 
+(λ get-first-autocmd-desc [?opts]
+  (-> (get-first-autocmd ?opts) ;
+      (. :desc)))
+
 (var default-augroup-id nil)
 (var another-augroup-name nil)
 
