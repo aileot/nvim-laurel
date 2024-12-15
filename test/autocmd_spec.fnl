@@ -328,6 +328,76 @@
                     {:desc :foo})
           (let [au (get-first-autocmd {:group default-augroup-id})]
             (assert.is_same "*" au.pattern)))))
+    (describe* "`:desc` key as the first `extra-opts` value can be omittable"
+      (it* "but interpreting as a pattern instead if neither pattern nor buffer is set for the autocmd"
+        (let [id (autocmd! default-augroup default-event ["foo"]
+                           default-callback)]
+          (assert.is_not_same :foo
+                              (get-first-autocmd-desc {:group default-augroup-id}))
+          (assert.is_same :foo (-> (get-first-autocmd {:group default-augroup-id})
+                                   (. :pattern)))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event ["bar"]
+                           default-callback {:once true})]
+          (assert.is_not_same :bar
+                              (get-first-autocmd-desc {:group default-augroup-id}))
+          (assert.is_same :bar (-> (get-first-autocmd {:group default-augroup-id})
+                                   (. :pattern)))
+          (del-autocmd! id)))
+      (it* "when any other keys constructs `extra-opts`."
+        (let [id (autocmd! default-augroup default-event ["bar" :nested]
+                           default-callback)]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id)))
+      (it* "if pattern is `*`"
+        (let [id (autocmd! default-augroup default-event * ["foo"]
+                           default-callback)]
+          (assert.is_same :foo
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event * ["bar" :nested]
+                           default-callback)]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event * ["baz"]
+                           default-callback {:once true})]
+          (assert.is_same :baz
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id)))
+      (it* "if pattern is set in strings"
+        (let [id (autocmd! default-augroup default-event [:foobar] ["foo"]
+                           default-callback)]
+          (assert.is_same :foo
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event [:foobar]
+                           ["bar" :nested] default-callback)]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event [:foobar] ["baz"]
+                           default-callback {:once true})]
+          (assert.is_same :baz
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id)))
+      (it* "if pattern is set in `extra-opts`"
+        (let [id (autocmd! default-augroup default-event
+                           ["foo" :pattern :foobar] default-callback)]
+          (assert.is_same :foo
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event ["bar" :nested]
+                           default-callback {:pattern :foobar})]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event ["baz"]
+                           default-callback {:once true :pattern :foobar})]
+          (assert.is_not_same :baz
+                              (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))))
     (describe* "detects 2 args:"
       (it* "with `:buffer` key and string callback"
         (autocmd! default-augroup default-event [:buffer :desc :foo] :callback)
