@@ -326,6 +326,9 @@
           (let [au (get-first-autocmd {:group default-augroup-id})]
             (assert.is_same "*" au.pattern)))))
     (describe* "detects 2 args:"
+      (it* "with `:buffer` key and string callback"
+        (autocmd! default-augroup default-event [:buffer :desc :foo] :callback)
+        (assert.is_same :foo (get-first-autocmd-desc {:buffer 0})))
       (it* "sequence pattern and string callback"
         (autocmd! default-augroup default-event [:pat] :callback))
       (it* "sequence pattern and function callback"
