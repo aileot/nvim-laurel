@@ -105,9 +105,14 @@ following features:
     - Boolean key/value for `api-opts` is set to `true` by key itself; the other
         keys expects the next items as their values respectively.
     - To set `false` to boolean key/value, set it in `api-opts` instead.
-- It is intended as shorthand; for complicated usage, use `api-opts` instead
-    or use them together.
+- It is intended as shorthand; for complicated usage, use `api-opts` instead or
+    use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
+- _(since v0.7.4)_ The `:desc` key can be omitted if the description is written
+    in the first argument of `extra-opts` and does not match against any other keys
+    of `extra-opts`.
+    (Note that |laurel-reference-`autocmd!`| additionally has a minor exception.
+    Please refer to the inline link for details.)
 
 
 RESERVED SYMBOL ~
@@ -118,12 +123,10 @@ macros to extend their functionalities.
 
 &vim                                                   *laurel-reference-&vim*
 
-_(Since v0.5.3)_
-
-A reserved symbol to set Vim script callback in symbol or list. Basically,
-symbol and list are interpreted as Lua callback function in the lists of
-nvim-laurel macros. With `&vim` in the list of nvim-laurel macro, they are
-interpreted as Vim script command.
+_(Since v0.5.3)_ A reserved symbol to set Vim script callback in symbol or
+list. Basically, symbol and list are interpreted as Lua callback function in
+the lists of nvim-laurel macros. With `&vim` in the list of nvim-laurel macro,
+they are interpreted as Vim script command.
 
 List of macros in which `&vim` makes sense:
 
@@ -134,14 +137,12 @@ List of macros in which `&vim` makes sense:
 
 &default-opts                                 *laurel-reference-&default-opts*
 
-_(Since v0.6.1)_
-
-A reserved symbol to set default values of `api-opts` fields. It indicates that
-the bare `kv-table` next to the symbol `&default-opts` contains default values
-for `api-opts`, but it also interprets the additional keys available in
-`extra-opts`. To set boolean option, it requires to set to either `true` or
-`false` in spite of the syntax of `extra-opts` itself. See also its
-Anti-Patterns <./COOKBOOK.md#default-opts>.
+_(Since v0.6.1)_ A reserved symbol to set default values of `api-opts` fields.
+It indicates that the bare `kv-table` next to the symbol `&default-opts`
+contains default values for `api-opts`, but it also interprets the additional
+keys available in `extra-opts`. To set boolean option, it requires to set to
+either `true` or `false` in spite of the syntax of `extra-opts` itself. See
+also its Anti-Patterns <./COOKBOOK.md#default-opts>.
 
 List of macros in which `&default-opts` is available:
 
@@ -229,6 +230,11 @@ available.)
     - `buffer`(number?) Create command in the buffer of the next
         value. Without 0 or no following number, create autocmd to current buffer
         by itself.
+    Note: The `:desc` key can be omitted if the description is written in the first
+    argument of `extra-opts` and does not match against any other keys of
+    `extra-opts`. However, unlike other macros, if `?pattern` is also omitted,
+    `autocmd!` additionally requires at least one other `extra-opts` key to omit
+    `:desc`.
 - `callback`(string|function) Set either callback function or Ex command. A
     callback is interpreted as Lua function by default. To set Ex command, you have
     three options:
@@ -359,6 +365,9 @@ available.)
     - `wait`Disable `nowait` _in extra-opts;_ will NOT disable `nowait`
         _in api-opts_. Useful in wrapper macro which set `nowait` with
         `&default-opts`.
+    Note: The `:desc` key can be omitted if the description is written in the first
+    argument of `extra-opts` and does not match against any other keys of
+    `extra-opts`.
 - `lhs`(string) Left-hand-side of the mapping.
 - `rhs`(string|function) Right-hand-side of the mapping. Set either callback
     function or Key sequence. A callback is interpreted as Lua function by default.
@@ -917,6 +926,9 @@ Create a user command. (`&default-opts` is available.)
     attributes:
     - `buffer`Create command in the buffer of the next value. Without 0 or no
         following number, create autocmd to current buffer by itself.
+    Note: The `:desc` key can be omitted if the description is written in the first
+    argument of `extra-opts` and does not match against any other keys of
+    `extra-opts`.
 - `name`(string) Name of the new user command. It must begin with an uppercase
     letter.
 - `command`(string|function) Replacement command.
@@ -968,11 +980,13 @@ is equivalent to
 
 >lua
     vim.api.nvim_feedkeys(
-      vim.api.nvim_replace_termcodes("foo<CR>", true, true, true)("ni"),
+      vim.api.nvim_replace_termcodes("foo<CR>", true, true, true),
+      "ni",
       false
     )
     vim.api.nvim_feedkeys(
-      vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true)("ni"),
+      vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true),
+      "ni",
       false
     )
 <
