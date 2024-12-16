@@ -989,11 +989,13 @@ call feedkeys('foo<CR>', 'ni')
 
 ```lua
 vim.api.nvim_feedkeys(
-  vim.api.nvim_replace_termcodes("foo<CR>", true, true, true)("ni"),
+  vim.api.nvim_replace_termcodes("foo<CR>", true, true, true),
+  "ni",
   false
 )
 vim.api.nvim_feedkeys(
-  vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true)("ni"),
+  vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true),
+  "ni",
   false
 )
 ```
