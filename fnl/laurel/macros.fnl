@@ -115,12 +115,12 @@
   (assert-seq xs)
   (. xs 1))
 
-;; (lambda second [xs]
-;;   "Return the second value in `xs`.
-;;   @param xs sequence|list
-;;   @return any"
-;;   (assert-seq xs)
-;;   (. xs 2))
+(λ second [xs]
+  "Return the second value in `xs`.
+@param xs sequence|list
+@return any"
+  (assert-seq xs)
+  (. xs 2))
 
 ;; (fn last [xs]
 ;;   "Return the last value in `xs`.
@@ -250,6 +250,16 @@ list, it's ignored.
                  :format (table.concat valid-types "/") val-type))))
   val)
 
+(λ extra-opts/supplement-desc-key! [extra-opts extra-opt-valid-keys]
+  "Insert missing `desc` key in `extra-opts` sequence.
+@param extra-opts sequence
+@param extra-opt-valid-keys string[]
+@return sequence"
+  (if (. extra-opt-valid-keys (first extra-opts)) extra-opts
+      (do
+        (table.insert extra-opts 1 :desc)
+        extra-opts)))
+
 (λ extra-opts/seq->kv-table [xs valid-option-types]
   "Convert `xs` into a kv-table as follows:
 
@@ -263,13 +273,14 @@ list, it's ignored.
   @return kv-table"
   (assert (sequence? xs) (.. "expected sequence, got " (type xs)))
   (let [kv-table {}
-        max (length xs)]
+        new-xs (extra-opts/supplement-desc-key! xs valid-option-types)
+        max (length new-xs)]
     (var i 1)
     (while (<= i max)
-      (let [key (. xs i)
+      (let [key (. new-xs i)
             val (case (. valid-option-types key)
                   :boolean true
-                  valid-types (let [next-val (. xs (inc i))]
+                  valid-types (let [next-val (. new-xs (inc i))]
                                 (if (or (. valid-option-types next-val)
                                         (<= max i))
                                     (case valid-types
@@ -504,8 +515,8 @@ instead to set a Vimscript function.
                                  (values "*" nil b ?c))
                              (or (str? a) (hidden-in-compile-time? a))
                              (values nil nil a b)
-                             (contains? (tbl->keys autocmd/extra-opt-keys)
-                                        (first a))
+                             (or (. autocmd/extra-opt-keys (first a))
+                                 (. autocmd/extra-opt-keys (second a)))
                              (values nil a b ?c)
                              (values a nil b ?c))
             _ (error* (: "unexpected args:\n?id: %s\nevents: %s\nrest: %s"

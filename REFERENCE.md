@@ -140,6 +140,13 @@ the following features:
 - It is intended as shorthand; for complicated usage, use `api-opts` instead
   or use them together.
 - It could accept some additional keys which are unavailable in `api-opts`.
+- _(since v0.7.4)_
+  The `:desc` key can be omitted if the description is written in the first
+  argument of `extra-opts` and does not match against any other keys of
+  `extra-opts`.
+
+  (Note that [`autocmd!`](#autocmd-1) additionally has a minor exception.
+  Please refer to the inline link for details.)
 
 ### Reserved Symbol
 
@@ -148,8 +155,7 @@ macros to extend their functionalities.
 
 #### `&vim`
 
-_(Since v0.5.3)_
-
+_(Since v0.5.3)_\
 A reserved symbol to set Vim script callback in symbol or list.  
 Basically, symbol and list are interpreted as Lua callback function in the
 lists of nvim-laurel macros.
@@ -164,8 +170,7 @@ List of macros in which `&vim` makes sense:
 
 #### `&default-opts`
 
-_(Since v0.6.1)_
-
+_(Since v0.6.1)_\
 A reserved symbol to set default values of `api-opts` fields.  
 It indicates that the bare `kv-table` next to the symbol `&default-opts`
 contains default values for `api-opts`, but it also interprets the additional
@@ -261,6 +266,13 @@ Create or get an augroup, or override an existing augroup.
   - `buffer`: (number?) Create command in the buffer of the next
     value. Without 0 or no following number, create autocmd to current buffer
     by itself.
+
+  Note: The `:desc` key can be omitted if the description is written in the
+  first argument of `extra-opts` and does not match against any other keys of
+  `extra-opts`.
+  However, unlike other macros, if `?pattern` is also omitted, `autocmd!`
+  additionally requires at least one other `extra-opts` key to omit `:desc`.
+
 - `callback`: (string|function) Set either callback function or Ex command. A
   callback is interpreted as Lua function by default. To set Ex command, you
   have three options:
@@ -393,6 +405,10 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   - `wait`: Disable `nowait` _in extra-opts;_ will NOT disable `nowait`
     _in api-opts_. Useful in wrapper macro which set `nowait` with
     `&default-opts`.
+
+  Note: The `:desc` key can be omitted if the description is written in the
+  first argument of `extra-opts` and does not match against any other keys of
+  `extra-opts`.
 
 - `lhs`: (string) Left-hand-side of the mapping.
 - `rhs`: (string|function) Right-hand-side of the mapping. Set either callback
@@ -941,6 +957,10 @@ Create a user command.
   - `buffer`: Create command in the buffer of the next value. Without 0 or no
     following number, create autocmd to current buffer by itself.
 
+  Note: The `:desc` key can be omitted if the description is written in the
+  first argument of `extra-opts` and does not match against any other keys of
+  `extra-opts`.
+
 - `name`: (string) Name of the new user command. It must begin with an
   uppercase letter.
 - `command`: (string|function) Replacement command.
@@ -991,11 +1011,13 @@ call feedkeys('foo<CR>', 'ni')
 
 ```lua
 vim.api.nvim_feedkeys(
-  vim.api.nvim_replace_termcodes("foo<CR>", true, true, true)("ni"),
+  vim.api.nvim_replace_termcodes("foo<CR>", true, true, true),
+  "ni",
   false
 )
 vim.api.nvim_feedkeys(
-  vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true)("ni"),
+  vim.api.nvim_replace_termcodes("foo<lt>CR>", true, true, true),
+  "ni",
   false
 )
 ```

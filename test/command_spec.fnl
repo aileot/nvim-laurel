@@ -84,7 +84,23 @@ Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
       (let [default-count 0]
         (assert.is_same (tostring default-count)
                         (-> (get-command :Foo)
-                            (. :count))))))
+                            (. :count)))))
+    (describe* "`:desc` key as the first `extra-opts` value can be omittable"
+      (it* "if `extra-opts` precedes `lhs`."
+        (command! :Foo ["foo"] default-callback)
+        (assert.is_same :foo (get-command-definition :Foo))
+        ;; NOTE: "bar" is reserved by vim.api.nvim_create_user_command.
+        (command! :Foo ["baz" :preview #nil] default-callback)
+        (assert.is_same :baz (get-command-definition :Foo))
+        (command! :Foo ["qux"] default-callback {:bang true})
+        (assert.is_same :qux (get-command-definition :Foo)))
+      (it* "if `lhs` precedes `extra-opts`."
+        (command! ["foo"] :Foo default-callback)
+        (assert.is_same :foo (get-command-definition :Foo))
+        (command! ["baz" :preview #nil] :Foo default-callback)
+        (assert.is_same :baz (get-command-definition :Foo))
+        (command! :Foo ["qux"] default-callback {:bang true})
+        (assert.is_same :qux (get-command-definition :Foo)))))
   (describe* :api-opts
     (it* "gives priority api-opts over extra-opts"
       (command! :Foo [:bar :bang] :FooBar)

@@ -31,7 +31,7 @@
     (values v true)))
 
 (local get-autocmds vim.api.nvim_get_autocmds)
-(local del-autocmd vim.api.nvim_del_autocmd)
+(local del-autocmd! vim.api.nvim_del_autocmd)
 (local exec-autocmds vim.api.nvim_exec_autocmds)
 (local del-augroup-by-id vim.api.nvim_del_augroup_by_id)
 (local del-augroup-by-name vim.api.nvim_del_augroup_by_name)
@@ -45,8 +45,20 @@
 (local <default>-command :<default>-command)
 (local <default>-str-callback #:<default>-str-callback)
 
+(fn clear-any-autocmds! []
+  ;; Clear all the badly defined autocmds apart from any group.
+  (vim.api.nvim_clear_autocmds {})
+  (let [builtin-autocmds (vim.api.nvim_get_autocmds {})]
+    (each [_ {: group} (ipairs builtin-autocmds)]
+      ;; NOTE: autocmd id could be nil.
+      (vim.api.nvim_clear_autocmds {: group}))))
+
 (λ get-first-autocmd [?opts]
   (. (get-autocmds ?opts) 1))
+
+(λ get-first-autocmd-desc [?opts]
+  (-> (get-first-autocmd ?opts) ;
+      (. :desc)))
 
 (var default-augroup-id nil)
 (var another-augroup-name nil)
@@ -58,12 +70,7 @@
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe* :autocmd
   (setup* (fn []
-            ;; Clear all the badly defined autocmds apart from any group.
-            (vim.api.nvim_clear_autocmds {})
-            (let [builtin-autocmds (vim.api.nvim_get_autocmds {})]
-              (each [_ {: group} (ipairs builtin-autocmds)]
-                ;; NOTE: autocmd id could be nil.
-                (vim.api.nvim_clear_autocmds {: group})))
+            (clear-any-autocmds!)
             (vim.cmd "function! g:Test() abort\nendfunction")))
   (teardown* (fn []
                (vim.cmd "delfunction g:Test")))
@@ -75,8 +82,8 @@
                  (let [aus (get-autocmds {})]
                    (assert.is_nil (next aus)))))
   (after-each (fn []
-                (pcall del-autocmd au-id1)
-                (pcall del-autocmd au-id2)))
+                (pcall del-autocmd! au-id1)
+                (pcall del-autocmd! au-id2)))
   (describe* :augroup!
     (it* "returns augroup id without autocmds insides"
       (let [id (augroup! default-augroup)]
@@ -321,7 +328,80 @@
                     {:desc :foo})
           (let [au (get-first-autocmd {:group default-augroup-id})]
             (assert.is_same "*" au.pattern)))))
+    (describe* "`:desc` key as the first `extra-opts` value can be omittable"
+      (it* "but interpreting as a pattern instead if neither pattern nor buffer is set for the autocmd"
+        (let [id (autocmd! default-augroup default-event ["foo"]
+                           default-callback)]
+          (assert.is_not_same :foo
+                              (get-first-autocmd-desc {:group default-augroup-id}))
+          (assert.is_same :foo (-> (get-first-autocmd {:group default-augroup-id})
+                                   (. :pattern)))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event ["bar"]
+                           default-callback {:once true})]
+          (assert.is_not_same :bar
+                              (get-first-autocmd-desc {:group default-augroup-id}))
+          (assert.is_same :bar (-> (get-first-autocmd {:group default-augroup-id})
+                                   (. :pattern)))
+          (del-autocmd! id)))
+      (it* "when any other keys constructs `extra-opts`."
+        (let [id (autocmd! default-augroup default-event ["bar" :nested]
+                           default-callback)]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id)))
+      (it* "if pattern is `*`"
+        (let [id (autocmd! default-augroup default-event * ["foo"]
+                           default-callback)]
+          (assert.is_same :foo
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event * ["bar" :nested]
+                           default-callback)]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event * ["baz"]
+                           default-callback {:once true})]
+          (assert.is_same :baz
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id)))
+      (it* "if pattern is set in strings"
+        (let [id (autocmd! default-augroup default-event [:foobar] ["foo"]
+                           default-callback)]
+          (assert.is_same :foo
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event [:foobar]
+                           ["bar" :nested] default-callback)]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event [:foobar] ["baz"]
+                           default-callback {:once true})]
+          (assert.is_same :baz
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id)))
+      (it* "if pattern is set in `extra-opts`"
+        (let [id (autocmd! default-augroup default-event
+                           ["foo" :pattern :foobar] default-callback)]
+          (assert.is_same :foo
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event ["bar" :nested]
+                           default-callback {:pattern :foobar})]
+          (assert.is_same :bar
+                          (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))
+        (let [id (autocmd! default-augroup default-event ["baz"]
+                           default-callback {:once true :pattern :foobar})]
+          (assert.is_not_same :baz
+                              (get-first-autocmd-desc {:group default-augroup-id}))
+          (del-autocmd! id))))
     (describe* "detects 2 args:"
+      (it* "with `:buffer` key and string callback"
+        (autocmd! default-augroup default-event [:buffer :desc :foo] :callback)
+        (assert.is_same :foo (get-first-autocmd-desc {:buffer 0})))
       (it* "sequence pattern and string callback"
         (autocmd! default-augroup default-event [:pat] :callback))
       (it* "sequence pattern and function callback"
