@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.4](https://github.com/aileot/nvim-laurel/compare/v0.7.3...v0.7.4) (2024-12-16)
+
+
+### Features
+
+* **extra-opts:** allow description without `:desc` key ([#312](https://github.com/aileot/nvim-laurel/issues/312)) ([75c2f73](https://github.com/aileot/nvim-laurel/commit/75c2f73df2782c15f0c8c6b8f4f0a34699076651))
+* **option:** deprecate `set!` macros in favor of `let!` macro ([#300](https://github.com/aileot/nvim-laurel/issues/300)) ([e4c1b79](https://github.com/aileot/nvim-laurel/commit/e4c1b79bd1415ff6549a7899b3ab0b3e5aaf7873))
+* **option:** deprecate `true` supplement ([#302](https://github.com/aileot/nvim-laurel/issues/302)) ([f4886e1](https://github.com/aileot/nvim-laurel/commit/f4886e16f5f30dfd5b976bb1935d6136ce6b7f90))
+* **option:** deprecate `true` supplement for `let!` without value ([#298](https://github.com/aileot/nvim-laurel/issues/298)) ([956240d](https://github.com/aileot/nvim-laurel/commit/956240d7441759cec2170d56f4f1b6fa18269dfc))
+
 ## [0.7.3](https://github.com/aileot/nvim-laurel/compare/v0.7.2...v0.7.3) (2024-05-26)
 
 
