@@ -23,8 +23,6 @@ TEST_DEPS:=$(TEST_ROOT)/.test-deps
 FNL_SPECS:=$(wildcard $(SPEC_ROOT)/*_spec.fnl)
 LUA_SPECS:=$(FNL_SPECS:%.fnl=%.lua)
 
-FNL_SRC:=$(wildcard fnl/*/*.fnl)
-
 REPO_FNL_DIR := $(REPO_ROOT)/fnl
 REPO_FNL_PATH := $(REPO_FNL_DIR)/?.fnl;$(REPO_FNL_DIR)/?/init.fnl
 REPO_MACRO_DIR := $(REPO_FNL_DIR)
