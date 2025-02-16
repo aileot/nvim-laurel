@@ -25,24 +25,24 @@ _and by good old Vim script_
 > (The version would be released after nvim v1.0.)\
 > If you encounter breaking changes
 > and the deprecation notices that precede them,
-> [COOKBOOK.md](./COOKBOOK.md)
+> [COOKBOOK.md](./docs/cookbook.md)
 > will help you update as painlessly as possible;
-> see [REFERENCE.md](./REFERENCE.md)
-> for usage of [`g:laurel_deprecated`](./REFERENCE.md#glaurel_deprecated),
+> see [REFERENCE.md](./docs/reference.md)
+> for usage of [`g:laurel_deprecated`](./docs/reference.md#glaurel_deprecated),
 > which would also help you update them as
 > long as they are deprecated, but not abolished yet.
 
 ## Documentations
 
-- The [Reference](./REFERENCE.md) lists out the nvim-laurel interfaces.
+- The [Reference](./docs/reference.md) lists out the nvim-laurel interfaces.
   Note that the interfaces are not limited to Fennel macros.
-- The [Cookbook](./COOKBOOK.md) demonstrates practical codes on the
+- The [Cookbook](./docs/cookbook.md) demonstrates practical codes on the
   nvim-laurel interfaces.
-- The [Appendix](./APPENDIX.md) shows extra knowledge not limited to
+- The [Appendix](./docs/appendix.md) shows extra knowledge not limited to
   nvim-laurel, but useful to write nvim config files in Fennel:
   LSP, Treesitter, etc. Happy Coding!
-- The [Changelog](./CHANGELOG.md).
-  _See also the [Cookbook](./COOKBOOK.md)_
+- The [Changelog](./docs/changelog.md).
+  _See also the [Cookbook](./docs/cookbook.md)_
   for tips how to update features and usages deprecated or removed in
   nvim-laurel.
 
@@ -249,53 +249,53 @@ _and by good old Vim script_
 (import-macros {: set! : map! : augroup! : au! ...} :laurel.macros)
 ```
 
-See [REFERENCE.md](./REFERENCE.md) for each macro usage in details.
+See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
 
 ### Macro List
 
-- [Autocmd](./REFERENCE.md#autocmd)
+- [Autocmd](./docs/reference.md#autocmd)
 
-  - [`augroup!`](./REFERENCE.md#augroup):
+  - [`augroup!`](./docs/reference.md#augroup):
     A replacement of `vim.api.nvim_create_augroup`
-  - [`autocmd!`](./REFERENCE.md#autocmd-1):
+  - [`autocmd!`](./docs/reference.md#autocmd-1):
     A replacement of `vim.api.nvim_create_autocmd`
-  - [`au!`](./REFERENCE.md#au):
+  - [`au!`](./docs/reference.md#au):
     An alias of `autocmd!`
 
-- [Keymap](./REFERENCE.md#Keymap)
+- [Keymap](./docs/reference.md#Keymap)
 
-  - [`map!`](./REFERENCE.md#map): A replacement of `vim.keymap.set`
-  - [`unmap!`](./REFERENCE.md#unmap): A replacement of `vim.keymap.del`
-  - [`<Cmd>`](./REFERENCE.md#Cmd)
-  - [`<C-u>`](./REFERENCE.md#C-u)
+  - [`map!`](./docs/reference.md#map): A replacement of `vim.keymap.set`
+  - [`unmap!`](./docs/reference.md#unmap): A replacement of `vim.keymap.del`
+  - [`<Cmd>`](./docs/reference.md#Cmd)
+  - [`<C-u>`](./docs/reference.md#C-u)
 
-- [Option](./REFERENCE.md#Option)
+- [Option](./docs/reference.md#Option)
 
-  - [`let!`](./REFERENCE.md#let):
+  - [`let!`](./docs/reference.md#let):
     A replacement of
     `vim.opt`, `vim.opt_local`, `vim.opt_global`,
     `vim.o`, `vim.bo`, `vim.wo`.\
-    You can wrap this macro into [`set!`, `setlocal!`, ...](./COOKBOOK.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
-    [`set+`, `set-`, ...](./COOKBOOK.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
-    [`bo!`, `wo!`](./COOKBOOK.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
+    You can wrap this macro into [`set!`, `setlocal!`, ...](./docs/cookbook.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
+    [`set+`, `set-`, ...](./docs/cookbook.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
+    [`bo!`, `wo!`](./docs/cookbook.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
     and so on.\
     Follow the links for the details.
 
-- [Variable](./REFERENCE.md#Variable)
+- [Variable](./docs/reference.md#Variable)
 
-  - [`g!`](./REFERENCE.md#g)
-  - [`b!`](./REFERENCE.md#b)
-  - [`w!`](./REFERENCE.md#w)
-  - [`t!`](./REFERENCE.md#t)
-  - [`v!`](./REFERENCE.md#v)
-  - [`env!`](./REFERENCE.md#env)
+  - [`g!`](./docs/reference.md#g)
+  - [`b!`](./docs/reference.md#b)
+  - [`w!`](./docs/reference.md#w)
+  - [`t!`](./docs/reference.md#t)
+  - [`v!`](./docs/reference.md#v)
+  - [`env!`](./docs/reference.md#env)
 
-- [Others](./REFERENCE.md#Others)
-  - [`command!`](./REFERENCE.md#command):
+- [Others](./docs/reference.md#Others)
+  - [`command!`](./docs/reference.md#command):
     A replacement of `vim.api.nvim_create_user_command`
-  - [`feedkeys!`](./REFERENCE.md#feedkeys)
-  - [`highlight!`](./REFERENCE.md#highlight)
-  - [`hi!`](./REFERENCE.md#hi)
+  - [`feedkeys!`](./docs/reference.md#feedkeys)
+  - [`highlight!`](./docs/reference.md#highlight)
+  - [`hi!`](./docs/reference.md#hi)
 
 ## Alternatives
 
