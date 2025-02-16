@@ -21,7 +21,7 @@ jobs:
         uses: kdheepak/panvimdoc@v4.0.0
         with:
           vimdoc: laurel-reference
-          pandoc: REFERENCE.md
+          pandoc: docs/reference.md
           version: "Neovim >= 0.9.5"
           description: "Reference of nvim-laurel"
           demojify: true
@@ -32,7 +32,7 @@ jobs:
         uses: kdheepak/panvimdoc@v4.0.0
         with:
           vimdoc: laurel-cookbook
-          pandoc: COOKBOOK.md
+          pandoc: docs/cookbook.md
           version: "Neovim >= 0.9.5"
           description: "Cookbook of nvim-laurel"
           demojify: true
@@ -43,7 +43,7 @@ jobs:
         uses: kdheepak/panvimdoc@v4.0.0
         with:
           vimdoc: laurel-appendix
-          pandoc: APPENDIX.md
+          pandoc: docs/appendix.md
           version: "Neovim >= 0.9.5"
           description: "Appendix of nvim-laurel"
           demojify: true
