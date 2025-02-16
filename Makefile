@@ -34,6 +34,12 @@ help: ## Show this help
 	@echo Targets:
 	@egrep -h '^\S+: .*## \S+' $(MAKEFILE_LIST) | sed 's/: .*##/:/' | column -t -s ':' | sed 's/^/  /'
 
+.PHONY: init
+init: .envrc ## Setup for project contribution
+
+.envrc: # Generate .envrc
+	@echo "use flake" > .envrc
+
 fnl/nvim-laurel/: ## Create link for backward compatibility
 	@ln -dsvL "$(REPO_ROOT)/fnl/laurel" "$(REPO_ROOT)/fnl/nvim-laurel"
 
