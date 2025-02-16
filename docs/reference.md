@@ -177,7 +177,7 @@ contains default values for `api-opts`, but it also interprets the additional
 keys available in `extra-opts`.
 To set boolean option, it requires to set to either `true` or
 `false` in spite of the syntax of `extra-opts` itself.
-See also its [Anti-Patterns](./COOKBOOK.md#default-opts).
+See also its [Anti-Patterns](./cookbook.md#default-opts).
 
 List of macros in which `&default-opts` is available:
 
