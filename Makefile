@@ -39,7 +39,7 @@ help: ## Show this help
 fnl/nvim-laurel/: ## Create link for backward compatibility
 	@ln -dsvL "$(REPO_ROOT)/fnl/laurel" "$(REPO_ROOT)/fnl/nvim-laurel"
 
-%_spec.lua: %_spec.fnl ## Compile fnl spec file into lua
+%_spec.lua: %_spec.fnl # Compile fnl spec file into lua
 	@$(FENNEL) \
 		$(FNL_FLAGS) \
 		$(FNL_EXTRA_FLAGS) \
