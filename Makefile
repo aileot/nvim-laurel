@@ -53,7 +53,7 @@ fnl/nvim-laurel/: ## Create link for backward compatibility
 
 .PHONY: clean
 clean: ## Clean lua test files compiled from fnl
-	@rm $(LUA_SPECS) || exit 0
+	@rm -f $(LUA_SPECS)
 
 .PHONY: test
 test: $(LUA_SPECS) ## Run test
