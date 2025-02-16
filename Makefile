@@ -11,8 +11,8 @@ VUSTED ?= vusted
 FNL_FLAGS ?= --correlate
 FNL_EXTRA_FLAGS ?=
 
-VUSTED_FLAGS ?= --shuffle --output=utfTerminal
 VUSTED_EXTRA_FLAGS ?=
+VUSTED_FLAGS ?= --shuffle --output=utfTerminal $(VUSTED_EXTRA_FLAGS)
 
 REPO_ROOT:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 TEST_ROOT:=$(REPO_ROOT)/test
@@ -54,5 +54,4 @@ clean: ## Clean lua test files compiled from fnl
 test: $(LUA_SPECS) ## Run test
 	@$(VUSTED) \
 		$(VUSTED_FLAGS) \
-		$(VUSTED_EXTRA_FLAGS) \
 		$(TEST_ROOT)
