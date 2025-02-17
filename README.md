@@ -2,20 +2,29 @@
 
 # nvim-laurel 🌿
 
-[![badge/license](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)][path/to/license]
-[![badge/test](https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=flat-square)][workflow/test]
-[![badge/semver](https://img.shields.io/github/release/aileot/nvim-laurel?display_name=tag&sort=semver&label=Release)][path/to/semver]\
-_A set of macros for Neovim config_\
+[![badge/test][]][url/to/workflow/test]
+[![badge/semver][]][url/to/semver]
+[![badge/license][]][url/to/license]\
+_A set of Fennel macros for Neovim config_\
 _inspired by the builtin Nvim Lua-Vimscript bridge on metatable_
 _and by good old Vim script_
 
 ![image/nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
 
-[![badge/fennel](https://img.shields.io/badge/Powered_by_Fennel-030281?logo=Lua&style=for-the-badge)][url/to/fennel]
+[![badge/fennel][]][url/to/fennel]
 
-[workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
-[path/to/license]: ./LICENSE
-[path/to/semver]: https://github.com/aileot/nvim-laurel/releases/latest
+<!--
+NOTE: The colors come from the palette of catppuccin-mocha:
+https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palettes
+-->
+
+[badge/test]: https://img.shields.io/github/actions/workflow/status/aileot/nvim-laurel/test.yml?branch=main&label=Test&logo=github&style=for-the-badge&logo=neovim&logoColor=CDD6F4&labelColor=1E1E2E&color=a6e3a1
+[badge/semver]: https://img.shields.io/github/v/release/aileot/nvim-laurel?style=for-the-badge&logo=starship&logoColor=CDD6F4&labelColor=1E1E2E&&color=cdd6f4&include_prerelease&sort=semver
+[badge/license]: https://img.shields.io/github/license/aileot/nvim-laurel?style=for-the-badge&logoColor=CDD6F4&labelColor=1E1E2E&color=89dceb
+[badge/fennel]: https://img.shields.io/badge/Powered_by_Fennel-030281?&style=for-the-badge&logo=lua&logoColor=cdd6f4&label=Lua&labelColor=1E1E2E&color=cba6f7
+[url/to/workflow/test]: https://github.com/aileot/nvim-laurel/actions/workflows/test.yml
+[url/to/license]: ./LICENSE
+[url/to/semver]: https://github.com/aileot/nvim-laurel/releases/latest
 [url/to/fennel]: https://fennel-lang.org/
 
 </div>
@@ -198,7 +207,7 @@ _and by good old Vim script_
                  ;; v0.7.1 <= {version} < v0.8.0
                  ;; Note: v0.7.0 has a backward compatibility issue.
                  :version "~v0.7.0"}
-                 ;; and other plugins
+                ;; and other plugins
                 ]
                {:defaults {:lazy true
                            ;; Note: Not to remove nvim-laurel from &rtp, and
