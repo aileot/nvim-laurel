@@ -41,7 +41,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 > which would also help you update them as
 > long as they are deprecated, but not abolished yet.
 
-## Documentations
+## 📚 Documentations
 
 - The [Reference](./docs/reference.md) lists out the nvim-laurel interfaces.
   Note that the interfaces are not limited to Fennel macros.
@@ -55,7 +55,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
   for tips how to update features and usages deprecated or removed in
   nvim-laurel.
 
-## Design
+## 🎨 Design
 
 - **Fast:** Each macro is expanded to a few nvim API functions in principle.
 - **Less:** The syntax is as little, but flexible and extensible as possible.
@@ -64,12 +64,12 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
   likely to be `format`ted into the same line where nvim-laurel macro starts
   from.
 
-## Requirements
+## ✔️ Requirements
 
 - Neovim 0.9.5+
 - A compiler: [Fennel][Fennel], [hotpot.nvim][hotpot.nvim], etc.
 
-## Installation
+## 📦 Installation
 
 ### With a compiler plugin (recommended)
 
@@ -252,7 +252,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    vim.opt.rtp:append("/path/to/nvim-laurel")
    ```
 
-## Usage
+## 🚀 Usage
 
 ```fennel
 (import-macros {: set! : map! : augroup! : au! ...} :laurel.macros)
@@ -260,7 +260,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 
 See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
 
-### Macro List
+### 🔥 Macro List
 
 - [Autocmd](./docs/reference.md#autocmd)
 
@@ -306,7 +306,7 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
   - [`highlight!`](./docs/reference.md#highlight)
   - [`hi!`](./docs/reference.md#hi)
 
-## Alternatives
+## 🔄 Alternatives
 
 - [aniseed](https://github.com/Olical/aniseed)
 - [hibiscus.nvim](https://github.com/udayvir-singh/hibiscus.nvim)
