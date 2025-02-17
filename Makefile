@@ -16,17 +16,13 @@ VUSTED_FLAGS ?= --shuffle --output=utfTerminal $(VUSTED_EXTRA_FLAGS)
 
 REPO_ROOT:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 TEST_ROOT:=$(REPO_ROOT)/test
-SPEC_ROOT:=$(TEST_ROOT)
 
-TEST_DEPS:=$(TEST_ROOT)/.test-deps
+FNL_SRC:=$(wildcard $(REPO_ROOT)/fnl/*/*.fnl)
 
-FNL_SPECS:=$(wildcard $(SPEC_ROOT)/*_spec.fnl)
+FNL_SPECS:=$(wildcard $(TEST_ROOT)/*_spec.fnl)
 LUA_SPECS:=$(FNL_SPECS:%.fnl=%.lua)
 
-REPO_FNL_DIR := $(REPO_ROOT)/fnl
-REPO_FNL_PATH := $(REPO_FNL_DIR)/?.fnl;$(REPO_FNL_DIR)/?/init.fnl
-REPO_MACRO_DIR := $(REPO_FNL_DIR)
-REPO_MACRO_PATH := $(REPO_MACRO_DIR)/?.fnl;$(REPO_MACRO_DIR)/?/init.fnl
+REPO_MACRO_PATH := fnl/?.fnl;fnl/?/init.fnl
 
 .DEFAULT_GOAL := help
 .PHONY: help
@@ -43,11 +39,11 @@ init: .envrc ## Setup for project contribution
 fnl/nvim-laurel/: ## Create link for backward compatibility
 	@ln -dsvL "$(REPO_ROOT)/fnl/laurel" "$(REPO_ROOT)/fnl/nvim-laurel"
 
-%_spec.lua: %_spec.fnl # Compile fnl spec file into lua
+%_spec.lua: %_spec.fnl $(FNL_SRC) # Compile fnl spec file into lua
 	@$(FENNEL) \
 		$(FNL_FLAGS) \
 		$(FNL_EXTRA_FLAGS) \
-		--add-macro-path "$(REPO_MACRO_PATH);$(SPEC_ROOT)/?.fnl" \
+		--add-macro-path "$(REPO_MACRO_PATH);$(TEST_ROOT)/?.fnl" \
 		--compile $< > $@
 
 .PHONY: clean
