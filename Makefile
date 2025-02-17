@@ -23,9 +23,7 @@ TEST_DEPS:=$(TEST_ROOT)/.test-deps
 FNL_SPECS:=$(wildcard $(SPEC_ROOT)/*_spec.fnl)
 LUA_SPECS:=$(FNL_SPECS:%.fnl=%.lua)
 
-REPO_FNL_DIR := $(REPO_ROOT)/fnl
-REPO_MACRO_DIR := $(REPO_FNL_DIR)
-REPO_MACRO_PATH := $(REPO_MACRO_DIR)/?.fnl;$(REPO_MACRO_DIR)/?/init.fnl
+REPO_MACRO_PATH := fnl/?.fnl;fnl/?/init.fnl
 
 .DEFAULT_GOAL := help
 .PHONY: help
