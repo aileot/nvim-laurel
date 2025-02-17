@@ -22,6 +22,8 @@ FNL_SRC:=$(wildcard $(REPO_ROOT)/fnl/*/*.fnl)
 FNL_SPECS:=$(wildcard $(TEST_ROOT)/*_spec.fnl)
 LUA_SPECS:=$(FNL_SPECS:%.fnl=%.lua)
 
+TEST_DEPS:=$(wildcard $(TEST_ROOT)/*/*)
+
 REPO_MACRO_PATH := fnl/?.fnl;fnl/?/init.fnl
 
 .DEFAULT_GOAL := help
@@ -39,7 +41,7 @@ init: .envrc ## Setup for project contribution
 fnl/nvim-laurel/: ## Create link for backward compatibility
 	@ln -dsvL "$(REPO_ROOT)/fnl/laurel" "$(REPO_ROOT)/fnl/nvim-laurel"
 
-%_spec.lua: %_spec.fnl $(FNL_SRC) # Compile fnl spec file into lua
+%_spec.lua: %_spec.fnl $(FNL_SRC) $(TEST_DEPS) # Compile fnl spec file into lua
 	@$(FENNEL) \
 		$(FNL_FLAGS) \
 		$(FNL_EXTRA_FLAGS) \
