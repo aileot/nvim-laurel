@@ -273,8 +273,10 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
 
 - [Keymap](./docs/reference.md#Keymap)
 
-  - [`map!`](./docs/reference.md#map): A replacement of `vim.keymap.set`
-  - [`unmap!`](./docs/reference.md#unmap): A replacement of `vim.keymap.del`
+  - [`map!`](./docs/reference.md#map): A replacement of `vim.keymap.set`,
+    but compiles into `vim.api.nvim_set_keymap`.
+  - [`unmap!`](./docs/reference.md#unmap): A replacement of `vim.keymap.del`,
+    but compiles into `vim.api.nvim_del_keymap`.
   - [`<Cmd>`](./docs/reference.md#Cmd)
   - [`<C-u>`](./docs/reference.md#C-u)
 
@@ -283,7 +285,8 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
   - [`let!`](./docs/reference.md#let):
     A replacement of
     `vim.opt`, `vim.opt_local`, `vim.opt_global`,
-    `vim.o`, `vim.bo`, `vim.wo`.\
+    `vim.o`, `vim.bo`, `vim.wo`,
+    but compiles into `vim.api.nvim_set_option_value`.\
     You can wrap this macro into [`set!`, `setlocal!`, ...](./docs/cookbook.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
     [`set+`, `set-`, ...](./docs/cookbook.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
     [`bo!`, `wo!`](./docs/cookbook.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
