@@ -1,4 +1,4 @@
-(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 (import-macros {: highlight!} :laurel.macros)
 (import-macros {: bold-highlight!} :test.helper.wrapper-macros)
 
@@ -164,7 +164,7 @@
     ;; not exist.
     (when vim.api.nvim_get_hl
       (describe* "with predefined-namespace-id"
-        (before-each (fn []
+        (before_each (fn []
                        (vim.api.nvim_set_hl predefined-namespace-id
                                             test-hl-name {})
                        (assert.is_same (vim.empty_dict)

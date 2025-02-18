@@ -1,7 +1,5 @@
 (import-macros {: setup*
                 : teardown*
-                : before-each
-                : after-each
                 : describe*
                 : it*} :test.helper.busted-macros)
 
@@ -74,14 +72,14 @@
             (vim.cmd "function! g:Test() abort\nendfunction")))
   (teardown* (fn []
                (vim.cmd "delfunction g:Test")))
-  (before-each (fn []
+  (before_each (fn []
                  (when another-augroup-name
                    (del-augroup-by-name another-augroup-name)
                    (set another-augroup-name nil))
                  (set default-augroup-id (augroup! default-augroup))
                  (let [aus (get-autocmds {})]
                    (assert.is_nil (next aus)))))
-  (after-each (fn []
+  (after_each (fn []
                 (pcall del-autocmd! au-id1)
                 (pcall del-autocmd! au-id2)))
   (describe* :augroup!

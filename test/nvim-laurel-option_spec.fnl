@@ -1,4 +1,4 @@
-(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 (import-macros {: set+ : set- : set^} :test.helper.wrapper-macros)
 (import-macros {: let! : set! : setglobal! : setlocal! : bo! : wo!}
                :laurel.macros)
@@ -66,7 +66,7 @@
 (local win-local-scope-list [:o :wo :opt :opt_local])
 
 (describe* :options
-  (before-each (do
+  (before_each (fn []
                  (reset-context)))
   (describe* :let!
     (describe* "for Vim script `variable` (g, b, w, t, env)"

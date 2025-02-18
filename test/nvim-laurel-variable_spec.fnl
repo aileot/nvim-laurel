@@ -1,8 +1,8 @@
-(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 (import-macros {: b! : env!} :laurel.macros)
 
 (describe* :b!
-  (before-each (fn []
+  (before_each (fn []
                  (set vim.b.foo nil)
                  (set vim.b.bar nil)
                  (set vim.env.FOO nil)
