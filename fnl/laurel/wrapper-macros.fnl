@@ -71,6 +71,7 @@
  : set!
  : setlocal!
  : setglobal!
+ :go! setglobal!
  : bo!
  : wo!
  : set+
