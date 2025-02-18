@@ -1,4 +1,4 @@
-(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 (import-macros {: command!} :laurel.macros)
 (import-macros {: buf-command!/as-api-alias} :test.helper.wrapper-macros)
 
@@ -28,7 +28,7 @@ Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
       (. name)))
 
 (describe* :command!
-  (before-each (fn []
+  (before_each (fn []
                  (pcall vim.api.nvim_del_user_command :Foo)
                  (pcall vim.api.nvim_buf_del_user_command 0 :Foo)
                  (assert.is_nil (get-command :Foo))))

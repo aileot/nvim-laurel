@@ -1,4 +1,4 @@
-(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 
 (import-macros {: set!
                 : setlocal!
@@ -77,7 +77,7 @@
 (local win-local-scope-list [:o :wo :opt :opt_local])
 
 (describe* "`let!` macro for Vim script `option` scope (o, go, bo, wo, opt, opt_global, opt_local)"
-  (before-each (do
+  (before_each (do
                  (reset-context!)))
   (describe* "with scope in symbol"
     (it* "cannot set any options when option name is not in lowercase"
@@ -559,7 +559,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`setlocal!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "is case-insensitive at option name"
       (vim.cmd "set foldlevel=2")
@@ -669,7 +669,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`setlocal!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (vim.cmd "setlocal nowrap")
@@ -790,7 +790,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`setglobal!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (vim.cmd "setglobal nowrap")
@@ -910,7 +910,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`bo!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (tset vim.bo :expandtab false)
@@ -1009,7 +1009,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`wo!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (tset vim.wo :wrap false)
@@ -1108,7 +1108,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`set+`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "appends option value of sequence"
       (let [name :path
@@ -1129,7 +1129,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`set^`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "prepends option value of sequence"
       (let [name :path
@@ -1150,7 +1150,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`set-`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "removes option value of sequence"
       (let [name :path
@@ -1171,7 +1171,7 @@
 
 (describe* "(deprecated in favor of `let!` wrapper)"
   (describe* "`set!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "is case-insensitive at option name"
       (vim.cmd "set foldlevel=2")
@@ -1281,7 +1281,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`setlocal!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (vim.cmd "setlocal nowrap")
@@ -1402,7 +1402,7 @@
 
 (describe* "(deprecated in favor of `let!` wrapper)"
   (describe* "`setglobal!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (vim.cmd "setglobal nowrap")
@@ -1522,7 +1522,7 @@
 
 (describe* "(deprecated in favor of `let!` wrapper)"
   (describe* "`bo!` macro"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (tset vim.bo :expandtab false)
@@ -1621,7 +1621,7 @@
 
 (describe* "(wrapper of `let!` macro)"
   (describe* "`wo!`"
-    (before-each (do
+    (before_each (do
                    (reset-context!)))
     (it* "can update option value with boolean"
       (tset vim.wo :wrap false)

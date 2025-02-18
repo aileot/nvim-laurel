@@ -1,4 +1,4 @@
-(import-macros {: before-each : describe* : it*} :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 (import-macros {: let! : b! : env!} :laurel.macros)
 
 (fn reset-context! []
@@ -103,7 +103,7 @@
         (assert.is_nil (. vim scope :foo))))))
 
 (describe* :b!
-  (before-each (fn []
+  (before_each (fn []
                  (set vim.b.foo nil)
                  (set vim.b.bar nil)
                  (set vim.env.FOO nil)
