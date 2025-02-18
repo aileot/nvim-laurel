@@ -66,7 +66,7 @@
 (local win-local-scope-list [:o :wo :opt :opt_local])
 
 (describe* :options
-  (before_each (do
+  (before_each (fn []
                  (reset-context)))
   (describe* :let!
     (describe* "for Vim script `variable` (g, b, w, t, env)"
