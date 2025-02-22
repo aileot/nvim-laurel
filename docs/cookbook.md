@@ -411,6 +411,41 @@ It could be an unexpected behavior that `autocmd` whose callback ends with
                          nil))
 ```
 
+#### `vim.cmd` in the end of callback
+
+As the same as
+the [anti-pattern for `pcall`](#pcall-in-the-end-of-callback)
+above,
+autocmd whose callback ends with `(vim.cmd :Foobar)`
+destroys the autocmd itself.
+This is because `vim.cmd` returns a string for the consistency of
+`nvim_cmd()` and `nvim_exec2()` since `vim.cmd` is a wrapper of them.
+
+##### Anti-Pattern
+
+```fennel
+;; bad
+(autocmd! group events #(vim.cmd :Foobar))
+(autocmd! group events (fn []
+                         (vim.cmd Foobar)))
+```
+
+##### Pattern
+
+```fennel
+;; good
+(macro vim/cmd [...]
+  "A warpper of `vim.cmd` to make sure to return `nil`."
+  `(do
+     (vim.cmd ,...)
+     nil))
+
+(autocmd! group events #(vim/cmd foobar)))
+;; Wrapping `vim.cmd` in `vim.schedule` also makes sense.
+(autocmd! group events (-> #(vim.cmd foobar)
+                           (vim.schedule))
+```
+
 #### Nested hash functions in callback
 
 `$` in the outermost hash function represents the single table argument from
