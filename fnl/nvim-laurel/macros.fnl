@@ -921,6 +921,11 @@
       (match (option/->?vim-value ?val)
         vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
         _ `(tset ,interface ,name ,?val))
+      "?"
+      (if (= interface `vim.bo) `(vim.api.nvim_buf_get_option ,name)
+          (= interface `vim.wo) `(vim.api.nvim_win_get_option ,name)
+          (= interface `vim.go) `(vim.api.nvim_get_option ,name)
+          `(: ,opt-obj :get))
       "+"
       `(: ,opt-obj :append ,?val)
       "^"
@@ -944,7 +949,7 @@
 
 (fn option/set-with-scope [scope ...]
   (assert-compile (table? scope) "Expected kv-table" scope)
-  (let [supported-flags [`+ `- `^ `! `& `<]]
+  (let [supported-flags [`+ `- `^ `? `! `& `<]]
     (case (case ...
             (name nil)
             (values name nil true)
@@ -1075,42 +1080,50 @@
           `(tset vim ,scope ,... true)
           `(tset vim ,scope ,...))
       (case (case scope
-              :g (values 2 `vim.api.nvim_set_var)
-              :b (values 3 `vim.api.nvim_buf_set_var)
-              :w (values 3 `vim.api.nvim_win_set_var)
-              :t (values 3 `vim.api.nvim_tabpage_set_var)
-              :v (values 2 `vim.api.nvim_set_vvar)
-              :env (values 2 `vim.fn.setenv))
-        (max-args setter) (let [(?id name val) (case (select "#" ...)
-                                                 3 ...
-                                                 2 (case max-args
-                                                     2 (values nil ...)
-                                                     3 (values 0 ...))
-                                                 1 (case max-args
-                                                     2 (values nil ... true)
-                                                     3 (values 0 ... true)))]
-                            (case max-args
-                              2 `(,setter ,name ,val)
-                              3 `(,setter ,?id ,name ,val)))
-        _ (case (values scope ...)
-            ;; Note: In the `case` body above, the scope for vim.opt,
-            ;; vim.opt_local, and vim.opt_global max-args would be 2 or
-            ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
-            ;;   order to set option scope later, temporarily set `nil` here.
-            (where (or :o :opt))
-            (option/set-with-scope {} ...)
-            :opt_local
-            (option/set-with-scope {:scope :local} ...)
-            (where (or :go :opt_global))
-            (option/set-with-scope {:scope :global} ...)
-            (:bo name val nil)
-            (option/modify {:buf 0} name val)
-            (:wo name val nil)
-            (option/modify {:win 0} name val)
-            (:bo id name val)
-            (option/modify {:buf id} name val)
-            (:wo id name val)
-            (option/modify {:win id} name val)))))
+              :g (values 2 `vim.api.nvim_set_var `vim.api.nvim_set_var)
+              :b (values 3 `vim.api.nvim_buf_set_var `vim.api.nvim_buf_set_var)
+              :w (values 3 `vim.api.nvim_win_set_var `vim.api.nvim_win_set_var)
+              :t (values 3 `vim.api.nvim_tabpage_set_var
+                         `vim.api.nvim_tabpage_set_var)
+              :v (values 2 `vim.api.nvim_set_vvar `vim.api.nvim_set_vvar)
+              :env (values 2 `vim.fn.setenv `vim.fn.getenv))
+        (max-args setter getter)
+        ;; Vim Variables
+        (let [(?id name val) (case (select "#" ...)
+                               3 ...
+                               2 (case max-args
+                                   2 (values nil ...)
+                                   3 (values 0 ...))
+                               1 (case max-args
+                                   2 (values nil ... true)
+                                   3 (values 0 ... true)))
+              {:? get?} (extract-symbols [...] [`?])]
+          (if get?
+              `(,getter ,name)
+              (case max-args
+                2 `(,setter ,name ,val)
+                3 `(,setter ,?id ,name ,val))))
+        _
+        ;; Vim Options
+        (case (values scope ...)
+          ;; Note: In the `case` body above, the scope for vim.opt,
+          ;; vim.opt_local, and vim.opt_global max-args would be 2 or
+          ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
+          ;;   order to set option scope later, temporarily set `nil` here.
+          (where (or :o :opt))
+          (option/set-with-scope {} ...)
+          :opt_local
+          (option/set-with-scope {:scope :local} ...)
+          (where (or :go :opt_global))
+          (option/set-with-scope {:scope :global} ...)
+          (:bo name val nil)
+          (option/modify {:buf 0} name val)
+          (:wo name val nil)
+          (option/modify {:win 0} name val)
+          (:bo id name val)
+          (option/modify {:buf id} name val)
+          (:wo id name val)
+          (option/modify {:win id} name val)))))
 
 ;; Command ///1
 

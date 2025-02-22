@@ -600,8 +600,8 @@ set `false` or `(not vim.go.foo)` respectively.
   camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
   `(setlocal! :keywordPrg ":help")` for fennel still makes sense. Type `K`
   on an option name to open the vim helpfile at the tag.
-- `?flag`: (symbol) Omittable flag. Set one of `+`, `^`, or `-` to append,
-  prepend, or remove, value to the option.
+- `?flag`: (`+`|`^`|`-`|`?`) Omittable flag. Set one of `+`, `^`, `-`, or `?`
+  to append, prepend, remove, or get, option value.
   Only available in the scopes "opt", "opt_local", or "opt_global".
 - `?val`: (boolean|number|string|table) New option value. If not provided, the
   value is supposed to be `true` (experimental). It does not work with `?id`
