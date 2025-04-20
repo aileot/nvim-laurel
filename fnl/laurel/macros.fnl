@@ -1081,7 +1081,7 @@ For example,
           (max-args setter getter)
           ;; Vim Variables
           (let [(?id name val) (case (length args)
-                                 3 args
+                                 3 (values (unpack args))
                                  2 (case max-args
                                      2 (values nil (unpack args))
                                      3 (values 0 (unpack args)))
