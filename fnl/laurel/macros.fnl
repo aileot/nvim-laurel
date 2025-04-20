@@ -1093,12 +1093,15 @@ For example,
                                      3 (values 0 (unpack args)
                                                (deprecate "(Partial) The format `let!` without value"
                                                           "Set `true` to set it to `true` explicitly"
-                                                          :v0.8.0 true))))]
+                                                          :v0.8.0 true))))
+                name* (if (and (= scope :env) (str? name))
+                          (name:gsub "^%$" "")
+                          name)]
             (if (= "?" ?flag)
-                `(,getter ,name)
+                `(,getter ,name*)
                 (case max-args
-                  2 `(,setter ,name ,val)
-                  3 `(,setter ,?id ,name ,val))))
+                  2 `(,setter ,name* ,val)
+                  3 `(,setter ,?id ,name* ,val))))
           _
           ;; Vim Options
           (let [[name ?val] args
