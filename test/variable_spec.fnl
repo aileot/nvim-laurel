@@ -123,10 +123,10 @@
                    (set vim.env.FOO nil)
                    (set vim.env.BAR nil)))
     (it* "sets environment variable in the editor session"
-      (env! :FOO :foo)
-      (env! :$BAR :bar)
-      (assert.is.same :foo vim.env.FOO)
-      (assert.is.same :bar vim.env.BAR)))
+      (env! :FOO "foo")
+      (env! :$BAR "bar")
+      (assert.is_same "foo" vim.env.FOO)
+      (assert.is_same "bar" vim.env.BAR)))
   (describe* "`b!`"
     (before_each (fn []
                    (set vim.b.foo nil)
@@ -139,8 +139,8 @@
         (b! buf :bar :bar1)
         (assert.is_nil (. vim.b buf :foo))
         (assert.is_nil vim.b.bar)
-        (assert.is.same :foo1 vim.b.foo)
-        (assert.is.same :bar1 (. vim.b buf :bar))))))
+        (assert.is_same :foo1 vim.b.foo)
+        (assert.is_same :bar1 (. vim.b buf :bar))))))
 
 (describe* "(deprecated in favor of `let!` wrapper)"
   (describe* "`env!`"
@@ -150,8 +150,8 @@
     (it* "sets environment variable in the editor session"
       (env* :FOO :foo)
       (env* :$BAR :bar)
-      (assert.is.same :foo vim.env.FOO)
-      (assert.is.same :bar vim.env.BAR)))
+      (assert.is_same :foo vim.env.FOO)
+      (assert.is_same :bar vim.env.BAR)))
   (describe* "`b!`"
     (before_each (fn []
                    (set vim.b.foo nil)
@@ -164,5 +164,5 @@
         (b* buf :bar :bar1)
         (assert.is_nil (. vim.b buf :foo))
         (assert.is_nil vim.b.bar)
-        (assert.is.same :foo1 vim.b.foo)
-        (assert.is.same :bar1 (. vim.b buf :bar))))))
+        (assert.is_same :foo1 vim.b.foo)
+        (assert.is_same :bar1 (. vim.b buf :bar))))))
