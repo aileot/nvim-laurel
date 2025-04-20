@@ -61,6 +61,12 @@
         (let! :b :foo)
         (assert.is_true (or (= true (. vim :b :foo))
                             (= "v:true" (. vim :b :foo))))))
+    (it* "also accepts buffer id after scope."
+      (let [buf (vim.api.nvim_get_current_buf)]
+        (vim.cmd.new)
+        (let! :b buf :foo "bar")
+        (assert.is_true (or (= "bar" (. vim :b buf :foo))
+                            (= "bar" (. vim :b buf :foo))))))
     (it* "can set to `nil`."
       (each [_ scope (ipairs scope-list)]
         (let! scope :foo nil)
@@ -74,6 +80,12 @@
         (let! :w :foo)
         (assert.is_true (or (= true (. vim :w :foo))
                             (= "v:true" (. vim :w :foo))))))
+    (it* "also accepts window id after scope."
+      (let [win (vim.api.nvim_get_current_win)]
+        (vim.cmd.new)
+        (let! :w win :foo "bar")
+        (assert.is_true (or (= "bar" (. vim :w win :foo))
+                            (= "bar" (. vim :w win :foo))))))
     (it* "can set to `nil`."
       (each [_ scope (ipairs scope-list)]
         (let! scope :foo nil)
