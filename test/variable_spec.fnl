@@ -1,5 +1,8 @@
 (import-macros {: describe* : it*} :test.helper.busted-macros)
-(import-macros {: let! : b! : env!} :laurel.macros)
+
+(import-macros {: b! : env!} :test.helper.wrapper-macros)
+
+(import-macros {: let! :b! b* :env! env*} :laurel.macros)
 
 (fn reset-context! []
   (vim.cmd.new)
@@ -102,24 +105,52 @@
         (let! scope :foo nil)
         (assert.is_nil (. vim scope :foo))))))
 
-(describe* :b!
-  (before_each (fn []
-                 (set vim.b.foo nil)
-                 (set vim.b.bar nil)
-                 (set vim.env.FOO nil)
-                 (set vim.env.BAR nil)))
-  (it* "sets environment variable in the editor session"
-    (env! :FOO :foo)
-    (env! :$BAR :bar)
-    (assert.is.same :foo vim.env.FOO)
-    (assert.is.same :bar vim.env.BAR))
-  (it* "sets buffer-local variable"
-    (let [buf (vim.api.nvim_get_current_buf)]
-      (vim.cmd.new)
-      (vim.cmd.only)
-      (b! :foo :foo1)
-      (b! buf :bar :bar1)
-      (assert.is_nil (. vim.b buf :foo))
-      (assert.is_nil vim.b.bar)
-      (assert.is.same :foo1 vim.b.foo)
-      (assert.is.same :bar1 (. vim.b buf :bar)))))
+(describe* "(wrapper of `let!` macro)"
+  (describe* "`env!`"
+    (before_each (fn []
+                   (set vim.env.FOO nil)
+                   (set vim.env.BAR nil)))
+    (it* "sets environment variable in the editor session"
+      (env! :FOO :foo)
+      (env! :$BAR :bar)
+      (assert.is.same :foo vim.env.FOO)
+      (assert.is.same :bar vim.env.BAR)))
+  (describe* "`b!`"
+    (before_each (fn []
+                   (set vim.b.foo nil)
+                   (set vim.b.bar nil)))
+    (it* "sets buffer-local variable"
+      (let [buf (vim.api.nvim_get_current_buf)]
+        (vim.cmd.new)
+        (vim.cmd.only)
+        (b! :foo :foo1)
+        (b! buf :bar :bar1)
+        (assert.is_nil (. vim.b buf :foo))
+        (assert.is_nil vim.b.bar)
+        (assert.is.same :foo1 vim.b.foo)
+        (assert.is.same :bar1 (. vim.b buf :bar))))))
+
+(describe* "(deprecated in favor of `let!` wrapper)"
+  (describe* "`env!`"
+    (before_each (fn []
+                   (set vim.env.FOO nil)
+                   (set vim.env.BAR nil)))
+    (it* "sets environment variable in the editor session"
+      (env* :FOO :foo)
+      (env* :$BAR :bar)
+      (assert.is.same :foo vim.env.FOO)
+      (assert.is.same :bar vim.env.BAR)))
+  (describe* "`b!`"
+    (before_each (fn []
+                   (set vim.b.foo nil)
+                   (set vim.b.bar nil)))
+    (it* "sets buffer-local variable"
+      (let [buf (vim.api.nvim_get_current_buf)]
+        (vim.cmd.new)
+        (vim.cmd.only)
+        (b* :foo :foo1)
+        (b* buf :bar :bar1)
+        (assert.is_nil (. vim.b buf :foo))
+        (assert.is_nil vim.b.bar)
+        (assert.is.same :foo1 vim.b.foo)
+        (assert.is.same :bar1 (. vim.b buf :bar))))))
