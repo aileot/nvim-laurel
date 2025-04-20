@@ -131,15 +131,15 @@
     (before_each (fn []
                    (set vim.b.foo nil)
                    (set vim.b.bar nil)))
-    (it* "sets buffer-local variable"
+    (it* "sets buffer-local variable in the current buffer"
+      (b! :foo :foo1)
+      (assert.is_nil vim.b.bar)
+      (assert.is_same :foo1 vim.b.foo))
+    (it* "sets buffer-local variable with specific buffer id"
       (let [buf (vim.api.nvim_get_current_buf)]
         (vim.cmd.new)
-        (vim.cmd.only)
-        (b! :foo :foo1)
         (b! buf :bar :bar1)
         (assert.is_nil (. vim.b buf :foo))
-        (assert.is_nil vim.b.bar)
-        (assert.is_same :foo1 vim.b.foo)
         (assert.is_same :bar1 (. vim.b buf :bar))))))
 
 (describe* "(deprecated in favor of `let!` wrapper)"
@@ -156,13 +156,13 @@
     (before_each (fn []
                    (set vim.b.foo nil)
                    (set vim.b.bar nil)))
-    (it* "sets buffer-local variable"
+    (it* "sets buffer-local variable in the current buffer"
+      (b* :foo :foo1)
+      (assert.is_nil vim.b.bar)
+      (assert.is_same :foo1 vim.b.foo))
+    (it* "sets buffer-local variable with specific buffer id"
       (let [buf (vim.api.nvim_get_current_buf)]
         (vim.cmd.new)
-        (vim.cmd.only)
-        (b* :foo :foo1)
         (b* buf :bar :bar1)
         (assert.is_nil (. vim.b buf :foo))
-        (assert.is_nil vim.b.bar)
-        (assert.is_same :foo1 vim.b.foo)
         (assert.is_same :bar1 (. vim.b buf :bar))))))
