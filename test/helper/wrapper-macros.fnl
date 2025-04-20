@@ -41,6 +41,9 @@
 (fn wo! [...]
   (let! :wo ...))
 
+(fn g! [...]
+  (let! :g ...))
+
 (fn b! [...]
   (let! :b ...))
 
@@ -99,6 +102,7 @@
  : setglobal!
  : bo!
  : wo!
+ : g!
  : b!
  : w!
  : t!
