@@ -567,6 +567,8 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 
 #### `let!`
 
+(Inspired by [`:let`](https://vimhelp.org/eval.txt.html#%3Alet))
+
 Set value to the Vim `variable`
 (g, b, w, t, v, env),
 or `option`
