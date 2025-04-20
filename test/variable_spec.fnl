@@ -1,6 +1,6 @@
 (import-macros {: describe* : it*} :test.helper.busted-macros)
 
-(import-macros {: g! : b! : w! : t! : env!} :test.helper.wrapper-macros)
+(import-macros {: v! : g! : b! : w! : t! : env!} :test.helper.wrapper-macros)
 
 (import-macros {: let! :b! b* :env! env*} :laurel.macros)
 
@@ -127,6 +127,13 @@
       (env! :$BAR "bar")
       (assert.is_same "foo" vim.env.FOO)
       (assert.is_same "bar" vim.env.BAR)))
+  (describe* "`v!`"
+    (before_each (fn []
+                   (set vim.b.foo nil)
+                   (set vim.b.bar nil)))
+    (it* "sets `v:` variable"
+      (v! :errmsg "bar")
+      (assert.is_same "bar" vim.v.errmsg)))
   (describe* "`g!`"
     (before_each (fn []
                    (set vim.b.foo nil)
