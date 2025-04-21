@@ -587,10 +587,8 @@ set `false` or `(not vim.go.foo)` respectively.
 (let! scope name ?val)
 (let! scope name ?flag ?val)
 
-; only in the scope: "opt", "opt_local", or "opt_global"
+;; only in the scopes: "bo", "wo", "b", "w", or "t"
 (let! scope ?id name ?flag ?val)
-
-; only in the scope: "b", "w", or "t"
 ```
 
 - `scope`: ("g"|"b"|"w"|"t"|"v"|"env"|"o"|"go"|"bo"|"wo"|"opt"|"opt_local"|"opt_global")
