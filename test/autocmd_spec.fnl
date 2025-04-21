@@ -4,8 +4,8 @@
                 : it*} :test.helper.busted-macros)
 
 (import-macros {: augroup! : au! : autocmd!} :laurel.macros)
+(import-macros {: augroup+} :laurel.wrapper-macros)
 (import-macros {: my-autocmd!
-                : augroup+
                 : bufnr-suffixed-augroup!
                 : buf-autocmd!/with-buffer=0}
                :test.helper.wrapper-macros)
