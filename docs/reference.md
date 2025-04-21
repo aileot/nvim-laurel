@@ -618,6 +618,14 @@ set `false` or `(not vim.go.foo)` respectively.
 (let! :opt :colorColumn + :+1)
 (let! :opt :rtp ^ [:/path/to/another/dir])
 
+(let! :b :foo "bar")
+(let! :bo :fileType "vim")
+
+;; buf id is optional
+(local buf (vim.api.nvim_get_current_buf))
+(let! :b buf :baz "qux")
+(let! :bo buf :fileType "lua")
+
 (local scope :bo)
 (let! scope :filetype :fennel)
 
@@ -639,6 +647,13 @@ call setwinvar(0, '&listchars', 'space:_,tab:>~')
 set colorcolumn+=+1
 set rtp^=/path/to/another/dir
 
+let b:foo = 'bar'
+setlocal filetype=vim
+
+let buf = bufnr()
+call setbufvar(buf, 'baz', 'qux')
+call setbufvar(buf, '&filetype', 'lua')
+
 let val = 'yes'
 let &signcolumn = val
 let opt = 'wrap'
@@ -652,6 +667,13 @@ vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect", {
 })
 vim.api.nvim_set_option_value("formatoptions", "12cB" { buf = 0 })
 vim.api.nvim_set_option_value("listchars", "space:_,tab:>~", { win = 0 })
+
+vim.api.nvim_buf_set_var(0, "foo", "bar")
+vim.api.nvim_buf_set_option(0, "filetype", "vim")
+
+local buf vim.api.nvim_get_current_buf()
+vim.api.nvim_buf_set_var(buf, "baz", "qux")
+vim.api.nvim_buf_set_option(buf, "filetype", "lua")
 
 local scope = "bo"
 vim[scope].filetype = "fennel"
