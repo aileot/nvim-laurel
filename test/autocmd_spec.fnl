@@ -447,18 +447,19 @@
         (autocmd! default-augroup default-event [:pat] &vim (macro-command))
         (let [au (get-first-autocmd {:pattern :pat})]
           (assert.is_same :macro-command au.command))))
+    (describe* "(supported wrapper macro)"
+      (describe* :augroup+
+        (it* "gets an existing augroup id"
+          (let [id (augroup! default-augroup)]
+            (assert.is_same id (augroup+ default-augroup))))
+        (it* "can add autocmds to an existing augroup within `augroup+`"
+          (augroup+ default-augroup
+            (au! default-event [:pat1 :pat2] default-callback))
+          (let [[autocmd] (get-autocmds {:group default-augroup})]
+            (assert.is_same default-callback autocmd.callback)))))
     (describe* "(wrapper)"
       (describe* "with `&default-opts`,"
         (describe* "imported macro"
-          (describe* :augroup+
-            (it* "gets an existing augroup id"
-              (let [id (augroup! default-augroup)]
-                (assert.is_same id (augroup+ default-augroup))))
-            (it* "can add autocmds to an existing augroup within `augroup+`"
-              (augroup+ default-augroup
-                (au! default-event [:pat1 :pat2] default-callback))
-              (let [[autocmd] (get-autocmds {:group default-augroup})]
-                (assert.is_same default-callback autocmd.callback))))
           (it* "can create autocmd in predefined augroup in global-scope"
             (set au-id1 (my-autocmd! [:FileType] [:foo] default-callback))
             (let [[au &as aus] (get-autocmds {:group _G.my-augroup-id})]
