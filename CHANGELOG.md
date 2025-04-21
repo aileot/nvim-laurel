@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.5](https://github.com/aileot/nvim-laurel/compare/v0.7.4...v0.7.5) (2025-04-21)
+
+
+### Features
+
+* **let!:** extend `let!` macro to fully support vim variables ([#326](https://github.com/aileot/nvim-laurel/issues/326)) ([e2eb7e4](https://github.com/aileot/nvim-laurel/commit/e2eb7e4c597f9c3fdcd0046dc2d2ede77e9f3ba8))
+
 ## [0.7.4](https://github.com/aileot/nvim-laurel/compare/v0.7.3...v0.7.4) (2024-12-16)
 
 
