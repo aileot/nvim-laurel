@@ -296,17 +296,17 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
 
 - [Variable](./docs/reference.md#Variable)
 
-  - [`g!`](./docs/reference.md#g)
+  - [`g!`](./docs/reference.md#g):
     A [`let!`][] alternative dedicated to handle Vim global variable `vim.g`.
-  - [`b!`](./docs/reference.md#b)
+  - [`b!`](./docs/reference.md#b):
     A [`let!`][] alternative dedicated to handle Vim buffer-local variable `vim.b`.
-  - [`w!`](./docs/reference.md#w)
+  - [`w!`](./docs/reference.md#w):
     A [`let!`][] alternative dedicated to handle Vim window-local variable `vim.w`.
-  - [`t!`](./docs/reference.md#t)
+  - [`t!`](./docs/reference.md#t):
     A [`let!`][] alternative dedicated to handle Vim tabpage-local variable `vim.t`.
-  - [`v!`](./docs/reference.md#v)
+  - [`v!`](./docs/reference.md#v):
     A [`let!`][] alternative dedicated to handle Vim variable `vim.v`.
-  - [`env!`](./docs/reference.md#env)
+  - [`env!`](./docs/reference.md#env):
     A [`let!`][] alternative dedicated to handle environment variable `vim.env`.
 
 - [Others](./docs/reference.md#Others)
