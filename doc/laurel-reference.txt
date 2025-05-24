@@ -664,9 +664,9 @@ is equivalent to
 
 set!                                                   *laurel-reference-set!*
 
-_(Deprecated in favor of let! with :opt at the first arg)_ Set, append,
-prepend, or remove, value to the option. Almost equivalent to `:set` in Vim
-script.
+_(The deprecation was withdrawn.)_ Set, append, prepend, or remove, value to
+the option. Almost equivalent to `:set` in Vim script. Or you can use
+|laurel-reference-`let!`| macro instead.
 
 >fennel
     (set! name ?flag ?val)
@@ -684,9 +684,9 @@ script.
 
 setglobal!                                       *laurel-reference-setglobal!*
 
-_(Deprecated in favor of let! with :opt_global at the first arg)_ Set, append,
-prepend, or remove, global value to the option. Almost equivalent to
-`:setglobal` in Vim script.
+_(The deprecation was withdrawn.)_ Set, append, prepend, or remove, global
+value to the option. Almost equivalent to `:setglobal` in Vim script. Or you
+can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (setglobal! name ?flag ?val)
@@ -697,9 +697,9 @@ See |laurel-reference-`set!`| for the details.
 
 setlocal!                                         *laurel-reference-setlocal!*
 
-_(Deprecated in favor of let! with :opt_local at the first arg)_ Set, append,
-prepend, or remove, local value to the option. Almost equivalent to `:setlocal`
-in Vim script.
+_(The deprecation was withdrawn.)_ Set, append, prepend, or remove, local value
+to the option. Almost equivalent to `:setlocal` in Vim script. Or you can use
+|laurel-reference-`let!`| macro instead.
 
 >fennel
     (setlocal! name ?flag ?val)
@@ -710,8 +710,8 @@ See |laurel-reference-`set!`| for the details.
 
 go!                                                     *laurel-reference-go!*
 
-_(Deprecated in favor of let! at the first arg)_ Alias of
-|laurel-reference-`setglobal!`|.
+_(The deprecation was withdrawn.)_ Alias of |laurel-reference-`setglobal!`|. Or
+you can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (go! name value)
@@ -720,8 +720,9 @@ _(Deprecated in favor of let! at the first arg)_ Alias of
 
 bo!                                                     *laurel-reference-bo!*
 
-_(Deprecated in favor of let! with :bo at the first arg)_ Set a buffer option
-value. |nvim_buf_set_option()|.
+_(The deprecation was withdrawn.)_ Set a buffer option value.
+|nvim_buf_set_option()|. Or you can use |laurel-reference-`let!`| macro
+instead.
 
 >fennel
     (bo! ?id name value)
@@ -754,8 +755,9 @@ is equivalent to
 
 wo!                                                     *laurel-reference-wo!*
 
-_(Deprecated in favor of let! with :wo at the first arg)_ Set a window option
-value. |nvim_win_set_option()|.
+_(The deprecation was withdrawn.)_ Set a window option value.
+|nvim_win_set_option()|. Or you can use |laurel-reference-`let!`| macro
+instead.
 
 >fennel
     (wo! ?id name value)
@@ -798,8 +800,8 @@ VARIABLE ~
 
 g!                                                       *laurel-reference-g!*
 
-_(Subject to be deprecated in favor of let!)_ Set global (`g:`) editor
-variable.
+_(The deprecation was withdrawn.)_ Set global (`g:`) editor variable. Or you
+can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (g! name val)
@@ -811,9 +813,9 @@ variable.
 
 b!                                                       *laurel-reference-b!*
 
-_(Subject to be deprecated in favor of let!)_ Set buffer-scoped (`b:`) variable
-for the current buffer. Can be indexed with an integer to access variables for
-specific buffer.
+_(The deprecation was withdrawn.)_ Set buffer-scoped (`b:`) variable for the
+current buffer. Can be indexed with an integer to access variables for specific
+buffer. Or you can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (b! ?id name val)
@@ -846,9 +848,9 @@ is equivalent to
 
 w!                                                       *laurel-reference-w!*
 
-_(Subject to be deprecated in favor of let!)_ Set window-scoped (`w:`) variable
-for the current window. Can be indexed with an integer to access variables for
-specific window.
+_(The deprecation was withdrawn.)_ Set window-scoped (`w:`) variable for the
+current window. Can be indexed with an integer to access variables for specific
+window. Or you can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (w! ?id name val)
@@ -861,9 +863,9 @@ specific window.
 
 t!                                                       *laurel-reference-t!*
 
-_(Subject to be deprecated in favor of let!)_ Set tabpage-scoped (`t:`)
-variable for the current tabpage. Can be indexed with an integer to access
-variables for specific tabpage.
+_(The deprecation was withdrawn.)_ Set tabpage-scoped (`t:`) variable for the
+current tabpage. Can be indexed with an integer to access variables for
+specific tabpage. Or you can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (t! ?id name val)
@@ -876,8 +878,8 @@ variables for specific tabpage.
 
 v!                                                       *laurel-reference-v!*
 
-_(Subject to be deprecated in favor of let!)_ Set `v:` variable if not
-readonly.
+_(The deprecation was withdrawn.)_ Set `v:` variable if not readonly. Or you
+can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (v! name val)
@@ -889,8 +891,8 @@ readonly.
 
 env!                                                   *laurel-reference-env!*
 
-_(Subject to be deprecated in favor of let!)_ Set environment variable in the
-editor session.
+_(The deprecation was withdrawn.)_ Set environment variable in the editor
+session. Or you can use |laurel-reference-`let!`| macro instead.
 
 >fennel
     (env! name val)
