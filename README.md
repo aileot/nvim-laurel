@@ -173,7 +173,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    ```lua
    require("lazy.nvim").setup({
      {
-       "aileot/nvim-laurel", {
+       "aileot/nvim-laurel",
        -- v0.7.1 <= {version} < v0.8.0
        -- Note: v0.7.0 has a backward compatibility issue.
        version = "~v0.7.1",
