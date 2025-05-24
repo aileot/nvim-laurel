@@ -1,8 +1,6 @@
 (import-macros {: describe* : it*} :test.helper.busted-macros)
 
-(import-macros {: v! : g! : b! : w! : t! : env!} :test.helper.wrapper-macros)
-
-(import-macros {: let! :b! b* :env! env*} :laurel.macros)
+(import-macros {: let!} :laurel.macros)
 
 (fn reset-context! []
   (vim.cmd.new)
@@ -116,28 +114,3 @@
       (each [_ scope (ipairs scope-list)]
         (let! scope :foo nil)
         (assert.is_nil (. vim scope :foo))))))
-
-(describe* "(deprecated in favor of `let!` wrapper)"
-  (describe* "`env!`"
-    (before_each (fn []
-                   (set vim.env.FOO nil)
-                   (set vim.env.BAR nil)))
-    (it* "sets environment variable in the editor session"
-      (env* :FOO :foo)
-      (env* :$BAR :bar)
-      (assert.is_same :foo vim.env.FOO)
-      (assert.is_same :bar vim.env.BAR)))
-  (describe* "`b!`"
-    (before_each (fn []
-                   (set vim.b.foo nil)
-                   (set vim.b.bar nil)))
-    (it* "sets buffer-local variable in the current buffer"
-      (b* :foo :foo1)
-      (assert.is_nil vim.b.bar)
-      (assert.is_same :foo1 vim.b.foo))
-    (it* "sets buffer-local variable with specific buffer id"
-      (let [buf (vim.api.nvim_get_current_buf)]
-        (vim.cmd.new)
-        (b* buf :bar :bar1)
-        (assert.is_nil (. vim.b buf :foo))
-        (assert.is_same :bar1 (. vim.b buf :bar))))))
