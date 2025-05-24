@@ -96,9 +96,18 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    -- Install nvim-laurel
    bootstrap("https://github.com/aileot/nvim-laurel")
 
-   -- Install a runtime compiler
-   bootstrap("https://github.com/rktjmp/hotpot.nvim")
+   -- Install a runtime compiler: nvim-thyme
+   bootstrap("https://git.sr.ht/~technomancy/fennel")
+   bootstrap("https://github.com/aileot/nvim-thyme")
+   table.insert(package.loaders, function(...)
+     return require("thyme").loader(...) -- Make sure to `return` the result!
+   end)
+   -- Note: Add a cache path to &rtp. The path MUST include the literal substring "/thyme/compile".
+   local thyme_cache_prefix = vim.fn.stdpath("cache") .. "/thyme/compiled"
+   vim.opt.rtp:prepend(thyme_cache_prefix)
 
+   --[[ For hotpot.nvim instead of nvim-thyme
+   bootstrap("https://github.com/rktjmp/hotpot.nvim")
    require("hotpot").setup({
      compiler = {
        macros = {
@@ -110,6 +119,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
        },
      },
    })
+   ]]
 
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
