@@ -706,9 +706,10 @@ vim.opt.signcolumn = val
 
 #### `set!`
 
-_(The deprecation was withdrawn.)_  
+_(The deprecation was withdrawn.)_\
 Set, append, prepend, or remove, value to the option. Almost equivalent to
 `:set` in Vim script.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (set! name ?flag ?val)
@@ -725,9 +726,10 @@ Set, append, prepend, or remove, value to the option. Almost equivalent to
 
 #### `setglobal!`
 
-_(The deprecation was withdrawn.)_  
+_(The deprecation was withdrawn.)_\
 Set, append, prepend, or remove, global value to the option. Almost equivalent
-to `:setglobal` in Vim script. Or you can use [let!][] macro instead.
+to `:setglobal` in Vim script.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (setglobal! name ?flag ?val)
@@ -737,9 +739,10 @@ See [`set!`](#set) for the details.
 
 #### `setlocal!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set, append, prepend, or remove, local value to the option. Almost equivalent
 to `:setlocal` in Vim script.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (setlocal! name ?flag ?val)
@@ -749,8 +752,9 @@ See [`set!`](#set) for the details.
 
 #### `go!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Alias of [`setglobal!`](#setglobal).
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (go! name value)
@@ -758,8 +762,9 @@ Alias of [`setglobal!`](#setglobal).
 
 #### `bo!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set a buffer option value. `:h nvim_buf_set_option()`.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (bo! ?id name value)
@@ -791,8 +796,9 @@ call setbufvar(10, '&buftype', 'nofile')
 
 #### `wo!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set a window option value. `:h nvim_win_set_option()`.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (wo! ?id name value)
@@ -833,8 +839,9 @@ call setwinvar(10, '&signcolumn', 'no')
 
 #### `g!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set global (`g:`) editor variable.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (g! name val)
@@ -845,9 +852,10 @@ Set global (`g:`) editor variable.
 
 #### `b!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set buffer-scoped (`b:`) variable for the current buffer. Can be indexed with
 an integer to access variables for specific buffer.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (b! ?id name val)
@@ -879,9 +887,10 @@ call setbufvar(8, 'baz', 'qux')
 
 #### `w!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set window-scoped (`w:`) variable for the current window. Can be indexed with
 an integer to access variables for specific window.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (w! ?id name val)
@@ -893,9 +902,10 @@ an integer to access variables for specific window.
 
 #### `t!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set tabpage-scoped (`t:`) variable for the current tabpage. Can be indexed
 with an integer to access variables for specific tabpage.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (t! ?id name val)
@@ -907,8 +917,9 @@ with an integer to access variables for specific tabpage.
 
 #### `v!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set `v:` variable if not readonly.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (v! name val)
@@ -919,8 +930,9 @@ Set `v:` variable if not readonly.
 
 #### `env!`
 
-_(The deprecation was withdrawn.)_
+_(The deprecation was withdrawn.)_\
 Set environment variable in the editor session.
+Or you can use [`let!`][] macro instead.
 
 ```fennel
 (env! name val)
@@ -1206,6 +1218,7 @@ or https://github.com/aileot/nvim-laurel/blob/main/CHANGELOG.md
 [`command!`]: #command
 [`highlight!`]: #highlight
 [`hi!`]: #hi
+[`let!`]: #let
 [-u]: https://neovim.io/doc/user/starting.html#-u
 [Quickfix]: https://neovim.io/doc/user/quickfix.html
 [`:cdo`]: https://neovim.io/doc/user/quickfix.html#%3Acdo
