@@ -78,7 +78,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    </summary>
 
    ```lua
-   local function prerequisite(name, url)
+   local function bootstrap(name, url)
      -- To manage the version of repo, the path should be where your plugin
      -- manager will download it.
      local name = url:gsub("^.*/", "")
@@ -96,13 +96,13 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    end
 
    -- Install your favorite plugin manager.
-   prerequisite("https://github.com/folke/lazy.nvim")
+   bootstrap("https://github.com/folke/lazy.nvim")
 
    -- Install nvim-laurel
-   prerequisite("https://github.com/aileot/nvim-laurel")
+   bootstrap("https://github.com/aileot/nvim-laurel")
 
    -- Install a runtime compiler
-   prerequisite("https://github.com/rktjmp/hotpot.nvim")
+   bootstrap("https://github.com/rktjmp/hotpot.nvim")
 
    require("hotpot").setup({
      compiler = {
@@ -128,7 +128,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    </summary>
 
    ```lua
-   local function prerequisite(url)
+   local function bootstrap(url)
      -- To manage the version of repo, the path should be where your plugin
      -- manager will download it.
      local path = "~/.cache/dein/repos/" .. url:gsub("^.*://", "")
@@ -145,11 +145,11 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    end
 
    -- Install your favorite plugin manager.
-   prerequisite("https://github.com/Shougo/dein.vim")
+   bootstrap("https://github.com/Shougo/dein.vim")
    -- Install nvim-laurel
-   prerequisite("https://github.com/aileot/nvim-laurel")
+   bootstrap("https://github.com/aileot/nvim-laurel")
    -- Install a runtime compiler
-   prerequisite("https://github.com/rktjmp/hotpot.nvim")
+   bootstrap("https://github.com/rktjmp/hotpot.nvim")
    require("hotpot").setup({
      compiler = {
        macros = {
