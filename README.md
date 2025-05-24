@@ -286,21 +286,28 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
     A replacement of
     `vim.opt`, `vim.opt_local`, `vim.opt_global`,
     `vim.o`, `vim.bo`, `vim.wo`,
-    but compiles into `vim.api.nvim_set_option_value`.\
-    You can wrap this macro into [`set!`, `setlocal!`, ...](./docs/cookbook.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
-    [`set+`, `set-`, ...](./docs/cookbook.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
-    [`bo!`, `wo!`](./docs/cookbook.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
-    and so on.\
-    Follow the links for the details.
+    but compiles into `vim.api.nvim_set_option_value`.
+  - [`set!`](#docs/reference.md#set):
+    A `let!` alternative dedicated to handle Vim option value like `vim.opt`.
+  - [`setglobal!`](#docs/reference.md#setglobal)
+    A `let!` alternative dedicated to handle Vim global option value like `vim.opt_global`.
+  - [`setlocal!`](#docs/reference.md#setlocal)
+    A `let!` alternative dedicated to handle Vim local option value like `vim.opt_local`.
 
 - [Variable](./docs/reference.md#Variable)
 
   - [`g!`](./docs/reference.md#g)
+    A `let!` alternative dedicated to handle Vim global variable `vim.g`.
   - [`b!`](./docs/reference.md#b)
+    A `let!` alternative dedicated to handle Vim buffer-local variable `vim.b`.
   - [`w!`](./docs/reference.md#w)
+    A `let!` alternative dedicated to handle Vim window-local variable `vim.w`.
   - [`t!`](./docs/reference.md#t)
+    A `let!` alternative dedicated to handle Vim tabpage-local variable `vim.t`.
   - [`v!`](./docs/reference.md#v)
+    A `let!` alternative dedicated to handle Vim variable `vim.v`.
   - [`env!`](./docs/reference.md#env)
+    A `let!` alternative dedicated to handle environment variable `vim.env`.
 
 - [Others](./docs/reference.md#Others)
   - [`command!`](./docs/reference.md#command):
