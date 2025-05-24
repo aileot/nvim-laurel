@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.5](https://github.com/aileot/nvim-laurel/compare/v0.7.4...v0.7.5) (2025-05-24)
+
+
+### Features
+
+* **let!:** extend `let!` macro to fully support vim variables ([#326](https://github.com/aileot/nvim-laurel/issues/326)) ([e2eb7e4](https://github.com/aileot/nvim-laurel/commit/e2eb7e4c597f9c3fdcd0046dc2d2ede77e9f3ba8))
+* **let!:** withdraw deprecations for `let!` macro wrappers: `set!`, `setlocal!`, ... ([#328](https://github.com/aileot/nvim-laurel/issues/328)) ([2ba7ce0](https://github.com/aileot/nvim-laurel/commit/2ba7ce0dd56551ffa259308686fc837c0e5a07d2))
+
 ## [0.7.4](https://github.com/aileot/nvim-laurel/compare/v0.7.3...v0.7.4) (2024-12-16)
 
 
