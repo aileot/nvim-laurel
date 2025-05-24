@@ -63,7 +63,9 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 ## ✔️ Requirements
 
 - Neovim 0.9.5+
-- A compiler: [Fennel][Fennel], [hotpot.nvim][hotpot.nvim], etc.
+- A compiler: [nvim-thyme][nvim-thyme],
+  [hotpot.nvim][hotpot.nvim], etc.,
+  or [Fennel][] itself.
 
 ## 📦 Installation
 
@@ -270,5 +272,6 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
 - [zest.nvim](https://github.com/tsbohc/zest.nvim)
 
 [Fennel]: https://github.com/bakpakin/Fennel
+[nvim-thyme]: https://github.com/aileot/nvim-thyme
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
 [`let!`]: ./docs/reference.md#let
