@@ -72,11 +72,6 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 1. Add nvim-laurel to `'runtimepath'`, before registering it with your plugin
    manager, to use nvim-laurel macros as early as possible.
 
-   <details>
-   <summary>
-   With lazy.nvim
-   </summary>
-
    ```lua
    local function bootstrap(name, url)
      -- To manage the version of repo, the path should be where your plugin
@@ -119,8 +114,6 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
-
-   </details>
 
 2. Manage the version of nvim-laurel by your favorite plugin manager. It's
    recommended to specify a version range to avoid unexpected breaking changes.
