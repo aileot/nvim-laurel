@@ -63,7 +63,9 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 ## ✔️ Requirements
 
 - Neovim 0.9.5+
-- A compiler: [Fennel][Fennel], [hotpot.nvim][hotpot.nvim], etc.
+- A compiler: [nvim-thyme][nvim-thyme],
+  [hotpot.nvim][hotpot.nvim], etc.,
+  or [Fennel][] itself.
 
 ## 📦 Installation
 
@@ -72,13 +74,8 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 1. Add nvim-laurel to `'runtimepath'`, before registering it with your plugin
    manager, to use nvim-laurel macros as early as possible.
 
-   <details>
-   <summary>
-   With lazy.nvim
-   </summary>
-
    ```lua
-   local function prerequisite(name, url)
+   local function bootstrap(name, url)
      -- To manage the version of repo, the path should be where your plugin
      -- manager will download it.
      local name = url:gsub("^.*/", "")
@@ -96,14 +93,23 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    end
 
    -- Install your favorite plugin manager.
-   prerequisite("https://github.com/folke/lazy.nvim")
+   bootstrap("https://github.com/folke/lazy.nvim")
 
    -- Install nvim-laurel
-   prerequisite("https://github.com/aileot/nvim-laurel")
+   bootstrap("https://github.com/aileot/nvim-laurel")
 
-   -- Install a runtime compiler
-   prerequisite("https://github.com/rktjmp/hotpot.nvim")
+   -- Install a runtime compiler: nvim-thyme
+   bootstrap("https://git.sr.ht/~technomancy/fennel")
+   bootstrap("https://github.com/aileot/nvim-thyme")
+   table.insert(package.loaders, function(...)
+     return require("thyme").loader(...) -- Make sure to `return` the result!
+   end)
+   -- Note: Add a cache path to &rtp. The path MUST include the literal substring "/thyme/compile".
+   local thyme_cache_prefix = vim.fn.stdpath("cache") .. "/thyme/compiled"
+   vim.opt.rtp:prepend(thyme_cache_prefix)
 
+   --[[ For hotpot.nvim instead of nvim-thyme
+   bootstrap("https://github.com/rktjmp/hotpot.nvim")
    require("hotpot").setup({
      compiler = {
        macros = {
@@ -115,55 +121,11 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
        },
      },
    })
+   ]]
 
    -- Then, you can write config in Fennel with nvim-laurel.
    require("your.core")
    ```
-
-   </details>
-
-   <details>
-   <summary>
-   With dein.vim
-   </summary>
-
-   ```lua
-   local function prerequisite(url)
-     -- To manage the version of repo, the path should be where your plugin
-     -- manager will download it.
-     local path = "~/.cache/dein/repos/" .. url:gsub("^.*://", "")
-     if not vim.loop.fs_stat(path) then
-       vim.fn.system({
-         "git",
-         "clone",
-         "--filter=blob:none",
-         url,
-         path,
-       })
-     end
-     vim.opt.runtimepath:prepend(path)
-   end
-
-   -- Install your favorite plugin manager.
-   prerequisite("https://github.com/Shougo/dein.vim")
-   -- Install nvim-laurel
-   prerequisite("https://github.com/aileot/nvim-laurel")
-   -- Install a runtime compiler
-   prerequisite("https://github.com/rktjmp/hotpot.nvim")
-   require("hotpot").setup({
-     compiler = {
-       macros = {
-         env = "_COMPILER",
-         allowedGlobals = false,
-       },
-     },
-   })
-
-   -- Then, you can write config in Fennel with nvim-laurel.
-   require("your.core")
-   ```
-
-   </details>
 
 2. Manage the version of nvim-laurel by your favorite plugin manager. It's
    recommended to specify a version range to avoid unexpected breaking changes.
@@ -211,15 +173,6 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
                            ;; don't mind the extra cost to maintain the
                            ;; "paths" properly.
                            :performance {:rtp {:reset false}}}})
-   ```
-
-   With [dein.vim](https://github.com/Shougo/dein.vim) in toml,
-
-   ```toml
-   [[plugins]]
-   repo = "aileot/nvim-laurel"
-   # Note: v0.7.0 has a backward compatibility issue.
-   rev = "v0.7.*"
    ```
 
 ### To compile outside Neovim
@@ -319,5 +272,6 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
 - [zest.nvim](https://github.com/tsbohc/zest.nvim)
 
 [Fennel]: https://github.com/bakpakin/Fennel
+[nvim-thyme]: https://github.com/aileot/nvim-thyme
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
 [`let!`]: ./docs/reference.md#let
