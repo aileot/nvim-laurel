@@ -253,7 +253,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 (import-macros {: set! : map! : augroup! : au! ...} :laurel.macros)
 ```
 
-See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
+See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
 
 ### 🔥 Macro List
 
