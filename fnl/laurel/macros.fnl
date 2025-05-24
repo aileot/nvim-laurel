@@ -1155,7 +1155,7 @@ For example,
   (let [opt :formatOptions]
     (set! opt + [:1 :B]))
   ```"
-  (deprecate :set! "`let!` with :opt for first arg" :v0.8.0 (let! :opt ...)))
+  (let! :opt ...))
 
 (λ setlocal! [...]
   "(Deprecated in favor of `let!`)
@@ -1167,8 +1167,7 @@ Almost equivalent to `:setlocal` in Vim script.
 ```
 
 See `set!` for the details."
-  (deprecate :setlocal! "`let!` with :opt_local for first arg" :v0.8.0
-             (let! :opt_local ...)))
+  (let! :opt_local ...))
 
 (λ setglobal! [...]
   "(Deprecated in favor of `let!`)
@@ -1180,8 +1179,7 @@ Almost equivalent to `:setglobal` in Vim script.
 ```
 
 See `set!` for the details."
-  (deprecate :setglobal! "`let!` with :opt_global for first arg" :v0.8.0
-             (let! :opt_global ...)))
+  (let! :opt_global ...))
 
 (λ bo! [...]
   "(Deprecated in favor of `let!`)
@@ -1194,7 +1192,7 @@ Set a buffer option value.
 @param ?id integer Buffer handle, or 0 for current buffer.
 @param name string Option name. Case-insensitive as long as in bare-string.
 @param value any Option value."
-  (deprecate :bo! "`let!` with :bo for first arg" :v0.8.0 (let! :bo ...)))
+  (let! :bo ...))
 
 (λ wo! [...]
   "(Deprecated in favor of `let!`)
@@ -1207,7 +1205,7 @@ Set a window option value.
 @param ?id integer Window handle, or 0 for current window.
 @param name string Option name. Case-insensitive as long as in bare-string.
 @param value any Option value."
-  (deprecate :wo! "`let!` with :wo for first arg" :v0.8.0 (let! :wo ...)))
+  (let! :wo ...))
 
 ;; Command ///1
 
