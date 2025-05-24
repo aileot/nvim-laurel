@@ -2,12 +2,11 @@
 
 # nvim-laurel 🌿
 
-[![badge/test][]][url/to/workflow/test]
-[![badge/semver][]][url/to/semver]
+[![badge/test][]][url/to/workflow/test] [![badge/semver][]][url/to/semver]
 [![badge/license][]][url/to/license]\
 _A set of Fennel macros for Neovim config_\
-_inspired by the builtin Nvim Lua-Vimscript bridge on metatable_
-_and by good old Vim script_
+_inspired by the builtin Nvim Lua-Vimscript bridge on metatable_ _and by good
+old Vim script_
 
 ![image/nvim-laurel-demo](https://user-images.githubusercontent.com/46470475/207041810-4d0afa5e-f9cc-4878-86f2-e607cff20601.png)
 
@@ -30,16 +29,14 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 </div>
 
 > [!WARNING]
-> Some breaking changes are planned until v1.0.0.
-> (The version would be released after nvim v1.0.)\
-> If you encounter breaking changes
-> and the deprecation notices that precede them,
-> [COOKBOOK.md](./docs/cookbook.md)
-> will help you update as painlessly as possible;
-> see [REFERENCE.md](./docs/reference.md)
-> for usage of [`g:laurel_deprecated`](./docs/reference.md#glaurel_deprecated),
-> which would also help you update them as
-> long as they are deprecated, but not abolished yet.
+> Some breaking changes are planned until v1.0.0. (The version would be released
+> after nvim v1.0.)\
+> If you encounter breaking changes and the deprecation notices that precede
+> them, [COOKBOOK.md](./docs/cookbook.md) will help you update as painlessly as
+> possible; see [REFERENCE.md](./docs/reference.md) for usage of
+> [`g:laurel_deprecated`](./docs/reference.md#glaurel_deprecated), which would
+> also help you update them as long as they are deprecated, but not abolished
+> yet.
 
 ## 📚 Documentations
 
@@ -48,19 +45,18 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 - The [Cookbook](./docs/cookbook.md) demonstrates practical codes on the
   nvim-laurel interfaces.
 - The [Appendix](./docs/appendix.md) shows extra knowledge not limited to
-  nvim-laurel, but useful to write nvim config files in Fennel:
-  LSP, Treesitter, etc. Happy Coding!
-- The [Changelog](./docs/changelog.md).
-  _See also the [Cookbook](./docs/cookbook.md)_
-  for tips how to update features and usages deprecated or removed in
-  nvim-laurel.
+  nvim-laurel, but useful to write nvim config files in Fennel: LSP, Treesitter,
+  etc. Happy Coding!
+- The [Changelog](./docs/changelog.md). _See also the
+  [Cookbook](./docs/cookbook.md)_ for tips how to update features and usages
+  deprecated or removed in nvim-laurel.
 
 ## 🎨 Design
 
 - **Fast:** Each macro is expanded to a few nvim API functions in principle.
 - **Less:** The syntax is as little, but flexible and extensible as possible.
-- **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set
-  in sequential table instead of key-value table. In this format, options are
+- **Fzf-Friendly:** Options such as `desc`, `buffer`, `expr`, ..., can be set in
+  sequential table instead of key-value table. In this format, options are
   likely to be `format`ted into the same line where nvim-laurel macro starts
   from.
 
@@ -170,8 +166,7 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
    </details>
 
 2. Manage the version of nvim-laurel by your favorite plugin manager. It's
-   recommended to specify a version range to avoid unexpected breaking
-   changes.
+   recommended to specify a version range to avoid unexpected breaking changes.
 
    With [lazy.nvim](https://github.com/folke/lazy.nvim),
 
@@ -258,23 +253,22 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 (import-macros {: set! : map! : augroup! : au! ...} :laurel.macros)
 ```
 
-See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
+See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
 
 ### 🔥 Macro List
 
 - [Autocmd](./docs/reference.md#autocmd)
 
-  - [`augroup!`](./docs/reference.md#augroup):
-    A replacement of `vim.api.nvim_create_augroup`
-  - [`autocmd!`](./docs/reference.md#autocmd-1):
-    A replacement of `vim.api.nvim_create_autocmd`
-  - [`au!`](./docs/reference.md#au):
-    An alias of `autocmd!`
+  - [`augroup!`](./docs/reference.md#augroup): A replacement of
+    `vim.api.nvim_create_augroup`
+  - [`autocmd!`](./docs/reference.md#autocmd-1): A replacement of
+    `vim.api.nvim_create_autocmd`
+  - [`au!`](./docs/reference.md#au): An alias of `autocmd!`
 
 - [Keymap](./docs/reference.md#Keymap)
 
-  - [`map!`](./docs/reference.md#map): A replacement of `vim.keymap.set`,
-    but compiles into `vim.api.nvim_set_keymap`.
+  - [`map!`](./docs/reference.md#map): A replacement of `vim.keymap.set`, but
+    compiles into `vim.api.nvim_set_keymap`.
   - [`unmap!`](./docs/reference.md#unmap): A replacement of `vim.keymap.del`,
     but compiles into `vim.api.nvim_del_keymap`.
   - [`<Cmd>`](./docs/reference.md#Cmd)
@@ -282,29 +276,34 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
 
 - [Option](./docs/reference.md#Option)
 
-  - [`let!`](./docs/reference.md#let):
-    A replacement of
-    `vim.opt`, `vim.opt_local`, `vim.opt_global`,
-    `vim.o`, `vim.bo`, `vim.wo`,
-    but compiles into `vim.api.nvim_set_option_value`.\
-    You can wrap this macro into [`set!`, `setlocal!`, ...](./docs/cookbook.md#set-setlocal-setglobal-the-dedicated-macros-to-set-vim-options),
-    [`set+`, `set-`, ...](./docs/cookbook.md#set-set--set--the-dedicated-macros-to-appendremoveprepend-vim-options),
-    [`bo!`, `wo!`](./docs/cookbook.md#bowo-the-dedicated-macros-to-set-bufferwindow-local-vim-options),
-    and so on.\
-    Follow the links for the details.
+  - [`let!`](./docs/reference.md#let): A replacement of `vim.opt`,
+    `vim.opt_local`, `vim.opt_global`, `vim.o`, `vim.bo`, `vim.wo`, but compiles
+    into `vim.api.nvim_set_option_value`.
+  - [`set!`](#docs/reference.md#set): A [`let!`][`let!`] alternative dedicated
+    to handle Vim option value like `vim.opt`.
+  - [`setglobal!`](#docs/reference.md#setglobal) A [`let!`][`let!`] alternative
+    dedicated to handle Vim global option value like `vim.opt_global`.
+  - [`setlocal!`](#docs/reference.md#setlocal) A [`let!`][`let!`] alternative
+    dedicated to handle Vim local option value like `vim.opt_local`.
 
 - [Variable](./docs/reference.md#Variable)
 
-  - [`g!`](./docs/reference.md#g)
-  - [`b!`](./docs/reference.md#b)
-  - [`w!`](./docs/reference.md#w)
-  - [`t!`](./docs/reference.md#t)
-  - [`v!`](./docs/reference.md#v)
-  - [`env!`](./docs/reference.md#env)
+  - [`g!`](./docs/reference.md#g): A [`let!`][`let!`] alternative dedicated to
+    handle Vim global variable `vim.g`.
+  - [`b!`](./docs/reference.md#b): A [`let!`][`let!`] alternative dedicated to
+    handle Vim buffer-local variable `vim.b`.
+  - [`w!`](./docs/reference.md#w): A [`let!`][`let!`] alternative dedicated to
+    handle Vim window-local variable `vim.w`.
+  - [`t!`](./docs/reference.md#t): A [`let!`][`let!`] alternative dedicated to
+    handle Vim tabpage-local variable `vim.t`.
+  - [`v!`](./docs/reference.md#v): A [`let!`][`let!`] alternative dedicated to
+    handle Vim variable `vim.v`.
+  - [`env!`](./docs/reference.md#env): A [`let!`][`let!`] alternative dedicated
+    to handle environment variable `vim.env`.
 
 - [Others](./docs/reference.md#Others)
-  - [`command!`](./docs/reference.md#command):
-    A replacement of `vim.api.nvim_create_user_command`
+  - [`command!`](./docs/reference.md#command): A replacement of
+    `vim.api.nvim_create_user_command`
   - [`feedkeys!`](./docs/reference.md#feedkeys)
   - [`highlight!`](./docs/reference.md#highlight)
   - [`hi!`](./docs/reference.md#hi)
@@ -321,3 +320,4 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in details.
 
 [Fennel]: https://github.com/bakpakin/Fennel
 [hotpot.nvim]: https://github.com/rktjmp/hotpot.nvim
+[`let!`]: ./docs/reference.md#let
