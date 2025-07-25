@@ -526,31 +526,31 @@
     (before_each (fn []
                    (reset-context!)))
     (it* "can update option value with boolean"
-      (tset vim.bo :expandtab false)
+      (set vim.bo.expandtab false)
       (let [vals (get-o-lo-go :expandtab)]
         (reset-context!)
         (bo! :expandtab false)
         (assert.is_same vals (get-o-lo-go :expandtab))))
     (it* "can update option value with number"
-      (tset vim.bo :tabstop 2)
+      (set vim.bo.tabstop 2)
       (let [vals (get-o-lo-go :tabstop)]
         (reset-context!)
         (bo! :tabstop 2)
         (assert.is_same vals (get-o-lo-go :tabstop))))
     (it* "can update option value with string"
-      (tset vim.bo :omnifunc :abc)
+      (set vim.bo.omnifunc "abc")
       (let [vals (get-o-lo-go :omnifunc)]
         (reset-context!)
         (bo! :omnifunc :abc)
         (assert.is_same vals (get-o-lo-go :omnifunc))))
     (it* "can update option value with sequence"
-      (tset vim.bo :path "/foo,/bar,/baz")
+      (set vim.bo.path "/foo,/bar,/baz")
       (let [vals (get-o-lo-go :path)]
         (reset-context!)
         (bo! :path [:/foo :/bar :/baz])
         (assert.is_same vals (get-o-lo-go :path))))
     (it* "can update option value with kv-table"
-      (tset vim.bo :matchpairs "a:A,b:B,c:C")
+      (set vim.bo.matchpairs "a:A,b:B,c:C")
       (let [vals (get-o-lo-go :matchpairs)]
         (reset-context!)
         (bo! :matchPairs {:a :A :b :B :c :C})
@@ -625,31 +625,31 @@
     (before_each (fn []
                    (reset-context!)))
     (it* "can update option value with boolean"
-      (tset vim.wo :wrap false)
+      (set vim.wo.wrap false)
       (let [vals (get-o-lo-go :wrap)]
         (reset-context!)
         (wo! :wrap false)
         (assert.is_same vals (get-o-lo-go :wrap))))
     (it* "can update option value with number"
-      (tset vim.wo :foldlevel 2)
+      (set vim.wo.foldlevel 2)
       (let [vals (get-o-lo-go :foldlevel)]
         (reset-context!)
         (wo! :foldlevel 2)
         (assert.is_same vals (get-o-lo-go :foldlevel))))
     (it* "can update option value with string"
-      (tset vim.wo :signcolumn :no)
+      (set vim.wo.signcolumn "no")
       (let [vals (get-o-lo-go :signcolumn)]
         (reset-context!)
         (wo! :signcolumn :no)
         (assert.is_same vals (get-o-lo-go :signcolumn))))
     (it* "can update option value with sequence"
-      (tset vim.wo :colorcolumn "80,81,82")
+      (set vim.wo.colorcolumn "80,81,82")
       (let [vals (get-o-lo-go :colorcolumn)]
         (reset-context!)
         (wo! :colorcolumn [:80 :81 :82])
         (assert.is_same vals (get-o-lo-go :colorcolumn))))
     (it* "can update option value with kv-table"
-      (tset vim.wo :listchars "eol:a,tab:abc,space:a")
+      (set vim.wo.listchars "eol:a,tab:abc,space:a")
       (let [vals (get-o-lo-go :listchars)]
         (reset-context!)
         (wo! :listchars {:eol :a :tab :abc :space :a})
@@ -1028,31 +1028,31 @@
     (before_each (fn []
                    (reset-context!)))
     (it* "can update option value with boolean"
-      (tset vim.bo :expandtab false)
+      (set vim.bo.expandtab false)
       (let [vals (get-o-lo-go :expandtab)]
         (reset-context!)
         (bo! :expandtab false)
         (assert.is_same vals (get-o-lo-go :expandtab))))
     (it* "can update option value with number"
-      (tset vim.bo :tabstop 2)
+      (set vim.bo.tabstop 2)
       (let [vals (get-o-lo-go :tabstop)]
         (reset-context!)
         (bo! :tabstop 2)
         (assert.is_same vals (get-o-lo-go :tabstop))))
     (it* "can update option value with string"
-      (tset vim.bo :omnifunc :abc)
+      (set vim.bo.omnifunc "abc")
       (let [vals (get-o-lo-go :omnifunc)]
         (reset-context!)
         (bo! :omnifunc :abc)
         (assert.is_same vals (get-o-lo-go :omnifunc))))
     (it* "can update option value with sequence"
-      (tset vim.bo :path "/foo,/bar,/baz")
+      (set vim.bo.path "/foo,/bar,/baz")
       (let [vals (get-o-lo-go :path)]
         (reset-context!)
         (bo! :path [:/foo :/bar :/baz])
         (assert.is_same vals (get-o-lo-go :path))))
     (it* "can update option value with kv-table"
-      (tset vim.bo :matchpairs "a:A,b:B,c:C")
+      (set vim.bo.matchpairs "a:A,b:B,c:C")
       (let [vals (get-o-lo-go :matchpairs)]
         (reset-context!)
         (bo! :matchPairs {:a :A :b :B :c :C})
@@ -1127,31 +1127,31 @@
     (before_each (fn []
                    (reset-context!)))
     (it* "can update option value with boolean"
-      (tset vim.wo :wrap false)
+      (set vim.wo.wrap false)
       (let [vals (get-o-lo-go :wrap)]
         (reset-context!)
         (wo! :wrap false)
         (assert.is_same vals (get-o-lo-go :wrap))))
     (it* "can update option value with number"
-      (tset vim.wo :foldlevel 2)
+      (set vim.wo.foldlevel 2)
       (let [vals (get-o-lo-go :foldlevel)]
         (reset-context!)
         (wo! :foldlevel 2)
         (assert.is_same vals (get-o-lo-go :foldlevel))))
     (it* "can update option value with string"
-      (tset vim.wo :signcolumn :no)
+      (set vim.wo.signcolumn "no")
       (let [vals (get-o-lo-go :signcolumn)]
         (reset-context!)
         (wo! :signcolumn :no)
         (assert.is_same vals (get-o-lo-go :signcolumn))))
     (it* "can update option value with sequence"
-      (tset vim.wo :colorcolumn "80,81,82")
+      (set vim.wo.colorcolumn "80,81,82")
       (let [vals (get-o-lo-go :colorcolumn)]
         (reset-context!)
         (wo! :colorcolumn [:80 :81 :82])
         (assert.is_same vals (get-o-lo-go :colorcolumn))))
     (it* "can update option value with kv-table"
-      (tset vim.wo :listchars "eol:a,tab:abc,space:a")
+      (set vim.wo.listchars "eol:a,tab:abc,space:a")
       (let [vals (get-o-lo-go :listchars)]
         (reset-context!)
         (wo! :listchars {:eol :a :tab :abc :space :a})
