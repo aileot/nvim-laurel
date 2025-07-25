@@ -32,9 +32,6 @@
 (local <default>-command :ltgt-command)
 (local <default>-str-callback #:ltgt-str-callback)
 
-(local new-callback #(fn []
-                       $))
-
 (fn refresh-buffer []
   (vim.cmd.new)
   (vim.cmd.only))

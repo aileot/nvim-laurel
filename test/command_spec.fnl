@@ -12,7 +12,6 @@
   `(command! &default-opts {:buffer 0} ,...))
 
 (local default-callback #:default-callback)
-(local default {:multi {:sym #:default.multi.sym}})
 
 (λ get-command [name]
   (-> (vim.api.nvim_get_commands {:builtin false})
