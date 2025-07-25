@@ -1,7 +1,5 @@
-(import-macros {: setup*
-                : teardown*
-                : describe*
-                : it*} :test.helper.busted-macros)
+(import-macros {: setup* : teardown* : describe* : it*}
+               :test.helper.busted-macros)
 
 (import-macros {: augroup! : au! : autocmd!} :laurel.macros)
 (import-macros {: my-autocmd!
