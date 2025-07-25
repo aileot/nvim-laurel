@@ -449,31 +449,31 @@
           (assert.is_true (get-go name))))))
   (describe* "in `:bo` scope"
     (it* "can update option value with boolean"
-      (tset vim.bo :expandtab false)
+      (set vim.bo.expandtab false)
       (let [vals (get-o-lo-go :expandtab)]
         (reset-context!)
         (let! :bo :expandtab false)
         (assert.is_same vals (get-o-lo-go :expandtab))))
     (it* "can update option value with number"
-      (tset vim.bo :tabstop 2)
+      (set vim.bo.tabstop 2)
       (let [vals (get-o-lo-go :tabstop)]
         (reset-context!)
         (let! :bo :tabstop 2)
         (assert.is_same vals (get-o-lo-go :tabstop))))
     (it* "can update option value with string"
-      (tset vim.bo :omnifunc :abc)
+      (set vim.bo.omnifunc "abc")
       (let [vals (get-o-lo-go :omnifunc)]
         (reset-context!)
         (let! :bo :omnifunc :abc)
         (assert.is_same vals (get-o-lo-go :omnifunc))))
     (it* "can update option value with sequence"
-      (tset vim.bo :path "/foo,/bar,/baz")
+      (set vim.bo.path "/foo,/bar,/baz")
       (let [vals (get-o-lo-go :path)]
         (reset-context!)
         (let! :bo :path [:/foo :/bar :/baz])
         (assert.is_same vals (get-o-lo-go :path))))
     (it* "can update option value with kv-table"
-      (tset vim.bo :matchpairs "a:A,b:B,c:C")
+      (set vim.bo.matchpairs "a:A,b:B,c:C")
       (let [vals (get-o-lo-go :matchpairs)]
         (reset-context!)
         (let! :bo :matchPairs {:a :A :b :B :c :C})
