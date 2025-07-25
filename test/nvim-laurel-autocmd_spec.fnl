@@ -167,7 +167,7 @@
                  (fn [a]
                    (assert.is_same default-augroup-id a.group)
                    (s)
-                   (let [[au1 au2 au3 &as aus] (get-autocmds {})]
+                   (let [[au1 au2 au3] (get-autocmds {})]
                      (assert.is_same (->trues [:InsertEnter
                                                :BufReadPost
                                                :VimEnter])
