@@ -228,7 +228,7 @@ priority. `nil` is ignored.
   @param actual string
   @param dump string"
   (let [msg (: "expected %s, got %s" :format expected actual)]
-    (match (select "#" ...)
+    (case (select "#" ...)
       0 msg
       1 (.. msg "\ndump:\n" (select 1 ...))
       _ (error* (msg-template/expected-actual "2 or 3 args"
@@ -959,7 +959,7 @@ For example,
   "Return in vim value for such API as `nvim_set_option`.
 @param val any
 @return 'vim.NIL|boolean|number|string|nil"
-  (match (type ?val)
+  (case (type ?val)
     :nil `vim.NIL
     :boolean ?val
     :string ?val
@@ -979,7 +979,7 @@ For example,
                                  _ (error (.. "invalid option name format: "
                                               raw-name)))
                                raw-name)
-        interface (match api-opts
+        interface (case api-opts
                     {:scope nil :buf nil :win nil} `vim.opt
                     {:scope :local} `vim.opt_local
                     {:scope :global} `vim.opt_global
@@ -1000,9 +1000,9 @@ For example,
                      (table.concat ?val)
                      `(table.concat ,?val))
                  ?val)]
-    (match (or ?flag ?infix-flag)
+    (case (or ?flag ?infix-flag)
       nil
-      (match (option/->?vim-value ?val)
+      (case (option/->?vim-value ?val)
         vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
         _ `(tset ,interface ,name ,?val))
       "+"
