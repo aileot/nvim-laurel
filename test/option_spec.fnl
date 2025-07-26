@@ -44,7 +44,7 @@
         ;; kv-table (wo)
         :listchars "eol:x,tab:xy,space:x"
         ;; shortmess (should be set both in string or bare-sequence)
-        :shortmess :fiw
+        :shortmess :fwi
         ;; formatoptions (should be set both in string or bare-sequence)
         :formatoptions :12b})
 

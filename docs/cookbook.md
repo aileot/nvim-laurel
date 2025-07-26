@@ -435,7 +435,7 @@ This is because `vim.cmd` returns a string for the consistency of
 ```fennel
 ;; good
 (macro vim/cmd [...]
-  "A warpper of `vim.cmd` to make sure to return `nil`."
+  "A wrapper of `vim.cmd` to make sure to return `nil`."
   `(do
      (vim.cmd ,...)
      nil))
