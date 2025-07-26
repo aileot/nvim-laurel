@@ -31,48 +31,35 @@ _(last edited at nvim-lspconfig [9619e53d](https://github.com/neovim/nvim-lspcon
 
 ### LSP: _Get fennel-ls support over `&rtp`, or `&runtimepath`_
 
-This is an example to get a support from
-[fennel-ls](https://git.sr.ht/~xerool/fennel-ls)
+Get a support from
+[fennel-ls][]
 with
 [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig).
-The code lets `fennel-ls` aware of all the Fennel files under `fnl/` in
-`&runtimepath`, including nvim-laurel macros.
+(or you could suppress errors with `"unknown identifier"` at least.)
 
-```fennel
-(let [globals [:vim]
-      extra-globals (table.concat globals " ")
-      runtime-fnl-roots (vim.api.nvim_get_runtime_file :fnl true)
-      pat-project-root "."
-      _ (table.insert runtime-fnl-roots pat-project-root)
-      ;; Note: It shares the suffix patterns with fennel-path and macro-path.
-      ;; Another step is required if you also need `?/init-macros.fnl`.
-      suffix-patterns [:?.fnl :?/init.fnl]
-      default-patterns (table.concat [:?.fnl
-                                      :?/init.fnl
-                                      ;; Extra worth considering patterns.
-                                      :src/?.fnl
-                                      :src/?/init.fnl
-                                      :fnl/?.fnl
-                                      :fnl/?/init.fnl
-                                      :test/?.fnl
-                                      :test/?/init.fnl
-                                      :tests/?.fnl
-                                      :tests/?/init.fnl]
-                                     ";")
-      fnl-patterns (accumulate [patterns default-patterns ;
-                                _ root (ipairs runtime-fnl-roots)]
-                     (do
-                       (each [_ suffix (ipairs suffix-patterns)]
-                         (set patterns (.. patterns ";" root "/" suffix)))
-                       patterns))
-      fennel-path fnl-patterns
-      macro-path fnl-patterns
-      config {:settings {:fennel-ls {: extra-globals
-                                     : fennel-path
-                                     : macro-path}}}
-      {: fennel_ls} (require :lspconfig)]
-  (fennel_ls.setup config))
-```
+1. Add `flsproject.fnl` to `stdpath("config")`, or `$XDG_CONFIG_HOME/nvim`,
+   with the following contents:
+
+   ```fennel
+   {:lua-version "lua5.1"
+    ;; NOTE: For the libraries, you should preinstall the docsets like
+    ;; `curl https://git.sr.ht/~micampe/fennel-ls-nvim-docs/blob/main/nvim.lua -o $HOME/.local/share/fennel-ls/docsets/nvim.lua`
+    :libraries {:nvim true}
+    :macro-path "fnl/?.fnl;fnl/?/init.fnl"
+    :fennel-path "fnl/?.fnl;fnl/?/init.fnl"}
+    ;; Or, with nvim-thyme, you might want this instead.
+    ;; :macro-path "lua/?.fnl;lua/?/init.fnl"
+    ;; :fennel-path "lua/?.fnl;lua/?/init.fnl"}
+   ```
+
+2. Add the `fnl/` directories on [&runtimepath][] to [fennel-ls][] workspace folders:
+
+   ```lua
+   -- In after/lsp/fennel_ls.lua
+   return {
+     workspace_folders = vim.api.nvim_get_runtime_file("fnl", true),
+   }
+   ```
 
 ## Treesitter
 
@@ -184,3 +171,6 @@ if you don't intend to override queries defined by other plugins._
 
 Note: Vim script syntax to be injected is Vim command syntax.
 It does not make sense to inject Vim syntax into `map!` macro.
+
+[fennel-ls]: https://git.sr.ht/~xerool/fennel-ls
+[&runtimepath]: https://vim-jp.org/vimdoc-ja/options.html#'runtimepath'
