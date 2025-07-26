@@ -11,6 +11,8 @@ jobs:
       matrix:
         nvim_version:
           - v0.9.5
+          - v0.10.4
+          - v0.11.3
           - stable
           - nightly
     steps:
