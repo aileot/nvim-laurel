@@ -48,8 +48,8 @@ with
     :macro-path "fnl/?.fnl;fnl/?/init.fnl"
     :fennel-path "fnl/?.fnl;fnl/?/init.fnl"}
     ;; Or, with nvim-thyme, you might want this instead.
-    ;; :macro-path "lua/?.fnl;lua/?/init.fnl"
-    ;; :fennel-path "lua/?.fnl;lua/?/init.fnl"}
+    ;; :macro-path "lua/?.fnl;lua/?/init.fnl;fnl/?.fnl;fnl/?/init.fnl"
+    ;; :fennel-path "lua/?.fnl;lua/?/init.fnl;fnl/?.fnl;fnl/?/init.fnl"}
    ```
 
 2. Add the `fnl/` directories on [&runtimepath][] to [fennel-ls][] workspace folders:
