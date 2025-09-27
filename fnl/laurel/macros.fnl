@@ -1064,8 +1064,8 @@ For example,
                      `(tset vim ,scope ,... true))
           `(tset vim ,scope ,...))
       (let [supported-flags [`+ `- `^ `? `! `& `<]
-            (args-without-symbol symbols) (extract-symbols [...]
-                                                           supported-flags)
+            (args-without-flags symbols) (extract-symbols [...]
+                                                          supported-flags)
             ?flag (next symbols)]
         (assert (< (length (tbl->keys symbols)) 2)
                 "only one symbol is supported at most")
@@ -1081,17 +1081,17 @@ For example,
                 :env (values 2 `vim.fn.setenv `vim.fn.getenv))
           (max-args setter getter)
           ;; Vim Variables
-          (let [(?id name val) (case (length args-without-symbol)
-                                 3 (unpack args-without-symbol)
+          (let [(?id name val) (case (length args-without-flags)
+                                 3 (unpack args-without-flags)
                                  2 (case max-args
-                                     2 (values nil (unpack args-without-symbol))
-                                     3 (values 0 (unpack args-without-symbol)))
+                                     2 (values nil (unpack args-without-flags))
+                                     3 (values 0 (unpack args-without-flags)))
                                  1 (case max-args
-                                     2 (values nil (unpack args-without-symbol)
+                                     2 (values nil (unpack args-without-flags)
                                                (deprecate "(Partial) The format `let!` without value"
                                                           "Set `true` to set it to `true` explicitly"
                                                           :v0.8.0 true))
-                                     3 (values 0 (unpack args-without-symbol)
+                                     3 (values 0 (unpack args-without-flags)
                                                (deprecate "(Partial) The format `let!` without value"
                                                           "Set `true` to set it to `true` explicitly"
                                                           :v0.8.0 true))))
@@ -1105,13 +1105,13 @@ For example,
                   3 `(,setter ,?id ,name* ,val))))
           _
           ;; Vim Options
-          (let [[name ?val] args-without-symbol
+          (let [[name ?val] args-without-flags
                 val (if (= nil ?val ?flag)
                         (deprecate "(Partial) The format `let!` without value"
                                    "Set `true` to set it to `true` explicitly"
                                    :v0.8.0 true)
                         ?val)]
-            (case (values scope args-without-symbol)
+            (case (values scope args-without-flags)
               ;; Note: In the `case` body above, the scope for vim.opt,
               ;; vim.opt_local, and vim.opt_global max-args would be 2 or
               ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
