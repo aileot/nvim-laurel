@@ -1114,6 +1114,7 @@ For example,
                           (name:gsub "^%$" "")
                           name)]
             (if (= setter `vim.api.nvim_set_option_value)
+                ;; Vim Options
                 (let [opts (case (values scope args-without-flags)
                              (where (or :o :opt)) {}
                              :opt_local {:scope "local"}
@@ -1124,6 +1125,7 @@ For example,
                                            (: :format (view scope) (type scope)
                                               (view args-without-flags)))))]
                   (option/modify opts name val ?flag))
+                ;; Vim Variables
                 (let [should-use-getter? (= "?" ?flag)]
                   (case max-args
                     2 (if should-use-getter?
