@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.6](https://github.com/aileot/nvim-laurel/compare/v0.7.5...v0.7.6) (2025-09-27)
+
+
+### Features
+
+* **let!:** detect `?` flag to get option value on `vim.api` ([#261](https://github.com/aileot/nvim-laurel/issues/261)) ([40ed062](https://github.com/aileot/nvim-laurel/commit/40ed062f0b3062cdc7a7d26a6aeffed0172e03b5))
+
 ## [0.7.5](https://github.com/aileot/nvim-laurel/compare/v0.7.4...v0.7.5) (2025-05-24)
 
 
