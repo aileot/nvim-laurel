@@ -1085,7 +1085,9 @@ For example,
                                  3
                                  (case actual-arg-count
                                    3 (unpack args-without-flags)
-                                   2 (values 0 (unpack args-without-flags))
+                                   2 (if (= "?" ?flag)
+                                         (unpack args-without-flags)
+                                         (values 0 (unpack args-without-flags)))
                                    1 (values 0 (unpack args-without-flags)
                                              (deprecate "(Partial) The format `let!` without value"
                                                         "Set `true` to set it to `true` explicitly"
@@ -1108,7 +1110,14 @@ For example,
                           (name:gsub "^%$" "")
                           name)]
             (if (= "?" ?flag)
-                `(,getter ,name*)
+                (case max-args
+                  2 `(,getter ,name*)
+                  3 (do
+                      (assert (or (= :number (type ?id))
+                                  (hidden-in-compile-time? ?id))
+                              (-> "for %s, expected number, got %s: %s"
+                                  (: :format name* (type ?id) (view ?id))))
+                      `(,getter ,?id ,name*)))
                 (case max-args
                   2 `(,setter ,name* ,val)
                   3 (do
