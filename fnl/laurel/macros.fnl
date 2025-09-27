@@ -1077,7 +1077,9 @@ For example,
                 :t (values 3 `vim.api.nvim_tabpage_set_var
                            `vim.api.nvim_tabpage_set_var)
                 :v (values 2 `vim.api.nvim_set_vvar `vim.api.nvim_set_vvar)
-                :env (values 2 `vim.fn.setenv `vim.fn.getenv))
+                ;; NOTE: vim.fn.getenv returns `vim.NIL` for an undefined
+                ;; environment variable while os.getenv returns `nil`.
+                :env (values 2 `vim.fn.setenv `os.getenv))
           (max-args setter getter)
           ;; Vim Variables
           (let [(?id name val) (case (length args)
