@@ -1124,23 +1124,18 @@ For example,
                                            (: :format (view scope) (type scope)
                                               (view args-without-flags)))))]
                   (option/modify opts name val ?flag))
-                (= "?" ?flag)
                 (case max-args
-                  2 `(,getter ,name*)
+                  2 (if (= "?" ?flag)
+                        `(,getter ,name*)
+                        `(,setter ,name* ,val))
                   3 (do
                       (assert (or (= :number (type ?id))
                                   (hidden-in-compile-time? ?id))
                               (-> "for %s, expected number, got %s: %s"
                                   (: :format name* (type ?id) (view ?id))))
-                      `(,getter ,?id ,name*)))
-                (case max-args
-                  2 `(,setter ,name* ,val)
-                  3 (do
-                      (assert (or (= :number (type ?id))
-                                  (hidden-in-compile-time? ?id))
-                              (-> "for %s, expected number, got %s: %s"
-                                  (: :format name* (type ?id) (view ?id))))
-                      `(,setter ,?id ,name* ,val)))))))))
+                      (if (= "?" ?flag)
+                          `(,getter ,?id ,name*)
+                          `(,setter ,?id ,name* ,val))))))))))
 
 (λ set! [...]
   "(Deprecated in favor of `let!`)
