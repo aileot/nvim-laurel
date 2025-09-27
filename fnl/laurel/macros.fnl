@@ -1064,8 +1064,7 @@ For example,
                      `(tset vim ,scope ,... true))
           `(tset vim ,scope ,...))
       (let [supported-flags [`+ `- `^ `? `! `& `<]
-            (args-without-flags symbols) (extract-symbols [...]
-                                                          supported-flags)
+            (args-without-flags symbols) (extract-symbols [...] supported-flags)
             ?flag (next symbols)]
         (assert (< (length (tbl->keys symbols)) 2)
                 "only one symbol is supported at most")
