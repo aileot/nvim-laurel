@@ -1153,13 +1153,13 @@ For example,
               ;; Getter with "?"
               (option/modify {:win 0} name nil "?")
               (:bo [name val nil])
-              (option/modify {:buf 0} name val)
+              (option/modify {:buf 0} name val ?flag)
               (:wo [name val nil])
-              (option/modify {:win 0} name val)
+              (option/modify {:win 0} name val ?flag)
               (:bo [id name val])
-              (option/modify {:buf id} name val)
+              (option/modify {:buf id} name val ?flag)
               (:wo [id name val])
-              (option/modify {:win id} name val)
+              (option/modify {:win id} name val ?flag)
               _
               (error* (-> "Invalid scope %s in type %s with args %s to be `unpack`ed"
                           (: :format (view scope) (type scope)
