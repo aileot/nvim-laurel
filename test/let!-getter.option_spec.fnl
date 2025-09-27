@@ -75,10 +75,26 @@
             (set vim.bo.expandtab false)
             (assert.is_false (let! :bo :expandtab ?))
             (set vim.bo.expandtab true)
-            (assert.is_true (let! :bo :expandtab ?))))
+            (assert.is_true (let! :bo :expandtab ?)))
+          (describe* "with index"
+            (it* "in boolean"
+              (let [buf (vim.api.nvim_get_current_buf)]
+                (vim.cmd.new)
+                (tset vim.bo buf :expandtab false)
+                (assert.is_false (let! :bo buf :expandtab ?))
+                (tset vim.bo buf :expandtab true)
+                (assert.is_true (let! :bo buf :expandtab ?))))))
         (describe* "`:wo`"
           (it* "in boolean"
             (set vim.wo.wrap false)
             (assert.is_false (let! :wo :wrap ?))
             (set vim.wo.wrap true)
-            (assert.is_true (let! :wo :wrap ?))))))))
+            (assert.is_true (let! :wo :wrap ?)))
+          (describe* "with index"
+            (it* "in boolean"
+              (let [win (vim.api.nvim_get_current_win)]
+                (vim.cmd.new)
+                (tset vim.wo win :wrap false)
+                (assert.is_false (let! :wo win :wrap ?))
+                (tset vim.wo win :wrap true)
+                (assert.is_true (let! :wo win :wrap ?))))))))))
