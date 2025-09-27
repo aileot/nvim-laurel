@@ -981,8 +981,8 @@ For example,
                                raw-name)
         interface (case api-opts
                     {:scope nil :buf nil :win nil} `vim.opt
-                    {:scope :local} `vim.opt_local
-                    {:scope :global} `vim.opt_global
+                    {:scope "local"} `vim.opt_local
+                    {:scope "global"} `vim.opt_global
                     {: buf :win nil} (if (= 0 buf) `vim.bo `(. vim.bo ,buf))
                     {: win :buf nil} (if (= 0 win) `vim.wo `(. vim.wo ,win))
                     _ (error* (.. "invalid api-opts: " (view api-opts))))
@@ -1001,6 +1001,8 @@ For example,
                      `(table.concat ,?val))
                  ?val)]
     (case (or ?flag ?infix-flag)
+      "?"
+      `(vim.api.nvim_get_option_value ,name ,api-opts)
       nil
       (case (option/->?vim-value ?val)
         vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
@@ -1016,8 +1018,8 @@ For example,
       "<" ; Sync local option to global one.
       `(vim.api.nvim_set_option_value ,name ;
                                       (vim.api.nvim_get_option_value ,name
-                                                                     {:scope :global})
-                                      {:scope :local})
+                                                                     {:scope "global"})
+                                      {:scope "local"})
       ;; "&" `(vim.cmd.set (.. ,name "&"))
       _
       (error* (.. "Invalid vim option modifier: " (view ?flag))))))
@@ -1064,71 +1066,79 @@ For example,
                      `(tset vim ,scope ,... true))
           `(tset vim ,scope ,...))
       (let [supported-flags [`+ `- `^ `? `! `& `<]
-            (args symbols) (extract-symbols [...] supported-flags)
+            (args-without-flags symbols) (extract-symbols [...] supported-flags)
             ?flag (next symbols)]
         (assert (< (length (tbl->keys symbols)) 2)
                 "only one symbol is supported at most")
         (case (case scope
-                :g (values 2 `vim.api.nvim_set_var `vim.api.nvim_set_var)
+                :g (values 2 `vim.api.nvim_set_var `vim.api.nvim_get_var)
                 :b (values 3 `vim.api.nvim_buf_set_var
-                           `vim.api.nvim_buf_set_var)
+                           `vim.api.nvim_buf_get_var)
                 :w (values 3 `vim.api.nvim_win_set_var
-                           `vim.api.nvim_win_set_var)
+                           `vim.api.nvim_win_get_var)
                 :t (values 3 `vim.api.nvim_tabpage_set_var
-                           `vim.api.nvim_tabpage_set_var)
-                :v (values 2 `vim.api.nvim_set_vvar `vim.api.nvim_set_vvar)
-                :env (values 2 `vim.fn.setenv `vim.fn.getenv))
+                           `vim.api.nvim_tabpage_get_var)
+                :v (values 2 `vim.api.nvim_set_vvar `vim.api.nvim_get_vvar)
+                :env (values 2 `vim.fn.setenv `vim.fn.getenv)
+                _ (values 3 `vim.api.nvim_set_option_value
+                          `vim.api.nvim_get_option_value))
           (max-args setter getter)
           ;; Vim Variables
-          (let [(?id name val) (case (length args)
-                                 3 (values (unpack args))
-                                 2 (case max-args
-                                     2 (values nil (unpack args))
-                                     3 (values 0 (unpack args)))
-                                 1 (case max-args
-                                     2 (values nil (unpack args)
-                                               (deprecate "(Partial) The format `let!` without value"
-                                                          "Set `true` to set it to `true` explicitly"
-                                                          :v0.8.0 true))
-                                     3 (values 0 (unpack args)
-                                               (deprecate "(Partial) The format `let!` without value"
-                                                          "Set `true` to set it to `true` explicitly"
-                                                          :v0.8.0 true))))
+          (let [actual-arg-count (length args-without-flags)
+                (?id name val) (case max-args
+                                 3
+                                 (case actual-arg-count
+                                   3 (unpack args-without-flags)
+                                   2 (if (= "?" ?flag)
+                                         (unpack args-without-flags)
+                                         (values 0 (unpack args-without-flags)))
+                                   1 (values 0 (unpack args-without-flags)
+                                             (deprecate "(Partial) The format `let!` without value"
+                                                        "Set `true` to set it to `true` explicitly"
+                                                        :v0.8.0 true))
+                                   _ (error* (.. "expected 1, 2, or 3 args, got "
+                                                 actual-arg-count)))
+                                 ;; For 2, `?id` should be `nil`.
+                                 2
+                                 (case actual-arg-count
+                                   2 (values nil (unpack args-without-flags))
+                                   1 (values nil (unpack args-without-flags)
+                                             (deprecate "(Partial) The format `let!` without value"
+                                                        "Set `true` to set it to `true` explicitly"
+                                                        :v0.8.0 true))
+                                   _ (error* (.. "expected 1 or 2 args, got "
+                                                 actual-arg-count)))
+                                 _
+                                 (error* (.. "expected 2 or 3, got " max-args)))
                 name* (if (and (= scope :env) (str? name))
                           (name:gsub "^%$" "")
                           name)]
-            (if (= "?" ?flag)
-                `(,getter ,name*)
-                (case max-args
-                  2 `(,setter ,name* ,val)
-                  3 `(,setter ,?id ,name* ,val))))
-          _
-          ;; Vim Options
-          (let [[name ?val] args
-                val (if (= nil ?val ?flag)
-                        (deprecate "(Partial) The format `let!` without value"
-                                   "Set `true` to set it to `true` explicitly"
-                                   :v0.8.0 true)
-                        ?val)]
-            (case (values scope args)
-              ;; Note: In the `case` body above, the scope for vim.opt,
-              ;; vim.opt_local, and vim.opt_global max-args would be 2 or
-              ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
-              ;;   order to set option scope later, temporarily set `nil` here.
-              (where (or :o :opt))
-              (option/modify {} name val ?flag)
-              :opt_local
-              (option/modify {:scope :local} name val ?flag)
-              (where (or :go :opt_global))
-              (option/modify {:scope :global} name val ?flag)
-              (:bo [name val nil])
-              (option/modify {:buf 0} name val)
-              (:wo [name val nil])
-              (option/modify {:win 0} name val)
-              (:bo [id name val])
-              (option/modify {:buf id} name val)
-              (:wo [id name val])
-              (option/modify {:win id} name val)))))))
+            (if (= setter `vim.api.nvim_set_option_value)
+                ;; Vim Options
+                (let [opts (case (values scope args-without-flags)
+                             (where (or :o :opt)) {}
+                             :opt_local {:scope "local"}
+                             (where (or :go :opt_global)) {:scope "global"}
+                             :bo {:buf ?id}
+                             :wo {:win ?id}
+                             _ (error* (-> "Invalid scope %s in type %s with args %s to be `unpack`ed"
+                                           (: :format (view scope) (type scope)
+                                              (view args-without-flags)))))]
+                  (option/modify opts name val ?flag))
+                ;; Vim Variables
+                (let [should-use-getter? (= "?" ?flag)]
+                  (case max-args
+                    2 (if should-use-getter?
+                          `(,getter ,name*)
+                          `(,setter ,name* ,val))
+                    3 (do
+                        (assert (or (= :number (type ?id))
+                                    (hidden-in-compile-time? ?id))
+                                (-> "for %s, expected number, got %s: %s"
+                                    (: :format name* (type ?id) (view ?id))))
+                        (if should-use-getter?
+                            `(,getter ,?id ,name*)
+                            `(,setter ,?id ,name* ,val)))))))))))
 
 (λ set! [...]
   "(Deprecated in favor of `let!`)
