@@ -113,4 +113,12 @@
     (it* "can set to `nil`."
       (each [_ scope (ipairs scope-list)]
         (let! scope :foo nil)
-        (assert.is_nil (. vim scope :foo))))))
+        (assert.is_nil (. vim scope :foo))))
+    (it* "returns the latest value of an environmental variable in a session"
+      (vim.fn.setenv "FOO" :foo)
+      (assert.is_same :foo (let! :env :FOO ?))
+      (vim.fn.setenv "FOO" :bar)
+      (assert.is_same :bar (let! :env :FOO ?)))
+    (it* "returns `nil` for undefined environmental variable"
+      (vim.fn.setenv "FOO" nil)
+      (assert.is_nil vim.env.FOO))))
