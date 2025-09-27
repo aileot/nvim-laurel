@@ -1001,7 +1001,8 @@ For example,
                      `(table.concat ,?val))
                  ?val)]
     (case (or ?flag ?infix-flag)
-      "?" `(vim.api.nvim_get_option_value ,name ,api-opts)
+      "?"
+      `(vim.api.nvim_get_option_value ,name ,api-opts)
       nil
       (case (option/->?vim-value ?val)
         vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
@@ -1078,7 +1079,9 @@ For example,
                 :t (values 3 `vim.api.nvim_tabpage_set_var
                            `vim.api.nvim_tabpage_get_var)
                 :v (values 2 `vim.api.nvim_set_vvar `vim.api.nvim_get_vvar)
-                :env (values 2 `vim.fn.setenv `vim.fn.getenv))
+                :env (values 2 `vim.fn.setenv `vim.fn.getenv)
+                _ (values 3 `vim.api.nvim_set_option_value
+                          `vim.api.nvim_get_option_value))
           (max-args setter getter)
           ;; Vim Variables
           (let [actual-arg-count (length args-without-flags)
@@ -1110,7 +1113,18 @@ For example,
                 name* (if (and (= scope :env) (str? name))
                           (name:gsub "^%$" "")
                           name)]
-            (if (= "?" ?flag)
+            (if (= setter `vim.api.nvim_set_option_value)
+                (let [opts (case (values scope args-without-flags)
+                             (where (or :o :opt)) {}
+                             :opt_local {:scope :local}
+                             (where (or :go :opt_global)) {:scope :global}
+                             :bo {:buf ?id}
+                             :wo {:win ?id}
+                             _ (error* (-> "Invalid scope %s in type %s with args %s to be `unpack`ed"
+                                           (: :format (view scope) (type scope)
+                                              (view args-without-flags)))))]
+                  (option/modify opts name val ?flag))
+                (= "?" ?flag)
                 (case max-args
                   2 `(,getter ,name*)
                   3 (do
@@ -1126,44 +1140,7 @@ For example,
                                   (hidden-in-compile-time? ?id))
                               (-> "for %s, expected number, got %s: %s"
                                   (: :format name* (type ?id) (view ?id))))
-                      `(,setter ,?id ,name* ,val)))))
-          _
-          ;; Vim Options
-          (let [[name ?val] args-without-flags
-                val (if (= nil ?val ?flag)
-                        (deprecate "(Partial) The format `let!` without value"
-                                   "Set `true` to set it to `true` explicitly"
-                                   :v0.8.0 true)
-                        ?val)]
-            (case (values scope args-without-flags)
-              ;; Note: In the `case` body above, the scope for vim.opt,
-              ;; vim.opt_local, and vim.opt_global max-args would be 2 or
-              ;; 3 regardless of extra symbol `+`, `-`, and so on; however, in
-              ;;   order to set option scope later, temporarily set `nil` here.
-              (where (or :o :opt))
-              (option/modify {} name val ?flag)
-              :opt_local
-              (option/modify {:scope :local} name val ?flag)
-              (where (or :go :opt_global))
-              (option/modify {:scope :global} name val ?flag)
-              (:bo [name nil nil])
-              ;; Getter with "?"
-              (option/modify {:buf 0} name nil "?")
-              (:wo [name nil nil])
-              ;; Getter with "?"
-              (option/modify {:win 0} name nil "?")
-              (:bo [name val nil])
-              (option/modify {:buf 0} name val ?flag)
-              (:wo [name val nil])
-              (option/modify {:win 0} name val ?flag)
-              (:bo [id name val])
-              (option/modify {:buf id} name val ?flag)
-              (:wo [id name val])
-              (option/modify {:win id} name val ?flag)
-              _
-              (error* (-> "Invalid scope %s in type %s with args %s to be `unpack`ed"
-                          (: :format (view scope) (type scope)
-                             (view args-without-flags))))))))))
+                      `(,setter ,?id ,name* ,val)))))))))
 
 (λ set! [...]
   "(Deprecated in favor of `let!`)
