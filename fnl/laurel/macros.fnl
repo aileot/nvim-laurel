@@ -1111,7 +1111,12 @@ For example,
                 `(,getter ,name*)
                 (case max-args
                   2 `(,setter ,name* ,val)
-                  3 `(,setter ,?id ,name* ,val))))
+                  3 (do
+                      (assert (or (= :number (type ?id))
+                                  (hidden-in-compile-time? ?id))
+                              (-> "for %s, expected number, got %s: %s"
+                                  (: :format name* (type ?id) (view ?id))))
+                      `(,setter ,?id ,name* ,val)))))
           _
           ;; Vim Options
           (let [[name ?val] args-without-flags
