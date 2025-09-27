@@ -1018,8 +1018,8 @@ For example,
       "<" ; Sync local option to global one.
       `(vim.api.nvim_set_option_value ,name ;
                                       (vim.api.nvim_get_option_value ,name
-                                                                     {:scope :global})
-                                      {:scope :local})
+                                                                     {:scope "global"})
+                                      {:scope "local"})
       ;; "&" `(vim.cmd.set (.. ,name "&"))
       _
       (error* (.. "Invalid vim option modifier: " (view ?flag))))))
@@ -1116,8 +1116,8 @@ For example,
             (if (= setter `vim.api.nvim_set_option_value)
                 (let [opts (case (values scope args-without-flags)
                              (where (or :o :opt)) {}
-                             :opt_local {:scope :local}
-                             (where (or :go :opt_global)) {:scope :global}
+                             :opt_local {:scope "local"}
+                             (where (or :go :opt_global)) {:scope "global"}
                              :bo {:buf ?id}
                              :wo {:win ?id}
                              _ (error* (-> "Invalid scope %s in type %s with args %s to be `unpack`ed"
