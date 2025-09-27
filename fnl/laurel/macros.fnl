@@ -981,8 +981,8 @@ For example,
                                raw-name)
         interface (case api-opts
                     {:scope nil :buf nil :win nil} `vim.opt
-                    {:scope :local} `vim.opt_local
-                    {:scope :global} `vim.opt_global
+                    {:scope "local"} `vim.opt_local
+                    {:scope "global"} `vim.opt_global
                     {: buf :win nil} (if (= 0 buf) `vim.bo `(. vim.bo ,buf))
                     {: win :buf nil} (if (= 0 win) `vim.wo `(. vim.wo ,win))
                     _ (error* (.. "invalid api-opts: " (view api-opts))))
