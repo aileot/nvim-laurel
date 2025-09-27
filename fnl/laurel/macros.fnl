@@ -1146,6 +1146,12 @@ For example,
               (option/modify {:scope :local} name val ?flag)
               (where (or :go :opt_global))
               (option/modify {:scope :global} name val ?flag)
+              (:bo [name nil nil])
+              ;; Getter with "?"
+              (option/modify {:buf 0} name nil "?")
+              (:wo [name nil nil])
+              ;; Getter with "?"
+              (option/modify {:win 0} name nil "?")
               (:bo [name val nil])
               (option/modify {:buf 0} name val)
               (:wo [name val nil])
