@@ -141,7 +141,7 @@ if you don't intend to override queries defined by other plugins._
 ### Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_
 
 ```query
-;; in after/quries/fennel/injection.scm
+;; in after/queries/fennel/injection.scm
 
 ;; without api-opts
 ((list
