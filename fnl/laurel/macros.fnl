@@ -1153,7 +1153,11 @@ For example,
               (:bo [id name val])
               (option/modify {:buf id} name val)
               (:wo [id name val])
-              (option/modify {:win id} name val)))))))
+              (option/modify {:win id} name val)
+              _
+              (error* (-> "Invalid scope %s in type %s with args %s to be `unpack`ed"
+                          (: :format (view scope) (type scope)
+                             (view args-without-flags))))))))))
 
 (λ set! [...]
   "(Deprecated in favor of `let!`)
