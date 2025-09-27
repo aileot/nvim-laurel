@@ -1080,20 +1080,30 @@ For example,
                 :env (values 2 `vim.fn.setenv `vim.fn.getenv))
           (max-args setter getter)
           ;; Vim Variables
-          (let [(?id name val) (case (length args-without-flags)
-                                 3 (unpack args-without-flags)
-                                 2 (case max-args
-                                     2 (values nil (unpack args-without-flags))
-                                     3 (values 0 (unpack args-without-flags)))
-                                 1 (case max-args
-                                     2 (values nil (unpack args-without-flags)
-                                               (deprecate "(Partial) The format `let!` without value"
-                                                          "Set `true` to set it to `true` explicitly"
-                                                          :v0.8.0 true))
-                                     3 (values 0 (unpack args-without-flags)
-                                               (deprecate "(Partial) The format `let!` without value"
-                                                          "Set `true` to set it to `true` explicitly"
-                                                          :v0.8.0 true))))
+          (let [actual-arg-count (length args-without-flags)
+                (?id name val) (case max-args
+                                 3
+                                 (case actual-arg-count
+                                   3 (unpack args-without-flags)
+                                   2 (values 0 (unpack args-without-flags))
+                                   1 (values 0 (unpack args-without-flags)
+                                             (deprecate "(Partial) The format `let!` without value"
+                                                        "Set `true` to set it to `true` explicitly"
+                                                        :v0.8.0 true))
+                                   _ (error* (.. "expected 1, 2, or 3 args, got "
+                                                 actual-arg-count)))
+                                 ;; For 2, `?id` should be `nil`.
+                                 2
+                                 (case actual-arg-count
+                                   2 (values nil (unpack args-without-flags))
+                                   1 (values nil (unpack args-without-flags)
+                                             (deprecate "(Partial) The format `let!` without value"
+                                                        "Set `true` to set it to `true` explicitly"
+                                                        :v0.8.0 true))
+                                   _ (error* (.. "expected 1 or 2 args, got "
+                                                 actual-arg-count)))
+                                 _
+                                 (error* (.. "expected 2 or 3, got " max-args)))
                 name* (if (and (= scope :env) (str? name))
                           (name:gsub "^%$" "")
                           name)]
