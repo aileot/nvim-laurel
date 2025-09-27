@@ -1001,6 +1001,7 @@ For example,
                      `(table.concat ,?val))
                  ?val)]
     (case (or ?flag ?infix-flag)
+      "?" `(vim.api.nvim_get_option_value ,name ,api-opts)
       nil
       (case (option/->?vim-value ?val)
         vim-val `(vim.api.nvim_set_option_value ,name ,vim-val ,api-opts)
