@@ -103,13 +103,13 @@
         (assert.is_nil (. vim scope :foo)))))
   (describe* :env
     (it* "can set vim option value in any scope."
-      (let! :env :foo :bar)
-      (assert.is_same :bar (. vim :env :foo)))
+      (let! :env :FOO :bar)
+      (assert.is_same :bar (. vim :env :FOO)))
     (describe* "without either id or value"
       (it* "sets vim option value to `true`."
-        (let! :env :foo)
-        (assert.is_true (or (= true (. vim :env :foo))
-                            (= "v:true" (. vim :env :foo))))))
+        (let! :env :FOO)
+        (assert.is_true (or (= true (. vim :env :FOO))
+                            (= "v:true" (. vim :env :FOO))))))
     (it* "can set to `nil`."
       (each [_ scope (ipairs scope-list)]
         (let! scope :foo nil)
