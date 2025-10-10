@@ -581,15 +581,16 @@ augroup.)"
   (if (= 0 (length autocmds))
       `(vim.api.nvim_create_augroup ,name ,api-opts)
       `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
-         ,(icollect [_ args (ipairs autocmds)]
-            (let [au-args (if (autocmd? args)
-                              (slice args 2)
-                              (sequence? args)
-                              args
-                              (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
-                                                                    (type args)
-                                                                    (view args))))]
-              (define-autocmd! `id# (unpack au-args)))))))
+         ,(-> (icollect [_ args (ipairs autocmds)]
+                (let [au-args (if (autocmd? args)
+                                  (slice args 2)
+                                  (sequence? args)
+                                  args
+                                  (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
+                                                                        (type args)
+                                                                        (view args))))]
+                  (define-autocmd! `id# (unpack au-args))))
+              (unpack)))))
 
 ;; Export ///2
 
