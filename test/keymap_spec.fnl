@@ -1,7 +1,4 @@
-(import-macros {: setup*
-                : teardown*
-                : describe*
-                : it*} :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 
 (import-macros {: nmap!
                 : omni-map!
@@ -64,10 +61,10 @@
   (?. (buf-get-mapargs bufnr mode lhs) :callback))
 
 (describe* :macros.keymap
-  (setup* (fn []
-            (vim.cmd "function g:Test()\nendfunction")))
-  (teardown* (fn []
-               (vim.cmd "delfunction g:Test")))
+  (setup (fn []
+           (vim.cmd "function g:Test()\nendfunction")))
+  (teardown (fn []
+              (vim.cmd "delfunction g:Test")))
   (before_each (fn []
                  (let [all-modes ["" "!" :l :t]]
                    (each [_ mode (ipairs all-modes)]

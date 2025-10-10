@@ -1,5 +1,4 @@
-(import-macros {: setup* : teardown* : describe* : it*}
-               :test.helper.busted-macros)
+(import-macros {: describe* : it*} :test.helper.busted-macros)
 
 (import-macros {: augroup! : au! : autocmd!} :laurel.macros)
 (import-macros {: my-autocmd!
@@ -65,11 +64,11 @@
 ;; Note: `(vim.cmd "normal! i")` does not trigger event `InsertEnter` in the
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe* :autocmd
-  (setup* (fn []
-            (clear-any-autocmds!)
-            (vim.cmd "function! g:Test() abort\nendfunction")))
-  (teardown* (fn []
-               (vim.cmd "delfunction g:Test")))
+  (setup (fn []
+           (clear-any-autocmds!)
+           (vim.cmd "function! g:Test() abort\nendfunction")))
+  (teardown (fn []
+              (vim.cmd "delfunction g:Test")))
   (before_each (fn []
                  (when another-augroup-name
                    (del-augroup-by-name another-augroup-name)
