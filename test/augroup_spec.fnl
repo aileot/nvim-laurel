@@ -23,6 +23,16 @@
 (describe* :augroup!
   (before_each (fn []
                  (clear-any-autocmds!)))
+  (describe* "should not return in table"
+    (it* "without any autocmd definitions inside"
+      (assert.not_equals :table (type (augroup! default-augroup))))
+    (it* "with an autocmd definition inside"
+      (assert.not_equals :table (type (augroup! default-augroup
+                                        (au! :InsertEnter * #:foobar)))))
+    (it* "with some autocmd definitions inside"
+      (assert.not_equals :table (type (augroup! default-augroup
+                                        (au! :InsertEnter * #:foo)
+                                        (au! :InsertLeave * #:bar))))))
   (it* "returns augroup id without autocmds insides"
     (let [id (augroup! default-augroup)]
       (assert.has_no_errors #(del-augroup-by-id id))))
