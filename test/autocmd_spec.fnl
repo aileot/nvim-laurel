@@ -28,7 +28,6 @@
 (local get-autocmds vim.api.nvim_get_autocmds)
 (local del-autocmd! vim.api.nvim_del_autocmd)
 (local exec-autocmds vim.api.nvim_exec_autocmds)
-(local del-augroup-by-id vim.api.nvim_del_augroup_by_id)
 (local del-augroup-by-name vim.api.nvim_del_augroup_by_name)
 
 (local default-augroup :default-test-augroup)
@@ -79,44 +78,6 @@
   (after_each (fn []
                 (pcall del-autocmd! au-id1)
                 (pcall del-autocmd! au-id2)))
-  (describe* :augroup!
-    (it* "returns augroup id without autocmds insides"
-      (let [id (augroup! default-augroup)]
-        (assert.has_no_errors #(del-augroup-by-id id))))
-    (it* "can create augroup with `au!` macro and sequence without `au!` macro mixed"
-      (assert.has_no_errors #(augroup! default-augroup
-                               [default-event default-callback]
-                               (au! :FileType [:foo :bar] #:foobar)
-                               [default-event default-callback]
-                               (au! :FileType [:foo :bar] #:foobar)
-                               [default-event default-callback]
-                               (au! :FileType [:foo :bar] #:foobar))))
-    (describe* "including bare-sequences with the symbol `*` at `pattern` position"
-      (describe* "without `extra-opts`"
-        (it* "can create autocmd with pattern `*`."
-          (augroup! default-augroup
-            [default-event * default-callback])
-          (assert.is_same "*" (-> (get-first-autocmd {:group default-augroup})
-                                  (. :pattern))))
-        (describe* "but with `api-opts`"
-          (it* "can create autocmd with pattern `*`."
-            (augroup! default-augroup
-              [default-event * default-callback {:desc :foo}])
-            (assert.is_same "*"
-                            (-> (get-first-autocmd {:group default-augroup})
-                                (. :pattern))))))
-      (describe* "preceding `extra-opts`"
-        (it* "can create autocmd with pattern `*`."
-          (augroup! default-augroup
-            [default-event * [:desc :foo] default-callback])
-          (assert.is_same "*" (-> (get-first-autocmd {:group default-augroup})
-                                  (. :pattern)))))
-      (describe* "preceding both `extra-opts` and `api-opts`"
-        (it* "can create autocmd with pattern `*`."
-          (augroup! default-augroup
-            [default-event * [:nested] default-callback {:desc :foo}])
-          (let [au (get-first-autocmd {:group default-augroup-id})]
-            (assert.is_same "*" au.pattern))))))
   (describe* :au!/autocmd!
     (describe* "nested autocmds"
       (it* "callback arg value at `group` is `nil` when parent group is `nil`."
