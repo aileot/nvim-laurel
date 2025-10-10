@@ -28,9 +28,9 @@
 (local get-autocmds vim.api.nvim_get_autocmds)
 (local del-autocmd! vim.api.nvim_del_autocmd)
 (local exec-autocmds vim.api.nvim_exec_autocmds)
-(local del-augroup-by-name vim.api.nvim_del_augroup_by_name)
 
 (local default-augroup :default-test-augroup)
+(local default-augroup-id (augroup! default-augroup))
 (local default-event :BufRead)
 (local default-callback #:default-callback)
 (local default-command :default-command)
@@ -54,7 +54,6 @@
   (-> (get-first-autocmd ?opts) ;
       (. :desc)))
 
-(var default-augroup-id nil)
 (var another-augroup-name nil)
 
 (var au-id1 nil)
@@ -64,17 +63,11 @@
 ;; nvim nightly v0.10; use `vim.api.nvim_exec_autocmds` instead.
 (describe* :autocmd
   (setup (fn []
-           (clear-any-autocmds!)
            (vim.cmd "function! g:Test() abort\nendfunction")))
   (teardown (fn []
               (vim.cmd "delfunction g:Test")))
   (before_each (fn []
-                 (when another-augroup-name
-                   (del-augroup-by-name another-augroup-name)
-                   (set another-augroup-name nil))
-                 (set default-augroup-id (augroup! default-augroup))
-                 (let [aus (get-autocmds {})]
-                   (assert.is_nil (next aus)))))
+                 (clear-any-autocmds!)))
   (after_each (fn []
                 (pcall del-autocmd! au-id1)
                 (pcall del-autocmd! au-id2)))
