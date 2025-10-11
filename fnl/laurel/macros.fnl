@@ -140,6 +140,23 @@
     (fcollect [i first last]
       (. xs i))))
 
+;; (fn prefer-sequence [seq]
+;;   "Return `seq` as it is if `seq` is a bare-sequence; otherwise, wrap the item
+;; `seq` into sequence initializer.
+;; @param seq any
+;; @return any"
+;;   (if (seq? seq) seq [seq]))
+
+(fn dislike-sequence [seq]
+  "Strip off sequence initializer and return as the item if `seq` is
+a bare-sequence which only contains one item; otherwise, return `seq` as it
+is.
+@param seq any
+@return any"
+  (if (and (seq? seq) (< (length seq) 2))
+      (first seq)
+      seq))
+
 (fn tbl->keys [tbl]
   "Return keys of `tbl`.
 @param tbl table
