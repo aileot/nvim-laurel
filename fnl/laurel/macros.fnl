@@ -140,6 +140,23 @@
     (fcollect [i first last]
       (. xs i))))
 
+;; (fn prefer-sequence [seq]
+;;   "Return `seq` as it is if `seq` is a bare-sequence; otherwise, wrap the item
+;; `seq` into sequence initializer.
+;; @param seq any
+;; @return any"
+;;   (if (seq? seq) seq [seq]))
+
+(fn dislike-sequence [seq]
+  "Strip off sequence initializer and return as the item if `seq` is
+a bare-sequence which only contains one item; otherwise, return `seq` as it
+is.
+@param seq any
+@return any"
+  (if (and (seq? seq) (< (length seq) 2))
+      (first seq)
+      seq))
+
 (fn tbl->keys [tbl]
   "Return keys of `tbl`.
 @param tbl table
@@ -501,7 +518,7 @@ instead to set a Vimscript function.
     ;; args are provided.
     [events api-opts nil nil]
     (let [api-opts* (default/merge-opts! api-opts)]
-      `(vim.api.nvim_create_autocmd ,events ,api-opts*))
+      `(vim.api.nvim_create_autocmd ,(dislike-sequence events) ,api-opts*))
     args
     (let [([?id events & rest] {:&vim ?vim-indice}) (extract-symbols args
                                                                      [`&vim])
@@ -555,7 +572,7 @@ instead to set a Vimscript function.
       (let [api-opts (-> (default/merge-opts! extra-opts)
                          (autocmd/->compatible-opts!)
                          (merge-api-opts ?api-opts))]
-        `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
+        `(vim.api.nvim_create_autocmd ,(dislike-sequence events) ,api-opts)))))
 
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
