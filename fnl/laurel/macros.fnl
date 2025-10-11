@@ -518,7 +518,7 @@ instead to set a Vimscript function.
     ;; args are provided.
     [events api-opts nil nil]
     (let [api-opts* (default/merge-opts! api-opts)]
-      `(vim.api.nvim_create_autocmd ,events ,api-opts*))
+      `(vim.api.nvim_create_autocmd ,(dislike-sequence events) ,api-opts*))
     args
     (let [([?id events & rest] {:&vim ?vim-indice}) (extract-symbols args
                                                                      [`&vim])
@@ -572,7 +572,7 @@ instead to set a Vimscript function.
       (let [api-opts (-> (default/merge-opts! extra-opts)
                          (autocmd/->compatible-opts!)
                          (merge-api-opts ?api-opts))]
-        `(vim.api.nvim_create_autocmd ,events ,api-opts)))))
+        `(vim.api.nvim_create_autocmd ,(dislike-sequence events) ,api-opts)))))
 
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
