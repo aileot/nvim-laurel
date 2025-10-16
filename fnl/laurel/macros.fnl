@@ -586,6 +586,11 @@ instead to set a Vimscript function.
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
+(λ augroup/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.always-return-id nil)
+  opts)
+
 (λ define-augroup! [name api-opts autocmds]
   "Define an augroup.
 ```fennel
@@ -599,22 +604,25 @@ instead to set a Vimscript function.
 @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
 @param autocmds sequence|list Parameters for `define-autocmd!`.
 @return integer The return value of `nvim_create_augroup`."
-  (if (= 0 (length autocmds))
-      `(vim.api.nvim_create_augroup ,name ,api-opts)
-      `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
-         ,(?do (-> (icollect [_ args (ipairs autocmds)]
-                     (let [au-args (if (autocmd? args)
-                                       (slice args 2)
-                                       (sequence? args)
-                                       args
-                                       (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
-                                                                             (type args)
-                                                                             (view args))))]
-                       (define-autocmd! `id# (unpack au-args))))
-                   (unpack)))
-         ;; NOTE: Without `do`,  `unpack` only outputs the first element in
-         ;; the list when other forms follows follows `unpack`ed sequence.
-         id#)))
+  (let [always-return-id? api-opts.always-return-id]
+    (augroup/->compatible-opts! api-opts)
+    (if (= 0 (length autocmds))
+        `(vim.api.nvim_create_augroup ,name ,api-opts)
+        `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
+           ,(?do (-> (icollect [_ args (ipairs autocmds)]
+                       (let [au-args (if (autocmd? args)
+                                         (slice args 2)
+                                         (sequence? args)
+                                         args
+                                         (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
+                                                                               (type args)
+                                                                               (view args))))]
+                         (define-autocmd! `id# (unpack au-args))))
+                     (unpack)))
+           ;; NOTE: Without `do`,  `unpack` only outputs the first element in
+           ;; the list when other forms follows follows `unpack`ed sequence.
+           ,(when-not (= false always-return-id?)
+              `id#)))))
 
 ;; Export ///2
 
