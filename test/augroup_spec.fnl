@@ -76,7 +76,36 @@
                       (au! :InsertEnter * #:foobar))]
               (assert.not_equals id
                                  (vim.api.nvim_create_augroup default-augroup
-                                                              {:clear false})))))))
+                                                              {:clear false}))))))
+    (it* "which is assigned to all the autocmd(s) inside"
+      (let [desc (tostring (math.random))
+            id (augroup! :for-single-autocmd
+                 (au! :InsertEnter * [:desc desc] #:foobar))]
+        (assert.equals desc (-> (get-first-autocmd {:group id
+                                                    :event :InsertEnter})
+                                (. :desc))
+                       "augroup id should assigned to the single autocmd inside")
+        (del-augroup-by-id id))
+      (let [desc1 (tostring (math.random))
+            desc2 (tostring (math.random))
+            desc3 (tostring (math.random))
+            id (augroup! :for-multi-autocmds
+                 (au! :InsertEnter * [:desc desc1] #:foobar)
+                 (au! :InsertLeave * [:desc desc2] #:foobar)
+                 [ :CmdlineEnter * [:desc desc3] #:foobar])]
+        (assert.equals desc1 (-> (get-first-autocmd {:group id
+                                                     :event :InsertEnter})
+                                 (. :desc))
+                       "augroup id should be assigned to the second autocmd inside")
+        (assert.equals desc2 (-> (get-first-autocmd {:group id
+                                                     :event :InsertLeave})
+                                 (. :desc))
+                       "augroup id should be assigned to the second autocmd inside")
+        (assert.equals desc3 (-> (get-first-autocmd {:group id
+                                                     :event :CmdlineEnter})
+                                 (. :desc))
+                       "augroup id should be assigned to the autocmd defined in sequence without `au!` macro inside")
+        (del-augroup-by-id id))))
   (it* "returns augroup id without autocmds insides"
     (let [id (augroup! default-augroup)]
       (assert.has_no_errors #(del-augroup-by-id id))))
