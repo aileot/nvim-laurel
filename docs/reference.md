@@ -254,8 +254,15 @@ Create or get an augroup, or override an existing augroup.
   ...)
 ```
 
-- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`. You cannot
-  use macro/function named `au!` or `autocmd!` here.
+- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`.
+  You cannot use macro/function named `au!` or `autocmd!` here.
+  Additional options:
+
+  - `always-return-id` (boolean; default: `true`)
+   If `true`, the `augroup!` macro should return the `augroup` id
+   regardless of `autocmd!` lists inside.
+   If `false`, the return value is not guaranteed.
+
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare-sequence|`*`) Patterns to match against. To set `pattern`
