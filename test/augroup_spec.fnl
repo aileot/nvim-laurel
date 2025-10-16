@@ -35,6 +35,25 @@
                          (type (augroup! default-augroup
                                  (au! :InsertEnter * #:foo)
                                  (au! :InsertLeave * #:bar))))))
+  (describe* "should return the created augroup id"
+    (it* "without any autocmd definitions inside"
+      (let [id (augroup! default-augroup)]
+        (assert.equals id
+                       (vim.api.nvim_create_augroup default-augroup
+                                                    {:clear false}))))
+    (it* "with an autocmd definition inside"
+      (let [id (augroup! default-augroup
+                 (au! :InsertEnter * #:foobar))]
+        (assert.equals id
+                       (vim.api.nvim_create_augroup default-augroup
+                                                    {:clear false}))))
+    (it* "with some autocmd definitions inside"
+      (let [id (augroup! default-augroup
+                 (au! :InsertEnter * #:foo)
+                 (au! :InsertLeave * #:bar))]
+        (assert.equals id
+                       (vim.api.nvim_create_augroup default-augroup
+                                                    {:clear false})))))
   (it* "returns augroup id without autocmds insides"
     (let [id (augroup! default-augroup)]
       (assert.has_no_errors #(del-augroup-by-id id))))
