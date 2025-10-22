@@ -1247,7 +1247,7 @@ Set a window option value.
         :count [:default 0 :number]
         :desc [:string]
         :keepscript :boolean
-        :nargs [:string]
+        :nargs [:default 0 :string :number]
         :preview [:function]
         :range [:default true :number :string]
         :register :boolean})

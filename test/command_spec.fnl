@@ -64,6 +64,10 @@ Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
     (it* "can be either first arg or second arg"
       (assert.has_no_error #(command! [:bang] :Foo :Bar))
       (assert.has_no_error #(command! :Foo [:bang] :Bar)))
+    (it* "should accept `1` for `nargs` parameter"
+      (command! [:nargs 1] :Foo :bar)
+      (assert.equals "1" (-> (get-command :Foo)
+                             (. :nargs))))
     (it* "can define command with `range` key with its value"
       (command! [:range "%"] :Foo :bar)
       (assert.is_same "%" (-> (get-command :Foo)
