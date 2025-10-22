@@ -48,12 +48,12 @@
                        (vim.api.nvim_create_augroup default-augroup
                                                     {:clear false}))))
     (it* "with some autocmd definitions inside"
-      (let [id (augroup! default-augroup
-                 (au! :InsertEnter * #:foo)
-                 (au! :InsertLeave * #:bar))]
-        (assert.equals id
-                       (vim.api.nvim_create_augroup default-augroup
-                                                    {:clear false}))))
+      (case (augroup! default-augroup
+              (au! :InsertEnter * #:foo)
+              (au! :InsertLeave * #:bar))
+        id (assert.equals id
+                          (vim.api.nvim_create_augroup default-augroup
+                                                       {:clear false}))))
     (describe* "with always-return-id"
       (describe* "set to false with an autocmd definition inside"
         (it* "as an api-opt returns augroup id"
