@@ -1246,6 +1246,7 @@ Set a window option value.
         :complete [:function :string]
         :count [:default 0 :number]
         :desc [:string]
+        :force [:default true :boolean]
         :keepscript :boolean
         :nargs [:default 0 :string :number]
         :preview [:function]
