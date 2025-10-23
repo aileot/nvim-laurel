@@ -68,6 +68,14 @@ Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
       (command! [:nargs 1] :Foo :bar)
       (assert.equals "1" (-> (get-command :Foo)
                              (. :nargs))))
+    (it* "should accept `false` at `force` parameter"
+      ;; NOTE: It does not make sense to tell if `:Foo` has `force` attiribute
+      ;; set to any falsy value. The map returned by nvim_get_commands does
+      ;; not have `force` attribute. The `force` attribute set to `false` only
+      ;; tells us detected duplicates on definition.
+      (command! [:force false] :Foo :bar)
+      (assert.has_error #(command! [:force false] :Foo :bar)
+                        "Failed to create user command"))
     (it* "can define command with `range` key with its value"
       (command! [:range "%"] :Foo :bar)
       (assert.is_same "%" (-> (get-command :Foo)
