@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.7](https://github.com/aileot/nvim-laurel/compare/v0.7.6...v0.7.7) (2025-10-23)
+
+
+### Bug Fixes
+
+* **command:** allow `:nargs` to be set to `1` in extra-opts ([#346](https://github.com/aileot/nvim-laurel/issues/346)) ([c1607ed](https://github.com/aileot/nvim-laurel/commit/c1607ed09faa36131f90c51abaf29aaead0679d2))
+* **command:** support `:force` in `extra-opts` ([#347](https://github.com/aileot/nvim-laurel/issues/347)) ([9241fdd](https://github.com/aileot/nvim-laurel/commit/9241fdd2d772db8438b1170576db82641db17b83))
+
+
+### Performance Improvements
+
+* **augroup:** unpack `autocmd`s within in compile time ([#341](https://github.com/aileot/nvim-laurel/issues/341)) ([6b39935](https://github.com/aileot/nvim-laurel/commit/6b399356c48452f299174c1c67163339558eedaf))
+* **autocmd:** strip one-event sequence into string ([#344](https://github.com/aileot/nvim-laurel/issues/344)) ([b197317](https://github.com/aileot/nvim-laurel/commit/b197317a8a3689719d574d1ab3cd37cd85a9c639))
+
 ## [0.7.6](https://github.com/aileot/nvim-laurel/compare/v0.7.5...v0.7.6) (2025-09-27)
 
 
