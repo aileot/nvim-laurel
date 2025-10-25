@@ -238,7 +238,7 @@ Note that quote position depends on where the wrapper macros are defined:
 
 #### `augroup!`
 
-Create or get an augroup, or override an existing augroup.
+Create or get an augroup, or override existing augroup.
 (`&default-opts` is available.)
 
 ```fennel
