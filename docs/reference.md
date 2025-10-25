@@ -708,7 +708,7 @@ vim.api.nvim_set_option_value("number", true, {})
 vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect", {
   scope = "global",
 })
-vim.api.nvim_set_option_value("formatoptions", "12cB" { buf = 0 })
+vim.api.nvim_set_option_value("formatoptions", "12cB", { buf = 0 })
 vim.api.nvim_set_option_value("listchars", "space:_,tab:>~", { win = 0 })
 
 vim.api.nvim_buf_set_var(0, "foo", "bar")
