@@ -384,7 +384,7 @@ if vim.v.vim_did_enter then
       group = group,
       buffer = buffer,
     })
-    do_something_to_buf(buf)
+    do_something_to_buf(buffer)
   end
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     vim.api.nvim_buf_call(buf, apply_lazy_augroup)
