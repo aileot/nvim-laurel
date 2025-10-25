@@ -1002,7 +1002,7 @@ vim.env.NVIM_CACHE_HOME = vim.fn.stdpath "cache"
 vim.env.NVIM_CONFIG_HOME = vim.fn.stdpath "config"
 vim.env.NVIM_DATA_HOME = vim.fn.stdpath "data"
 vim.env.NVIM_STATE_HOME = vim.fn.stdpath "state"
-vim.env.PLUGIN_CACHE_HOME vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
+vim.env.PLUGIN_CACHE_HOME = vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
 ```
 
 ```vim
