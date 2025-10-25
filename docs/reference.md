@@ -1139,7 +1139,7 @@ highlight! Foo guifg=#8d9eb2 gui=bold,italic ctermfg=103 cterm=bold,italic
 ```
 
 ```lua
-vim.api.nvim_set_nl(0, "Foo", {
+vim.api.nvim_set_hl(0, "Foo", {
   fg = "#8d9eb2",
   ctermfg = 103,
   bold = true,
