@@ -56,27 +56,19 @@
                                                        {:clear false}))))
     (describe* "with always-return-id"
       (describe* "set to false with an autocmd definition inside"
-        (it* "as an api-opt returns augroup id"
-          (let [id (augroup! default-augroup {:always-return-id false}
-                     (au! :InsertEnter * #:foobar))]
-            (assert.not_equals id
-                               (vim.api.nvim_create_augroup default-augroup
-                                                            {:clear false}))))
-        (it* "as a default api-opt returns augroup id"
-          (let [id (augroup! default-augroup &default-opts
-                     {:always-return-id false}
-                     (au! :InsertEnter * #:foobar))]
-            (assert.not_equals id
-                               (vim.api.nvim_create_augroup default-augroup
-                                                            {:clear false}))))
-        (it* "as a api-opt overriding preceding &default-opts returns augroup id"
-          (let [id (augroup! default-augroup &default-opts
-                     {:always-return-id true}
-                     {:always-return-id false}
-                     (au! :InsertEnter * #:foobar))]
-            (assert.not_equals id
-                               (vim.api.nvim_create_augroup default-augroup
-                                                            {:clear false}))))))
+        (it* "as an api-opt should return undefined value"
+          (assert.has_no_errors #(augroup! default-augroup
+                                   {:always-return-id false}
+                                   (au! :InsertEnter * #:foobar))))
+        (it* "as a default api-opt should return undefined value"
+          (assert.has_no_errors #(augroup! default-augroup &default-opts
+                                   {:always-return-id false}
+                                   (au! :InsertEnter * #:foobar))))
+        (it* "as a api-opt overriding preceding &default-opts should return undefined value"
+          (assert.has_no_errors #(augroup! default-augroup &default-opts
+                                   {:always-return-id true}
+                                   {:always-return-id false}
+                                   (au! :InsertEnter * #:foobar))))))
     (it* "which is assigned to all the autocmd(s) inside"
       (let [desc (tostring (math.random))
             id (augroup! :for-single-autocmd
