@@ -27,12 +27,77 @@
     (it* "without any autocmd definitions inside"
       (assert.not_equals :table (type (augroup! default-augroup))))
     (it* "with an autocmd definition inside"
-      (assert.not_equals :table (type (augroup! default-augroup
-                                        (au! :InsertEnter * #:foobar)))))
+      (assert.not_equals :table
+                         (type (augroup! default-augroup
+                                 (au! :InsertEnter * #:foobar)))))
     (it* "with some autocmd definitions inside"
-      (assert.not_equals :table (type (augroup! default-augroup
-                                        (au! :InsertEnter * #:foo)
-                                        (au! :InsertLeave * #:bar))))))
+      (assert.not_equals :table
+                         (type (augroup! default-augroup
+                                 (au! :InsertEnter * #:foo)
+                                 (au! :InsertLeave * #:bar))))))
+  (describe* "should return the created augroup id"
+    (it* "without any autocmd definitions inside"
+      (let [id (augroup! default-augroup)]
+        (assert.equals id
+                       (vim.api.nvim_create_augroup default-augroup
+                                                    {:clear false}))))
+    (it* "with an autocmd definition inside"
+      (let [id (augroup! default-augroup
+                 (au! :InsertEnter * #:foobar))]
+        (assert.equals id
+                       (vim.api.nvim_create_augroup default-augroup
+                                                    {:clear false}))))
+    (it* "with some autocmd definitions inside"
+      (case (augroup! default-augroup
+              (au! :InsertEnter * #:foo)
+              (au! :InsertLeave * #:bar))
+        id (assert.equals id
+                          (vim.api.nvim_create_augroup default-augroup
+                                                       {:clear false}))))
+    (describe* "with always-return-id"
+      (describe* "set to false with an autocmd definition inside"
+        (it* "as an api-opt should return undefined value"
+          (assert.has_no_errors #(augroup! default-augroup
+                                   {:always-return-id false}
+                                   (au! :InsertEnter * #:foobar))))
+        (it* "as a default api-opt should return undefined value"
+          (assert.has_no_errors #(augroup! default-augroup &default-opts
+                                   {:always-return-id false}
+                                   (au! :InsertEnter * #:foobar))))
+        (it* "as a api-opt overriding preceding &default-opts should return undefined value"
+          (assert.has_no_errors #(augroup! default-augroup &default-opts
+                                   {:always-return-id true}
+                                   {:always-return-id false}
+                                   (au! :InsertEnter * #:foobar))))))
+    (it* "which is assigned to all the autocmd(s) inside"
+      (let [desc (tostring (math.random))
+            id (augroup! :for-single-autocmd
+                 (au! :InsertEnter * [:desc desc] #:foobar))]
+        (assert.equals desc (-> (get-first-autocmd {:group id
+                                                    :event :InsertEnter})
+                                (. :desc))
+                       "augroup id should be assigned to the single autocmd inside")
+        (del-augroup-by-id id))
+      (let [desc1 (tostring (math.random))
+            desc2 (tostring (math.random))
+            desc3 (tostring (math.random))
+            id (augroup! :for-multi-autocmds
+                 (au! :InsertEnter * [:desc desc1] #:foobar)
+                 (au! :InsertLeave * [:desc desc2] #:foobar)
+                 [:CmdlineEnter * [:desc desc3] #:foobar])]
+        (assert.equals desc1 (-> (get-first-autocmd {:group id
+                                                     :event :InsertEnter})
+                                 (. :desc))
+                       "augroup id should be assigned to the first autocmd inside")
+        (assert.equals desc2 (-> (get-first-autocmd {:group id
+                                                     :event :InsertLeave})
+                                 (. :desc))
+                       "augroup id should be assigned to the second autocmd inside")
+        (assert.equals desc3 (-> (get-first-autocmd {:group id
+                                                     :event :CmdlineEnter})
+                                 (. :desc))
+                       "augroup id should be assigned to the autocmd defined in sequence without `au!` macro inside")
+        (del-augroup-by-id id))))
   (it* "returns augroup id without autocmds insides"
     (let [id (augroup! default-augroup)]
       (assert.has_no_errors #(del-augroup-by-id id))))

@@ -204,6 +204,15 @@ priority. `nil` is ignored.
         (tset tbl1 k v))))
   tbl1)
 
+(fn ?do [...]
+  "Return `...` in `do` list, or just return `...`.
+@param ... any
+@return any"
+  (if (< 1 (select "#" ...))
+      `(do
+         ,...)
+      ...))
+
 ;; Additional predicates ///2
 
 ;; (fn quoted? [x]
@@ -577,37 +586,44 @@ instead to set a Vimscript function.
 (fn autocmd? [args]
   (and (list? args) (contains? [`au! `autocmd!] (first args))))
 
+(λ augroup/->compatible-opts! [opts]
+  "Remove invalid keys of `opts` for the api functions."
+  (set opts.always-return-id nil)
+  opts)
+
 (λ define-augroup! [name api-opts autocmds]
   "Define an augroup.
-
 ```fennel
 (define-augroup! name api-opts [events ?pattern ?extra-opts callback ?api-opts])
 (define-augroup! name api-opts
   (au! events ?pattern ?extra-opts callback ?api-opts))
-
 (define-augroup! name api-opts
   (autocmd! events ?pattern ?extra-opts callback ?api-opts))
 ```
-
 @param name string Augroup name.
 @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
+@param opts.always-return-id boolean? (default: true) if true or nil, the `augroup!` macro always return its id regardless of its `au!` macro args inside; otherwise, the return value is undefined.
 @param autocmds sequence|list Parameters for `define-autocmd!`.
-@return undefined Without `...`, the return value of `nvim_create_augroup`;
-otherwise, undefined (currently a sequence of `autocmd`s defined in the
-augroup.)"
-  (if (= 0 (length autocmds))
-      `(vim.api.nvim_create_augroup ,name ,api-opts)
-      `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
-         ,(-> (icollect [_ args (ipairs autocmds)]
-                (let [au-args (if (autocmd? args)
-                                  (slice args 2)
-                                  (sequence? args)
-                                  args
-                                  (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
-                                                                        (type args)
-                                                                        (view args))))]
-                  (define-autocmd! `id# (unpack au-args))))
-              (unpack)))))
+@return integer The return value of `nvim_create_augroup` unless `always-return-id` is set to `false`."
+  (let [always-return-id? (not= false api-opts.always-return-id)]
+    (augroup/->compatible-opts! api-opts)
+    (if (= 0 (length autocmds))
+        `(vim.api.nvim_create_augroup ,name ,api-opts)
+        `(let [id# (vim.api.nvim_create_augroup ,name ,api-opts)]
+           ,(?do (-> (icollect [_ args (ipairs autocmds)]
+                       (let [au-args (if (autocmd? args)
+                                         (slice args 2)
+                                         (sequence? args)
+                                         args
+                                         (error* (msg-template/expected-actual "sequence, or list which starts with `au!` or `autocmd!`"
+                                                                               (type args)
+                                                                               (view args))))]
+                         (define-autocmd! `id# (unpack au-args))))
+                     (unpack)))
+           ;; NOTE: Without `do`, `unpack` only outputs the first element in
+           ;; the list when other forms follows `unpack`ed sequence.
+           ,(when always-return-id?
+              `id#)))))
 
 ;; Export ///2
 

@@ -254,8 +254,15 @@ Create or get an augroup, or override an existing augroup.
   ...)
 ```
 
-- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`. You cannot
-  use macro/function named `au!` or `autocmd!` here.
+- `?api-opts-for-augroup`: (kv-table) `:h nvim_create_augroup()`.
+  You cannot use macro/function named `au!` or `autocmd!` here.
+  Additional options:
+
+  - `always-return-id` (boolean; default: `true`)
+   If `true`, the `augroup!` macro should return the `augroup` id
+   regardless of `autocmd!` lists inside.
+   If `false`, the return value is not guaranteed.
+
 - `name`: (string) The name of autocmd group.
 - `events`: (string|string[]) The event or events to register this autocmd.
 - `?pattern`: (bare-sequence|`*`) Patterns to match against. To set `pattern`
@@ -288,16 +295,25 @@ Create or get an augroup, or override an existing augroup.
 - `?api-opts`: (kv-table) `:h nvim_create_autocmd()`.
 
 ```fennel
-(augroup! :sample-augroup
+(augroup! :sample-augroup {:always-return-id false}
   [:TextYankPost #(vim.highlight.on_yank {:timeout 450 :on_visual false})]
   (autocmd! [:InsertEnter :InsertLeave]
             [:buffer :desc "call foo#bar() without any args"] vim.fn.foo#bar)
   (autocmd! :VimEnter * [:once :nested :desc "call baz#qux() with <amatch>"]
-            #(vim.fn.baz#qux $.match)))
+            #(vim.fn.baz#qux $.match))
+  (autocmd! :LspAttach *
+            #(au! $.group :CursorHold [:buffer $.buf]
+                vim.lsp.buf.document_highlight)))
 
-(autocmd! :LspAttach *
-          #(au! $.group :CursorHold [:buffer $.buf]
-                vim.lsp.buf.document_highlight))
+(case (augroup! :lazy-augroup
+        (au! [:BufRead] * #(do-something-to-buf $.buf)))
+  group (when vim.v.vim_did_enter
+           ;; Apply the autocmd to each buf already loaded before the augroup
+           ;; is created.
+           (fn apply-lazy-augroup! [buffer]
+             (vim.api.nvim_exec_autocmds :BufRead {: group : buffer}))
+           (each [_ buf (ipairs (vim.api.nvim_list_bufs))]
+             (vim.api.nvim_buf_call buf apply-lazy-augroup!))))
 ```
 
 is equivalent to
@@ -311,6 +327,14 @@ augroup sample-augroup
   autocmd LspAttach * au sample-augroup CursorHold <buffer>
   \ lua vim.lsp.buf.document_highlight()
 augroup END
+
+augroup lazy-augroup
+  autocmd!
+  autocmd BufRead * lua do_something_to_buf(vim.fn.expand('<abuf>'))
+augroup END
+if v:vim_did_enter
+  bufdo doautocmd lazy-augroup BufRead
+endif
 ```
 
 ```lua
@@ -332,20 +356,40 @@ vim.api.nvim_create_autocmd("VimEnter", {
   once = true,
   nested = true,
   desc = "call baz#qux() with <amatch>",
-  callback = function(args)
-    vim.fn["baz#qux"](args.match)
+  callback = function(a)
+    vim.fn["baz#qux"](a.match)
   end,
 })
 vim.api.nvim_create_autocmd("LspAttach", {
   group = id,
-  callback = function(args)
+  callback = function(a)
     vim.api.nvim_create_autocmd("CursorHold", {
-      group = args.group,
-      buffer = args.buf,
+      group = a.group,
+      buffer = a.buf,
       callback = vim.lsp.buf.document_highlight,
     })
   end,
 })
+
+local group = vim.api.nvim_create_augroup("lazy-augroup", {})
+vim.api.nvim_create_autocmd("BufRead", {
+  group = group,
+  callback = function(a)
+    do_something_to_buf(a.buf)
+  end,
+})
+if vim.v.vim_did_enter then
+  local function apply_lazy_augroup(buffer)
+    vim.api.nvim_exec_autocmds("BufRead", {
+      group = group,
+      buffer = buffer,
+    })
+    do_something_to_buf(buf)
+  end
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    vim.api.nvim_buf_call(buf, apply_lazy_augroup)
+  end
+end
 ```
 
 c.f. [`autocmd!`](#autocmd-1)
