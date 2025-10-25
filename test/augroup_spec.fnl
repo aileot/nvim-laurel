@@ -96,7 +96,7 @@
         (assert.equals desc1 (-> (get-first-autocmd {:group id
                                                      :event :InsertEnter})
                                  (. :desc))
-                       "augroup id should be assigned to the second autocmd inside")
+                       "augroup id should be assigned to the first autocmd inside")
         (assert.equals desc2 (-> (get-first-autocmd {:group id
                                                      :event :InsertLeave})
                                  (. :desc))
