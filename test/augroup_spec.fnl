@@ -84,7 +84,7 @@
         (assert.equals desc (-> (get-first-autocmd {:group id
                                                     :event :InsertEnter})
                                 (. :desc))
-                       "augroup id should assigned to the single autocmd inside")
+                       "augroup id should be assigned to the single autocmd inside")
         (del-augroup-by-id id))
       (let [desc1 (tostring (math.random))
             desc2 (tostring (math.random))
