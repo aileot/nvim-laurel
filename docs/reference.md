@@ -356,16 +356,16 @@ vim.api.nvim_create_autocmd("VimEnter", {
   once = true,
   nested = true,
   desc = "call baz#qux() with <amatch>",
-  callback = function(args)
-    vim.fn["baz#qux"](args.match)
+  callback = function(a)
+    vim.fn["baz#qux"](a.match)
   end,
 })
 vim.api.nvim_create_autocmd("LspAttach", {
   group = id,
-  callback = function(args)
+  callback = function(a)
     vim.api.nvim_create_autocmd("CursorHold", {
-      group = args.group,
-      buffer = args.buf,
+      group = a.group,
+      buffer = a.buf,
       callback = vim.lsp.buf.document_highlight,
     })
   end,
