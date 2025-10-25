@@ -305,8 +305,8 @@ Create or get an augroup, or override an existing augroup.
             #(au! $.group :CursorHold [:buffer $.buf]
                 vim.lsp.buf.document_highlight)))
 
-(case (augroup! :lazy-augroup)
-        (au! [:BufRead] * #(do-something-to-buf $.buf))
+(case (augroup! :lazy-augroup
+        (au! [:BufRead] * #(do-something-to-buf $.buf)))
   group (when vim.v.vim_did_enter
            ;; Apply the autocmd to each buf already loaded before the augroup
            ;; is created.
