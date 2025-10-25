@@ -105,7 +105,7 @@ time. For example,
 
 - `:foobar` is a `bare-string`.
 - `(.. :foo :bar)` is not a `bare-string`.
-- `[:foo :bar]` is a `bare-sequence` and also a `bare-string[]`.
+- `[:foo :bar]` is a `bare-sequence` and a `bare-string[]`.
 - `[baz]` where `baz` is either symbol or list is a `bare-sequence`, but not a
   `bare-string[]`.
 - `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence`
