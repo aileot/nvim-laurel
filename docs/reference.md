@@ -113,12 +113,12 @@ time. For example,
 
 #### `?{name}`
 
-It represents `{name}` is omittable rather than nilable in nvim-laurel
+It represents `{name}` is omittable rather than `nil`able in nvim-laurel
 contexts.
 
 #### `api-opts`
 
-It is kv-table `{}` option for the api functions, `vim.api.nvim_foo()`. Unless
+It is kv-table `{}` option for the API functions, `vim.api.nvim_foo()`. Unless
 otherwise noted, this option has the following features:
 
 - It only accepts the same key/value described in `api.txt`.
@@ -434,8 +434,8 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
 (map! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
-- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i",
-  "v", "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
+- `modes`: (string|string[]) Mode short-name (map command prefix: `"n"`, `"i"`,
+  `"v"`, `"x"`, …) or `"!"` for `:map!`, or empty string for `:map`. As long as in
   bare-string, multi modes can be set in a string like `:nox` instead of
   `[:n :o :x]`.
 - `?extra-opts`: (bare-sequence) Additional option:
@@ -446,8 +446,8 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
     `expr` is set in `extra-opts`.
   - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
     option from `nvim_set_keymap()`.
-  - `wait`: Disable `nowait` _in extra-opts;_ will NOT disable `nowait`
-    _in api-opts_. Useful in wrapper macro which set `nowait` with
+  - `wait`: Disable `nowait` _in `extra-opts`;_ will NOT disable `nowait`
+    _in `api-opts`_. Useful in wrapper macro which set `nowait` with
     `&default-opts`.
 
   Note: The `:desc` key can be omitted if the description is written in the
@@ -635,10 +635,10 @@ set `false` or `(not vim.go.foo)` respectively.
 (let! scope ?id name ?flag ?val)
 ```
 
-- `scope`: ("g"|"b"|"w"|"t"|"v"|"env"|"o"|"go"|"bo"|"wo"|"opt"|"opt_local"|"opt_global")
+- `scope`: (`"g"`|`"b"`|`"w"`|`"t"`|`"v"`|`"env"`|`"o"`|`"go"`|`"bo"`|`"wo"`|`"opt"`|`"opt_local"`|`"opt_global"`)
   One of the scopes.
 - `?id`: (integer) Location handle, or 0 for current location.
-  Only available in the scopes "b", "w", or "t".
+  Only available in the scopes `"b"`, `"w"`, or `"t"`.
 - `name`: (string) Option name. As long as the option name is bare-string,
   option name is _case-insensitive;_ you can improve readability a bit with
   camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
@@ -646,8 +646,9 @@ set `false` or `(not vim.go.foo)` respectively.
   on an option name to open the vim helpfile at the tag.
 - `?flag`: (`+`|`^`|`-`|`?`) Omittable flag in symbol.
   Set one of `+`, `^`, `-`, or `?` to append, prepend, remove, or get, option
-  value. While `?` to get value is available in all the `scope`, the other
-  flags are only available in the scopes "opt", "opt_local", or "opt_global".
+  value.
+  While `?` to get value is available in all the `scope`, the other flags are
+  only available in the scopes `"opt"`, `"opt_local"`, or `"opt_global"`.
 - `?val`: (boolean|number|string|table) New option value. If not provided, the
   value is supposed to be `true` (experimental). It does not work with `?id`
   argument.
