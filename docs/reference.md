@@ -105,7 +105,7 @@ time. For example,
 
 - `:foobar` is a `bare-string`.
 - `(.. :foo :bar)` is not a `bare-string`.
-- `[:foo :bar]` is a `bare-sequence` and also a `bare-string[]`.
+- `[:foo :bar]` is both a `bare-sequence` and a `bare-string[]`.
 - `[baz]` where `baz` is either symbol or list is a `bare-sequence`, but not a
   `bare-string[]`.
 - `(icollect [_ val (ipairs [:foo :bar])] val)` is neither a `bare-sequence`
@@ -113,12 +113,12 @@ time. For example,
 
 #### `?{name}`
 
-It represents `{name}` is omittable rather than nilable in nvim-laurel
+It represents `{name}` is omittable rather than `nil`able in nvim-laurel
 contexts.
 
 #### `api-opts`
 
-It is kv-table `{}` option for the api functions, `vim.api.nvim_foo()`. Unless
+It is kv-table `{}` option for the API functions, `vim.api.nvim_foo()`. Unless
 otherwise noted, this option has the following features:
 
 - It only accepts the same key/value described in `api.txt`.
@@ -238,7 +238,7 @@ Note that quote position depends on where the wrapper macros are defined:
 
 #### `augroup!`
 
-Create or get an augroup, or override an existing augroup.
+Create or get an augroup, or override existing augroup.
 (`&default-opts` is available.)
 
 ```fennel
@@ -384,7 +384,7 @@ if vim.v.vim_did_enter then
       group = group,
       buffer = buffer,
     })
-    do_something_to_buf(buf)
+    do_something_to_buf(buffer)
   end
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     vim.api.nvim_buf_call(buf, apply_lazy_augroup)
@@ -434,8 +434,8 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
 (map! modes lhs ?extra-opts rhs ?api-opts)
 ```
 
-- `modes`: (string|string[]) Mode short-name (map command prefix: "n", "i",
-  "v", "x", …) or "!" for `:map!`, or empty string for `:map`. As long as in
+- `modes`: (string|string[]) Mode short-name (map command prefix: `"n"`, `"i"`,
+  `"v"`, `"x"`, …) or `"!"` for `:map!`, or empty string for `:map`. As long as in
   bare-string, multi modes can be set in a string like `:nox` instead of
   `[:n :o :x]`.
 - `?extra-opts`: (bare-sequence) Additional option:
@@ -446,8 +446,8 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
     `expr` is set in `extra-opts`.
   - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
     option from `nvim_set_keymap()`.
-  - `wait`: Disable `nowait` _in extra-opts;_ will NOT disable `nowait`
-    _in api-opts_. Useful in wrapper macro which set `nowait` with
+  - `wait`: Disable `nowait` _in `extra-opts`;_ will NOT disable `nowait`
+    _in `api-opts`_. Useful in wrapper macro which set `nowait` with
     `&default-opts`.
 
   Note: The `:desc` key can be omitted if the description is written in the
@@ -614,11 +614,11 @@ Generate `:<C-u>foobar<CR>` in string. Useful for `rhs` in keymap macro.
 (Inspired by [`:let`](https://vimhelp.org/eval.txt.html#%3Alet))
 
 Set value to the Vim `variable`
-(g, b, w, t, v, env),
+(`g`, `b`, `w`, `t`, `v`, `env`),
 or `option`
-(o, go, bo, wo, opt, opt_local, opt_global).
+(`o`, `go`, `bo`, `wo`, `opt`, `opt_local`, `opt_global`).
 It can also append, prepend, or remove, value the Vim `option`
-in the scopes: opt, opt_local, opt_global.
+in the scopes: `opt`, `opt_local`, `opt_global`.
 
 This is an optimized replacement of `vim.o`, `vim.bo`, ...,
 `vim.opt`, `vim.opt_local`, `vim.opt_global`,
@@ -635,19 +635,20 @@ set `false` or `(not vim.go.foo)` respectively.
 (let! scope ?id name ?flag ?val)
 ```
 
-- `scope`: ("g"|"b"|"w"|"t"|"v"|"env"|"o"|"go"|"bo"|"wo"|"opt"|"opt_local"|"opt_global")
+- `scope`: (`"g"`|`"b"`|`"w"`|`"t"`|`"v"`|`"env"`|`"o"`|`"go"`|`"bo"`|`"wo"`|`"opt"`|`"opt_local"`|`"opt_global"`)
   One of the scopes.
 - `?id`: (integer) Location handle, or 0 for current location.
-  Only available in the scopes "b", "w", or "t".
+  Only available in the scopes `"b"`, `"w"`, or `"t"`.
 - `name`: (string) Option name. As long as the option name is bare-string,
   option name is _case-insensitive;_ you can improve readability a bit with
   camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
   `(setlocal! :keywordPrg ":help")` for fennel still makes sense. Type `K`
-  on an option name to open the vim helpfile at the tag.
+  on an option name to open the vim help file at the tag.
 - `?flag`: (`+`|`^`|`-`|`?`) Omittable flag in symbol.
   Set one of `+`, `^`, `-`, or `?` to append, prepend, remove, or get, option
-  value. While `?` to get value is available in all the `scope`, the other
-  flags are only available in the scopes "opt", "opt_local", or "opt_global".
+  value.
+  While `?` to get value is available in all the `scope`, the other flags are
+  only available in the scopes `"opt"`, `"opt_local"`, or `"opt_global"`.
 - `?val`: (boolean|number|string|table) New option value. If not provided, the
   value is supposed to be `true` (experimental). It does not work with `?id`
   argument.
@@ -708,7 +709,7 @@ vim.api.nvim_set_option_value("number", true, {})
 vim.api.nvim_set_option_value("completeopt", "menu,menuone,noselect", {
   scope = "global",
 })
-vim.api.nvim_set_option_value("formatoptions", "12cB" { buf = 0 })
+vim.api.nvim_set_option_value("formatoptions", "12cB", { buf = 0 })
 vim.api.nvim_set_option_value("listchars", "space:_,tab:>~", { win = 0 })
 
 vim.api.nvim_buf_set_var(0, "foo", "bar")
@@ -1002,7 +1003,7 @@ vim.env.NVIM_CACHE_HOME = vim.fn.stdpath "cache"
 vim.env.NVIM_CONFIG_HOME = vim.fn.stdpath "config"
 vim.env.NVIM_DATA_HOME = vim.fn.stdpath "data"
 vim.env.NVIM_STATE_HOME = vim.fn.stdpath "state"
-vim.env.PLUGIN_CACHE_HOME vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
+vim.env.PLUGIN_CACHE_HOME = vim.fs.normalize "$NVIM_CACHE_HOME/to/plugin/home"
 ```
 
 ```vim
@@ -1138,7 +1139,7 @@ highlight! Foo guifg=#8d9eb2 gui=bold,italic ctermfg=103 cterm=bold,italic
 ```
 
 ```lua
-nvim_set_nl(0, "Foo", {
+vim.api.nvim_set_hl(0, "Foo", {
   fg = "#8d9eb2",
   ctermfg = 103,
   bold = true,
