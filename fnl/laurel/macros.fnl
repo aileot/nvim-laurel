@@ -619,8 +619,8 @@ instead to set a Vimscript function.
                                                                                (view args))))]
                          (define-autocmd! `id# (unpack au-args))))
                      (unpack)))
-           ;; NOTE: Without `do`,  `unpack` only outputs the first element in
-           ;; the list when other forms follows follows `unpack`ed sequence.
+           ;; NOTE: Without `do`, `unpack` only outputs the first element in
+           ;; the list when other forms follows `unpack`ed sequence.
            ,(when-not (= false always-return-id?)
               `id#)))))
 
