@@ -602,9 +602,10 @@ instead to set a Vimscript function.
 ```
 @param name string Augroup name.
 @param opts kv-table Dictionary parameters for `nvim_create_augroup`.
+@param opts.always-return-id boolean? (default: true) if true or nil, the `augroup!` macro always return its id regardless of its `au!` macro args inside; otherwise, the return value is undefined.
 @param autocmds sequence|list Parameters for `define-autocmd!`.
-@return integer The return value of `nvim_create_augroup`."
-  (let [always-return-id? api-opts.always-return-id]
+@return integer The return value of `nvim_create_augroup` unless `always-return-id` is set to `false`."
+  (let [always-return-id? (not= false api-opts.always-return-id)]
     (augroup/->compatible-opts! api-opts)
     (if (= 0 (length autocmds))
         `(vim.api.nvim_create_augroup ,name ,api-opts)
@@ -621,7 +622,7 @@ instead to set a Vimscript function.
                      (unpack)))
            ;; NOTE: Without `do`, `unpack` only outputs the first element in
            ;; the list when other forms follows `unpack`ed sequence.
-           ,(when-not (= false always-return-id?)
+           ,(when always-return-id?
               `id#)))))
 
 ;; Export ///2
