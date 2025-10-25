@@ -643,7 +643,7 @@ set `false` or `(not vim.go.foo)` respectively.
   option name is _case-insensitive;_ you can improve readability a bit with
   camelCase/PascalCase. Since `:h {option}` is also case-insensitive,
   `(setlocal! :keywordPrg ":help")` for fennel still makes sense. Type `K`
-  on an option name to open the vim helpfile at the tag.
+  on an option name to open the vim help file at the tag.
 - `?flag`: (`+`|`^`|`-`|`?`) Omittable flag in symbol.
   Set one of `+`, `^`, `-`, or `?` to append, prepend, remove, or get, option
   value.
