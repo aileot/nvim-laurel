@@ -55,7 +55,7 @@ with
 2. Add the `fnl/` directories on [&runtimepath][] to [fennel-ls][] workspace folders:
 
    ```lua
-   -- In after/lsp/fennel_ls.lua
+   -- In ~/.config/nvim/after/lsp/fennel_ls.lua
    return {
      workspace_folders = vim.api.nvim_get_runtime_file("fnl", true),
    }
