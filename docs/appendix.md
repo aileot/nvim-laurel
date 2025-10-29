@@ -27,7 +27,7 @@ _Please adopt or adjust the snippets at your own risk._
 
 ## LSP
 
-_(last edited at nvim-lspconfig [9619e53d](https://github.com/neovim/nvim-lspconfig/commit/9619e53d3f99f0ca4ea3b88f5d97fce703131820))_
+_(last edited at nvim-lspconfig [48a9b4dc](https://github.com/neovim/nvim-lspconfig/commit/48a9b4dcd9a3611edddd51972d8abb1a289c7724))_
 
 ### LSP: _Get fennel-ls support over `&rtp`, or `&runtimepath`_
 
