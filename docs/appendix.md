@@ -27,7 +27,7 @@ _Please adopt or adjust the snippets at your own risk._
 
 ## LSP
 
-_(last edited at nvim-lspconfig [9619e53d](https://github.com/neovim/nvim-lspconfig/commit/9619e53d3f99f0ca4ea3b88f5d97fce703131820))_
+_(last edited at nvim-lspconfig [48a9b4dc](https://github.com/neovim/nvim-lspconfig/commit/48a9b4dcd9a3611edddd51972d8abb1a289c7724))_
 
 ### LSP: _Get fennel-ls support over `&rtp`, or `&runtimepath`_
 
@@ -48,16 +48,23 @@ with
     :macro-path "fnl/?.fnl;fnl/?/init.fnl"
     :fennel-path "fnl/?.fnl;fnl/?/init.fnl"}
     ;; Or, with nvim-thyme, you might want this instead.
-    ;; :macro-path "lua/?.fnl;lua/?/init.fnl"
-    ;; :fennel-path "lua/?.fnl;lua/?/init.fnl"}
+    ;; :macro-path "lua/?.fnl;lua/?/init.fnl;fnl/?.fnl;fnl/?/init.fnl"
+    ;; :fennel-path "lua/?.fnl;lua/?/init.fnl;fnl/?.fnl;fnl/?/init.fnl"}
    ```
 
 2. Add the `fnl/` directories on [&runtimepath][] to [fennel-ls][] workspace folders:
 
    ```lua
-   -- In after/lsp/fennel_ls.lua
+   -- In ~/.config/nvim/after/lsp/fennel_ls.lua
+   local workspace_folders_on_rtp = vim.tbl_map(function(path)
+     return {
+       uri = "file://" .. path,
+       name = vim.fs.basename(vim.fs.dirname(path)),
+     }
+   end, vim.api.nvim_get_runtime_file("fnl", true))
+
    return {
-     workspace_folders = vim.api.nvim_get_runtime_file("fnl", true),
+     workspace_folders = workspace_folders_on_rtp,
    }
    ```
 
@@ -141,7 +148,7 @@ if you don't intend to override queries defined by other plugins._
 ### Treesitter: _Inject Vim syntax highlight to Vim command in nvim-laurel macros_
 
 ```query
-;; in after/quries/fennel/injection.scm
+;; in after/queries/fennel/injection.scm
 
 ;; without api-opts
 ((list
