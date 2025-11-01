@@ -679,6 +679,63 @@ instead to set a Vimscript function.
   ;;" (view [...]))))
   (define-autocmd! ...))
 
+(fn doautocmd/parse-args [...]
+  "Parse arguments for `doautocmd!` macro.
+@param args sequence The arguments passed to `doautocmd!`.
+@return ?group string|integer|symbol|nil
+@return events string[]
+@return ?patterns string[]|nil
+@return ?api-opts kv-table|nil"
+  (case (select :# ...)
+    1
+    ;; (doautocmd! events)
+    (let [events ...]
+      (values nil events nil nil nil))
+    2
+    ;; (doautocmd! events patterns)
+    ;; (doautocmd! events api-opts)
+    ;; (doautocmd! group events)
+    (case ...
+      (where (events patterns|api-opts) (sequence? events))
+      (if (or (sequence? patterns|api-opts) (= `* patterns|api-opts))
+          (let [patterns patterns|api-opts]
+            (values nil events patterns nil nil))
+          ;; Otherwise
+          (let [api-opts patterns|api-opts]
+            (values nil events nil nil api-opts)))
+      (group events) (values group events))
+    3
+    ;; (doautocmd! events patterns api-opts)
+    ;; (doautocmd! group events patterns)
+    ;; (doautocmd! group events api-opts)
+    (case ...
+      (where (events patterns api-opts) (sequence? events))
+      (values nil events patterns nil api-opts)
+      (group events api-opts) (values group events nil nil api-opts))
+    4
+    ;; (doautocmd! group events patterns api-opts)
+    (let [(group events patterns api-opts) ...]
+      (values group events patterns nil api-opts))
+    ;; Otherwise
+    n
+    (error* (.. "unsupported number of arguments: " n))))
+
+(fn doautocmd! [...]
+  "Execute all the autocmds for `events` that match the corresponding
+`?group`, `?patterns`, and `?api-opts`.
+@param ?group string|integer? The optional autocmd group name or id to match against.
+@param events string[] `events` should be set in sequence even if the `events` is set in symbol or list which returns multi events.
+@param ?patterns string[] `patterns` should be set in sequence even if the `patterns` is set in symbol or list which returns multi patterns.
+@param ?api-opts kv-table Dict of vim.api.keyset.exec_autocmds"
+  (let [(?group events ?patterns ?buffer ?api-opts) (doautocmd/parse-args ...)]
+    (let [api-opts (merge-api-opts {:group ?group :buffer ?buffer} ?api-opts)]
+      (when (and ?patterns (not= `* ?patterns))
+        (set api-opts.pattern (dislike-sequence ?patterns)))
+      (?do (-> (icollect [_ event (ipairs events)]
+                 `(vim.api.nvim_exec_autocmds ,event
+                    ,api-opts))
+               (unpack))))))
+
 ;; Keymap ///1
 
 (local keymap/extra-opt-keys {:<buffer> :boolean
@@ -1393,6 +1450,7 @@ The same as {opts} for `nvim_create_user_command`."
                       : augroup!
                       : autocmd!
                       :au! autocmd!
+                      : doautocmd!
                       : set!
                       : setlocal!
                       : setglobal!
