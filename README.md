@@ -213,9 +213,14 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
 - [Autocmd](./docs/reference.md#autocmd)
   - [`augroup!`](./docs/reference.md#augroup): A replacement of
     `vim.api.nvim_create_augroup`
+    inspired by `:augroup`.
   - [`autocmd!`](./docs/reference.md#autocmd-1): A replacement of
     `vim.api.nvim_create_autocmd`
+    inspired by `:autocmd`.
   - [`au!`](./docs/reference.md#au): An alias of `autocmd!`
+    inspired by ` :au`.
+  - [`doautocmd!`](./docs/reference.md#doautocmd): A replacement of
+    `vim.api.nvim_exec_autocmds` inspied by `:doautocmd`.
 
 - [Keymap](./docs/reference.md#Keymap)
   - [`map!`](./docs/reference.md#map): A replacement of `vim.keymap.set`, but
