@@ -140,20 +140,20 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
        -- Note: v0.7.0 has a backward compatibility issue.
        version = "~v0.7.1",
      },
-     ... -- and other plugins
+     ..., -- and other plugins
    }, {
-       defaults = {
-         lazy = true,
+     defaults = {
+       lazy = true,
+     },
+     performance = {
+       rtp = {
+         -- Note: Not to remove nvim-laurel from &rtp, and not to encounter any
+         -- other potential issues, it's UNRECOMMENDED to reset &rtp unless you
+         -- don't mind the extra cost to maintain the "paths" properly.
+         reset = false,
        },
-       performance = {
-         rtp = {
-           -- Note: Not to remove nvim-laurel from &rtp, and not to encounter any
-           -- other potential issues, it's UNRECOMMENDED to reset &rtp unless you
-           -- don't mind the extra cost to maintain the "paths" properly.
-           reset = false,
-         }
-       }
-     })
+     },
+   })
    ```
 
    or, if you are confident in writing plugin specs in Fennel,
@@ -188,10 +188,10 @@ https://github.com/catppuccin/catppuccin/tree/v0.2.0?tab=readme-ov-file#-palette
 
    ```make
    %.lua: %.fnl
-     fennel \
-       --add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl" \
-       --add-package-path "/path/to/nvim-laurel/lua/?.lua;/path/to/nvim-laurel/lua/?/init.lua" \
-       --compile $< > $@
+   	fennel \
+   	--add-macro-path "/path/to/nvim-laurel/fnl/?.fnl;/path/to/nvim-laurel/fnl/?/init.fnl" \
+   	--add-package-path "/path/to/nvim-laurel/lua/?.lua;/path/to/nvim-laurel/lua/?/init.lua" \
+   	--compile $< > $@
    ```
 
 3. Add `/path/to/nvim-laurel` to `'runtimepath'` in your Neovim config file.
@@ -211,7 +211,6 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
 ### 🔥 Macro List
 
 - [Autocmd](./docs/reference.md#autocmd)
-
   - [`augroup!`](./docs/reference.md#augroup): A replacement of
     `vim.api.nvim_create_augroup`
   - [`autocmd!`](./docs/reference.md#autocmd-1): A replacement of
@@ -219,7 +218,6 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
   - [`au!`](./docs/reference.md#au): An alias of `autocmd!`
 
 - [Keymap](./docs/reference.md#Keymap)
-
   - [`map!`](./docs/reference.md#map): A replacement of `vim.keymap.set`, but
     compiles into `vim.api.nvim_set_keymap`.
   - [`unmap!`](./docs/reference.md#unmap): A replacement of `vim.keymap.del`,
@@ -228,7 +226,6 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
   - [`<C-u>`](./docs/reference.md#C-u)
 
 - [Option](./docs/reference.md#Option)
-
   - [`let!`](./docs/reference.md#let): A replacement of `vim.opt`,
     `vim.opt_local`, `vim.opt_global`, `vim.o`, `vim.bo`, `vim.wo`, but compiles
     into `vim.api.nvim_set_option_value`.
@@ -240,7 +237,6 @@ See [REFERENCE.md](./docs/reference.md) for each macro usage in detail.
     dedicated to handle Vim local option value like `vim.opt_local`.
 
 - [Variable](./docs/reference.md#Variable)
-
   - [`g!`](./docs/reference.md#g): A [`let!`][`let!`] alternative dedicated to
     handle Vim global variable `vim.g`.
   - [`b!`](./docs/reference.md#b): A [`let!`][`let!`] alternative dedicated to
