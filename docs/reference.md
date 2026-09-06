@@ -25,6 +25,7 @@ builtin Nvim Lua-Vimscript bridge on metatable and by good old Vim script._
     - [`augroup!`](#augroup)
     - [`autocmd!`](#autocmd-1)
     - [`au!`](#au)
+    - [`doautocmd!`](#doautocmd)
   - [Keymap](#keymap)
     - [`map!`](#map)
     - [`unmap!`](#unmap)
@@ -235,6 +236,7 @@ Note that quote position depends on where the wrapper macros are defined:
 - [`augroup!`](#augroup)
 - [`autocmd!`](#autocmd-1)
 - [`au!`](#au)
+- [`doautocmd!`](#doautocmd)
 
 #### `augroup!`
 
@@ -416,6 +418,65 @@ See [`augroup!`](#augroup) for the rest.
 
 An alias of [`autocmd!`](#autocmd-1).
 (`&default-opts` is available.)
+
+#### `doautocmd!`
+
+Execute autocmds for given events. Fennel equivalent of `:doautocmd` /
+`vim.api.nvim_exec_autocmds()`.
+
+```fennel
+(doautocmd! events)
+(doautocmd! events patterns)
+(doautocmd! events api-opts)
+(doautocmd! group events)
+(doautocmd! events patterns api-opts)
+(doautocmd! group events patterns)
+(doautocmd! group events api-opts)
+(doautocmd! group events patterns api-opts)
+```
+
+- `?group`: (string|integer|nil) The optional autocmd group name or id to
+  match against.
+- `events`: (string[]) The event or events to execute. Even if the events are
+  set in a symbol or list which returns multiple events, `events` should be
+  set in a sequence.
+- `?patterns`: (bare-sequence|`*`) Pattern(s) to match. Even if the patterns
+  are set in a symbol or list which returns multiple patterns, `?patterns`
+  should be set in a sequence.
+- `?api-opts`: (kv-table) `:h nvim_exec_autocmds()`. It can also accept the
+  following key:
+
+  - `buffer`: (number?) Execute autocmds for the buffer of the next value.
+    Without 0 or no following number, execute autocmds for the current buffer.
+
+Note: `&default-opts` is not available in this macro.
+
+```fennel
+(doautocmd! [:InsertEnter])
+(doautocmd! [:BufRead] *)
+(doautocmd! [:BufRead] {:buffer 3})
+(local buf (vim.api.nvim_get_current_buf))
+(doautocmd! augroup [:InsertEnter] {: buffer})
+(doautocmd! augroup [:OptionSet] [:tabstop] {})
+```
+
+is equivalent to
+
+```vim
+doautocmd InsertEnter
+doautocmd BufRead *
+doautocmd BufRead <buffer=3>
+doautocmd! augroup InsertEnter <buffer>
+doautocmd! augroup OptionSet tabstop
+```
+
+```lua
+vim.api.nvim_exec_autocmds("InsertEnter", {})
+vim.api.nvim_exec_autocmds("BufRead", { pattern = "*" })
+vim.api.nvim_exec_autocmds("BufRead", { buffer = 3 })
+vim.api.nvim_exec_autocmds("InsertEnter", { group = augroup, buffer = buf })
+vim.api.nvim_exec_autocmds("OptionSet", { group = augroup, pattern = "tabstop" })
+```
 
 ### Keymap
 
@@ -1260,6 +1321,7 @@ or https://github.com/aileot/nvim-laurel/blob/main/CHANGELOG.md
 [`augroup!`]: #augroup
 [`autocmd!`]: #autocmd
 [`au!`]: #au
+[`doautocmd!`]: #doautocmd
 [`map!`]: #map
 [`command!`]: #command
 [`highlight!`]: #highlight
