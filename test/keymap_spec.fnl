@@ -144,7 +144,9 @@
       (let [modes [:n]]
         (map! modes [:expr :literal] :lhs :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-          (assert.is_nil replace_keycodes))))
+          ;; `replace_keycodes` is reported as nil (<v0.12.0) or 0 (≥v0.12.0)
+          ;; by `nvim_get_keymap()` when disabled.
+          (assert.is_not_same 1 replace_keycodes))))
     (describe* :extra-opt
       (describe* "`buffer`"
         (it* "with the next value sets buffer-local keymap to the buffer"
@@ -290,13 +292,13 @@
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
           (assert.is_same 1 replace_keycodes))
         (let [{: replace_keycodes} (get-mapargs :n :lhs1)]
-          (assert.is_nil replace_keycodes))
+          (assert.is_not_same 1 replace_keycodes))
         (let [{: replace_keycodes} (get-mapargs :n :lhs2)]
-          (assert.is_nil replace_keycodes)))
+          (assert.is_not_same 1 replace_keycodes)))
       (it* "disables `replace_keycodes` when `literal` is set in `extra-opts`"
         (nmap! :lhs [:expr :literal] :rhs)
         (let [{: replace_keycodes} (get-mapargs :n :lhs)]
-          (assert.is_nil replace_keycodes))))
+          (assert.is_not_same 1 replace_keycodes))))
     (describe* "with `&default-opts`,"
       (describe* "local macro"
         (describe* :buf-map!
