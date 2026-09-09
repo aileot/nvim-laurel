@@ -270,9 +270,12 @@ Create or get an augroup, or override existing augroup.
   first pattern in string cannot be any of the keys used in `?extra-opts`.
   The symbol `*` is available to imply pattern `"*"` here.
 - `?extra-opts`: (bare-sequence) Additional option:
-  - `buffer`: (number?) Create command in the buffer of the next
+  - `buf`: (number?) Create command in the buffer of the next
     value. Without 0 or no following number, create autocmd to current buffer
-    by itself.
+    by itself. Compiled to `buf` key for nvim>=0.12, where the `buffer` key
+    was renamed to `buf`.
+  - `buffer`: (number?) Same as `buf`, but compiled to `buffer` key.
+    Kept for backward compatibility; still accepted on latest nvim.
 
   Note: The `:desc` key can be omitted if the description is written in the
   first argument of `extra-opts` and does not match against any other keys of
@@ -440,8 +443,12 @@ Map `lhs` to `rhs` in `modes`, non-recursively by default.
   `[:n :o :x]`.
 - `?extra-opts`: (bare-sequence) Additional option:
 
+  - `buf`: (number?) Map `lhs` to a buffer of the next value. With `0` or
+    with no following value, create autocmd to current buffer.
+    Same as `buffer`, following the `buf` naming on nvim>=0.12.
   - `buffer`: (number?) Map `lhs` to a buffer of the next value. With `0` or
     with no following value, create autocmd to current buffer.
+    Kept for backward compatibility.
   - `literal`: Disable `replace_keycodes`, which is automatically enabled when
     `expr` is set in `extra-opts`.
   - `remap`: Make the mapping recursive. This is the inverse of the "noremap"
@@ -1034,8 +1041,12 @@ Create a user command.
 - `?extra-opts`: (bare-sequence) Optional command attributes.
   Additional attributes:
 
+  - `buf`: Create command in the buffer of the next value. Without 0 or no
+    following number, create autocmd to current buffer by itself.
+    Same as `buffer`, following the `buf` naming on nvim>=0.12.
   - `buffer`: Create command in the buffer of the next value. Without 0 or no
     following number, create autocmd to current buffer by itself.
+    Kept for backward compatibility.
 
   Note: The `:desc` key can be omitted if the description is written in the
   first argument of `extra-opts` and does not match against any other keys of
