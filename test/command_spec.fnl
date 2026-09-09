@@ -20,7 +20,13 @@
 (λ get-command-definition [name]
   "Return command, or value for desc if callback is Lua function.
 Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
-  (. (get-command name) :definition))
+  (let [{: definition : desc} (get-command name)]
+    ;; `definition` carries `desc` on nvim < v0.13.0. On nvim >= v0.13.0,
+    ;; `desc` is always reported (as "" when unset) and `definition` is empty
+    ;; for function callbacks.
+    (if (and definition (not= definition "")) definition
+        (and desc (not= desc "")) desc
+        definition)))
 
 (λ get-buf-command [bufnr name]
   (-> (vim.api.nvim_buf_get_commands bufnr {:builtin false})
