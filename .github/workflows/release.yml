@@ -55,6 +55,7 @@ jobs:
       - name: PR new vimdoc
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
         with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           branch: create-pull-request--branches--main--vimdoc
           title: "docs(vimdoc): auto-generate"
           body: |
