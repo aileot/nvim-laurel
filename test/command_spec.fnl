@@ -53,6 +53,20 @@ Read `Parameters.opts.desc` of `:h nvim_create_user_command()`"
       (command! :Foo [:buffer bufnr] :Bar)
       (assert.is_not_nil (get-buf-command bufnr :Foo))
       (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr :Foo))))
+  ;; Note: Unlike autocmd APIs, no `buf` key reaches nvim APIs here;
+  ;; both `buf` and `buffer` select buffer-local commands.
+  (it* "defines local user command for current buffer with `buf` key with no value"
+    (assert.is_nil (get-buf-command 0 :Foo))
+    (command! [:buf] :Foo :Bar)
+    (assert.is_not_nil (get-buf-command 0 :Foo)))
+  (it* "defines local user command with buffer number in `buf` key"
+    (let [bufnr (vim.api.nvim_get_current_buf)]
+      (assert.is_nil (get-buf-command bufnr :Foo))
+      (vim.cmd.new)
+      (vim.cmd.only)
+      (command! :Foo [:buf bufnr] :Bar)
+      (assert.is_not_nil (get-buf-command bufnr :Foo))
+      (assert.has_no_error #(vim.api.nvim_buf_del_user_command bufnr :Foo))))
   (it* "which sets callback vim.fn.Test will not be overridden by `desc` key"
     ;; Note: The reason is probably vim.fn.Test is not a Lua function but
     ;; a Vim one.
