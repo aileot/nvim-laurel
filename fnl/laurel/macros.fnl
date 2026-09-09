@@ -1046,7 +1046,18 @@ For example,
       "^"
       `(: ,opt-obj :prepend ,?val)
       "-"
-      `(: ,opt-obj :remove ,?val)
+      ;; Note: `nvim_set_option_value` with `operation: "remove"` removes at
+      ;; most one flag on nvim >= v0.13.0, so remove flags one-by-one for
+      ;; flaglist options; other options keep a single batched call.
+      (let [opt# (gensym :opt)]
+        `(let [,opt# ,opt-obj]
+           (if (. (vim.api.nvim_get_option_info2 ,name {}) :flaglist)
+             (if (= (type ,?val) "table")
+               (each [_# flag# (ipairs ,?val)]
+                 (: ,opt# :remove flag#))
+               (each [_# flag# (ipairs (vim.split (tostring ,?val) ""))]
+                 (: ,opt# :remove flag#)))
+             (: ,opt# :remove ,?val))))
       "!"
       `(tset ,opt-obj (not (: ,opt-obj :get)))
       "<" ; Sync local option to global one.
