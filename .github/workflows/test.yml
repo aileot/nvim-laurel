@@ -4,6 +4,9 @@ on:
     branches:
       - main
   pull_request:
+  workflow_call:
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: ubuntu-22.04
@@ -16,7 +19,9 @@ jobs:
           - stable
           - nightly
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - name: Install luarocks
         run: |
           sudo apt-get update
@@ -25,7 +30,7 @@ jobs:
         run: |
           sudo luarocks --lua-version=5.1 install fennel
           sudo luarocks --lua-version=5.1 install vusted
-      - uses: rhysd/action-setup-vim@v1
+      - uses: rhysd/action-setup-vim@febef33995d6649302e9d88dda81e071b68f16a7 # v1.6.1
         id: vim
         with:
           neovim: true
