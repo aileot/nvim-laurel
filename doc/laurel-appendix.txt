@@ -26,7 +26,7 @@ _Please adopt or adjust the snippets at your own risk._
 
 LSP                                                      *laurel-appendix-lsp*
 
-_(last edited at nvim-lspconfig 9619e53d)_
+_(last edited at nvim-lspconfig 48a9b4dc)_
 
 
 LSP: GET FENNEL-LS SUPPORT OVER &RTP, OR &RUNTIMEPATH ~
@@ -46,8 +46,8 @@ the following contents:
      :macro-path "fnl/?.fnl;fnl/?/init.fnl"
      :fennel-path "fnl/?.fnl;fnl/?/init.fnl"}
      ;; Or, with nvim-thyme, you might want this instead.
-     ;; :macro-path "lua/?.fnl;lua/?/init.fnl"
-     ;; :fennel-path "lua/?.fnl;lua/?/init.fnl"}
+     ;; :macro-path "lua/?.fnl;lua/?/init.fnl;fnl/?.fnl;fnl/?/init.fnl"
+     ;; :fennel-path "lua/?.fnl;lua/?/init.fnl;fnl/?.fnl;fnl/?/init.fnl"}
 <
 
 
@@ -56,9 +56,16 @@ the following contents:
 <https://git.sr.ht/~xerool/fennel-ls> workspace folders:
 
 >lua
-    -- In after/lsp/fennel_ls.lua
+    -- In ~/.config/nvim/after/lsp/fennel_ls.lua
+    local workspace_folders_on_rtp = vim.tbl_map(function(path)
+      return {
+        uri = "file://" .. path,
+        name = vim.fs.basename(vim.fs.dirname(path)),
+      }
+    end, vim.api.nvim_get_runtime_file("fnl", true))
+    
     return {
-      workspace_folders = vim.api.nvim_get_runtime_file("fnl", true),
+      workspace_folders = workspace_folders_on_rtp,
     }
 <
 
@@ -142,7 +149,7 @@ TREESITTER: HIGHLIGHT NAME OF AUGROUP, COMMAND, AND HIGHLIGHT ~
 TREESITTER: INJECT VIM SYNTAX HIGHLIGHT TO VIM COMMAND IN NVIM-LAUREL MACROS ~
 
 >query
-    ;; in after/quries/fennel/injection.scm
+    ;; in after/queries/fennel/injection.scm
     
     ;; without api-opts
     ((list
