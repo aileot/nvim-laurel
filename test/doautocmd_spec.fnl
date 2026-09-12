@@ -58,6 +58,17 @@
         (assert-spy s :was_called 1)
         (doautocmd! [:BufRead] {:buffer buf2})
         (assert-spy s :was_called 1)))
+    (it* "should execute autocommand for the current buffer with the :buffer keyword"
+      (let [s (spy.new (fn []))
+            buf (vim.api.nvim_create_buf false true)]
+        (au! nil [:BufRead] [:buffer buf] #(s))
+        (doautocmd! [:BufRead] :buffer)
+        (assert-spy s :was_not_called)
+        (au! nil [:BufRead] #(s))
+        (doautocmd! [:BufRead] :buf)
+        (assert-spy s :was_called)
+        (doautocmd! [:BufRead] :buffer)
+        (assert-spy s :was_called 2)))
     (it* "should execute autocommand for a specific pattern"
       (let [s (spy.new (fn []))
             test-file-txt "test.txt"

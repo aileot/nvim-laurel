@@ -679,12 +679,19 @@ instead to set a Vimscript function.
   ;;" (view [...]))))
   (define-autocmd! ...))
 
+(fn doautocmd/buffer-keyword? [x]
+  "Check if `x` is the `:buffer` or `:buf` keyword, which implies the
+current buffer as if `{:buffer 0}`."
+  (or (= :buffer x) (= :buf x)))
+
 (fn doautocmd/parse-args [...]
   "Parse arguments for `doautocmd!` macro.
 @param args sequence The arguments passed to `doautocmd!`.
 @return ?group string|integer|symbol|nil
 @return events string[]
 @return ?patterns string[]|nil
+@return ?buffer number|nil Set to 0 if the `:buffer` or `:buf` keyword is
+set right after `events` instead of ?patterns.
 @return ?api-opts kv-table|nil"
   (case (select :# ...)
     1
@@ -694,8 +701,12 @@ instead to set a Vimscript function.
     2
     ;; (doautocmd! events patterns)
     ;; (doautocmd! events api-opts)
+    ;; (doautocmd! events :buffer)
     ;; (doautocmd! group events)
     (case ...
+      (where (events ?kw) (sequence? events)
+             (doautocmd/buffer-keyword? ?kw))
+      (values nil events nil 0 nil)
       (where (events patterns|api-opts) (sequence? events))
       (if (or (sequence? patterns|api-opts) (= `* patterns|api-opts))
           (let [patterns patterns|api-opts]
@@ -706,16 +717,32 @@ instead to set a Vimscript function.
       (group events) (values group events))
     3
     ;; (doautocmd! events patterns api-opts)
+    ;; (doautocmd! events :buffer api-opts)
     ;; (doautocmd! group events patterns)
+    ;; (doautocmd! group events :buffer)
     ;; (doautocmd! group events api-opts)
     (case ...
+      (where (events ?kw api-opts) (sequence? events)
+             (doautocmd/buffer-keyword? ?kw))
+      (values nil events nil 0 api-opts)
       (where (events patterns api-opts) (sequence? events))
       (values nil events patterns nil api-opts)
+      (where (group events ?kw) (doautocmd/buffer-keyword? ?kw))
+      (values group events nil 0 nil)
       (group events api-opts) (values group events nil nil api-opts))
     4
     ;; (doautocmd! group events patterns api-opts)
+    ;; (doautocmd! group events :buffer api-opts)
     (let [(group events patterns api-opts) ...]
-      (values group events patterns nil api-opts))
+      (if (doautocmd/buffer-keyword? patterns)
+          (values group events nil 0 api-opts)
+          (values group events patterns nil api-opts)))
+    5
+    ;; (doautocmd! group events :buffer patterns api-opts)
+    (let [(group events ?kw patterns api-opts) ...]
+      (assert (doautocmd/buffer-keyword? ?kw)
+              "expected :buffer or :buf keyword after events")
+      (values group events nil 0 patterns api-opts))
     ;; Otherwise
     n
     (error* (.. "unsupported number of arguments: " n))))
@@ -726,7 +753,7 @@ instead to set a Vimscript function.
 @param ?group string|integer? The optional autocmd group name or id to match against.
 @param events string[] `events` should be set in sequence even if the `events` is set in symbol or list which returns multi events.
 @param ?patterns string[] `patterns` should be set in sequence even if the `patterns` is set in symbol or list which returns multi patterns.
-@param ?api-opts kv-table Dict of vim.api.keyset.exec_autocmds"
+@param ?api-opts kv-table Dict of vim.api.keyset.exec_autocmds Set the `:buffer` or `:buf` keyword right after `events` to execute autocmds for the current buffer as if `{:buffer 0}`."
   (let [(?group events ?patterns ?buffer ?api-opts) (doautocmd/parse-args ...)]
     (let [api-opts (merge-api-opts {:group ?group :buffer ?buffer} ?api-opts)]
       (when (and ?patterns (not= `* ?patterns))

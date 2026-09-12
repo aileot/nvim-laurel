@@ -449,12 +449,18 @@ Execute autocmds for given events. Fennel equivalent of `:doautocmd` /
   - `buffer`: (number?) Execute autocmds for the buffer of the next value.
     Without 0 or no following number, execute autocmds for the current buffer.
 
+Alternatively, set the `:buffer` or `:buf` keyword right after `events` to
+execute autocmds for the current buffer as if `{:buffer 0}`. Note that the
+keyword can only be set in the position right after `events`; `?api-opts`
+`:buffer` takes precedence when both are set.
+
 Note: `&default-opts` is not available in this macro.
 
 ```fennel
 (doautocmd! [:InsertEnter])
 (doautocmd! [:BufRead] *)
 (doautocmd! [:BufRead] {:buffer 3})
+(doautocmd! [:BufRead] :buffer)
 (local buf (vim.api.nvim_get_current_buf))
 (doautocmd! augroup [:InsertEnter] {: buffer})
 (doautocmd! augroup [:OptionSet] [:tabstop] {})
@@ -466,6 +472,7 @@ is equivalent to
 doautocmd InsertEnter
 doautocmd BufRead *
 doautocmd BufRead <buffer=3>
+doautocmd BufRead <buffer>
 doautocmd! augroup InsertEnter <buffer>
 doautocmd! augroup OptionSet tabstop
 ```
@@ -474,6 +481,7 @@ doautocmd! augroup OptionSet tabstop
 vim.api.nvim_exec_autocmds("InsertEnter", {})
 vim.api.nvim_exec_autocmds("BufRead", { pattern = "*" })
 vim.api.nvim_exec_autocmds("BufRead", { buffer = 3 })
+vim.api.nvim_exec_autocmds("BufRead", { buffer = 0 })
 vim.api.nvim_exec_autocmds("InsertEnter", { group = augroup, buffer = buf })
 vim.api.nvim_exec_autocmds("OptionSet", { group = augroup, pattern = "tabstop" })
 ```
