@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.8](https://github.com/aileot/nvim-laurel/compare/v0.7.7...v0.7.8) (2026-09-13)
+
+
+### Features
+
+* **augroup:** make `augroup!` always return id by default ([#348](https://github.com/aileot/nvim-laurel/issues/348)) ([9b766d8](https://github.com/aileot/nvim-laurel/commit/9b766d8f4de2939228c480f7ea5ee1707eeb7447))
+* support "buf" key in addition to "buffer" ([#358](https://github.com/aileot/nvim-laurel/issues/358)) ([5ba4f29](https://github.com/aileot/nvim-laurel/commit/5ba4f29d6a7545bee5a511b3c444b2866caf8fe4))
+
 ## [0.7.7](https://github.com/aileot/nvim-laurel/compare/v0.7.6...v0.7.7) (2025-10-23)
 
 
