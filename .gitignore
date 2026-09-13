@@ -5,6 +5,8 @@ tmp-*
 .test-deps/
 *.spec
 
+.env*
+
 # # For backward compatibility
 # fnl/nvim-laurel
 
