@@ -488,6 +488,7 @@ no other type of args is supposed to precede them. The rightmost has priority.
 
 (local autocmd/extra-opt-keys
        {:<buffer> :boolean
+        :buf [:default 0 :number]
         :buffer [:default 0 :number]
         :callback [:function]
         :command [:string]
@@ -554,10 +555,14 @@ instead to set a Vimscript function.
           ?bufnr (if extra-opts.<buffer>
                      (deprecate ":<buffer> key" ":buffer key alone, or with 0,"
                                 :v0.9.0 0)
-                     extra-opts.buffer)
+                     (or extra-opts.buf extra-opts.buffer))
           ?pat (or extra-opts.pattern ?pattern)]
       (set extra-opts.group ?id)
-      (set extra-opts.buffer ?bufnr)
+      ;; Note: Keep `:buf` as `buf` for nvim>=v0.13, and `:buffer` as
+      ;; `buffer` for backward compatibility.
+      (if extra-opts.buf
+          (set extra-opts.buf ?bufnr)
+          (set extra-opts.buffer ?bufnr))
       (let [pat (if (and (sequence? ?pat) (= 1 (length ?pat)))
                     (first ?pat)
                     ?pat)
@@ -575,7 +580,8 @@ instead to set a Vimscript function.
           (let [cb (or (extract-?vim-fn-name callback) ;
                        callback)]
             (set extra-opts.callback cb)))
-      (assert-compile (nand extra-opts.pattern extra-opts.buffer)
+      (assert-compile (and (nand extra-opts.pattern extra-opts.buf)
+                           (nand extra-opts.pattern extra-opts.buffer))
                       "cannot set both pattern and buffer for the same autocmd"
                       extra-opts)
       (let [api-opts (-> (default/merge-opts! extra-opts)
@@ -682,6 +688,7 @@ instead to set a Vimscript function.
 ;; Keymap ///1
 
 (local keymap/extra-opt-keys {:<buffer> :boolean
+                              :buf [:default 0 :number]
                               :buffer [:default 0 :number]
                               :callback [:function]
                               :desc [:string]
@@ -699,6 +706,7 @@ instead to set a Vimscript function.
 (λ keymap/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
+  (set opts.buf nil)
   (set opts.<buffer> nil)
   (set opts.literal nil)
   (set opts.wait nil)
@@ -744,7 +752,7 @@ instead to set a Vimscript function.
               ?bufnr (if extra-opts*.<buffer>
                          (deprecate ":<buffer> key"
                                     ":buffer key alone, or with 0," :v0.9.0 0)
-                         extra-opts*.buffer)]
+                         (or extra-opts*.buf extra-opts*.buffer))]
           (set extra-opts*.buffer ?bufnr)
           (values modes extra-opts* lhs rhs ?api-opts)))))
 
@@ -802,7 +810,7 @@ instead to set a Vimscript function.
                           (not (hidden-in-compile-time? ?api-opts))))))
     (set extra-opts.remap nil)
     (set extra-opts.noremap nil))
-  (let [?bufnr extra-opts.buffer
+  (let [?bufnr (or extra-opts.buf extra-opts.buffer)
         api-opts (merge-api-opts (keymap/->compatible-opts! extra-opts)
                                  ?api-opts)
         set-keymap (λ [mode]
@@ -1269,6 +1277,7 @@ Set a window option value.
         :addr [:string]
         :bang :boolean
         :bar :boolean
+        :buf [:default 0 :number]
         :buffer [:default 0 :number]
         :complete [:function :string]
         :count [:default 0 :number]
@@ -1283,6 +1292,7 @@ Set a window option value.
 (λ command/->compatible-opts! [opts]
   "Remove invalid keys of `opts` for the api functions."
   (set opts.buffer nil)
+  (set opts.buf nil)
   (set opts.<buffer> nil)
   opts)
 
@@ -1315,7 +1325,7 @@ The same as {opts} for `nvim_create_user_command`."
         ?bufnr (if extra-opts*.<buffer>
                    (deprecate ":<buffer> key" ":buffer key alone, or with 0,"
                               :v0.9.0 0)
-                   extra-opts*.buffer)
+                   (or extra-opts*.buf extra-opts*.buffer))
         api-opts (-> (command/->compatible-opts! extra-opts*)
                      (merge-api-opts ?api-opts))]
     (if ?bufnr

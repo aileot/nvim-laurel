@@ -238,6 +238,23 @@
               (get-autocmds {:buffer (vim.api.nvim_get_current_buf)})]
           (assert.is_same au1 autocmd1.id)
           (assert.is_same au2 autocmd2.id))))
+    ;; Note: The `buf` key in autocmd-related APIs is only available on
+    ;; nvim-0.12+. The `buffer` key above keeps working for backward
+    ;; compatibility.
+    (when (= 1 (vim.fn.has "nvim-0.12"))
+      (it* "creates buffer-local autocmd with `buf` key"
+        (let [buf (vim.api.nvim_get_current_buf)
+              au1 (au! default-augroup default-event [:buf buf]
+                       default-callback)]
+          (vim.cmd.new)
+          (vim.cmd.only)
+          (let [au2 (au! default-augroup default-event [:buf]
+                         default-callback)
+                [autocmd1] (get-autocmds {: buf})
+                [autocmd2] ;
+                (get-autocmds {:buf (vim.api.nvim_get_current_buf)})]
+            (assert.is_same au1 autocmd1.id)
+            (assert.is_same au2 autocmd2.id)))))
     (it* "can define autocmd without any augroup"
       (set au-id1 (au! nil default-event default-callback)))
     (it* "gives lowest priority to `pattern` as (< raw seq tbl)"
